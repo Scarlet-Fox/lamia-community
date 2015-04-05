@@ -132,6 +132,10 @@ class Category(models.Model):
     parent = models.ForeignKey("Category", blank=True, null=True)
     moderators = models.ManyToManyField(User, through="CategoryParticipant")
 
+    class Meta:
+        ordering = ["-parent_id", "weight"]
+        verbose_name_plural = "categories"
+
     def __str__(self):
         return self.title
 

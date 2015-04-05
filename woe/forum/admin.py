@@ -1,3 +1,7 @@
 from django.contrib import admin
+from forum.models import *
 
-# Register your models here.
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('parent', 'weight', 'title')
+
+admin.site.register(Category, CategoryAdmin)
