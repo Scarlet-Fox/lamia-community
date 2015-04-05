@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.fields import HStoreField
 import reversion
 
 """This file should go from low level to high level."""
@@ -16,7 +17,7 @@ class Post(models.Model):
     edited = models.DateTimeField(auto_now=True, index=True)
     
     content = models.TextField(blank=True)
-    content_html = models.TextField(blank=True)
+    meta = models.HStoreField()
 
     hidden = models.BooleanField(default=False, index=True)
     hide_message = models.CharField(max_length=255, blank=True)
@@ -55,6 +56,8 @@ class Flag(models.Model):
     created = models.DateTimeField(auto_now_add=True, index=True)
 
 class LogEntry(models.Model):
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user = models.ForeignKey(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, index=True)
     category = models.CharField(index=True, index=True)
     details = models.TextField(blank=True)
@@ -65,10 +68,12 @@ class Prefix(models.Model):
     pre_html = models.CharField(max_length=255)
     post_html = models.CharField(max_length=255)
 
-class Topic(DateContentAuthor):
+class Topic(models.Model):
+    author = models.ForeignKey("User")
     title = models.CharField(max_length=255)
     category = models.ForeignKey("Category")
     prefix = models.ForeignKey("Prefix", blank=True, null=True)
+    meta = models.HStoreField()
     
     active_user = models.ForeignKey("User")
     created = models.DateTimeField(blank=True, null=True)
@@ -80,6 +85,80 @@ class Topic(DateContentAuthor):
 
     sticky = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
+    hidden = models.BooleanField(default=False)
+    hide_message = models.CharField(max_length=255)
 
     participants = models.ManyToManyField() # TODO
     favorites = models.ManyToManyField() # TODO
+    moderators = models.ManyToManyField() # TODO
+
+class Category(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+
+    weight = models.IntegerField(default=0, index=True)
+    category = models.ForeignKey("Category", index=True)
+
+    groups = models.ManyToManyField() # TODO
+    moderators = models.ManyToManyField() # TODO
+
+class StatusUpdate(models.Model):
+    author = models.ForeignKey("User")
+    created = models.DateTimeField(auto_now_add=True, index=True)
+    message = models.TextField()
+    profile = models.ForeignKey("User", blank=True, null=True)
+    """If null, then a normal status update. If not, then user-linked."""
+
+    participants = models.ManyToManyField() # TODO
+
+class StatusComments(models.Model):
+    status = models.ForeignKey("StatusUpdate")
+    comment = models.TextField()
+    created = models.DateTimeField(auto_now_add=True, index=True)
+    author = models.ForeignKey("User")
+
+    hidden = models.BooleanField(default=False)
+
+class Ban(models.Model):
+    user = models.ForeignKey("User")
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+
+    created = models.DateTimeField(auto_now_add=True, index=True)
+    mod = models.ForeignKey("User")
+
+class Profile(models.Model):
+    user = models.ForeignKey("User")
+    status = models.ForeignKey("StatusUpdate", blank=True, null=True)
+    location = models.CharField(blank=True)
+    time_zone = models.FloatField(default=0.0)
+    about = models.TextField(blank=True)
+
+    birthday = models.DateField(blank=True, null=True)
+    age = models.IntegerField(blank=True, null=True)
+    hide_age = models.BooleanField(default=True)
+    hide_birthday = models.BooleanField(default=True)
+
+    GENDERS = (
+        ('n', ''),
+        ('f', 'Female'),
+        ('m', 'Male'),
+        ('g', 'Genderfluid'),
+        ('o', 'Other')
+    )
+    gender = models.CharField(choices=GENDERS, default="n")
+    hide_gender = models.BooleanField(default=True)
+
+    ALLOWED_FIELDS = (
+        'Website',
+        'DeviantArt'
+        'Skype',
+        'Steam',
+        'Tumblr'
+        )
+    fields = models.HStoreField()
+    avatar = models.ImageField(upload_to="avatars", blank=True)
+
+class Signature(models.Model):
+    user = models.ForeignKey("User")
+    description = models.CharField(max_length=255)
+    content = models.TextField()
