@@ -88,21 +88,29 @@ class Topic(models.Model):
     hidden = models.BooleanField(default=False)
     hide_message = models.CharField(max_length=255)
 
-    participants = models.ManyToManyField() # TODO
-    favorites = models.ManyToManyField() # TODO
-    moderators = models.ManyToManyField() # TODO
+    participants = models.ManyToManyField(User, through="TopicParticipant")
+    # TODO : Rate limiting stuff.
 
-    # TODO : Rate limiting.
+class TopicParticipant(models.Model):
+    topic = models.ForeignKey("Topic")
+    user = models.ForeignKey("User")
+    following = models.BooleanField(default=False)
+    posts = models.IntegerField(default=0)    
+    moderator = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(blank=True, null=True)
+    # TODO : Add a preference to toggle this.
 
 class Category(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-
     weight = models.IntegerField(default=0, index=True)
-    category = models.ForeignKey("Category", index=True)
+    category = models.ForeignKey("Category", index=True, blank=True, null=True)
+    moderators = models.ManyToManyField(User, through="CategoryParticipant")
 
-    groups = models.ManyToManyField() # TODO
-    moderators = models.ManyToManyField() # TODO
+class CategoryParticipant(models.Model):
+    category = models.ForeignKey("Category")
+    user = models.ForeignKey("User")
+    moderator = models.BooleanField(default=False)
 
 class StatusUpdate(models.Model):
     author = models.ForeignKey("User")
@@ -110,8 +118,12 @@ class StatusUpdate(models.Model):
     message = models.TextField()
     profile = models.ForeignKey("User", blank=True, null=True)
     """If null, then a normal status update. If not, then user-linked."""
+    participants = models.ManyToManyField("User", through="StatusParticipant")
 
-    participants = models.ManyToManyField() # TODO
+class StatusParticipant(models.Model):
+    status = models.ForeignKey("StatusUpdate")
+    user = models.ForeignKey("User")
+    following = models.BooleanField(default=True)
 
 class StatusComments(models.Model):
     status = models.ForeignKey("StatusUpdate")
@@ -128,6 +140,19 @@ class Ban(models.Model):
     created = models.DateTimeField(auto_now_add=True, index=True)
     mod = models.ForeignKey("User")
 
+class ModerationNotes(models.Model):
+    user = models.ForeignKey("User")
+    author = models.ForeignKey("User")
+    created = models.DateTimeField(auto_now_add=True, index=True)
+    comment = models.TextField(blank=True)
+
+class Friends(models.Model):
+    user = models.ForeignKey("User")
+    friend = models.ForeignKey("User")
+    follow_posts = models.BooleanField(default=False)
+    follow_status = models.BooleanField(default=False)
+    follow_topics = models.BooleanField(default=False)
+
 class Profile(models.Model):
     user = models.ForeignKey("User")
     status = models.ForeignKey("StatusUpdate", blank=True, null=True)
@@ -135,6 +160,7 @@ class Profile(models.Model):
     location = models.CharField(blank=True)
     time_zone = models.FloatField(default=0.0)
     about = models.TextField(blank=True)
+    friends = models.ManyToManyField("User", through="Friends")
 
     birthday = models.DateField(blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
@@ -163,6 +189,23 @@ class Profile(models.Model):
     fields = models.HStoreField()
     avatar = models.ImageField(upload_to="avatars", blank=True)
 
+    VALIDATION_STATUSES = (
+        (0, "Pending"),
+        (1, "Reviewing"),
+        (2, "Validated"),
+        (3, "Banned in Validation"),
+    )
+    validation_status = models.IntegerField(choices=VALIDATION_STATUSES, default=0)
+
+    MODERATION_STATUSES = (
+        (0, "Under Review"),
+        (1, "Request Feedback"),
+        (2, "Good"),
+        (3, "Bad Egg"),
+        (4, "KO"),
+    )
+    moderation_status = models.IntegerField(choices=MODERATION_STATUSES, default=2)
+
     disable_posts = models.BooleanField(default=False)
     disable_status = models.BooleanField(default=False)
     disable_pm = models.BooleanField(default=False)
@@ -179,22 +222,66 @@ class Signature(models.Model):
     content = models.TextField()
 
 class PrivateMessageLabel(models.Model):
-    user = models.ForeignKey("User")
+    user = models.ForeignKey("User", index=True)
     label = models.CharField(max_length=255)
 
 class PrivateMessage(models.Model):
     title = models.CharField(max_length=255)
-    label = models.ForeignKey("PrivateMessageLabel", blank=True, null=True)
-    user = models.ForeignKey("User")
-    participants = models.ManyToManyField() # TODO
+    label = models.ForeignKey("PrivateMessageLabel", blank=True, null=True, index=True)
+    user = models.ForeignKey("User", index=True)
+    participants = models.ManyToManyField("User", through="PrivateMessageParticipant")
 
     content = models.TextField()
     created = models.DateTimeField(auto_now_add=True, index=True)
     last_updated = models.DateTimeField(auto_now=True, index=True)
 
-class PrivateMessageReply(models.Model):
+class PrivateMessageParticipant(models.Model):
     pm = models.ForeignKey("PrivateMessage")
+    user = models.ForeignKey("User")
+    ignore = models.BooleanField(default=False)
+    blocked = models.BooleanField(default=False)
+    left = models.BooleanField(default=False)
+    last_viewed = models.DateTimeField(blank=True, null=True)
+
+class PrivateMessageReply(models.Model):
+    pm = models.ForeignKey("PrivateMessage", index=True)
     author = models.ForeignKey("User", index=True)
     created = models.DateTimeField(auto_now_add=True, index=True)
     edited = models.DateTimeField(auto_now=True, index=True)
     content = models.TextField(blank=True)
+
+class Notifications(models.Model):
+    user = models.ForeignKey("User")
+    created = models.DateField(auto_now_add=True, index=True)
+    content_type = models.ForeignKey("ContentType")
+    object_id = models.PositiveIntegerField()
+    content = GenericForeignKey('content_type', 'object_id')
+
+    action = models.CharField(max_length=255)
+    category = models.CharField(max_length=255, index=True)
+    author = models.ForeignKey("User", null=True, blank=True)
+    meta = models.HStoreField()
+
+    seen = models.BooleanField(default=False)
+    hidden = models.BooleanField(default=False)
+
+class NotificationPreferences(models.Model):
+    user = models.ForeignKey("User")
+    
+    OPTIONS = (
+        (0, "Dashboard"),
+        (1, "Email"),
+        (2, "All")
+    )
+    moderation = models.CharField(choices=OPTIONS, default=0)
+    topics = models.CharField(choices=OPTIONS, default=0)
+    status = models.CharField(choices=OPTIONS, default=0)
+    quote = models.CharField(choices=OPTIONS, default=0)
+    mention = models.CharField(choices=OPTIONS, default=0)
+    followed = models.CharField(choices=OPTIONS, default=0)
+    messages = models.CharField(choices=OPTIONS, default=0)
+    announcements = models.CharField(choices=OPTIONS, default=0)
+
+class MailingListExclude(models.Model):
+    member = models.ForeignKey("User")
+    exclude = models.BooleanField(default=False)
