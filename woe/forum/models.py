@@ -92,6 +92,8 @@ class Topic(models.Model):
     favorites = models.ManyToManyField() # TODO
     moderators = models.ManyToManyField() # TODO
 
+    # TODO : Rate limiting.
+
 class Category(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -158,7 +160,38 @@ class Profile(models.Model):
     fields = models.HStoreField()
     avatar = models.ImageField(upload_to="avatars", blank=True)
 
+    disable_posts = models.BooleanField(default=False)
+    disable_status = models.BooleanField(default=False)
+    disable_pm = models.BooleanField(default=False)
+    disable_topics = models.BooleanField(default=False)
+    hellban = models.BooleanField(default=False)
+
+    posts = models.IntegerField(default=0)
+    status_updates = models.IntegerField(default=0)
+    status_comments = models.IntegerField(default=0)
+
 class Signature(models.Model):
     user = models.ForeignKey("User")
     description = models.CharField(max_length=255)
     content = models.TextField()
+
+class PrivateMessageLabel(models.Model):
+    user = models.ForeignKey("User")
+    label = models.CharField(max_length=255)
+
+class PrivateMessage(models.Model):
+    title = models.CharField(max_length=255)
+    label = models.ForeignKey("PrivateMessageLabel", blank=True, null=True)
+    user = models.ForeignKey("User")
+    participants = models.ManyToManyField() # TODO
+
+    content = models.TextField()
+    created = models.DateTimeField(auto_now_add=True, index=True)
+    last_updated = models.DateTimeField(auto_now=True, index=True)
+
+class PrivateMessageReply(models.Model):
+    pm = models.ForeignKey("PrivateMessage")
+    author = models.ForeignKey("User", index=True)
+    created = models.DateTimeField(auto_now_add=True, index=True)
+    edited = models.DateTimeField(auto_now=True, index=True)
+    content = models.TextField(blank=True)
