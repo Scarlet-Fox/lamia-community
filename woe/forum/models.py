@@ -10,19 +10,19 @@ import reversion
 @reversion.register
 class Post(models.Model):
     author = models.ForeignKey(User)
-    edited_by = models.ForeignKey(User, related_name="+")
+    edited_by = models.ForeignKey(User, related_name="+", null=True, blank=True)
     topic = models.ForeignKey("Topic")
 
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
     
     content = models.TextField(blank=True)
-    meta = HStoreField()
+    meta = HStoreField(blank=True, null=True)
 
     hidden = models.BooleanField(default=False)
     hide_message = models.CharField(max_length=255, blank=True)
     flag_score = models.IntegerField(default=0)
-    ignore_flags = models.DateTimeField(auto_now=True) 
+    ignore_flags = models.DateTimeField() 
     """Ignore any flags older than this date, useful for resets."""
 
     def __str__(self):
@@ -65,8 +65,11 @@ class Flag(models.Model):
     flag_score = models.IntegerField(default=1)
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-created"]
+
     def __str__(self):
-        return "%s flag on %s, %s" % (unicode(self.flag_user), unicode(self.content))
+        return "%s flag on %s, %s" % (unicode(self.flag_user), unicode(self.created), unicode(self.content))
 
 class LogEntry(models.Model):
     ip_address = models.GenericIPAddressField(blank=True, null=True)
@@ -92,7 +95,7 @@ class Topic(models.Model):
     title = models.CharField(max_length=255)
     category = models.ForeignKey("Category")
     prefix = models.ForeignKey("Prefix", blank=True, null=True)
-    meta = HStoreField()
+    meta = HStoreField(blank=True, null=True)
     
     active_user = models.ForeignKey(User, related_name="+")
     created = models.DateTimeField(blank=True, null=True)
@@ -100,15 +103,17 @@ class Topic(models.Model):
 
     views = models.IntegerField(default=0)
     post_count = models.IntegerField(default=0)
-    recent_post = models.ForeignKey("Post", related_name="+")
 
     sticky = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
-    hide_message = models.CharField(max_length=255)
+    hide_message = models.CharField(max_length=255, blank=True)
 
     participants = models.ManyToManyField(User, through="TopicParticipant")
     # TODO : Rate limiting stuff.
+
+    class Meta:
+        ordering = ["-created"]
 
     def __str__(self):
         return "%s by %s" % (self.title, unicode(self.author))
@@ -239,7 +244,7 @@ class Profile(models.Model):
         'Steam',
         'Tumblr'
         )
-    fields = HStoreField()
+    fields = HStoreField(blank=True, null=True)
     avatar = models.ImageField(upload_to="avatars", blank=True)
 
     VALIDATION_STATUSES = (
@@ -333,7 +338,7 @@ class Notifications(models.Model):
     action = models.CharField(max_length=255)
     category = models.CharField(max_length=255)
     author = models.ForeignKey(User, null=True, blank=True, related_name="+")
-    meta = HStoreField()
+    meta = HStoreField(blank=True, null=True)
 
     seen = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
