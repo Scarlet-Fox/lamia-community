@@ -25,10 +25,14 @@ class Post(models.Model):
     ignore_flags = models.DateTimeField(auto_now=True) 
     """Ignore any flags older than this date, useful for resets."""
 
+    def __str__(self):
+        return "Post #%s by %s : %s" % (self.id, unicode(self.author), self.content[0:20])
+
 class Report(models.Model):
     content_type = models.ForeignKey("ContentType")
     object_id = models.PositiveIntegerField()
     content = GenericForeignKey('content_type', 'object_id')
+    author = models.ForeignKey("User", index=True)
 
     report = models.TextField(blank=True)
     STATUS_CHOICES = (
@@ -40,11 +44,17 @@ class Report(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=1, index=True)
     created = models.DateTimeField(auto_now_add=True, index=True)
 
+    def __str__(self):
+        return "Report by %s on %s" % (unicode(self.author), unicode(self.created))
+
 class ReportComments(models.Model):
     report = models.ForeignKey("Report", index=True)
     author = models.ForeignKey("User")
     created = models.DateTimeField(auto_now_add=True, index=True)
     comment = models.TextField(blank=True)
+
+    def __str__(self):
+        return "%s : %s" % (unicode(self.report), self.comment[0:20])
 
 class Flag(models.Model):
     content_type = models.ForeignKey("ContentType")
@@ -55,6 +65,9 @@ class Flag(models.Model):
     flag_score = models.IntegerField(default=1)
     created = models.DateTimeField(auto_now_add=True, index=True)
 
+    def __str__(self):
+        return "%s flag on %s, %s" % (unicode(self.flag_user), unicode(self.content))
+
 class LogEntry(models.Model):
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     user = models.ForeignKey(blank=True, null=True)
@@ -63,10 +76,16 @@ class LogEntry(models.Model):
     details = models.TextField(blank=True)
     """YAML or JSON containing more details."""
 
+    def __str__(self):
+        return "%s : %s : %s" % (unicode(self.user), self.category, unicode(self.details))
+
 class Prefix(models.Model):
     title = models.CharField(max_length=255, index=True)
     pre_html = models.CharField(max_length=255)
     post_html = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title
 
 class Topic(models.Model):
     author = models.ForeignKey("User")
@@ -91,6 +110,9 @@ class Topic(models.Model):
     participants = models.ManyToManyField(User, through="TopicParticipant")
     # TODO : Rate limiting stuff.
 
+    def __str__(self):
+        return "%s by %s" % (self.title, unicode(self.author))
+
 class TopicParticipant(models.Model):
     topic = models.ForeignKey("Topic")
     user = models.ForeignKey("User")
@@ -100,6 +122,9 @@ class TopicParticipant(models.Model):
     last_seen = models.DateTimeField(blank=True, null=True)
     # TODO : Add a preference to toggle this.
 
+    def __str__(self):
+        return "%s : %s" % (unicode(self.user), unicode(self.topic))
+
 class Category(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -107,10 +132,16 @@ class Category(models.Model):
     category = models.ForeignKey("Category", index=True, blank=True, null=True)
     moderators = models.ManyToManyField(User, through="CategoryParticipant")
 
+    def __str__(self):
+        return self.title
+
 class CategoryParticipant(models.Model):
     category = models.ForeignKey("Category")
     user = models.ForeignKey("User")
     moderator = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "%s : %s" % (unicode(self.user), unicode(self.category))
 
 class StatusUpdate(models.Model):
     author = models.ForeignKey("User")
@@ -120,10 +151,16 @@ class StatusUpdate(models.Model):
     """If null, then a normal status update. If not, then user-linked."""
     participants = models.ManyToManyField("User", through="StatusParticipant")
 
+    def __str__(self):
+        return "%s by %s" % (self.message, unicode(self.author))
+
 class StatusParticipant(models.Model):
     status = models.ForeignKey("StatusUpdate")
     user = models.ForeignKey("User")
     following = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "%s : %s" % (unicode(self.user), unicode(self.status))
 
 class StatusComments(models.Model):
     status = models.ForeignKey("StatusUpdate")
@@ -133,6 +170,9 @@ class StatusComments(models.Model):
 
     hidden = models.BooleanField(default=False)
 
+    def __str__(self):
+        return "%s says %s in %s" % (unicode(self.author), self.comment, unicode(self.status))
+
 class Ban(models.Model):
     user = models.ForeignKey("User")
     ip_address = models.GenericIPAddressField(blank=True, null=True)
@@ -140,11 +180,17 @@ class Ban(models.Model):
     created = models.DateTimeField(auto_now_add=True, index=True)
     mod = models.ForeignKey("User")
 
+    def __str__(self):
+        return "%s on %s" % (unicode(self.user), unicode(self.created))
+
 class ModerationNotes(models.Model):
     user = models.ForeignKey("User")
     author = models.ForeignKey("User")
     created = models.DateTimeField(auto_now_add=True, index=True)
     comment = models.TextField(blank=True)
+
+    def __str__(self):
+        return "%s : %s on %s" % (unicode(self.user), self.comment, unicode(self.created))
 
 class Friends(models.Model):
     user = models.ForeignKey("User")
@@ -153,8 +199,11 @@ class Friends(models.Model):
     follow_status = models.BooleanField(default=False)
     follow_topics = models.BooleanField(default=False)
 
+    def __str__(self):
+        return "%s : %s" % (unicode(self.user), unicode(self.friend))
+
 class Profile(models.Model):
-    user = models.ForeignKey("User")
+    user = models.OneToOneField("User")
     status = models.ForeignKey("StatusUpdate", blank=True, null=True)
     title = models.CharField(max_length=255)
     location = models.CharField(blank=True)
@@ -216,24 +265,38 @@ class Profile(models.Model):
     status_updates = models.IntegerField(default=0)
     status_comments = models.IntegerField(default=0)
 
+    def __str__(self):
+        return unicode(self.user)
+
 class Signature(models.Model):
     user = models.ForeignKey("User")
     description = models.CharField(max_length=255)
     content = models.TextField()
+    created = models.DateTimeField(auto_now_add=True, index=True)
+    last_updated = models.DateTimeField(auto_now=True, index=True)
+
+    def __str__(self):
+        return "%s : %s" % (unicode(self.user), self.description)
 
 class PrivateMessageLabel(models.Model):
     user = models.ForeignKey("User", index=True)
     label = models.CharField(max_length=255)
 
+    def __str__(self):
+        return "%s : %s" % (unicode(self.user), label)
+
 class PrivateMessage(models.Model):
     title = models.CharField(max_length=255)
     label = models.ForeignKey("PrivateMessageLabel", blank=True, null=True, index=True)
-    user = models.ForeignKey("User", index=True)
+    author = models.ForeignKey("User", index=True)
     participants = models.ManyToManyField("User", through="PrivateMessageParticipant")
 
     content = models.TextField()
     created = models.DateTimeField(auto_now_add=True, index=True)
     last_updated = models.DateTimeField(auto_now=True, index=True)
+
+    def __str__(self):
+        return "%s : %s" % (unicode(self.author), self.title)
 
 class PrivateMessageParticipant(models.Model):
     pm = models.ForeignKey("PrivateMessage")
@@ -243,12 +306,18 @@ class PrivateMessageParticipant(models.Model):
     left = models.BooleanField(default=False)
     last_viewed = models.DateTimeField(blank=True, null=True)
 
+    def __str__(self):
+        return "%s :: %s" % (unicode(self.user), unicode(pm))
+
 class PrivateMessageReply(models.Model):
     pm = models.ForeignKey("PrivateMessage", index=True)
     author = models.ForeignKey("User", index=True)
     created = models.DateTimeField(auto_now_add=True, index=True)
     edited = models.DateTimeField(auto_now=True, index=True)
     content = models.TextField(blank=True)
+
+    def __str__(self):
+        return "%s :: %s" % (unicode(self.author), unicode(pm))
 
 class Notifications(models.Model):
     user = models.ForeignKey("User")
@@ -265,8 +334,11 @@ class Notifications(models.Model):
     seen = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
 
+    def __str__(self):
+        return "%s : %s : %s" % (unicode(self.user), unicode(self.created), self.category)
+
 class NotificationPreferences(models.Model):
-    user = models.ForeignKey("User")
+    user = models.OneToOneField("User")
     
     OPTIONS = (
         (0, "Dashboard"),
@@ -282,6 +354,12 @@ class NotificationPreferences(models.Model):
     messages = models.CharField(choices=OPTIONS, default=0)
     announcements = models.CharField(choices=OPTIONS, default=0)
 
+    def __str__(self):
+        return unicode(self.user)
+
 class MailingListExclude(models.Model):
-    member = models.ForeignKey("User")
+    user = models.ForeignKey("User")
     exclude = models.BooleanField(default=False)
+
+    def __str__(self):
+        return unicode(self.user)
