@@ -131,6 +131,7 @@ class Ban(models.Model):
 class Profile(models.Model):
     user = models.ForeignKey("User")
     status = models.ForeignKey("StatusUpdate", blank=True, null=True)
+    title = models.CharField(max_length=255)
     location = models.CharField(blank=True)
     time_zone = models.FloatField(default=0.0)
     about = models.TextField(blank=True)
@@ -145,10 +146,12 @@ class Profile(models.Model):
         ('f', 'Female'),
         ('m', 'Male'),
         ('g', 'Genderfluid'),
-        ('o', 'Other')
+        ('o', 'Other'),
     )
     gender = models.CharField(choices=GENDERS, default="n")
     hide_gender = models.BooleanField(default=True)
+    favorite_color = models.CharField(default="Red", blank=True)
+    how_found = models.TextField(blank=True)
 
     ALLOWED_FIELDS = (
         'Website',
