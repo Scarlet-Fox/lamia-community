@@ -9,17 +9,17 @@ import reversion
 
 @reversion.register
 class Post(models.Model):
-    author = models.ForeignKey("User", index=True)
-    edited_by = models.ForeignKey("User")
-    topic = models.ForeignKey("Topic", index=True)
+    author = models.ForeignKey(User)
+    edited_by = models.ForeignKey(User, related_name="+")
+    topic = models.ForeignKey("Topic")
 
-    created = models.DateTimeField(auto_now_add=True, index=True)
-    edited = models.DateTimeField(auto_now=True, index=True)
+    created = models.DateTimeField(auto_now_add=True)
+    edited = models.DateTimeField(auto_now=True)
     
     content = models.TextField(blank=True)
-    meta = models.HStoreField()
+    meta = HStoreField()
 
-    hidden = models.BooleanField(default=False, index=True)
+    hidden = models.BooleanField(default=False)
     hide_message = models.CharField(max_length=255, blank=True)
     flag_score = models.IntegerField(default=0)
     ignore_flags = models.DateTimeField(auto_now=True) 
@@ -29,10 +29,10 @@ class Post(models.Model):
         return "Post #%s by %s : %s" % (self.id, unicode(self.author), self.content[0:20])
 
 class Report(models.Model):
-    content_type = models.ForeignKey("ContentType")
+    content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content = GenericForeignKey('content_type', 'object_id')
-    author = models.ForeignKey("User", index=True)
+    author = models.ForeignKey(User)
 
     report = models.TextField(blank=True)
     STATUS_CHOICES = (
@@ -41,38 +41,38 @@ class Report(models.Model):
         (2, 'Feedback Requested'),
         (3, 'Waiting')
     )
-    status = models.IntegerField(choices=STATUS_CHOICES, default=1, index=True)
-    created = models.DateTimeField(auto_now_add=True, index=True)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return "Report by %s on %s" % (unicode(self.author), unicode(self.created))
 
 class ReportComments(models.Model):
-    report = models.ForeignKey("Report", index=True)
-    author = models.ForeignKey("User")
-    created = models.DateTimeField(auto_now_add=True, index=True)
+    report = models.ForeignKey("Report")
+    author = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(blank=True)
 
     def __str__(self):
         return "%s : %s" % (unicode(self.report), self.comment[0:20])
 
 class Flag(models.Model):
-    content_type = models.ForeignKey("ContentType")
+    content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content = GenericForeignKey('content_type', 'object_id')
 
-    flag_user = models.ForeignKey("User")
+    flag_user = models.ForeignKey(User)
     flag_score = models.IntegerField(default=1)
-    created = models.DateTimeField(auto_now_add=True, index=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return "%s flag on %s, %s" % (unicode(self.flag_user), unicode(self.content))
 
 class LogEntry(models.Model):
     ip_address = models.GenericIPAddressField(blank=True, null=True)
-    user = models.ForeignKey(blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True, index=True)
-    category = models.CharField(index=True, index=True)
+    user = models.ForeignKey(User, blank=True, null=True, related_name="logs")
+    created = models.DateTimeField(auto_now_add=True)
+    category = models.CharField(max_length=255)
     details = models.TextField(blank=True)
     """YAML or JSON containing more details."""
 
@@ -80,7 +80,7 @@ class LogEntry(models.Model):
         return "%s : %s : %s" % (unicode(self.user), self.category, unicode(self.details))
 
 class Prefix(models.Model):
-    title = models.CharField(max_length=255, index=True)
+    title = models.CharField(max_length=255)
     pre_html = models.CharField(max_length=255)
     post_html = models.CharField(max_length=255)
 
@@ -88,19 +88,19 @@ class Prefix(models.Model):
         return self.title
 
 class Topic(models.Model):
-    author = models.ForeignKey("User")
+    author = models.ForeignKey(User, related_name="my_topics")
     title = models.CharField(max_length=255)
     category = models.ForeignKey("Category")
     prefix = models.ForeignKey("Prefix", blank=True, null=True)
-    meta = models.HStoreField()
+    meta = HStoreField()
     
-    active_user = models.ForeignKey("User")
+    active_user = models.ForeignKey(User, related_name="+")
     created = models.DateTimeField(blank=True, null=True)
     last_updated = models.DateTimeField(blank=True, null=True)
 
     views = models.IntegerField(default=0)
     post_count = models.IntegerField(default=0)
-    recent_post = models.ForeignKey("Post")
+    recent_post = models.ForeignKey("Post", related_name="+")
 
     sticky = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
@@ -115,7 +115,7 @@ class Topic(models.Model):
 
 class TopicParticipant(models.Model):
     topic = models.ForeignKey("Topic")
-    user = models.ForeignKey("User")
+    user = models.ForeignKey(User)
     following = models.BooleanField(default=False)
     posts = models.IntegerField(default=0)    
     moderator = models.BooleanField(default=False)
@@ -128,8 +128,8 @@ class TopicParticipant(models.Model):
 class Category(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    weight = models.IntegerField(default=0, index=True)
-    category = models.ForeignKey("Category", index=True, blank=True, null=True)
+    weight = models.IntegerField(default=0)
+    parent = models.ForeignKey("Category", blank=True, null=True)
     moderators = models.ManyToManyField(User, through="CategoryParticipant")
 
     def __str__(self):
@@ -137,26 +137,26 @@ class Category(models.Model):
 
 class CategoryParticipant(models.Model):
     category = models.ForeignKey("Category")
-    user = models.ForeignKey("User")
+    user = models.ForeignKey(User)
     moderator = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s : %s" % (unicode(self.user), unicode(self.category))
 
 class StatusUpdate(models.Model):
-    author = models.ForeignKey("User")
-    created = models.DateTimeField(auto_now_add=True, index=True)
+    author = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now_add=True)
     message = models.TextField()
-    profile = models.ForeignKey("User", blank=True, null=True)
+    profile = models.ForeignKey(User, blank=True, null=True, related_name="+")
     """If null, then a normal status update. If not, then user-linked."""
-    participants = models.ManyToManyField("User", through="StatusParticipant")
+    participants = models.ManyToManyField(User, through="StatusParticipant", related_name="+")
 
     def __str__(self):
         return "%s by %s" % (self.message, unicode(self.author))
 
 class StatusParticipant(models.Model):
     status = models.ForeignKey("StatusUpdate")
-    user = models.ForeignKey("User")
+    user = models.ForeignKey(User)
     following = models.BooleanField(default=True)
 
     def __str__(self):
@@ -165,8 +165,8 @@ class StatusParticipant(models.Model):
 class StatusComments(models.Model):
     status = models.ForeignKey("StatusUpdate")
     comment = models.TextField()
-    created = models.DateTimeField(auto_now_add=True, index=True)
-    author = models.ForeignKey("User")
+    created = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(User)
 
     hidden = models.BooleanField(default=False)
 
@@ -174,27 +174,27 @@ class StatusComments(models.Model):
         return "%s says %s in %s" % (unicode(self.author), self.comment, unicode(self.status))
 
 class Ban(models.Model):
-    user = models.ForeignKey("User")
+    user = models.ForeignKey(User, related_name="bans")
     ip_address = models.GenericIPAddressField(blank=True, null=True)
 
-    created = models.DateTimeField(auto_now_add=True, index=True)
-    mod = models.ForeignKey("User")
+    created = models.DateTimeField(auto_now_add=True)
+    mod = models.ForeignKey(User, related_name="banned")
 
     def __str__(self):
         return "%s on %s" % (unicode(self.user), unicode(self.created))
 
 class ModerationNotes(models.Model):
-    user = models.ForeignKey("User")
-    author = models.ForeignKey("User")
-    created = models.DateTimeField(auto_now_add=True, index=True)
+    user = models.ForeignKey(User)
+    author = models.ForeignKey(User, related_name="+")
+    created = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(blank=True)
 
     def __str__(self):
         return "%s : %s on %s" % (unicode(self.user), self.comment, unicode(self.created))
 
-class Friends(models.Model):
-    user = models.ForeignKey("User")
-    friend = models.ForeignKey("User")
+class Friend(models.Model):
+    user = models.ForeignKey("Profile", related_name="+")
+    friend = models.ForeignKey(User, related_name="followers")
     follow_posts = models.BooleanField(default=False)
     follow_status = models.BooleanField(default=False)
     follow_topics = models.BooleanField(default=False)
@@ -203,13 +203,13 @@ class Friends(models.Model):
         return "%s : %s" % (unicode(self.user), unicode(self.friend))
 
 class Profile(models.Model):
-    user = models.OneToOneField("User")
-    status = models.ForeignKey("StatusUpdate", blank=True, null=True)
+    user = models.OneToOneField(User)
+    status = models.ForeignKey("StatusUpdate", blank=True, null=True, related_name="+")
     title = models.CharField(max_length=255)
-    location = models.CharField(blank=True)
+    location = models.CharField(max_length=255, blank=True)
     time_zone = models.FloatField(default=0.0)
     about = models.TextField(blank=True)
-    friends = models.ManyToManyField("User", through="Friends")
+    friends = models.ManyToManyField(User, through="Friend", related_name="+")
 
     birthday = models.DateField(blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
@@ -223,9 +223,9 @@ class Profile(models.Model):
         ('g', 'Genderfluid'),
         ('o', 'Other'),
     )
-    gender = models.CharField(choices=GENDERS, default="n")
+    gender = models.CharField(max_length=255, choices=GENDERS, default="n")
     hide_gender = models.BooleanField(default=True)
-    favorite_color = models.CharField(default="Red", blank=True)
+    favorite_color = models.CharField(max_length=255, default="Red", blank=True)
     how_found = models.TextField(blank=True)
 
     ALLOWED_FIELDS = (
@@ -235,7 +235,7 @@ class Profile(models.Model):
         'Steam',
         'Tumblr'
         )
-    fields = models.HStoreField()
+    fields = HStoreField()
     avatar = models.ImageField(upload_to="avatars", blank=True)
 
     VALIDATION_STATUSES = (
@@ -269,17 +269,17 @@ class Profile(models.Model):
         return unicode(self.user)
 
 class Signature(models.Model):
-    user = models.ForeignKey("User")
+    user = models.ForeignKey(User)
     description = models.CharField(max_length=255)
     content = models.TextField()
-    created = models.DateTimeField(auto_now_add=True, index=True)
-    last_updated = models.DateTimeField(auto_now=True, index=True)
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return "%s : %s" % (unicode(self.user), self.description)
 
 class PrivateMessageLabel(models.Model):
-    user = models.ForeignKey("User", index=True)
+    user = models.ForeignKey(User)
     label = models.CharField(max_length=255)
 
     def __str__(self):
@@ -287,20 +287,20 @@ class PrivateMessageLabel(models.Model):
 
 class PrivateMessage(models.Model):
     title = models.CharField(max_length=255)
-    label = models.ForeignKey("PrivateMessageLabel", blank=True, null=True, index=True)
-    author = models.ForeignKey("User", index=True)
-    participants = models.ManyToManyField("User", through="PrivateMessageParticipant")
+    label = models.ForeignKey("PrivateMessageLabel", blank=True, null=True)
+    author = models.ForeignKey(User)
+    participants = models.ManyToManyField(User, through="PrivateMessageParticipant", related_name="+")
 
     content = models.TextField()
-    created = models.DateTimeField(auto_now_add=True, index=True)
-    last_updated = models.DateTimeField(auto_now=True, index=True)
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return "%s : %s" % (unicode(self.author), self.title)
 
 class PrivateMessageParticipant(models.Model):
     pm = models.ForeignKey("PrivateMessage")
-    user = models.ForeignKey("User")
+    user = models.ForeignKey(User)
     ignore = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
     left = models.BooleanField(default=False)
@@ -310,26 +310,26 @@ class PrivateMessageParticipant(models.Model):
         return "%s :: %s" % (unicode(self.user), unicode(pm))
 
 class PrivateMessageReply(models.Model):
-    pm = models.ForeignKey("PrivateMessage", index=True)
-    author = models.ForeignKey("User", index=True)
-    created = models.DateTimeField(auto_now_add=True, index=True)
-    edited = models.DateTimeField(auto_now=True, index=True)
+    pm = models.ForeignKey("PrivateMessage")
+    author = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now_add=True)
+    edited = models.DateTimeField(auto_now=True)
     content = models.TextField(blank=True)
 
     def __str__(self):
         return "%s :: %s" % (unicode(self.author), unicode(pm))
 
 class Notifications(models.Model):
-    user = models.ForeignKey("User")
-    created = models.DateField(auto_now_add=True, index=True)
-    content_type = models.ForeignKey("ContentType")
+    user = models.ForeignKey(User)
+    created = models.DateField(auto_now_add=True)
+    content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content = GenericForeignKey('content_type', 'object_id')
 
     action = models.CharField(max_length=255)
-    category = models.CharField(max_length=255, index=True)
-    author = models.ForeignKey("User", null=True, blank=True)
-    meta = models.HStoreField()
+    category = models.CharField(max_length=255)
+    author = models.ForeignKey(User, null=True, blank=True, related_name="+")
+    meta = HStoreField()
 
     seen = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
@@ -338,27 +338,27 @@ class Notifications(models.Model):
         return "%s : %s : %s" % (unicode(self.user), unicode(self.created), self.category)
 
 class NotificationPreferences(models.Model):
-    user = models.OneToOneField("User")
+    user = models.OneToOneField(User)
     
     OPTIONS = (
         (0, "Dashboard"),
         (1, "Email"),
         (2, "All")
     )
-    moderation = models.CharField(choices=OPTIONS, default=0)
-    topics = models.CharField(choices=OPTIONS, default=0)
-    status = models.CharField(choices=OPTIONS, default=0)
-    quote = models.CharField(choices=OPTIONS, default=0)
-    mention = models.CharField(choices=OPTIONS, default=0)
-    followed = models.CharField(choices=OPTIONS, default=0)
-    messages = models.CharField(choices=OPTIONS, default=0)
-    announcements = models.CharField(choices=OPTIONS, default=0)
+    moderation = models.CharField(choices=OPTIONS, default=0, max_length=255)
+    topics = models.CharField(choices=OPTIONS, default=0, max_length=255)
+    status = models.CharField(choices=OPTIONS, default=0, max_length=255)
+    quote = models.CharField(choices=OPTIONS, default=0, max_length=255)
+    mention = models.CharField(choices=OPTIONS, default=0, max_length=255)
+    followed = models.CharField(choices=OPTIONS, default=0, max_length=255)
+    messages = models.CharField(choices=OPTIONS, default=0, max_length=255)
+    announcements = models.CharField(choices=OPTIONS, default=0, max_length=255)
 
     def __str__(self):
         return unicode(self.user)
 
 class MailingListExclude(models.Model):
-    user = models.ForeignKey("User")
+    user = models.ForeignKey(User)
     exclude = models.BooleanField(default=False)
 
     def __str__(self):
