@@ -182,6 +182,13 @@ class StatusComments(models.Model):
     def __str__(self):
         return "%s says %s in %s" % (unicode(self.author), self.comment, unicode(self.status))
 
+class UserIP(models.Model):
+    ip_address = models.GenericIPAddressField()
+    users = models.ManyToManyField(User, blank=True)
+
+    def __str__(self):
+        return self.ip_address
+
 class Ban(models.Model):
     user = models.ForeignKey(User, related_name="bans")
     ip_address = models.GenericIPAddressField(blank=True, null=True)
@@ -214,7 +221,7 @@ class Friend(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User)
     status = models.ForeignKey("StatusUpdate", blank=True, null=True, related_name="+")
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255,  blank=True)
     location = models.CharField(max_length=255, blank=True)
     time_zone = models.FloatField(default=0.0)
     about = models.TextField(blank=True)

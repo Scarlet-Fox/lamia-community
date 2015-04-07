@@ -81,3 +81,27 @@ class ReportAdmin(admin.ModelAdmin):
         ReportCommentInline,
     ]
 admin.site.register(Report, ReportAdmin)
+
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'title',)
+    search_fields = ('about',)
+admin.site.register(Profile, ProfileAdmin)
+
+class PrivateMessageParticipantInline(admin.TabularInline):
+    model = PrivateMessageParticipant
+
+class PrivateMessageReplyInline(admin.TabularInline):
+    model = PrivateMessageReply
+
+class PrivateMessageAdmin(admin.ModelAdmin):
+    list_display = ('author', 'title', 'created')
+    inlines = [
+        PrivateMessageParticipantInline,
+        PrivateMessageReplyInline
+    ]
+admin.site.register(PrivateMessage, PrivateMessageAdmin)
+
+class IPAddressAdmin(admin.ModelAdmin):
+    list_display = ('ip_address',)
+    search_fields = ('ip_address',)
+admin.site.register(UserIP, IPAddressAdmin)
