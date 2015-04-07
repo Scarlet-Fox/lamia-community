@@ -18,6 +18,7 @@ class Post(models.Model):
     
     content = models.TextField(blank=True)
     meta = HStoreField(blank=True, null=True)
+    moderation_post = models.BooleanField(default=False)
 
     hidden = models.BooleanField(default=False)
     hide_message = models.CharField(max_length=255, blank=True)
@@ -27,6 +28,24 @@ class Post(models.Model):
 
     def __str__(self):
         return "Post #%s by %s : %s" % (self.id, unicode(self.author), self.content[0:20])
+
+class Attachment(models.Model):
+    owner = models.ForeignKey(User)
+    meta = HStoreField(blank=True, null=True)
+
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    link_to = GenericForeignKey('content_type', 'object_id')
+
+    upload = models.FileField(upload_to="uploads", max_length=300)
+    file_name = models.CharField(max_length=255, blank=True)
+    file_type = models.CharField(max_length=255, blank=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+    edited = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.file_name
 
 class Report(models.Model):
     content_type = models.ForeignKey(ContentType)
@@ -185,9 +204,20 @@ class StatusComments(models.Model):
 class UserIP(models.Model):
     ip_address = models.GenericIPAddressField()
     users = models.ManyToManyField(User, blank=True)
+    first_seen = models.DateTimeField()
+    last_seen = models.DateTimeField()
 
     def __str__(self):
         return self.ip_address
+
+class Fingerprint(models.Model):
+    identity = models.TextField()
+    users = models.ManyToManyField(User, blank=True)
+    first_seen = models.DateTimeField()
+    last_seen = models.DateTimeField()
+
+    def __str__(self):
+        return self.identity
 
 class Ban(models.Model):
     user = models.ForeignKey(User, related_name="bans")

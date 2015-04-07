@@ -102,6 +102,16 @@ class PrivateMessageAdmin(admin.ModelAdmin):
 admin.site.register(PrivateMessage, PrivateMessageAdmin)
 
 class IPAddressAdmin(admin.ModelAdmin):
-    list_display = ('ip_address',)
-    search_fields = ('ip_address',)
+    list_display = ('ip_address','first_seen','last_seen')
+    search_fields = ('ip_address','first_seen','last_seen')
 admin.site.register(UserIP, IPAddressAdmin)
+
+class FingerprintAdmin(admin.ModelAdmin):
+    list_display = ('identity','first_seen','last_seen')
+    search_fields = ('identity','first_seen','last_seen')
+admin.site.register(Fingerprint, FingerprintAdmin)
+
+class AttachmentAdmin(admin.ModelAdmin):
+    list_display = ('owner', 'file_name', 'created')
+    search_fields = ('file_name',)
+admin.site.register(Attachment, AttachmentAdmin)
