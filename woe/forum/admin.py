@@ -46,3 +46,38 @@ class FlagAdmin(admin.ModelAdmin):
     list_display = ('content', 'flag_user', 'created')
     search_fields = ('flag_user__username',)
 admin.site.register(Flag, FlagAdmin)
+
+class BanAdmin(admin.ModelAdmin):
+    list_display = ('user', 'ip_address', 'created', 'mod')
+    search_fields = ('user__username', 'ip_address')
+admin.site.register(Ban, BanAdmin)
+
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'created', 'action', 'category')
+    list_filter = ('category',)
+admin.site.register(Notification, NotificationAdmin)
+
+class LogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'created', 'category', 'details')
+    search_fields = ('details',)
+    list_filter = ('category',)
+admin.site.register(LogEntry, LogAdmin)
+
+class StatusUpdateAdmin(admin.ModelAdmin):
+    list_display = ('author', 'created', 'message')
+    list_filter = ('author__username',)
+    search_fields = ('message',)
+admin.site.register(StatusUpdate, StatusUpdateAdmin)
+
+class ReportCommentInline(admin.TabularInline):
+    model = ReportComment
+
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('author', 'status', 'created', 'report')
+    list_filter = ('status',)
+    search_fields = ('report',)
+
+    inlines = [
+        ReportCommentInline,
+    ]
+admin.site.register(Report, ReportAdmin)

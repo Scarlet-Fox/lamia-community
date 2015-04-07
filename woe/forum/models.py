@@ -47,7 +47,7 @@ class Report(models.Model):
     def __str__(self):
         return "Report by %s on %s" % (unicode(self.author), unicode(self.created))
 
-class ReportComments(models.Model):
+class ReportComment(models.Model):
     report = models.ForeignKey("Report")
     author = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
@@ -328,7 +328,7 @@ class PrivateMessageReply(models.Model):
     def __str__(self):
         return "%s :: %s" % (unicode(self.author), unicode(pm))
 
-class Notifications(models.Model):
+class Notification(models.Model):
     user = models.ForeignKey(User)
     created = models.DateField(auto_now_add=True)
     content_type = models.ForeignKey(ContentType)
