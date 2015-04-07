@@ -3,18 +3,82 @@
 	{
 		"selected_items":
 		[
+			[
+				"Fl",
+				"FlagAdmin"
+			],
+			[
+				"Mode",
+				"ModelAdmin"
+			],
+			[
+				"user",
+				"user"
+			],
+			[
+				"def",
+				"def	Function"
+			],
+			[
+				"fl",
+				"flag_user"
+			],
+			[
+				"MO",
+				"MODERATION_STATUSES"
+			],
+			[
+				"Priv",
+				"PrivateMessage"
+			],
+			[
+				"Statu",
+				"StatusUpdate"
+			],
+			[
+				"Stat",
+				"StatusParticipants"
+			],
+			[
+				"Top",
+				"TopicParticipant"
+			],
+			[
+				"User",
+				"User"
+			],
+			[
+				"Hid",
+				"hide_message"
+			],
+			[
+				"mode",
+				"models"
+			],
+			[
+				"Post",
+				"Post"
+			],
+			[
+				"Da",
+				"DateTimeField"
+			],
+			[
+				"Topic",
+				"Topic"
+			],
+			[
+				"For",
+				"ForeignKey"
+			],
+			[
+				"de",
+				"default"
+			]
 		]
 	},
 	"buffers":
 	[
-		{
-			"file": "MASTERLIST.md",
-			"settings":
-			{
-				"buffer_size": 2,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -23,11 +87,15 @@
 		"selected_items":
 		[
 			[
+				"pack",
+				"Package Control: Remove Package"
+			],
+			[
 				"packa",
 				"Package Control: Install Package"
 			]
 		],
-		"width": 575.0
+		"width": 593.0
 	},
 	"console":
 	{
@@ -44,18 +112,29 @@
 	},
 	"file_history":
 	[
+		"/home/eva/Documents/woe/woe/woe/settings.py",
 		"/home/eva/Documents/woe/.gitignore",
-		"/home/eva/Documents/woe/woe.sublime-workspace"
+		"/home/eva/Documents/woe/woe/woe/urls.py",
+		"/home/eva/Documents/woe/woe/forum/models.py",
+		"/home/eva/Documents/woe/woe/forum/admin.py",
+		"/home/eva/Documents/woe/MASTERLIST.txt",
+		"/home/eva/Documents/woe/woe.sublime-workspace",
+		"/home/eva/Documents/woe/woe.sublime-project",
+		"/home/eva/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+		"/home/eva/Documents/woe/MASTERLIST.md",
+		"/home/eva/.config/sublime-text-2/Packages/User/Default (Linux).sublime-keymap"
 	],
 	"find":
 	{
-		"height": 0.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 93.0,
 		"where_history":
 		[
+			"<open folders>",
+			""
 		]
 	},
 	"find_state":
@@ -63,13 +142,37 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"Flag",
+			"Flag(",
+			"Mera:",
+			"HStoreField(",
+			"Generi",
+			"GenericFo",
+			"\"User\"",
+			"CharField",
+			"category = ",
+			"index=True",
+			"models.HS",
+			", index=True",
+			"Foreign",
+			"ManyToMan",
+			"pass",
+			"hash",
+			"user =",
+			"indent",
+			"	"
 		],
 		"highlight": true,
-		"in_selection": false,
+		"in_selection": true,
 		"preserve_case": false,
 		"regex": false,
 		"replace_history":
 		[
+			"User",
+			"",
+			"    ",
+			"     ",
+			"    "
 		],
 		"reverse": false,
 		"show_context": true,
@@ -80,35 +183,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "MASTERLIST.md",
-					"settings":
-					{
-						"buffer_size": 2,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2,
-								2
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Markdown/Markdown.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -118,7 +194,7 @@
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 33.0
 	},
 	"layout":
 	{
@@ -145,7 +221,7 @@
 	"menu_visible": true,
 	"replace":
 	{
-		"height": 0.0
+		"height": 64.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -153,6 +229,26 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"sett",
+				"woe/woe/settings.py"
+			],
+			[
+				"urls",
+				"woe/woe/urls.py"
+			],
+			[
+				"settin",
+				"woe/woe/settings.py"
+			],
+			[
+				"setti",
+				"woe/woe/settings.py"
+			],
+			[
+				"mas",
+				"MASTERLIST.md"
+			]
 		],
 		"width": 0.0
 	},
