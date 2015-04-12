@@ -107,7 +107,7 @@
       <ol class="breadcrumb">
         <li><a href="#">Home</a></li>
         <li><a href="#">Celestial Hub</a></li>
-        <li><a href="#" class="active">An Example post</a></li>
+        <li><a href="#" class="active">An Example topic</a></li>
       </ol>
 
       <div class="row"> 
@@ -115,23 +115,43 @@
 
           <ul class="list-group category">
             <li class="list-group-item section-header">
+
             </li>
             <li class="list-group-item post-listing-info">
               <div class="row">
-                <div class="col-md-3">
-                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Shade</b>
-                  <span style="color:#F88379;"><strong>Members</strong></span>
+                <div class="col-xs-4 hidden-md hidden-lg">
+                  <img src="https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Shade%20Dreamer.png" width="50px" class="">
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-3 col-xs-8">
+                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Shade</b>
+                  <span style="color:#F88379;"><strong>Members</strong></span><br>
+                  <span class="hidden-md hidden-lg">Posted 15 minutes ago</span>
+                </div>
+                <div class="col-md-9 hidden-xs hidden-sm">
+                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="#">#1</a></span>
                   Posted 15 minutes ago
                 </div>
               </div>
             </li>
             <li class="list-group-item post-listing-post">
               <div class="row">
-                <div class="col-md-3">
-                  <div class="post-member-self-title">Something amazing could be here.</div>
-                  <img src="https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Shade%20Dreamer.png" width="200px" class="post-member-avatar">
+                <div class="col-md-3" style="text-align: center;">
+                  <img src="https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Shade%20Dreamer.png" width="200px" class="post-member-avatar hidden-xs hidden-sm">
+                  <span class="hidden-xs hidden-sm"><br><br>
+                    <hr></span>
+                  <div class="post-member-self-title hidden-xs hidden-sm">Something amazing could be here.</div>
+                  <div class="post-meta">
+                    125 / 250 Hitpoints
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%;">
+                      </div>
+                    </div>
+                    10 / 100 Sanity
+                    <div class="progress">
+                      <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 10%; background-color: black;">
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="col-md-9 post-right">
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. </p>
@@ -143,6 +163,41 @@
                   <p>Quisque cursus, metus vitae pharetra auctor, sem massa mattis sem, at interdum magna augue eget diam. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Morbi lacinia molestie dui. Praesent blandit dolor. Sed non quam. In vel mi sit amet augue congue elementum. Morbi in ipsum sit amet pede facilisis laoreet. Donec lacus nunc, viverra nec, blandit vel, egestas et, augue. Vestibulum tincidunt malesuada tellus. Ut ultrices ultrices enim. Curabitur sit amet mauris. Morbi in dui quis est pulvinar ullamcorper. Nulla facilisi. Integer lacinia sollicitudin massa. </p>
 
                   <p>Cras metus. Sed aliquet risus a tortor. Integer id quam. Morbi mi. Quisque nisl felis, venenatis tristique, dignissim in, ultrices sit amet, augue. Proin sodales libero eget ante. Nulla quam. Aenean laoreet. Vestibulum nisi lectus, commodo ac, facilisis ac, ultricies eu, pede. Ut orci risus, accumsan porttitor, cursus quis, aliquet eget, justo. Sed pretium blandit orci. Ut eu diam at pede suscipit sodales. Aenean lectus elit, fermentum non, convallis id, sagittis at, neque. Nullam mauris orci, aliquet et, iaculis et, viverra vitae, ligula. </p>
+                  <div class="row post-edit-likes-info">
+                      <div class="col-md-8">
+                        <div class="btn-group" role="group" aria-label="...">
+                          <button type="button" class="btn btn-default">Report</button>
+                          <div class="btn-group">
+                            <button type="button" class="btn btn-default">Reply</button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                              <span class="caret"></span>
+                              <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                              <li><a href="#">Quote</a></li>
+                              <li><a href="#">Multiquote</a></li>
+                            </ul>
+                          </div>
+                          <div class="btn-group">
+                            <button type="button" class="btn btn-default">Moderate</button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                              <span class="caret"></span>
+                              <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                              <li><a href="#">Edit</a></li>
+                              <li><a href="#">Hide</a></li>
+                              <li><a href="#">Delete</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                        <span class="post-edited">Edited by Shade 15 minutes ago.</span>
+                    </div>
+                    <div class="col-md-4 post-likes">
+                      <span class="post-edited"><span class="badge">1</span> person booped this </span>
+                      <button type="button" class="btn btn-default">Boop!</button>
+                    </div>
+                  </div>
                   <hr>
                   <div class="post-signature">
                     <img src="https://dl.dropboxusercontent.com/u/9060700/MapGearSig.png">
@@ -152,18 +207,39 @@
             </li>
             <li class="list-group-item post-listing-info">
               <div class="row">
-                <div class="col-md-3">
-                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Shade</b>
+                <div class="col-xs-4 hidden-md hidden-lg">
+                  <img src="https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Shade%20Dreamer.png" width="50px" class="">
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-3 col-xs-8">
+                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Shade</b>
+                  <span style="color:#F88379;"><strong>Members</strong></span><br>
+                  <span class="hidden-md hidden-lg">Posted 15 minutes ago</span>
+                </div>
+                <div class="col-md-9 hidden-xs hidden-sm">
+                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="#">#1</a></span>
                   Posted 15 minutes ago
                 </div>
               </div>
             </li>
             <li class="list-group-item post-listing-post">
               <div class="row">
-                <div class="col-md-3">
-                  <img src="https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Shade%20Dreamer.png" width="200px">
+                <div class="col-md-3" style="text-align: center;">
+                  <img src="https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Shade%20Dreamer.png" width="200px" class="post-member-avatar hidden-xs hidden-sm">
+                  <span class="hidden-xs hidden-sm"><br><br>
+                    <hr></span>
+                  <div class="post-member-self-title hidden-xs hidden-sm">Something amazing could be here.</div>
+                  <div class="post-meta">
+                    125 / 250 Hitpoints
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%;">
+                      </div>
+                    </div>
+                    10 / 100 Sanity
+                    <div class="progress">
+                      <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 10%; background-color: black;">
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="col-md-9 post-right">
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. </p>
@@ -175,19 +251,74 @@
                   <p>Quisque cursus, metus vitae pharetra auctor, sem massa mattis sem, at interdum magna augue eget diam. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Morbi lacinia molestie dui. Praesent blandit dolor. Sed non quam. In vel mi sit amet augue congue elementum. Morbi in ipsum sit amet pede facilisis laoreet. Donec lacus nunc, viverra nec, blandit vel, egestas et, augue. Vestibulum tincidunt malesuada tellus. Ut ultrices ultrices enim. Curabitur sit amet mauris. Morbi in dui quis est pulvinar ullamcorper. Nulla facilisi. Integer lacinia sollicitudin massa. </p>
 
                   <p>Cras metus. Sed aliquet risus a tortor. Integer id quam. Morbi mi. Quisque nisl felis, venenatis tristique, dignissim in, ultrices sit amet, augue. Proin sodales libero eget ante. Nulla quam. Aenean laoreet. Vestibulum nisi lectus, commodo ac, facilisis ac, ultricies eu, pede. Ut orci risus, accumsan porttitor, cursus quis, aliquet eget, justo. Sed pretium blandit orci. Ut eu diam at pede suscipit sodales. Aenean lectus elit, fermentum non, convallis id, sagittis at, neque. Nullam mauris orci, aliquet et, iaculis et, viverra vitae, ligula. </p>
+                  <div class="row post-edit-likes-info">
+                      <div class="col-md-8">
+                        <div class="btn-group" role="group" aria-label="...">
+                          <button type="button" class="btn btn-default">Report</button>
+                          <div class="btn-group">
+                            <button type="button" class="btn btn-default">Reply</button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                              <span class="caret"></span>
+                              <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                              <li><a href="#">Quote</a></li>
+                              <li><a href="#">Multiquote</a></li>
+                            </ul>
+                          </div>
+                          <div class="btn-group">
+                            <button type="button" class="btn btn-default">Moderate</button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                              <span class="caret"></span>
+                              <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                              <li><a href="#">Edit</a></li>
+                              <li><a href="#">Hide</a></li>
+                              <li><a href="#">Delete</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                        <span class="post-edited">Edited by Shade 15 minutes ago.</span>
+                    </div>
+                    <div class="col-md-4 post-likes">
+                      <span class="post-edited"><span class="badge">1</span> person booped this </span>
+                      <button type="button" class="btn btn-default">Boop!</button>
+                    </div>
+                  </div>
                   <hr>
                   <div class="post-signature">
                     <img src="https://dl.dropboxusercontent.com/u/9060700/MapGearSig.png">
                   </div>
                 </div>
               </div>
+            </li>
+
+          </ul>
+        </div>
+    </div> <!-- /container -->
+      <div class="row">
+        <div class="col-md-8">
+        <nav>
+          <ul class="pagination">
+            <li>
+              <a href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li>
+              <a href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
             </li>
           </ul>
-
-        </div>
-
-    </div> <!-- /container -->
-
+        </nav>
+      </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

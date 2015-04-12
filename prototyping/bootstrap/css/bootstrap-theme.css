@@ -88,9 +88,36 @@
 .post-listing-info {
   background-color: #eee;
 }
-.post-member-self-title {
-  
+.post-member-avatar {
+  margin-top: 5px;
 }
+.post-member-self-title {
+  color: grey;
+}
+.post-meta {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.post-number {
+  float: right;
+}
+.post-edit-likes-info {
+  margin-top: 20px;
+}
+.post-edited {
+  color: gray;
+  font-style: italic;
+}
+.post-edit-likes-info div {
+  vertical-align: middle;
+}
+.post-likes {
+  text-align: right;
+}
+.post-likes button {
+  margin-left: 10px;
+}
+
 
 /* Topic Listing */
 
