@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="http://getbootstrap.com/favicon.ico">
 
-    <title>Forum Index</title>
+    <title>Topics Index</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -104,106 +104,106 @@
         </div><!--/.container-fluid -->
       </nav>
 
-      <div class="row"> <!-- Main forum index-->
-        <div class="col-md-8"><!-- Category listing -->
+      <ol class="breadcrumb">
+        <li><a href="#">Home</a></li>
+        <li><a href="#" class="active">Celestial Hub</a></li>
+      </ol>
+
+      <div class="row"> 
+        <div class="col-md-12">
           <ul class="list-group category">
-            <li class="list-group-item section-header">Celestial Hub</li>
+            <li class="list-group-item section-header">Subcategories</li>
             <li class="list-group-item subcategory">
               <div>
-                <span class="subcategory-listing-name">
-                Welcome Mat
-                </span>
-                <span class="subcategory-listing-recent">
-                  <a href="#">An Example Topic</a>
-                  <br>
-                  <a href="#">15 minutes ago</a>
-                </span>
-                <span class="subcategory-listing-recent-image">
-                  <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-                </span>
-              <div>
-            </li>
-            <li class="list-group-item subcategory">
-              <div>
-                <span class="subcategory-listing-name">
-                Latest News
-                </span>
-                <span class="subcategory-listing-recent">
-                  <a href="#">An Example Topic</a>
-                  <br>
-                  <a href="#">15 minutes ago</a>
-                </span>
-                <span class="subcategory-listing-recent-image">
-                  <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-                </span>
-              <div>
-            </li>
-            <li class="list-group-item subcategory">
-              <div>
-                <span class="subcategory-listing-name">
-                Help Lab
-                </span>
-                <span class="subcategory-listing-recent">
-                  <a href="#">An Example Topic</a>
-                  <br>
-                  <a href="#">15 minutes ago</a>
-                </span>
-                <span class="subcategory-listing-recent-image">
-                  <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-                </span>
+                <div class="row">
+                  <div class="col-xs-12 col-sm-9">
+                    <span class="subcategory-listing-name">
+                    Help Lab
+                    </span>
+                  </div>
+                  <div class="col-sm-3 hidden-xs hidden-sm">
+                    <span class="subcategory-listing-recent-image">
+                      <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
+                    </span>
+                    <span class="subcategory-listing-recent">
+                      <a href="#">An Example Topic</a>
+                      <br>
+                      <a href="#">15 minutes ago</a>
+                    </span>
+                  </div>
+                </div>
               <div>
             </li>
           </ul>
-        </div>
-        <div class="col-md-4"><!-- Status updates and stuff -->
+
           <ul class="list-group category">
-            <li class="list-group-item section-header">Status Updates</li>
-            <li class="list-group-item front-page-status">
-                <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-<p><a href="#">Ambrosia</a> says: <span class="discuss">Discuss</span></p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris lacinia risus eget purus vulputate molestie. Etiam feugiat mauris eu risues.</p>
-            </li> 
-            <li class="list-group-item front-page-status">
-                <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-<p><a href="#">Ambrosia</a> says: <span class="discuss">Discuss</span></p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris lacinia risus eget purus vulputate molestie. Etiam feugiat mauris eu risues.</p>
-            </li> 
+            <li class="list-group-item section-header">
+              <div class="btn-group">
+                <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                  Prefix Filter <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">Action</a></li>
+                  <li><a href="#">Another action</a></li>
+                  <li><a href="#">Something else here</a></li>
+                  <li class="divider"></li>
+                  <li><a href="#">Separated link</a></li>
+                </ul>
+              </div>
+              <div class="btn-group" style="float: right;">
+                <button type="button" class="btn btn-default btn-xs">Moderate</button>
+                <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                  Actions <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">Action</a></li>
+                  <li><a href="#">Another action</a></li>
+                  <li><a href="#">Something else here</a></li>
+                  <li class="divider"></li>
+                  <li><a href="#">Separated link</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="list-group-item topic-listing">
+              <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                  <span class="topic-listing-name">
+                  <span class="badge prefix" style="background-color: #722F37;">Mystery</span>
+                  <a href="#">The House (OOC)</a><br>
+                  <span class="topic-author">
+                    Started by Luminescence, Jan 2015
+                  </span>
+                  <span class="topic-listing-jumps">
+                    <span class="badge" style="">1</span>
+                    <span class="badge" style="">...</span>
+                    <span class="badge" style="">12</span>
+                  </span>
+                </div>
+                <div class="col-xs-1 hidden-xs hidden-sm">
+                    <span class="badge" style="background-color: #B22222;">Blazing Hot</span>
+                </div>
+                <div class="col-xs-2 hidden-xs hidden-sm">
+                  <span class="topic-listing-recent">
+                    <a href="#" class="topic-listing-text">16 replies</a>
+                    <br>
+                    <a href="#" class="topic-listing-text">800 views</a>
+                  </span>
+                </div>
+                <div class="col-xs-6 col-sm-3 hidden-xs">
+                  <span class="topic-listing-recent-image">
+                    <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
+                  </span>
+                  <span class="topic-listing-recent">
+                    <a href="#" class="topic-listing-username">Ambrosia</a>
+                    <br>
+                    <a href="#" class="topic-listing-time">15 seconds ago</a>
+                  </span>
+                </div>
+              <div>
+            </li>
           </ul>
-        </div>
-      </div>
 
-      <div class="row">
-        <div class="col-md-12">
-          <center><p class="front-page-stats">
-            <span class="label label-default">1,021,000</span> Posts &nbsp; &nbsp; &nbsp; &nbsp;
-            <span class="label label-default">1,021,000</span> Members &nbsp; &nbsp; &nbsp; &nbsp;
-            <span class="label label-default">God</span> Newest Member &nbsp; &nbsp; &nbsp; &nbsp;
-          </p></center>
         </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">100 Users Online</h3>
-            </div>
-            <div class="panel-body">
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>
-            </div>
-          </div>
-        </div>
-      </div>
 
     </div> <!-- /container -->
 

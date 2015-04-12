@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="http://getbootstrap.com/favicon.ico">
 
-    <title>Forum Index</title>
+    <title>Search Index</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -82,7 +82,7 @@
                   <li><a href="#">Characters</a></li>
                 </ul>
               </li>
-                  <li><a href="#">
+                  <li class="active"><a href="#">
                     Search
                   </a></li>
             </ul>
@@ -103,108 +103,32 @@
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
       </nav>
+      <div class="row"> 
+        <div class="col-md-8">
 
-      <div class="row"> <!-- Main forum index-->
-        <div class="col-md-8"><!-- Category listing -->
+          <form class="form-inline">
+            <div class="form-group search-box">
+              <input type="keywords" class="form-control" id="searchKeywords" placeholder="Enter keywords">
+            </div>
+            <button type="submit" class="btn btn-default">Search</button>
+          </form>
+        </div>
+        <div class="col-md-4">
           <ul class="list-group category">
-            <li class="list-group-item section-header">Celestial Hub</li>
-            <li class="list-group-item subcategory">
-              <div>
-                <span class="subcategory-listing-name">
-                Welcome Mat
-                </span>
-                <span class="subcategory-listing-recent">
-                  <a href="#">An Example Topic</a>
-                  <br>
-                  <a href="#">15 minutes ago</a>
-                </span>
-                <span class="subcategory-listing-recent-image">
-                  <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-                </span>
-              <div>
-            </li>
-            <li class="list-group-item subcategory">
-              <div>
-                <span class="subcategory-listing-name">
-                Latest News
-                </span>
-                <span class="subcategory-listing-recent">
-                  <a href="#">An Example Topic</a>
-                  <br>
-                  <a href="#">15 minutes ago</a>
-                </span>
-                <span class="subcategory-listing-recent-image">
-                  <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-                </span>
-              <div>
-            </li>
-            <li class="list-group-item subcategory">
-              <div>
-                <span class="subcategory-listing-name">
-                Help Lab
-                </span>
-                <span class="subcategory-listing-recent">
-                  <a href="#">An Example Topic</a>
-                  <br>
-                  <a href="#">15 minutes ago</a>
-                </span>
-                <span class="subcategory-listing-recent-image">
-                  <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-                </span>
-              <div>
+            <li class="list-group-item section-header">Tips &amp; Tricks</li>
+            <li class="list-group-item">
+              <b>Basic Search</b>
+              <p>&gt; cheese -mozerella</p>
+              <p><i>Finds cheese, no mozerella.</i></p>
+              <br>
+              <b>User Content</b>
+              <p>&gt;cheese user:Luminescence</p>
+              <p><i>Finds cheese posts by Luminescence.</i></p>
+              <br>
+              <b><a href="#">Read FAQ</a></b>
             </li>
           </ul>
         </div>
-        <div class="col-md-4"><!-- Status updates and stuff -->
-          <ul class="list-group category">
-            <li class="list-group-item section-header">Status Updates</li>
-            <li class="list-group-item front-page-status">
-                <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-<p><a href="#">Ambrosia</a> says: <span class="discuss">Discuss</span></p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris lacinia risus eget purus vulputate molestie. Etiam feugiat mauris eu risues.</p>
-            </li> 
-            <li class="list-group-item front-page-status">
-                <img src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png" width="40px">
-<p><a href="#">Ambrosia</a> says: <span class="discuss">Discuss</span></p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris lacinia risus eget purus vulputate molestie. Etiam feugiat mauris eu risues.</p>
-            </li> 
-          </ul>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12">
-          <center><p class="front-page-stats">
-            <span class="label label-default">1,021,000</span> Posts &nbsp; &nbsp; &nbsp; &nbsp;
-            <span class="label label-default">1,021,000</span> Members &nbsp; &nbsp; &nbsp; &nbsp;
-            <span class="label label-default">God</span> Newest Member &nbsp; &nbsp; &nbsp; &nbsp;
-          </p></center>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">100 Users Online</h3>
-            </div>
-            <div class="panel-body">
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>, 
-              <a href="#">Based God Lumi</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div> <!-- /container -->
 
 
