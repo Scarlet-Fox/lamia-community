@@ -78,7 +78,21 @@
 }
 
 /* Post Listing */
+.post-new-buttons {
+  float: right;
+}
 
+.fast-post-area {
+  overflow: hidden;
+}
+#post-editor {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  height: 300px;
+  overflow: scroll;
+  border: 1px lightgray solid;
+}
 .post-left {
   background-color: #FCFFE0;
   width: 220px;
@@ -116,6 +130,9 @@
 }
 .post-likes button {
   margin-left: 10px;
+}
+.topic-header {
+  height: 44px;
 }
 
 
