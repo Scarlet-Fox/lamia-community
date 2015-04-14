@@ -58,6 +58,67 @@
 .section-header {
   background-color: black;
   color: white;
+  overflow: hidden;
+}
+
+/* Status Updates */
+.status-reply-box {
+    resize: horizontal;
+    width: 90% !important;
+}
+.status-mod-controls {
+    float: right;
+    font-style: italic;
+    font-size: 90%;
+}
+.status-reply-box input {
+    resize: horizontal;
+    width: 99% !important;
+}
+
+.status-reply-box input:active {
+    width: auto;   
+}
+
+.status-reply-box input:focus {
+    min-width: 99% !important;
+}
+
+.status-time {
+  font-style: italic;
+  float: right;
+}
+.front-page-status {
+  overflow: hidden;
+}
+.front-page-status img {
+  float: left;
+  margin-right: 10px;
+}
+.front-page-status p {
+  overflow: hidden;
+}
+.front-page-status .discuss {
+  float: right;
+}
+.status-reply {
+  margin-left: 30px;
+}
+.status-reply img {
+  float: left;
+  margin-right: 10px;
+}
+.status-reply p {
+  overflow: hidden;
+}
+.status-reply .status-reply-time {
+  font-style: italic;
+  font-size: 80%;
+}
+.status-replies {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 300px; 
 }
 
 /* Subcategories */
@@ -180,23 +241,6 @@ span.topic-listing-name span.prefix {
 .topic-author {
   font-size: 90%;
   font-style: italic;
-}
-
-.front-page-status {
-  overflow: hidden;
-}
-
-.front-page-status img {
-  float: left;
-  margin-right: 10px;
-}
-
-.front-page-status p {
-  overflow: hidden;
-}
-
-.front-page-status .discuss {
-  float: right;
 }
 
 .front-page-stats {
