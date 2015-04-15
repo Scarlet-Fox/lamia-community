@@ -54,12 +54,14 @@
 .bs-callout-info h4 {
     color: #5bc0de;
 }
-
 .section-header {
   background-color: black;
   color: white;
   overflow: hidden;
 }
+
+/*  Private Messages */
+
 
 /* Status Updates */
 .status-reply-box {
@@ -194,6 +196,8 @@
 }
 .topic-header {
   height: 44px;
+  background-color: black;
+  color: white;
 }
 
 
