@@ -62,3 +62,4 @@ static
 woe/forum/migrations/*
 woe.sublime-workspace
 woe.sublime-project
+config.json

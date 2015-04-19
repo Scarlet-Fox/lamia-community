@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+import os, json
+
+CONFIG = json.loads(open("config.json").read())
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -95,11 +97,11 @@ WSGI_APPLICATION = 'woe.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'woe',
-        'USER': 'postgres',
-        'PASS': '',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': CONFIG["db"]["name"],
+        'USER': CONFIG["db"]["user"],
+        'PASS': CONFIG["db"]["pass"],
+        'HOST': CONFIG["db"]["host"],
+        'PORT': CONFIG["db"]["port"]
     }
 }
 
