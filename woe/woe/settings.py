@@ -18,6 +18,9 @@ CONFIG = json.loads(open("config.json").read())
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+if CONFIG.get("test", False):
+    FORCE_SCRIPT_NAME = '/test'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
