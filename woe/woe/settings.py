@@ -53,6 +53,13 @@ INSTALLED_APPS = (
     'forum'
 )
 
+TEMPLATE_LOADERS = (
+    ('',(
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
+)
+
 TEMPLATE_CONTEXT_PROCESSORS = ("django.core.context_processors.request",
 "django.contrib.auth.context_processors.auth",
 "django.template.context_processors.debug",
@@ -79,7 +86,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -87,6 +94,12 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'loaders': [
+                ('pyjade.ext.django.Loader',(
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                )),
+            ]
         },
     },
 ]
@@ -129,3 +142,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = '/home/eva/woeprj/woe/static'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
