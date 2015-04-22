@@ -1,0 +1,280 @@
+.bs-callout {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+}
+.bs-callout h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code {
+    border-radius: 3px;
+}
+.bs-callout+.bs-callout {
+    margin-top: -5px;
+}
+.bs-callout-default {
+    border-left-color: #777;
+}
+.bs-callout-default h4 {
+    color: #777;
+}
+.bs-callout-primary {
+    border-left-color: #428bca;
+}
+.bs-callout-primary h4 {
+    color: #428bca;
+}
+.bs-callout-success {
+    border-left-color: #5cb85c;
+}
+.bs-callout-success h4 {
+    color: #5cb85c;
+}
+.bs-callout-danger {
+    border-left-color: #d9534f;
+}
+.bs-callout-danger h4 {
+    color: #d9534f;
+}
+.bs-callout-warning {
+    border-left-color: #f0ad4e;
+}
+.bs-callout-warning h4 {
+    color: #f0ad4e;
+}
+.bs-callout-info {
+    border-left-color: #5bc0de;
+}
+.bs-callout-info h4 {
+    color: #5bc0de;
+}
+.section-header {
+  background-color: black;
+  color: white;
+  overflow: hidden;
+}
+
+/*  Private Messages */
+
+
+/* Status Updates */
+.status-reply-box {
+    resize: horizontal;
+    width: 90% !important;
+}
+.status-mod-controls {
+    float: right;
+    font-style: italic;
+    font-size: 90%;
+}
+.status-reply-box input {
+    resize: horizontal;
+    width: 99% !important;
+}
+
+.status-reply-box input:active {
+    width: auto;   
+}
+
+.status-reply-box input:focus {
+    min-width: 99% !important;
+}
+
+.status-time {
+  font-style: italic;
+  float: right;
+}
+.front-page-status {
+  overflow: hidden;
+}
+.front-page-status img {
+  float: left;
+  margin-right: 10px;
+}
+.front-page-status p {
+  overflow: hidden;
+}
+.front-page-status .discuss {
+  float: right;
+}
+.status-reply {
+  margin-left: 30px;
+}
+.status-reply img {
+  float: left;
+  margin-right: 10px;
+}
+.status-reply p {
+  overflow: hidden;
+}
+.status-reply .status-reply-time {
+  font-style: italic;
+  font-size: 80%;
+}
+.status-replies {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 300px; 
+}
+
+/* Subcategories */
+
+.subcategory {
+}
+.subcategory-listing-name {
+  vertical-align: middle;
+  padding-top: 15px;
+}
+.subcategory-listing-recent-image {
+  padding-right: 10px;
+  float: left;
+}
+.subcategory-listing-recent {
+  float: left;
+  font-size: 95%;
+}
+
+/* Post Listing */
+.post-new-buttons {
+  float: right;
+}
+
+.fast-post-area {
+  overflow: hidden;
+}
+#post-editor {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  height: 300px;
+  overflow: scroll;
+  border: 1px lightgray solid;
+}
+.post-left {
+  background-color: #FCFFE0;
+  width: 220px;
+  margin-left: 10px;
+  height: 100%;
+}
+.post-listing-info {
+  background-color: #eee;
+}
+.post-member-avatar {
+  margin-top: 5px;
+}
+.post-member-self-title {
+  color: grey;
+}
+.post-meta {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.post-number {
+  float: right;
+}
+.post-edit-likes-info {
+  margin-top: 20px;
+}
+.post-edited {
+  color: gray;
+  font-style: italic;
+}
+.post-edit-likes-info div {
+  vertical-align: middle;
+}
+.post-likes {
+  text-align: right;
+}
+.post-likes button {
+  margin-left: 10px;
+}
+.topic-header {
+  height: 44px;
+  background-color: black;
+  color: white;
+}
+
+
+/* Topic Listing */
+
+.topic-listing {
+}
+.topic-listing-jumps {
+  margin-left: 5px;
+}
+.topic-listing-jumps span.badge {
+  font-size: 70%;
+  border-radius: 3px !important;
+}
+.topic-listing-name {
+}
+.topic-listing-username {
+  font-size: 95%;
+}
+.topic-listing-text {
+  font-size: 95%;
+  float: right;
+}
+.topic-listing-recent span.badge {
+  font-size: 70%;
+  vertical-align: top;
+  margin-top: 2px;
+  margin-right: 5px;
+}
+.topic-listing-time {
+  font-size: 95%;
+}
+.topic-listing-recent-image {
+  padding-right: 10px;
+  float: left;
+}
+.topic-listing-recent {
+  float: left;
+}
+span.topic-listing-name span.prefix {
+  font-size: 70%;
+  vertical-align: top;
+  margin-top: 2px;
+}
+.topic-author {
+  font-size: 90%;
+  font-style: italic;
+}
+
+.front-page-stats {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.front-page-stats .label {
+  font-size: 100% !important;
+}
+
+.background-div {
+  height: 400px;
+  background: #00ff00 url("file:///home/eva/Documents/woe/prototyping/fff.png") no-repeat scroll top; 
+}
+
+.search-box {
+    resize: horizontal;
+    width: 80% !important;
+}
+
+.search-box input {
+    resize: horizontal;
+    width: 99% !important;
+}
+
+.search-box input:active {
+    width: auto;   
+}
+
+.search-box input:focus {
+    min-width: 99% !important;
+}
