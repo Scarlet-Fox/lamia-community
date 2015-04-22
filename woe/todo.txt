@@ -1,0 +1,29 @@
+[ ] Create sign-in page
+[ ] Create sign-out action
+[ ] Create forum index
+[ ] Integrate basic group permissions
+[ ] Create category topic listing
+[ ] Create topic post listing
+[ ] Create make-post action
+[ ] Create "is_updated" check
+[ ] Create post accessory action
+    [ ] Edit
+	[ ] Delete/Hide
+	[ ] Report
+	[ ] Create
+	[ ] Quote
+[ ] Create topic accessory actions
+    [ ] Edit
+	[ ] Delete/Hide
+	[ ] Create
+	[ ] Pin
+	[ ] Announcement
+	[ ] Close
+	[ ] Move
+	[ ] Merge
+	[ ] Split
+[ ] Poll display
+	[ ] Poll creation
+	[ ] Poll voting
+[ ] User profile diplay
+	[ ] Editing
