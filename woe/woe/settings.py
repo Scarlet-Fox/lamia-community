@@ -112,12 +112,12 @@ WSGI_APPLICATION = 'woe.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': CONFIG["db"]["name"],
-        'USER': CONFIG["db"]["user"],
-        'PASS': CONFIG["db"]["pass"],
-        'HOST': CONFIG["db"]["host"],
-        'PORT': CONFIG["db"]["port"]
+        'ENGINE': CONFIG["db"].get("engine","django.db.backends.sqlite3"),
+        'NAME': CONFIG["db"].get("name","simple.sql"),
+        'USER': CONFIG["db"].get("user", ""),
+        'PASS': CONFIG["db"].get("pass", ""),
+        'HOST': CONFIG["db"].get("host", ""),
+        'PORT': CONFIG["db"].get("port", "")
     }
 }
 
