@@ -106,10 +106,10 @@ body(role='document')
                       a(href='#') Profile
                     li.divider
                     li
-                      a(href='#') Sign Out
+                      a(href='#')#sign-out Sign Out
             else
               li
-                a(href='#')
+                a(href='/sign-in/')
                   | Sign In
         // /.nav-collapse
       // /.container-fluid
@@ -119,5 +119,16 @@ body(role='document')
   
   script(src="/static/assets/jquery.js")
   script(src="/static/assets/bootstrap.js")
-  script(src="/static/assets/docs.js")
   script(src="/static/assets/ie10-viewport-bug-workaround.js")
+  if request.user.is_authenticated
+    script(type="text/javascript")
+      $(document).ready(function(){
+        $("#sign-out").click(function(e) {
+          e.preventDefault();
+          $.post("/sign-out/", function(data) {
+            window.location = "/";
+          });
+        });
+      });
+  {% block script %}
+  {% endblock %}
