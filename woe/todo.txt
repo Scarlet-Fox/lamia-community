@@ -12,6 +12,8 @@
 	[ ] Report
 	[ ] Create
 	[ ] Quote
+	[ ] Add attachment
+	[ ] Remove attachment
 [ ] Create topic accessory actions
     [ ] Edit
 	[ ] Delete/Hide

@@ -278,3 +278,7 @@ span.topic-listing-name span.prefix {
 .search-box input:focus {
     min-width: 99% !important;
 }
+
+.hideme {
+    display: none;
+}
