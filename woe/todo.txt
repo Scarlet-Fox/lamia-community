@@ -1,13 +1,13 @@
 [X] Create sign-in page
 [X] Create sign-out action
 [X] Registration
-[ ] Create forum index
-[ ] Integrate basic group permissions
-[ ] Create category topic listing
-[ ] Create topic post listing
-[ ] Create make-post action
-[ ] Create "is_updated" check
-[ ] Create post accessory action
+[ ] Create forum index                    - Fri
+[ ] Make the navbar actually work         - Fri
+[ ] Integrate basic group permissions     - Sat
+[ ] Create category topic listing         - Sat
+[ ] Create topic post listing             - Sat
+[ ] Create "is_updated" check             - Sat
+[ ] Create post accessory action          - Sat
     [ ] Edit
 	[ ] Delete/Hide
 	[ ] Report
@@ -15,7 +15,7 @@
 	[ ] Quote
 	[ ] Add attachment
 	[ ] Remove attachment
-[ ] Create topic accessory actions
+[ ] Create topic accessory actions        - Sun
     [ ] Edit
 	[ ] Delete/Hide
 	[ ] Create
@@ -25,13 +25,21 @@
 	[ ] Move
 	[ ] Merge
 	[ ] Split
-[ ] Poll display
+[ ] Status updates                        - Sun
+  [ ] Create
+  [ ] Other
+[ ] Poll display                          
 	[ ] Poll creation
 	[ ] Poll voting
 [ ] User profile diplay
-	[ ] Editing
+	[ ] Editing name/pass
+  [ ] Editing avatar
 [ ] Search
 [ ] Post import
 [ ] Topic import
 [ ] Category import
 [ ] Notifications
+[ ] Setup detailed logging
+[ ] Staff pages
+[ ] Basic theme support
+[ ] Site footer
