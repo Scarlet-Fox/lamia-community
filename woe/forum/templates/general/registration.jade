@@ -1,0 +1,17 @@
+{% extends "general/base.jade" %}
+
+{% block content %}
+.row
+  .col-md-12
+    h2 Sign In
+    form(action="/register/", method="post")
+      {{ form.errors }}
+      {% csrf_token %}
+      {% for field in form %}
+      .form-group
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {{ field }}
+      {% endfor %}
+      button(type="submit").btn.btn-default Submit
+{% endblock %}

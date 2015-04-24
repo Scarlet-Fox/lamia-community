@@ -250,6 +250,7 @@ class Friend(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User)
+    display_name = models.CharField(max_length=255, blank=True)
     status = models.ForeignKey("StatusUpdate", blank=True, null=True, related_name="+")
     title = models.CharField(max_length=255,  blank=True)
     location = models.CharField(max_length=255, blank=True)

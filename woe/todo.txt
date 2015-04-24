@@ -1,5 +1,6 @@
-[ ] Create sign-in page
-[ ] Create sign-out action
+[X] Create sign-in page
+[X] Create sign-out action
+[X] Registration
 [ ] Create forum index
 [ ] Integrate basic group permissions
 [ ] Create category topic listing
@@ -29,3 +30,8 @@
 	[ ] Poll voting
 [ ] User profile diplay
 	[ ] Editing
+[ ] Search
+[ ] Post import
+[ ] Topic import
+[ ] Category import
+[ ] Notifications

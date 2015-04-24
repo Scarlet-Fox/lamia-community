@@ -22,4 +22,11 @@ class SignInView(FormView):
     def form_valid(self, form):
         login(self.request, form.cleaned_data["authenticated_user"])
         return super(SignInView, self).form_valid(form)
-        
+
+class RegisterView(FormView):
+    template_name = "general/registration.jade"
+    form_class = forms.RegisterForm
+    success_url = "/"
+    
+    def form_valid(self, form):
+        print "okay"
