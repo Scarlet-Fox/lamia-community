@@ -1,7 +1,7 @@
 [X] Create sign-in page
 [X] Create sign-out action
 [X] Registration
-[ ] Create forum index                    - Fri
+[X] Create forum index
 [ ] Make the navbar actually work         - Fri
 [ ] Integrate basic group permissions     - Sat
 [ ] Create category topic listing         - Sat
@@ -15,6 +15,7 @@
 	[ ] Quote
 	[ ] Add attachment
 	[ ] Remove attachment
+  [ ] Automatic update when in topic
 [ ] Create topic accessory actions        - Sun
     [ ] Edit
 	[ ] Delete/Hide
@@ -25,6 +26,7 @@
 	[ ] Move
 	[ ] Merge
 	[ ] Split
+[ ] Topic prefix setup                    - Sun
 [ ] Status updates                        - Sun
   [ ] Create
   [ ] Other
@@ -34,7 +36,28 @@
 [ ] User profile diplay
 	[ ] Editing name/pass
   [ ] Editing avatar
+[ ] Private messages
+  [ ] Indexing
+  [ ] Creating
+  [ ] Labels
 [ ] Search
+  [ ] Topics
+  [ ] Posts
+  [ ] byAuthor
+  [ ] Status Updates
+  [ ] Private Messages
+[ ] Moderation 
+  [ ] Flagging
+  [ ] Show flags (include action buttons)
+  [ ] Reporting
+  [ ] Show reports
+  [ ] Change report status
+  [ ] Member notes
+  [ ] Show latest notes
+  [ ] Show reports by member
+  [ ] Change member status
+  [ ] Member action locks
+  [ ] Edit member account
 [ ] Post import
 [ ] Topic import
 [ ] Category import
@@ -43,3 +66,5 @@
 [ ] Staff pages
 [ ] Basic theme support
 [ ] Site footer
+[ ] Admin on seperate site
+[ ] Disable main site admin via config

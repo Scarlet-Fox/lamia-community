@@ -256,7 +256,7 @@ span.topic-listing-name span.prefix {
   font-size: 100% !important;
 }
 
-.background-div {
+.site-background {
   height: 400px;
   background: #00ff00 url("file:///home/eva/Documents/woe/prototyping/fff.png") no-repeat scroll top; 
 }

@@ -155,6 +155,9 @@ class Category(models.Model):
     weight = models.IntegerField(default=0)
     parent = models.ForeignKey("Category", blank=True, null=True)
     moderators = models.ManyToManyField(User, through="CategoryParticipant")
+    restricted = models.BooleanField(default=False)
+    latest_topic = models.ForeignKey("Topic", blank=True, null=True, related_name="+")
+    latest_poster = models.ForeignKey("Profile", blank=True, null=True, related_name="+")
 
     class Meta:
         ordering = ["-parent_id", "weight"]
@@ -262,6 +265,7 @@ class Profile(models.Model):
     age = models.IntegerField(blank=True, null=True)
     hide_age = models.BooleanField(default=True)
     hide_birthday = models.BooleanField(default=True)
+    hide_login = models.BooleanField(default=False)
 
     GENDERS = (
         ('n', ''),

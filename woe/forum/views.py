@@ -1,14 +1,70 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import FormView
+from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.utils.datastructures import SortedDict
+from django.contrib.sessions.models import Session
+from django.utils import timezone
 from . import models
 from . import forms
 
-def index(request):
-    context = {}
-    return render(request, "general/base.jade", context)
+class Index(View):
+    def get(self, request):
+        
+        # Categories
+        
+        categories = models.Category.objects.all().select_related("parent").order_by("-parent")
+        
+        category_tree = SortedDict()
+        
+        for category in categories:
+            if category.parent == None:
+                category_tree[category.title] = [category]
+            else:
+                category_tree[category.parent.title].append(category)
+        
+        # Status updates
+        
+        status_updates = models.StatusUpdate.objects.filter(profile=None).order_by("-created")[:5]
+        
+        # Sessions (online users and guests)
+        
+        sessions = Session.objects.filter(expire_date__gte=timezone.now())
+        user_id_list = []
+        anonymouse = 0
+        
+        for session in sessions:
+            session_data = session.get_decoded()
+            uid = session_data.get("_auth_user_id", False)
+            if uid == False:
+                anonymouse += 1
+            else:
+                user_id_list.append(uid)
+        
+        online_users = models.Profile.objects.filter(user__id__in=user_id_list, hide_login=False)
+        
+        # Post count
+        post_count = models.Post.objects.all().count()
+        
+        # Member count
+        member_count = models.Profile.objects.all().count()
+        
+        # Newest member    
+        newest_member = models.Profile.objects.order_by("-user__id")[:1]
+        
+        context = {
+            "categories": category_tree,
+            "statuses": status_updates,
+            "online_users": online_users,
+            "guest_uses": anonymouse,
+            "post_count": post_count,
+            "member_count": member_count,
+            "newest_member": newest_member
+        }        
+        print context
+        return render(request, "general/index.jade", context) 
 
 @csrf_exempt
 def sign_out(request):
@@ -46,5 +102,3 @@ class RegisterView(FormView):
         p.save()
         # SETUP EMAIL ADDRESS STUFF
         return super(RegisterView, self).form_valid(form)
-        
-        
