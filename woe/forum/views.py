@@ -52,19 +52,19 @@ class Index(View):
         member_count = models.Profile.objects.all().count()
         
         # Newest member    
-        newest_member = models.Profile.objects.order_by("-user__id")[:1]
+        newest_member = models.Profile.objects.order_by("-user__id")[:1][0]
         
         context = {
             "categories": category_tree,
             "statuses": status_updates,
             "online_users": online_users,
-            "guest_uses": anonymouse,
+            "guest_users": anonymouse,
+            "all_users": anonymouse+len(online_users),
             "post_count": post_count,
             "member_count": member_count,
             "newest_member": newest_member
         }        
-        print context
-        return render(request, "general/index.jade", context) 
+        return render(request, "general/index.jade", context)
 
 @csrf_exempt
 def sign_out(request):

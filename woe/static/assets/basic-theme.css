@@ -136,6 +136,7 @@
   float: left;
 }
 .subcategory-listing-recent {
+  margin-top: 2px;
   float: left;
   font-size: 95%;
 }
@@ -254,6 +255,7 @@ span.topic-listing-name span.prefix {
 
 .front-page-stats .label {
   font-size: 100% !important;
+  font-weight: normal !important;
 }
 
 .site-background {

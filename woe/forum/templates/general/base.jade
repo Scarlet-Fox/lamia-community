@@ -94,7 +94,7 @@ body(role='document')
                 img(src='https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Key%20Gear%20-%20Flaret%20-%20avatar.png', height='40px', style='margin-top: 5px; margin-left: 15px;')
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-                  | Based God Lumi
+                  | {{request.user.profile.display_name}}
                   span.caret
                 ul.dropdown-menu(role='menu')
                     li

@@ -1,4 +1,58 @@
 {% extends "general/base.jade" %}
 
 {% block content %}
+.row
+  .col-md-8
+    {% for category_list in categories.values %}
+    ul.list-group.category 
+      {% for category in category_list %}
+      {% if forloop.first %}
+      li.list-group-item.section-header {{category.title}}
+      {% else %}
+      li.list-group-item.subcategory
+        div
+          .row
+            .col-xs-12.col-sm-8
+              span.subcategory-listing-name {{category.title}}
+            .col-sm-4.hidden-xs.hidden-sm
+              span.subcategory-listing-recent-image
+                img(src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png", width="40px", height="40px")
+              span.subcategory-listing-recent
+                a(href="#") Example Topic
+                br
+                a(href="#") 15 minutes ago
+      {% endif %}
+      {% endfor %}
+    {% endfor %}
+  .col-md-4
+    ul.list-group.category
+      li.list-group-item.section-header Status Updates
+      {% for status in statuses %}
+      li.list-group-item.front-page-status
+        img(src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png", width="40px", height="40px")
+        p
+          a(href="#") {{ status.author.profile.display_name }}
+          span &nbsp;says:
+          span.discuss Discuss
+        p {{ status.message }}
+      {% endfor %}
+.row 
+  .col-md-12
+    center
+      p.front-page-stats
+        span.label.label-default {{post_count}}
+        span &nbsp;Posts &nbsp; &nbsp; &nbsp; &nbsp;
+        span.label.label-default {{member_count}}
+        span &nbsp;Members &nbsp; &nbsp; &nbsp; &nbsp;
+        span.label.label-default {{newest_member.display_name}}
+        span &nbsp;Newest Member
+.row
+  .col-md-12
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title {{all_users}} Users Online
+      .panel-body
+        {% for u in online_users %}
+        a(href="#") {{u.display_name}}{% if not forloop.last %},{% endif %} 
+        {% endfor %}
 {% endblock %}
