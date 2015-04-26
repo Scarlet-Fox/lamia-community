@@ -14,7 +14,7 @@
           {% else %}
           button(type="button").btn.btn-default.btn-xs#subscribe-button Ignore
           {% endif %}
-      li.list-group-item.front-page-status
+      li.list-group-item.front-page-status#status(data-id="{{status.id}}")
         img(src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png", width="40px", height="40px")
         p
           a(href="#") {{ status.author.profile.display_name }}
@@ -25,8 +25,8 @@
       li.list-group-item.status-reply-form
         form.form-inline
           .form-group.status-reply-box
-            input(type="text").form-control#statusReply
-          button(type="submit").btn.btn-default Reply
+            input.form-control#status-reply(type="text")
+          button#submit-reply.btn.btn-default(type="submit") Reply
   .col-md-4
     # TODO NEW STATUS
     ul.list-group.category
@@ -41,4 +41,8 @@
             a(href="/status/{{status.pk}}") Discuss
         p {{ recent.message }}
       {% endfor %}
+{% endblock %}
+
+{% block script %}
+script(src="/static/local/js/status_updates.js")
 {% endblock %}

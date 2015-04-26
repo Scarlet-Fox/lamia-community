@@ -7,14 +7,39 @@ from django.contrib.auth.models import User
 from django.utils.datastructures import SortedDict
 from django.contrib.sessions.models import Session
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
 from django.http import Http404
 from django.utils import timezone
+from django.http import JsonResponse
 from . import models
 from . import forms
 
 class StatusUpdate(View):
-    def get(self, request, status=1): # TODO - remove default
-        status = get_object_or_404(models.StatusUpdate, pk=1)
+    
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(StatusUpdate, self).dispatch(*args, **kwargs)
+
+    def post(self, request, status):
+        status = get_object_or_404(models.StatusUpdate, pk=status)
+        # TODO - check if a user can reply to statuses
+        # TODO - check for ignores
+        
+        if len(request.POST.get("text","")) < 1:
+            raise Http404("")
+             
+        status_reply = models.StatusComment(
+            status = status,
+            author = request.user,
+            comment = request.POST.get("text","")
+        )
+        status_reply.save()
+        
+        response = {"status": "OK"}
+        return JsonResponse(response)
+    
+    def get(self, request, status): # TODO - remove default
+        status = get_object_or_404(models.StatusUpdate, pk=status)
         status_comments = models.StatusComment.objects.filter(status=status)
         
         if status.hidden == True and not request.user.is_staff():
