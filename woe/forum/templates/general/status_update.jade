@@ -14,14 +14,14 @@
           {% else %}
           button(type="button").btn.btn-default.btn-xs#subscribe-button Ignore
           {% endif %}
-      li.list-group-item.front-page-status#status(data-id="{{status.id}}")
+      li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}")
         img(src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png", width="40px", height="40px")
         p
           a(href="#") {{ status.author.profile.display_name }}
           span &nbsp;says:
           span.status-time {{ status.created }} 
         p {{ status.message }}
-      li.list-group-item.status-replies
+      li.list-group-item.status-replies#status-replies
       li.list-group-item.status-reply-form
         form.form-inline
           .form-group.status-reply-box

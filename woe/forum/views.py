@@ -11,8 +11,10 @@ from django.utils.decorators import method_decorator
 from django.http import Http404
 from django.utils import timezone
 from django.http import JsonResponse
+from django.utils.html import strip_tags, escape
 from . import models
 from . import forms
+import arrow
 
 class StatusUpdate(View):
     
@@ -21,22 +23,39 @@ class StatusUpdate(View):
         return super(StatusUpdate, self).dispatch(*args, **kwargs)
 
     def post(self, request, status):
-        status = get_object_or_404(models.StatusUpdate, pk=status)
-        # TODO - check if a user can reply to statuses
-        # TODO - check for ignores
+        if request.POST.get("reply", "false") == "true":
+            status = get_object_or_404(models.StatusUpdate, pk=status)
+            # TODO - check if a user can reply to statuses
+            # TODO - check for ignores
+            # TODO - add limit on replies
         
-        if len(request.POST.get("text","")) < 1:
-            raise Http404("")
+            if len(request.POST.get("text","")) < 1:
+                raise Http404("")
              
-        status_reply = models.StatusComment(
-            status = status,
-            author = request.user,
-            comment = request.POST.get("text","")
-        )
-        status_reply.save()
+            status_reply = models.StatusComment(
+                status = status,
+                author = request.user,
+                comment = request.POST.get("text","")
+            )
+            status_reply.save()
         
-        response = {"status": "OK"}
-        return JsonResponse(response)
+            response = {"status": "OK"}
+            return JsonResponse(response)
+        else:
+            status = get_object_or_404(models.StatusUpdate, pk=status)
+            status_comments = models.StatusComment.objects.filter(status=status).order_by("created").select_related("author__profile")
+            response = {"replies": [], "status": "OK"}
+            
+            for comment in status_comments:
+                response["replies"].append({
+                    "author": comment.author.profile.display_name,
+                    "text": escape(comment.comment),
+                    "date": arrow.get(comment.created).humanize(),
+                    "author_id": comment.author_id,
+                    "author_avatar": "" # TODO
+                })
+
+            return JsonResponse(response)
     
     def get(self, request, status): # TODO - remove default
         status = get_object_or_404(models.StatusUpdate, pk=status)
