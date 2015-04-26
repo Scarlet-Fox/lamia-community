@@ -33,7 +33,8 @@
         p
           a(href="#") {{ status.author.profile.display_name }}
           span &nbsp;says:
-          span.discuss Discuss
+          span.discuss 
+            a(href="/status/{{status.pk}}") Discuss
         p {{ status.message }}
       {% endfor %}
 .row 
