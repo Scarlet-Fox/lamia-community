@@ -6,9 +6,38 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.utils.datastructures import SortedDict
 from django.contrib.sessions.models import Session
+from django.shortcuts import get_object_or_404
+from django.http import Http404
 from django.utils import timezone
 from . import models
 from . import forms
+
+class StatusUpdate(View):
+    def get(self, request, status=1): # TODO - remove default
+        status = get_object_or_404(models.StatusUpdate, pk=1)
+        status_comments = models.StatusComment.objects.filter(status=status)
+        
+        if status.hidden == True and not request.user.is_staff():
+            raise Http404("This status has been hidden.")
+        
+        #TODO - Check if a user was blocked from statuses?
+        recent_status_updates = models.StatusUpdate.objects.filter(profile=None).order_by("-created")[:5]
+        
+        context = {
+            "recent_status_updates": recent_status_updates,
+            "status": status
+        }
+        
+        if request.user.is_authenticated():
+            participant, created = models.StatusParticipant.objects.get_or_create(
+                    status = status,
+                    user = request.user
+                )
+            if created:
+                participant.save()
+            context["participant"] = participant
+        
+        return render(request, "general/status_update.jade", context)
 
 class Index(View):
     def get(self, request):

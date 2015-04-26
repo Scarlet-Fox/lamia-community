@@ -181,6 +181,7 @@ class StatusUpdate(models.Model):
     profile = models.ForeignKey(User, blank=True, null=True, related_name="+")
     """If null, then a normal status update. If not, then user-linked."""
     participants = models.ManyToManyField(User, through="StatusParticipant", related_name="+")
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s by %s" % (self.message, unicode(self.author))
@@ -188,12 +189,12 @@ class StatusUpdate(models.Model):
 class StatusParticipant(models.Model):
     status = models.ForeignKey("StatusUpdate")
     user = models.ForeignKey(User)
-    following = models.BooleanField(default=True)
+    ignoring = models.BooleanField(default=True)
 
     def __str__(self):
         return "%s : %s" % (unicode(self.user), unicode(self.status))
 
-class StatusComments(models.Model):
+class StatusComment(models.Model):
     status = models.ForeignKey("StatusUpdate")
     comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True)

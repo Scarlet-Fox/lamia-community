@@ -1,0 +1,43 @@
+{% extends "general/base.jade" %}
+
+{% block content %}
+.row
+  .col-md-8
+    ul.list-group.category
+      li.list-group-item.section-header
+        .btn-group(style="float: right;")
+          {% if status.author_id = request.user.pk and status.hidden = False %}
+          button(type="button").btn.btn-default.btn-xs#hide-button Hide
+          {% endif %}
+          {% if participant.ignoring %}
+          button(type="button").btn.btn-default.btn-xs#subscribe-button Follow
+          {% else %}
+          button(type="button").btn.btn-default.btn-xs#subscribe-button Ignore
+          {% endif %}
+      li.list-group-item.front-page-status
+        img(src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png", width="40px", height="40px")
+        p
+          a(href="#") {{ status.author.profile.display_name }}
+          span &nbsp;says:
+          span.status-time {{ status.created }} 
+        p {{ status.message }}
+      li.list-group-item.status-replies
+      li.list-group-item.status-reply-form
+        form.form-inline
+          .form-group.status-reply-box
+            input(type="text").form-control#statusReply
+          button(type="submit").btn.btn-default Reply
+  .col-md-4
+    # TODO NEW STATUS
+    ul.list-group.category
+      li.list-group-item.section-header Recent Status Updates
+      {% for recent in recent_status_updates %}
+      li.list-group-item.front-page-status
+        img(src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png", width="40px", height="40px")
+        p
+          a(href="#") {{ recent.author.profile.display_name }}
+          span &nbsp;says:
+          span.discuss Discuss
+        p {{ recent.message }}
+      {% endfor %}
+{% endblock %}

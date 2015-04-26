@@ -27,9 +27,9 @@
 	[ ] Merge
 	[ ] Split
 [ ] Topic prefix setup                    - Sun
-[ ] Status updates                        - Sun
-  [ ] Create
-  [ ] Other
+[X] Status updates
+  [X] Create
+  [X] Other
 [ ] Poll display                          
 	[ ] Poll creation
 	[ ] Poll voting

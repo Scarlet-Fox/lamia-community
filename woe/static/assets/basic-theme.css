@@ -66,7 +66,7 @@
 /* Status Updates */
 .status-reply-box {
     resize: horizontal;
-    width: 90% !important;
+    width: 80% !important;
 }
 .status-mod-controls {
     float: right;
