@@ -10,7 +10,7 @@ $ ->
     
     replyTMPL: (vars) ->
       return """
-      <div class="status-reply">  
+      <div class="status-reply" data-id="#{vars.pk}">  
         <img src="https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Key%20Gear%20-%20avatar.png" width="30px">
         <p><a href="#">#{vars.author}</a><span class="status-mod-controls"></span>
         <br>#{vars.text}
@@ -30,6 +30,11 @@ $ ->
         
   s = new Status
   do s.refreshView
+  
+  makeInterval = (time, func)-> setInterval func, time
+  
+  makeInterval 3000, () ->
+    do s.refreshView
     
   $("#submit-reply").click (e) ->
     e.preventDefault()

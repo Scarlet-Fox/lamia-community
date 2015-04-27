@@ -38,7 +38,7 @@
           a(href="#") {{ recent.author.profile.display_name }}
           span &nbsp;says:
           span.discuss
-            a(href="/status/{{status.pk}}") Discuss
+            a(href="/status/{{recent.pk}}/") Discuss
         p {{ recent.message }}
       {% endfor %}
 {% endblock %}

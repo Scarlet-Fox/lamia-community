@@ -48,6 +48,7 @@ class StatusUpdate(View):
             
             for comment in status_comments:
                 response["replies"].append({
+                    "pk": comment.pk,
                     "author": comment.author.profile.display_name,
                     "text": escape(comment.comment),
                     "date": arrow.get(comment.created).humanize(),
