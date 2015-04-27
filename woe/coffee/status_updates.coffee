@@ -2,6 +2,10 @@ $ ->
   class Status
     constructor: () ->
       @id = $("#status").attr("data-id")
+      if $("#status").attr("data-mod") is "True"
+        @mod = true
+      else
+        @mod = false
     
     addReply: () ->
       $.post "/status/#{@id}/", {text: $("#status-reply")[0].value, reply: true}, (response) =>

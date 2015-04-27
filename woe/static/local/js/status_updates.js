@@ -5,6 +5,11 @@
     Status = (function() {
       function Status() {
         this.id = $("#status").attr("data-id");
+        if ($("#status").attr("data-mod") === "True") {
+          this.mod = true;
+        } else {
+          this.mod = false;
+        }
       }
 
       Status.prototype.addReply = function() {

@@ -6,7 +6,7 @@
     ul.list-group.category
       li.list-group-item.section-header
         .btn-group(style="float: right;")
-          {% if status.author_id = request.user.pk and status.hidden = False %}
+          {% if mod == True %}
           button(type="button").btn.btn-default.btn-xs#hide-button Hide
           {% endif %}
           {% if participant.ignoring %}
@@ -14,7 +14,7 @@
           {% else %}
           button(type="button").btn.btn-default.btn-xs#subscribe-button Ignore
           {% endif %}
-      li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}")
+      li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}")
         img(src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png", width="40px", height="40px")
         p
           a(href="#") {{ status.author.profile.display_name }}

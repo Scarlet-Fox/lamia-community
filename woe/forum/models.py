@@ -182,7 +182,8 @@ class StatusUpdate(models.Model):
     """If null, then a normal status update. If not, then user-linked."""
     participants = models.ManyToManyField(User, through="StatusParticipant", related_name="+")
     hidden = models.BooleanField(default=False)
-
+    # TODO - comment count
+    
     def __str__(self):
         return "%s by %s" % (self.message, unicode(self.author))
 

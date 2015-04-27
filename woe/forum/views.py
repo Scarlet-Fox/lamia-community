@@ -68,9 +68,14 @@ class StatusUpdate(View):
         #TODO - Check if a user was blocked from statuses?
         recent_status_updates = models.StatusUpdate.objects.filter(profile=None).order_by("-created")[:5]
         
+        mod = False
+        if status.author_id == request.user.pk or request.user.is_staff == True:
+            mod = True
+        
         context = {
             "recent_status_updates": recent_status_updates,
-            "status": status
+            "status": status,
+            "mod": mod
         }
         
         if request.user.is_authenticated():
