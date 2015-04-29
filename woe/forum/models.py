@@ -183,6 +183,8 @@ class StatusUpdate(models.Model):
     participants = models.ManyToManyField(User, through="StatusParticipant", related_name="+")
     hidden = models.BooleanField(default=False)
     # TODO - comment count
+    # TODO - latest activity
+    # TODO - velocity (weight of age and comment count)
     
     def __str__(self):
         return "%s by %s" % (self.message, unicode(self.author))

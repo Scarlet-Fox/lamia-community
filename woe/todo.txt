@@ -2,12 +2,20 @@
 [X] Create sign-out action
 [X] Registration
 [X] Create forum index
-[ ] Make the navbar actually work         - Fri
-[ ] Integrate basic group permissions     - Sat
-[ ] Create category topic listing         - Sat
-[ ] Create topic post listing             - Sat
-[ ] Create "is_updated" check             - Sat
-[ ] Create post accessory action          - Sat
+[X] Make the navbar actually work
+[X] Status updates
+  [X] Create
+  [X] Reply
+[ ] User profile diplay
+	[ ] Editing name/pass
+  [ ] Editing avatar
+[ ] Private messages
+  [ ] Indexing
+  [ ] Creating
+  [ ] Labels
+[ ] Create category topic listing
+[ ] Create topic post listing
+[ ] Create post accessory action
     [ ] Edit
 	[ ] Delete/Hide
 	[ ] Report
@@ -16,7 +24,8 @@
 	[ ] Add attachment
 	[ ] Remove attachment
   [ ] Automatic update when in topic
-[ ] Create topic accessory actions        - Sun
+  [ ] Flag
+[ ] Create topic accessory actions
     [ ] Edit
 	[ ] Delete/Hide
 	[ ] Create
@@ -26,20 +35,10 @@
 	[ ] Move
 	[ ] Merge
 	[ ] Split
-[ ] Topic prefix setup                    - Sun
-[X] Status updates
-  [X] Create
-  [X] Other
+[ ] Topic prefix setup
 [ ] Poll display                          
 	[ ] Poll creation
 	[ ] Poll voting
-[ ] User profile diplay
-	[ ] Editing name/pass
-  [ ] Editing avatar
-[ ] Private messages
-  [ ] Indexing
-  [ ] Creating
-  [ ] Labels
 [ ] Search
   [ ] Topics
   [ ] Posts
@@ -62,6 +61,7 @@
 [ ] Topic import
 [ ] Category import
 [ ] Notifications
+  [ ] Create "is_updated" check
 [ ] Setup detailed logging
 [ ] Staff pages
 [ ] Basic theme support

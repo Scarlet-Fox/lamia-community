@@ -16,6 +16,11 @@ from . import models
 from . import forms
 import arrow
 
+class PrototypeView(View):
+    def get(self, request):
+        return render(request, "general/user_profile.jade", context)
+        
+
 class StatusUpdate(View):
     
     @method_decorator(csrf_exempt)

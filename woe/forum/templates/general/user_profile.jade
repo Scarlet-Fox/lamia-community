@@ -1,0 +1,12 @@
+{% extends "general/base.jade" %}
+
+{% block content %}
+.row 
+  .col-md-4
+    ul.nav.nav-pills.nav-stacked(role="tablist")
+      li(role="presentation")
+    
+  .col-md-8
+    h2 {{profile.display_name}}
+    .user-profile-about-me {{profile.get_clean_profile}}
+{% endblock %}
