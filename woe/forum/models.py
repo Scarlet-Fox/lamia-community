@@ -264,6 +264,7 @@ class Profile(models.Model):
     time_zone = models.FloatField(default=0.0)
     about = models.TextField(blank=True)
     friends = models.ManyToManyField(User, through="Friend", related_name="+")
+    show_roleplay_tab = models.BooleanField(default=False)
 
     birthday = models.DateField(blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)

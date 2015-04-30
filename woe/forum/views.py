@@ -16,9 +16,12 @@ from . import models
 from . import forms
 import arrow
 
-class PrototypeView(View):
-    def get(self, request):
-        return render(request, "general/user_profile.jade", context)
+class UserProfileView(View):
+    def get(self, request, profile):
+        context = {}
+        member_profile = get_object_or_404(models.Profile, user__id=profile)
+        context["member_profile"] = member_profile
+        return render(request, "general/member_profile.jade", context)
         
 
 class StatusUpdate(View):

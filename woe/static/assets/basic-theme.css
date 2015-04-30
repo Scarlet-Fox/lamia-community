@@ -60,6 +60,21 @@
   overflow: hidden;
 }
 
+/* Profile Pages */
+
+#profile-page-header {
+  overflow: hidden;
+}
+
+#profile-avatar {
+}
+
+#profile-name {
+  font-size: 30px;
+  font-weight: 500;
+  vertical-align: top !important;
+}
+
 /*  Private Messages */
 
 
@@ -283,4 +298,20 @@ span.topic-listing-name span.prefix {
 
 .hideme {
     display: none;
+}
+
+/* Formatting */
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+/* IPB Hacks */
+
+.bbc_center {
+  text-align: center;
 }
