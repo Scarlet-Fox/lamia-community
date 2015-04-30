@@ -19,7 +19,7 @@
         }, (function(_this) {
           return function(response) {
             $("#status-reply")[0].value = "";
-            return _this.refreshView();
+            return _this.refreshView(true);
           };
         })(this));
       };
@@ -28,7 +28,10 @@
         return "<div class=\"status-reply\" data-id=\"" + vars.pk + "\">  \n  <img src=\"https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Key%20Gear%20-%20avatar.png\" width=\"30px\">\n  <p><a href=\"#\">" + vars.author + "</a><span class=\"status-mod-controls\"></span>\n  <br>" + vars.text + "\n  <br><span class=\"status-reply-time\">" + vars.date + "</span></p>\n  <hr>\n</div>";
       };
 
-      Status.prototype.refreshView = function() {
+      Status.prototype.refreshView = function(scrolldown) {
+        if (scrolldown == null) {
+          scrolldown = false;
+        }
         return $.post("/status/" + this.id + "/", {}, (function(_this) {
           return function(response) {
             var comment, i, len, ref;
@@ -38,7 +41,9 @@
               comment = ref[i];
               $("#status-replies").append(_this.replyTMPL(comment));
             }
-            return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
+            if (scrolldown) {
+              return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
+            }
           };
         })(this));
       };

@@ -10,7 +10,7 @@ $ ->
     addReply: () ->
       $.post "/status/#{@id}/", {text: $("#status-reply")[0].value, reply: true}, (response) =>
         $("#status-reply")[0].value = ""
-        do @refreshView
+        @refreshView(true)
     
     replyTMPL: (vars) ->
       return """
@@ -23,14 +23,15 @@ $ ->
       </div>
       """
       
-    refreshView: () ->
+    refreshView: (scrolldown=false) ->
       $.post "/status/#{@id}/", {}, (response) =>
         $("#status-replies").html("")
         
         for comment in response.replies
           $("#status-replies").append(@replyTMPL(comment))
         
-        $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
+        if scrolldown
+          $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
         
   s = new Status
   do s.refreshView
