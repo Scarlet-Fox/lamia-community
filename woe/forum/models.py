@@ -219,12 +219,21 @@ class UserIP(models.Model):
 
 class Fingerprint(models.Model):
     identity = models.TextField()
-    users = models.ManyToManyField(User, blank=True)
+    user = models.ForeignKey(User, blank=True)
     first_seen = models.DateTimeField()
     last_seen = models.DateTimeField()
-
+    related = models.ManyToManyField(through="FingerprintRelational")
+    
     def __str__(self):
-        return self.identity
+        return self.user.username
+
+class FingerprintRelational(models.Model):
+    primary = models.ForeignKey("Fingerprint")
+    related = models.ForeignKey("Fingerprint")
+    match_percentage = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return self.pk
 
 class Ban(models.Model):
     user = models.ForeignKey(User, related_name="bans")
