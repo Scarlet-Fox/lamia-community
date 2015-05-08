@@ -1,6 +1,33 @@
 from woe import db
 from woe import bcrypt
 
+class Fingerprint(db.Document):
+    user = db.ReferenceField("User")
+    fingerprint = db.DictField({})
+    last_seen = db.DateTimeField()
+    
+    def compute_similarity_score(self, stranger):
+        max_score = float(len(self.fingerprint))
+        score = 0.0
+        
+        for key, value in self.fingerprint.iteritems():
+            if stranger.get(key, False) == value:
+                score += 1
+                
+        return score/max_score
+        
+    def get_factors(self):
+        return float(len(self.fingerprint))
+
+class IPAddress(db.Document):
+    user = db.ReferenceField("User")
+    ip_address = db.StringField()
+    last_seen = db.DateTimeField()
+    
+class Ban(db.Document):
+    user = db.ReferenceField("User")
+    ip_address = db.StringField()
+
 class ModNote(db.EmbeddedDocument):
     date = db.DateTimeField(required=True)
     note = db.StringField(required=True)
