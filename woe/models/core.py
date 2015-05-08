@@ -209,3 +209,35 @@ class Log(db.Document):
     url = db.StringField()
     data = db.DictField()
     logged_at_time = db.DateTimeField()
+
+class StatusViewer(db.EmbeddedDocument):
+    last_seen = db.DateTimeField()
+    user = db.ReferenceField(User)
+    
+class StatusComment(db.EmbeddedDocument):
+    text = db.StringField()
+    author = db.ReferenceField(User)
+    created = db.DateTimeField()
+
+class StatusUpdate(db.Document):
+    attached_to_user = db.ReferenceField(User)
+    author = db.ReferenceField(User)
+    message = db.StringField()
+    comments = db.ListField(db.EmbeddedDocumentField(StatusComment))
+    
+    # Realtime stuff
+    viewing = db.ListField(db.EmbeddedDocumentField(StatusViewer))
+    
+    # Notification stuff
+    participants = db.ListField(db.ReferenceField(User))
+    ignoring = db.ListField(db.ReferenceField(User))
+    
+    # Mod stuff
+    hidden = db.BooleanField(default=False)
+    hide_message = db.StringField(default=False)
+    
+    # Tracking
+    viewers = db.IntField(default=0)
+    created = db.DateTimeField()
+    replies = db.IntField(default=0)
+    hot_score = db.IntField(default=0) # Replies - Age (basically)
