@@ -181,3 +181,22 @@ class Notification(db.Document):
     category = db.StringField()
     created = db.DateTimeField()
     acknowledged = db.BooleanField(default=False)
+
+class ReportComment(db.Document):
+    author = db.ReferenceField(User)
+    created = db.DateTimeField()
+    text = db.StringField()
+
+class Report(db.Document):
+    content = db.GenericReferenceField()
+    text = db.StringField()
+    initiated_by = db.ReferenceField(User)
+    STATUS_CHOICES = ( 
+        ('closed', 'Closed'), 
+        ('open', 'Open'), 
+        ('feedback', 'Feedback Requested'), 
+        ('waiting', 'Waiting') 
+    )
+    status = db.StringField(choices=STATUS_CHOICES, default='open')
+    created = db.DateTimeField()
+    
