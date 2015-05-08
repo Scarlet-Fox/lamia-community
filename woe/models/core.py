@@ -31,7 +31,8 @@ class User(db.Document):
     social_fields = db.ListField(db.DictField())
     
     # Background details
-    
+
+    last_sent_notification_email = db.DateTimeField()
     auto_acknowledge_notifications_after = db.IntField()
     last_looked_at_notifications = db.DateTimeField()
     
@@ -59,6 +60,23 @@ class User(db.Document):
         'Steam',
         'Tumblr'
     )
+    
+    # Notification preferences
+    
+    OPTIONS = (
+        (0, "Dashboard"),
+        (1, "Email"),
+        (2, "Both")
+    )
+    
+    # NOTE MOD NOTES ARE AUTO SENT VIA BOTH
+    topics = db.StringField(choices=OPTIONS, default=0)
+    status = db.StringField(choices=OPTIONS, default=0)
+    quoted = db.StringField(choices=OPTIONS, default=0)
+    mention = db.StringField(choices=OPTIONS, default=0)
+    followed = db.StringField(choices=OPTIONS, default=0)
+    messages = db.StringField(choices=OPTIONS, default=0)
+    announcements = db.StringField(choices=OPTIONS, default=0)
     
     # Friends
     friends = db.ListField(db.ReferenceField("User"))
@@ -113,6 +131,8 @@ class PrivateMessageTopic(db.Document):
     
     messages = db.ListField(db.EmbeddedDocumentField(PrivateMessage))
     participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant))
+    
+    labels = db.ListField(db.StringField())
     
 class PrivateMessageWatch(db.Document):
     user = db.ReferenceField(User)
