@@ -40,6 +40,7 @@ class Topic(db.Document):
     sticky = db.BooleanField()
     hidden = db.BooleanField()
     closed = db.BooleanField()
+    close_message = db.StringField()
     announcement = db.BooleanField()
     
     # Prefixes
@@ -55,6 +56,31 @@ class Topic(db.Document):
     
     # Tracking
     post_count = db.IntField()
+    view_count = db.IntField()
+    last_post_by = db.ReferenceField(core.User)
+    last_post_date = db.DateTimeField()
+    last_post_author_avatar = db.StringField()
+
+class Category(db.Document):
+    name = db.StringField()
+    parent = db.ReferenceField("Category")
+    root_category = db.BooleanField(default=True)
+    
+    # Background info
+    weight = db.IntField()
+    category_moderators = db.ListField(db.ReferenceField(core.User))
+    user_post_counts = db.DictField()
+    data = db.DictField()
+    
+    # Security
+    restricted = db.BooleanField(default=False)
+    allow_only = db.ListField(db.ReferenceField(core.User))
+    
+    # Tracking
+    prefix_frequency = db.DictField()
+    post_count = db.IntField()
+    view_count = db.IntField()
+    last_topic_name = db.StringField()
     last_post_by = db.ReferenceField(core.User)
     last_post_date = db.DateTimeField()
     last_post_author_avatar = db.StringField()
