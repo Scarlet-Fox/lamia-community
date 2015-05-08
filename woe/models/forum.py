@@ -5,6 +5,12 @@ class Flag(db.EmbeddedDocument):
     flagger = db.ReferenceField(core.User)
     flag_date = db.DateTimeField()
 
+class PostHistory(db.EmbeddedDocument):
+    creator = db.ReferenceField(core.User)
+    created = db.DateTimeField()
+    html = db.StringField()
+    data = db.DictField()
+
 class Post(db.Document):
     # Basics
     html = db.StringField()
@@ -14,6 +20,7 @@ class Post(db.Document):
     created = db.DateTimeField()
     modified = db.DateTimeField()
     data = db.DictField()
+    history = db.ListField(db.EmbeddedDocumentField(PostHistory))
     
     # Moderation
     edited = db.DateTimeField()
@@ -23,7 +30,7 @@ class Post(db.Document):
     hide_message = db.StringField()
     flag_score = db.IntField(default=0)
     flag_clear_date = db.DateTimeField()
-    flags = db.EmbeddedDocumentField(Flag)
+    flags = db.ListField(db.EmbeddedDocumentField(Flag))
 
 class Prefix(db.Document):
     pre_html = db.StringField()
@@ -84,3 +91,12 @@ class Category(db.Document):
     last_post_by = db.ReferenceField(core.User)
     last_post_date = db.DateTimeField()
     last_post_author_avatar = db.StringField()
+
+class Attachment(db.Document):
+    filename = db.StringField()
+    mimetype = db.StringField()
+    size_in_bytes = db.IntField()
+    created_date = db.DateTimeField()
+    last_modified_date = db.DateTimeField()
+    owner = db.ReferenceField(core.User)
+    present_in = db.ListField(db.GenericReferenceField())
