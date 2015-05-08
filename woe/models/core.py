@@ -14,6 +14,12 @@ class ModNote(db.EmbeddedDocument):
     )
     incident_level = db.StringField(choices=INCIDENT_LEVELS)
 
+class UserActivity(db.EmbeddedDocument):
+    content = db.GenericReferenceField()
+    category = db.StringField()
+    created = db.DateTimeField()
+    meta = db.DictField()
+
 class User(db.Document):
     login_name = db.StringField(required=True, unique=True)
     display_name = db.StringField(required=True, unique=True)
@@ -78,8 +84,9 @@ class User(db.Document):
     messages = db.StringField(choices=OPTIONS, default=0)
     announcements = db.StringField(choices=OPTIONS, default=0)
     
-    # Friends
+    # Friends and social stuff
     friends = db.ListField(db.ReferenceField("User"))
+    profile_feed = db.ListField(db.UserActivity())
     
     # Moderation options
     disable_posts = db.BooleanField(default=False)
