@@ -4,7 +4,7 @@ from woe import bcrypt
 class ModNote(db.EmbeddedDocument):
     date = db.DateTimeField(required=True)
     note = db.StringField(required=True)
-    reference = db.GenericEmbeddedDocumentField()
+    reference = db.GenericReferenceField()
     INCIDENT_LEVELS = (
         ("Other", "???"),
         ("Wat", "Something Weird"),
@@ -32,6 +32,10 @@ class User(db.Document):
     
     # Background details
     
+    auto_acknowledge_notifications_after = db.IntField()
+    last_looked_at_notifications = db.DateTimeField()
+    
+    signatures = db.ListField(db.StringField())
     timezone = db.IntField(default=0) # Relative to UTC
     hide_age = db.BooleanField(default=True)
     hide_birthday = db.BooleanField(default=True)
@@ -90,3 +94,36 @@ class User(db.Document):
     def check_password(self, password):
         return bcrypt.bcrypt.check_password_hash(self.password_hash, password)
         
+class PrivateMessage(db.EmbeddedDocument):
+    message = db.StringField()
+    author = db.ReferenceField(User)
+    
+    created = db.DateTimeField()
+    modified = db.DateTimeField()
+
+class PrivateMessageParticipant(db.EmbeddedDocument):
+    author = db.ReferenceField(User)
+    left_pm = db.BooleanField(default=False)
+
+class PrivateMessageTopic(db.Document):
+    title = db.StringField()
+    creator = db.ReferenceField(User)
+    created = db.DateTimeField()
+    last_message = db.DateTimeField()
+    
+    messages = db.ListField(db.EmbeddedDocumentField(PrivateMessage))
+    participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant))
+    
+class PrivateMessageWatch(db.Document):
+    user = db.ReferenceField(User)
+    pm = db.ReferenceField(PrivateMessageTopic)
+    
+    do_not_notify = db.BooleanField(default=False)
+    last_read = db.DateTimeField()
+    
+class Notification(db.Document):
+    user = db.ReferenceField(User)
+    content = db.GenericReferenceField()
+    category = db.StringField()
+    created = db.DateTimeField()
+    acknowledged = db.BooleanField(default=False)
