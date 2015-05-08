@@ -1,2 +1,0 @@
-# woe
-World of Equestria
