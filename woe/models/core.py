@@ -3,7 +3,7 @@ from woe import bcrypt
 
 class Fingerprint(db.Document):
     user = db.ReferenceField("User")
-    fingerprint = db.DictField({})
+    fingerprint = db.DictField()
     last_seen = db.DateTimeField()
     
     def compute_similarity_score(self, stranger):
@@ -45,7 +45,7 @@ class UserActivity(db.EmbeddedDocument):
     content = db.GenericReferenceField()
     category = db.StringField()
     created = db.DateTimeField()
-    meta = db.DictField()
+    data = db.DictField()
 
 class User(db.Document):
     login_name = db.StringField(required=True, unique=True)
@@ -113,7 +113,7 @@ class User(db.Document):
     
     # Friends and social stuff
     friends = db.ListField(db.ReferenceField("User"))
-    profile_feed = db.ListField(db.UserActivity())
+    profile_feed = db.ListField(db.EmbeddedDocumentField(UserActivity))
     
     # Moderation options
     disable_posts = db.BooleanField(default=False)
