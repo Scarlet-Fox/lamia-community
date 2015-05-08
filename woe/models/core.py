@@ -200,3 +200,12 @@ class Report(db.Document):
     status = db.StringField(choices=STATUS_CHOICES, default='open')
     created = db.DateTimeField()
     
+class Log(db.Document):
+    content = db.GenericReferenceField()
+    user = db.ReferenceField(User)
+    ip_address = db.ReferenceField(IPAddress)
+    fingerprint = db.ReferenceField(Fingerprint)
+    action = db.StringField()
+    url = db.StringField()
+    data = db.DictField()
+    logged_at_time = db.DateTimeField()
