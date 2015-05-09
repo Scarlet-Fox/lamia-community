@@ -1,26 +1,18 @@
 {% extends "base.jade" %}
 
 {% block content %}
-{# Commented out 
 .row
   .col-md-12
     h2 Sign In
-    form(action="/sign-in/", method="post")
+    form(action="/sign-in", method="post")
       {{ form.errors }}
-      {% csrf_token %}
       .form-group
-        {{ form.username.errors }}
-        label(for="{{ form.username.id_for_label }}") Username
-        {{ form.username }}
+        {{ form.username.label }}
+        {{ form.username(class="form-control") }}
       .form-group
-        {{ form.password.errors }}
-        label(for="{{ form.password.id_for_label }}") Password
-        {{ form.password }}
-      .form-group.hideme
-        {{ form.email.errors }}
-        label(for="{{ form.email.id_for_label }}") Email address
-        {{ form.email }}
-      button(type="submit").btn.btn-default Submit #}
+        {{ form.password.label }}
+        {{ form.password(class="form-control") }}
+      button(type="submit").btn.btn-default Submit
 {% endblock %}
 
 {% block script %}

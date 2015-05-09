@@ -161,7 +161,7 @@ class User(db.Document):
         self.password_hash = bcrypt.generate_password_hash(password.strip(),12)
         
     def check_password(self, password):
-        return bcrypt.bcrypt.check_password_hash(self.password_hash, password)
+        return bcrypt.check_password_hash(self.password_hash, password)
         
 class PrivateMessage(db.EmbeddedDocument):
     message = db.StringField()
