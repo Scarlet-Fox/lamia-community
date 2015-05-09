@@ -75,6 +75,7 @@ class User(db.Document):
     hide_birthday = db.BooleanField(default=True)
     hide_login = db.BooleanField(default=False)
     banned = db.BooleanField(default=False)
+    validated = db.BooleanField(default=False)
     
     warning_points = db.IntField(default=0)
     
@@ -97,19 +98,19 @@ class User(db.Document):
     # Notification preferences
     
     OPTIONS = (
-        (0, "Dashboard"),
-        (1, "Email"),
-        (2, "Both")
+        ("dash", "Dashboard"),
+        ("email", "Email"),
+        ("both", "Both")
     )
     
     # NOTE MOD NOTES ARE AUTO SENT VIA BOTH
-    topics = db.StringField(choices=OPTIONS, default=0)
-    status = db.StringField(choices=OPTIONS, default=0)
-    quoted = db.StringField(choices=OPTIONS, default=0)
-    mention = db.StringField(choices=OPTIONS, default=0)
-    followed = db.StringField(choices=OPTIONS, default=0)
-    messages = db.StringField(choices=OPTIONS, default=0)
-    announcements = db.StringField(choices=OPTIONS, default=0)
+    topics = db.StringField(choices=OPTIONS, default="dash")
+    status = db.StringField(choices=OPTIONS, default="dash")
+    quoted = db.StringField(choices=OPTIONS, default="dash")
+    mention = db.StringField(choices=OPTIONS, default="dash")
+    followed = db.StringField(choices=OPTIONS, default="dash")
+    messages = db.StringField(choices=OPTIONS, default="dash")
+    announcements = db.StringField(choices=OPTIONS, default="dash")
     
     # Friends and social stuff
     friends = db.ListField(db.ReferenceField("User"))
@@ -135,10 +136,26 @@ class User(db.Document):
     post_frequency = db.DictField()
     
     # Migration related
-    old_member_id = db.IntField(default=True)
+    old_member_id = db.IntField(default=1, unique=True)
     
     def __str__(self):
         return self.login_name
+    
+    def is_active(self):
+        if self.banned:
+            return False
+        if not self.validated:
+            return False
+        return True
+        
+    def get_id(self):
+        return self.login_name
+        
+    def is_authenticated(self):
+        return True # Will only ever return True.
+        
+    def is_anonymous(self):
+        return False # Will only ever return False. Anonymous = guest user. We don't support those.
     
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password.strip(),12)
