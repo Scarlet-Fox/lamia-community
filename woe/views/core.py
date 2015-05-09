@@ -1,7 +1,7 @@
 from woe import login_manager
 from woe import app
 from woe.models.core import User
-from flask import abort, redirect, url_for, request, render_template, make_response
+from flask import abort, redirect, url_for, request, render_template, make_response, json
 
 @login_manager.user_loader
 def load_user(login_name):
