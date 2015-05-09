@@ -108,10 +108,10 @@ body(role='document')
                       a(href='#')#sign-out Sign Out
             else
               li#sign-in-li
-                a(href='/sign-in/')
+                a(href='/sign-in')
                   | Sign In
               li
-                a(href='/register/')
+                a(href='/register')
                   | Register
         // /.nav-collapse
       // /.container-fluid
@@ -127,7 +127,7 @@ body(role='document')
       $(document).ready(function(){
         $("#sign-out").click(function(e) {
           e.preventDefault();
-          $.post("/sign-out/", function(data) {
+          $.post("/sign-out", function(data) {
             window.location = "/";
           });
         });

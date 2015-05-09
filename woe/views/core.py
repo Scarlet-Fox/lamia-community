@@ -16,7 +16,7 @@ def load_user(login_name):
 def index():
     return render_template("base.jade")
 
-@app.route('/sign-in/', methods=['GET', 'POST'])
+@app.route('/sign-in', methods=['GET', 'POST'])
 def sign_in():
     form = LoginForm(csrf_enabled=False)
     if form.validate_on_submit():
@@ -26,7 +26,7 @@ def sign_in():
         
     return render_template("sign_in.jade", form=form)
     
-@app.route('/sign-out/', methods=['POST'])
+@app.route('/sign-out', methods=['POST'])
 def sign_out():
     logout_user()
     return redirect('/')
