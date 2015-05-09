@@ -4,6 +4,7 @@ from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
 
 app = Flask(__name__)
+app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config["MONGODB_SETTINGS"] = {'DB': "woe_main"}

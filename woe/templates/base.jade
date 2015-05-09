@@ -30,7 +30,7 @@ body(role='document')
           a.navbar-brand(href='#')
         #navbar.navbar-collapse.collapse
           ul.nav.navbar-nav
-            if request.user.is_authenticated
+            if current_user.is_authenticated()
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                   | Dashboard 
@@ -88,12 +88,12 @@ body(role='document')
               a(href='#')
                 | Search
           ul.nav.navbar-nav.navbar-right
-            if request.user.is_authenticated
+            if current_user.is_authenticated()
               li
                 img(src='https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Key%20Gear%20-%20Flaret%20-%20avatar.png', height='40px', style='margin-top: 5px; margin-left: 15px;')
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-                  | {{request.user.profile.display_name}}
+                  | {{current_user.display_name}}
                   span.caret
                 ul.dropdown-menu(role='menu')
                     li
@@ -107,7 +107,7 @@ body(role='document')
                     li
                       a(href='#')#sign-out Sign Out
             else
-              li
+              li#sign-in-li
                 a(href='/sign-in/')
                   | Sign In
               li
@@ -122,7 +122,7 @@ body(role='document')
   script(src="/static/assets/jquery.js")
   script(src="/static/assets/bootstrap.js")
   script(src="/static/assets/ie10-viewport-bug-workaround.js")
-  if request.user.is_authenticated
+  if current_user.is_authenticated()
     script(type="text/javascript")
       $(document).ready(function(){
         $("#sign-out").click(function(e) {

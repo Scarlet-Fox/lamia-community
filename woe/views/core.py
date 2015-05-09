@@ -10,3 +10,10 @@ def load_user(login_name):
     except IndexError:
         return None
 
+@app.route('/')
+def index():
+    return render_template("base.jade")
+
+@app.route('/sign-in', methods=['GET', 'POST'])
+def sign_in():
+    return render_template("sign_in.jade")
