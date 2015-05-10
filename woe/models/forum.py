@@ -1,17 +1,17 @@
 from woe import db
 from . import core
 
-class Flag(db.EmbeddedDocument):
+class Flag(db.DynamicEmbeddedDocument):
     flagger = db.ReferenceField(core.User)
     flag_date = db.DateTimeField()
 
-class PostHistory(db.EmbeddedDocument):
+class PostHistory(db.DynamicEmbeddedDocument):
     creator = db.ReferenceField(core.User)
     created = db.DateTimeField()
     html = db.StringField()
     data = db.DictField()
 
-class Post(db.Document):
+class Post(db.DynamicDocument):
     # Basics
     html = db.StringField()
     author = db.ReferenceField(core.User)
@@ -32,12 +32,12 @@ class Post(db.Document):
     flag_clear_date = db.DateTimeField()
     flags = db.ListField(db.EmbeddedDocumentField(Flag))
 
-class Prefix(db.Document):
+class Prefix(db.DynamicDocument):
     pre_html = db.StringField()
     post_html = db.StringField()
     prefix = db.StringField()
 
-class Topic(db.Document):
+class Topic(db.DynamicDocument):
     # Basics
     category = db.ReferenceField("Category")
     title = db.StringField()
@@ -68,7 +68,7 @@ class Topic(db.Document):
     last_post_date = db.DateTimeField()
     last_post_author_avatar = db.StringField()
 
-class Category(db.Document):
+class Category(db.DynamicDocument):
     name = db.StringField()
     parent = db.ReferenceField("Category")
     root_category = db.BooleanField(default=True)
@@ -92,7 +92,7 @@ class Category(db.Document):
     last_post_date = db.DateTimeField()
     last_post_author_avatar = db.StringField()
 
-class Attachment(db.Document):
+class Attachment(db.DynamicDocument):
     filename = db.StringField()
     mimetype = db.StringField()
     size_in_bytes = db.IntField()

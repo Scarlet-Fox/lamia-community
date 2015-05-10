@@ -1,7 +1,7 @@
 from woe import db
 from woe import bcrypt
 
-class Fingerprint(db.Document):
+class Fingerprint(db.DynamicDocument):
     user = db.ReferenceField("User")
     fingerprint = db.DictField()
     last_seen = db.DateTimeField()
@@ -19,16 +19,16 @@ class Fingerprint(db.Document):
     def get_factors(self):
         return float(len(self.fingerprint))
 
-class IPAddress(db.Document):
+class IPAddress(db.DynamicDocument):
     user = db.ReferenceField("User")
     ip_address = db.StringField()
     last_seen = db.DateTimeField()
     
-class Ban(db.Document):
+class Ban(db.DynamicDocument):
     user = db.ReferenceField("User")
     ip_address = db.StringField()
 
-class ModNote(db.EmbeddedDocument):
+class ModNote(db.DynamicEmbeddedDocument):
     date = db.DateTimeField(required=True)
     note = db.StringField(required=True)
     reference = db.GenericReferenceField()
@@ -41,13 +41,13 @@ class ModNote(db.EmbeddedDocument):
     )
     incident_level = db.StringField(choices=INCIDENT_LEVELS)
 
-class UserActivity(db.EmbeddedDocument):
+class UserActivity(db.DynamicEmbeddedDocument):
     content = db.GenericReferenceField()
     category = db.StringField()
     created = db.DateTimeField()
     data = db.DictField()
 
-class User(db.Document):
+class User(db.DynamicDocument):
     login_name = db.StringField(required=True, unique=True)
     display_name = db.StringField(required=True, unique=True)
     password_hash = db.StringField()
@@ -95,22 +95,11 @@ class User(db.Document):
         'Tumblr'
     )
     
-    # Notification preferences
-    
-    OPTIONS = (
-        ("dash", "Dashboard"),
-        ("email", "Email"),
-        ("both", "Both")
-    )
+    ignored_users = db.ListField(db.ReferenceField("User"))
+    remain_anonymous = db.BooleanField(default=False)
     
     # NOTE MOD NOTES ARE AUTO SENT VIA BOTH
-    topics = db.StringField(choices=OPTIONS, default="dash")
-    status = db.StringField(choices=OPTIONS, default="dash")
-    quoted = db.StringField(choices=OPTIONS, default="dash")
-    mention = db.StringField(choices=OPTIONS, default="dash")
-    followed = db.StringField(choices=OPTIONS, default="dash")
-    messages = db.StringField(choices=OPTIONS, default="dash")
-    announcements = db.StringField(choices=OPTIONS, default="dash")
+    notification_preferences = db.DictField()
     
     # Friends and social stuff
     friends = db.ListField(db.ReferenceField("User"))
@@ -136,7 +125,7 @@ class User(db.Document):
     post_frequency = db.DictField()
     
     # Migration related
-    old_member_id = db.IntField(default=1, unique=True)
+    old_member_id = db.IntField(default=0)
     
     def __str__(self):
         return self.login_name
@@ -163,18 +152,18 @@ class User(db.Document):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
         
-class PrivateMessage(db.EmbeddedDocument):
+class PrivateMessage(db.DynamicEmbeddedDocument):
     message = db.StringField()
     author = db.ReferenceField(User)
     
     created = db.DateTimeField()
     modified = db.DateTimeField()
 
-class PrivateMessageParticipant(db.EmbeddedDocument):
+class PrivateMessageParticipant(db.DynamicEmbeddedDocument):
     author = db.ReferenceField(User)
     left_pm = db.BooleanField(default=False)
 
-class PrivateMessageTopic(db.Document):
+class PrivateMessageTopic(db.DynamicDocument):
     title = db.StringField()
     creator = db.ReferenceField(User)
     created = db.DateTimeField()
@@ -185,20 +174,21 @@ class PrivateMessageTopic(db.Document):
     
     labels = db.ListField(db.StringField())
     
-class PrivateMessageWatch(db.Document):
+class PrivateMessageWatch(db.DynamicDocument):
     user = db.ReferenceField(User)
     pm = db.ReferenceField(PrivateMessageTopic)
     
     do_not_notify = db.BooleanField(default=False)
     last_read = db.DateTimeField()
     
-class Notification(db.Document):
+class Notification(db.DynamicDocument):
     user = db.ReferenceField(User)
     text = db.StringField()
     description = db.StringField()
     NOTIFICATION_CATEGORIES = (
         ("topic", "Topics"),
         ("pm", "Private Messages"),
+        ("mention", "Mentioned"),
         ("topic_reply", "Topic Replies"),
         ("boop", "Boops"),
         ("mod", "Moderation"),
@@ -207,20 +197,24 @@ class Notification(db.Document):
         ("announcement", "Announcements"),
         ("profile_comment","Profile Comments"),
         ("rules_updated", "Rule Update"),
-        ("faqs", "FAQs Updated")
+        ("faqs", "FAQs Updated"),
+        ("user_activity", "Followed User Activity"),
+        ("streaming", "Streaming")
     )
     category = db.StringField(choices=NOTIFICATION_CATEGORIES)
     created = db.DateTimeField()
+    url = db.StringField()
     content = db.GenericReferenceField()
     author = db.ReferenceField(User)
     acknowledged = db.BooleanField(default=False)
+    emailed = db.BooleanField(default=False)
 
-class ReportComment(db.Document):
+class ReportComment(db.DynamicDocument):
     author = db.ReferenceField(User)
     created = db.DateTimeField()
     text = db.StringField()
 
-class Report(db.Document):
+class Report(db.DynamicDocument):
     content = db.GenericReferenceField()
     text = db.StringField()
     initiated_by = db.ReferenceField(User)
@@ -233,7 +227,7 @@ class Report(db.Document):
     status = db.StringField(choices=STATUS_CHOICES, default='open')
     created = db.DateTimeField()
     
-class Log(db.Document):
+class Log(db.DynamicDocument):
     content = db.GenericReferenceField()
     user = db.ReferenceField(User)
     ip_address = db.ReferenceField(IPAddress)
@@ -243,16 +237,16 @@ class Log(db.Document):
     data = db.DictField()
     logged_at_time = db.DateTimeField()
 
-class StatusViewer(db.EmbeddedDocument):
+class StatusViewer(db.DynamicEmbeddedDocument):
     last_seen = db.DateTimeField()
     user = db.ReferenceField(User)
     
-class StatusComment(db.EmbeddedDocument):
+class StatusComment(db.DynamicEmbeddedDocument):
     text = db.StringField()
     author = db.ReferenceField(User)
     created = db.DateTimeField()
 
-class StatusUpdate(db.Document):
+class StatusUpdate(db.DynamicDocument):
     attached_to_user = db.ReferenceField(User)
     author = db.ReferenceField(User)
     message = db.StringField()
