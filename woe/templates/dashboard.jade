@@ -1,0 +1,119 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row#dashboard-container
+  .col-sm-6.col-md-4.dashboard-panel#followed-topics-panel
+    .panel.panel-default 
+      .panel-heading 
+        span Topics
+        button.close(href="#") &times;
+      ul.list-group.panel-body 
+        li.list-group-item 
+          a(href="#") Say something
+        li.list-group-item 
+          a(href="#") I'm giving up
+        li.list-group-item 
+          a(href="#") on you
+        li.list-group-item 
+          a(href="#") Say something
+        li.list-group-item 
+          a(href="#") I'm giving up
+        li.list-group-item 
+          a(href="#") on you
+  .col-sm-6.col-md-4.dashboard-panel#private-message-panel
+    .panel.panel-default 
+      .panel-heading 
+        span &nbsp;Private Messages
+        button.close(href="#") &times;
+      ul.list-group.panel-body 
+        li.list-group-item 
+          a(href="#") Say something
+          p.text-muted 12 minutes ago
+        li.list-group-item 
+          a(href="#") I'm giving up
+          p.text-muted Jan 1, 2016 12:01 PM
+        li.list-group-item 
+          a(href="#") on you
+          p.text-muted Jan 1, 2016 12:01 PM
+  .col-sm-6.col-md-4.dashboard-panel#status-update-panel
+    .panel.panel-default 
+      .panel-heading 
+        span Topic Replies
+        button.close(href="#") &times;
+      ul.list-group.panel-body 
+        li.list-group-item 
+          a(href="#", data-trigger="hover", data-toggle="popover", data-placement="bottom", data-content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed lacus et neque maximus dapibus. Aenean eu egestas dui, sit amet cras amet.") 
+            | Quoted in Topic Name is Fairly Long
+          p.text-muted 
+            | by 
+            a(href="#") Luminescence
+            |  - Jan 12 12:01 PM
+        li.list-group-item 
+          a(href="#") I'm giving up
+        li.list-group-item 
+          a(href="#") on you
+  .col-sm-6.col-md-4.dashboard-panel#mentions-panel
+    .panel.panel-default 
+      .panel-heading 
+        span Topic Replies
+        button.close(href="#") &times;
+      ul.list-group.panel-body 
+        li.list-group-item 
+          a(href="#", data-trigger="hover", data-toggle="popover", data-placement="bottom", data-content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed lacus et neque maximus dapibus. Aenean eu egestas dui, sit amet cras amet.") 
+            | Quoted in Topic Name is Fairly Long
+          p.text-muted 
+            | by 
+            a(href="#") Luminescence
+            |  - Jan 12 12:01 PM
+        li.list-group-item 
+          a(href="#") I'm giving up
+        li.list-group-item 
+          a(href="#") on you
+  .col-sm-6.col-md-4.dashboard-panel#reply-to-me-panel
+    .panel.panel-default 
+      .panel-heading 
+        span Topic Replies
+        button.close(href="#") &times;
+      ul.list-group.panel-body 
+        li.list-group-item 
+          a(href="#", data-trigger="hover", data-toggle="popover", data-placement="bottom", data-content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed lacus et neque maximus dapibus. Aenean eu egestas dui, sit amet cras amet.") 
+            | Quoted in Topic Name is Fairly Long
+          p.text-muted 
+            | by 
+            a(href="#") Luminescence
+            |  - Jan 12 12:01 PM
+        li.list-group-item 
+          a(href="#") I'm giving up
+        li.list-group-item 
+          a(href="#") on you
+  .col-sm-6.col-md-4.dashboard-panel#mod-action-panel
+    .panel.panel-default 
+      .panel-heading 
+        span Topic Replies
+        button.close(href="#") &times;
+      ul.list-group.panel-body 
+        li.list-group-item 
+          a(href="#", data-trigger="hover", data-toggle="popover", data-placement="bottom", data-content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed lacus et neque maximus dapibus. Aenean eu egestas dui, sit amet cras amet.") 
+            | Quoted in Topic Name is Fairly Long
+          p.text-muted 
+            | by 
+            a(href="#") Luminescence
+            |  - Jan 12 12:01 PM
+        li.list-group-item 
+          a(href="#") I'm giving up
+        li.list-group-item 
+          a(href="#") on you
+{% endblock %}
+
+{% block script %}
+script(src="/static/assets/jquery.shuffle.modernizr.js")
+script(type="text/javascript")
+  $(document).ready(function(){
+    $('#dashboard-li').addClass('active');
+    $('[data-toggle="popover"]').popover();
+    var $grid = $('#dashboard-container');
+    $grid.shuffle({
+      itemSelector: '.dashboard-panel'
+    });
+  });
+{% endblock %}

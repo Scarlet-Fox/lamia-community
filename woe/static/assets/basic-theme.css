@@ -310,6 +310,14 @@ span.topic-listing-name span.prefix {
   float: right;
 }
 
+.force-muted {
+  color: #777 !important;
+}
+
+.dashboard-panel {
+  min-width: 360px;
+}
+
 /* IPB Hacks */
 
 .bbc_center {

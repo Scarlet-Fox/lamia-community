@@ -10,15 +10,15 @@ class LoginForm(Form):
         return User.objects(login_name=login_name)
     
     def validate_username(self, field):
-        if not self.__get_user__(field.data):
+        if not self.__get_user__(field.data.lower().strip()):
             raise validators.ValidationError("Invalid username or password.")
             
     def validate_password(self, field):
-        user = self.__get_user__(self.username.data)
+        user = self.__get_user__(self.username.data.lower().strip())
         if not user:
             raise validators.ValidationError("Invalid username or password.")
             
-        if not user[0].check_password(field.data):
+        if not user[0].check_password(field.data.strip()):
             raise validators.ValidationError("Invalid username or password.")
         
         self.user = user[0]

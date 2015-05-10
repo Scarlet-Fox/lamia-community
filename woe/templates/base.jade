@@ -30,26 +30,6 @@ body(role='document')
           a.navbar-brand(href='#')
         #navbar.navbar-collapse.collapse
           ul.nav.navbar-nav
-            if current_user.is_authenticated()
-              li.dropdown
-                a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-                  | Dashboard 
-                  span.badge 4
-                  span.caret
-                ul.dropdown-menu(role='menu')
-                  li
-                    a(href='#') Dashboard
-                  li.divider
-                  li
-                    a(href='#') Blah has quoted you.
-                  li
-                    a(href='#') Blah has quoted you.
-                  li
-                    a(href='#') Blah has quoted you.
-                  li
-                    a(href='#') Blah has quoted you.
-                  li
-                    a(href='#') Blah has quoted you.
             li.dropdown
               a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                 | Community
@@ -113,6 +93,24 @@ body(role='document')
               li
                 a(href='/register')
                   | Register
+            if current_user.is_authenticated()
+              li.dropdown#dashboard-li
+                a.dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
+                  span.badge 4
+                ul.dropdown-menu(role='menu')
+                  li
+                    a(href='/dashboard') Dashboard
+                  li.divider
+                  li
+                    a(href='#') Blah has quoted you.
+                  li
+                    a(href='#') Blah has quoted you.
+                  li
+                    a(href='#') Blah has quoted you.
+                  li
+                    a(href='#') Blah has quoted you.
+                  li
+                    a(href='#') Blah has quoted you.
         // /.nav-collapse
       // /.container-fluid
   
