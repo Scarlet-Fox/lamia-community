@@ -194,8 +194,21 @@ class PrivateMessageWatch(db.Document):
     
 class Notification(db.Document):
     user = db.ReferenceField(User)
-    content = db.GenericReferenceField()
-    category = db.StringField()
+    text = db.StringField()
+    NOTIFICATION_CATEGORIES = (
+        ("topic", "Topics"),
+        ("pm", "Private Messages"),
+        ("topic_reply", "Topic Replies"),
+        ("boop", "Boops"),
+        ("mod", "Moderation"),
+        ("status", "Status Updates"),
+        ("new_member", "New Members"),
+        ("announcement", "Announcements"),
+        ("profile_comment","Profile Comments"),
+        ("rules_updated", "Rule Update"),
+        ("faqs", "FAQs Updated")
+    )
+    category = db.StringField(choices=NOTIFICATION_CATEGORIES)
     created = db.DateTimeField()
     acknowledged = db.BooleanField(default=False)
 
