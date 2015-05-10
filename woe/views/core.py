@@ -21,7 +21,7 @@ def sign_in():
     form = LoginForm(csrf_enabled=False)
     if form.validate_on_submit():
         login_user(form.user)
-        flash('Welcome back!')
+        # TODO - get fingerprint
         return redirect('/')
         
     return render_template("sign_in.jade", form=form)

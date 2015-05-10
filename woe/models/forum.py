@@ -37,6 +37,11 @@ class Prefix(db.DynamicDocument):
     post_html = db.StringField()
     prefix = db.StringField()
 
+class Poll(db.DynamicEmbeddedDocument):
+    poll_question = db.StringField()
+    poll_options = db.ListField(db.StringField())
+    poll_votes = db.DictField() # User : Question
+
 class Topic(db.DynamicDocument):
     # Basics
     category = db.ReferenceField("Category")
@@ -49,6 +54,9 @@ class Topic(db.DynamicDocument):
     closed = db.BooleanField()
     close_message = db.StringField()
     announcement = db.BooleanField()
+    
+    polls = db.ListField(db.EmbeddedDocumentField(Poll))
+    poll_show_voters = db.BooleanField(default=False)
     
     # Prefixes
     pre_html = db.StringField()
