@@ -195,6 +195,7 @@ class PrivateMessageWatch(db.Document):
 class Notification(db.Document):
     user = db.ReferenceField(User)
     text = db.StringField()
+    description = db.StringField()
     NOTIFICATION_CATEGORIES = (
         ("topic", "Topics"),
         ("pm", "Private Messages"),
@@ -210,6 +211,8 @@ class Notification(db.Document):
     )
     category = db.StringField(choices=NOTIFICATION_CATEGORIES)
     created = db.DateTimeField()
+    content = db.GenericReferenceField()
+    author = db.ReferenceField(User)
     acknowledged = db.BooleanField(default=False)
 
 class ReportComment(db.Document):
