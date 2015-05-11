@@ -1,0 +1,5 @@
+- Inline content editor universal js (don't bother with attachments)
+- Generic full size editor (includes attachments)
+- Work safe toggles in base theme
+- time online counter
+- hide images about X size (post image introspection) - need an image library
