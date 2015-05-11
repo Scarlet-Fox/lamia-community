@@ -1,0 +1,28 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row 
+  .col-sm-4
+    .panel.panel-default
+      .panel-heading {{profile.display_name}}'s Profile
+        a(href="#")
+          span.glyphicon.glyphicon-cog.float-right
+      .panel-body.text-center
+        img.center-block.img-responsive.profile-page-avatar#profile-avatar(src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png", width="200px", height="200px")
+        span.text-muted Lorem ipsum
+    .panel.panel-default
+      .panel-body.text-center
+        ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+          li(role="presentation")
+            a(href="/user/{{profile.login_name}}/") About Me
+          if current_user == profile
+            li(role="presentation")
+              a(href="/user/{{profile.login_name}}/settings/") Settings
+  .col-sm-8
+    .panel.panel-default
+      .panel-heading About Me
+        a(href="#")
+          span.glyphicon.glyphicon-cog.float-right
+      .panel-body
+        .user-profile-about-me!= profile.about_me
+{% endblock %}

@@ -67,6 +67,8 @@
 }
 
 #profile-avatar {
+  margin-bottom: 10px;
+  
 }
 
 #profile-name {
@@ -323,4 +325,8 @@ span.topic-listing-name span.prefix {
 
 .bbc_center {
   text-align: center;
+}
+
+body {
+  background: #fff;
 }

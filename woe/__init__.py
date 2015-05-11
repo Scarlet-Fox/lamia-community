@@ -16,6 +16,7 @@ bcrypt = Bcrypt(app)
 import views.core
 import views.topics
 import views.dashboard
+import views.profiles
 
 if __name__ == '__main__':
     app.run()

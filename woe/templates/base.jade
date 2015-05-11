@@ -18,7 +18,7 @@ head
       script(src='https://oss.maxcdn.com/respond/1.4.2/respond.min.js')
 body(role='document')
   .site-background
-  .container
+  .container#site-container
     nav.navbar.navbar-default
       .container-fluid
         .navbar-header
@@ -113,9 +113,10 @@ body(role='document')
                     a(href='#') Blah has quoted you.
         // /.nav-collapse
       // /.container-fluid
-  
-    {% block content %}
-    {% endblock %}
+    
+    #content-border
+      {% block content %}
+      {% endblock %}
   
   script(src="/static/assets/jquery.js")
   script(src="/static/assets/bootstrap.js")
