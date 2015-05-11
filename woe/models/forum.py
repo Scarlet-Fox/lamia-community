@@ -68,6 +68,7 @@ class Topic(db.DynamicDocument):
     topic_moderators = db.ListField(db.ReferenceField(core.User))
     user_post_counts = db.DictField()
     data = db.DictField()
+    last_seen_by = db.DictField() # User : last_seen_utc
     
     # Tracking
     post_count = db.IntField()
