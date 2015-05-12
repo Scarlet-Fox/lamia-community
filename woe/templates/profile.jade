@@ -25,6 +25,7 @@
             li(role="presentation")
               a(href="/member/{{profile.login_name}}/settings") Settings
   .col-sm-8
+    {% block profile_content %}
     .panel.panel-default
       .panel-heading About Me
         {% if current_user == profile or current_user.is_staff %}
@@ -33,4 +34,5 @@
         {% endif %}
       .panel-body
         .user-profile-about-me!= profile.about_me
+    {% endblock %}
 {% endblock %}
