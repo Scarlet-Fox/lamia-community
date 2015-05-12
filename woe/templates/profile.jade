@@ -5,11 +5,15 @@
   .col-sm-4
     .panel.panel-default
       .panel-heading {{profile.display_name}}'s Profile
-        a(href="#")
+        a(href="/member/change-avatar-title")
           span.glyphicon.glyphicon-cog.float-right
       .panel-body.text-center
-        img.center-block.img-responsive.profile-page-avatar#profile-avatar(src="https://dl.dropboxusercontent.com/u/9060700/commisions/Ambrosia%20Emotes/Calm.png", width="200px", height="200px")
-        span.text-muted Lorem ipsum
+        {% if current_user.avatar_extension != "" %}
+        img.center-block.profile-page-avatar#profile-avatar(src="{{current_user.get_avatar_url()}}", width="{{current_user.avatar_full_x}}", height="{{current_user.avatar_full_y}}")
+        {% else %}
+        img.center-block.profile-page-avatar#profile-avatar(src="", width="200px", height="200px")
+        {% endif %}
+        span.text-muted {{profile.title}}
     .panel.panel-default
       .panel-body.text-center
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")

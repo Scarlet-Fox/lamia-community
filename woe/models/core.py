@@ -58,6 +58,16 @@ class User(db.DynamicDocument):
     title = db.StringField(default="")
     location = db.StringField(default="")
     about = db.StringField(default="")
+    avatar_extension = db.StringField()
+    
+    # avatar_sizes
+    avatar_full_x = db.IntField()
+    avatar_full_y = db.IntField()
+    avatar_60_x = db.IntField()
+    avatar_60_y = db.IntField()
+    avatar_40_x = db.IntField()
+    avatar_40_y = db.IntField()
+    avatar_timestamp = db.StringField(default="")
     
     information_fields = db.ListField(db.DictField())
     social_fields = db.ListField(db.DictField())
@@ -154,6 +164,15 @@ class User(db.DynamicDocument):
         
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
+        
+    def get_avatar_url(self, size=""):
+        if size != "":
+            size = "_"+size
+        
+        if self.avatar_extension == "":
+            return False
+        else:
+            return "/static/avatars/"+str(self.avatar_timestamp)+str(self.pk)+size+self.avatar_extension
         
 class PrivateMessage(db.DynamicEmbeddedDocument):
     message = db.StringField(required=True)

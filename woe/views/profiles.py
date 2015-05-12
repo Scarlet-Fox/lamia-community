@@ -4,7 +4,7 @@ from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
-from os import path
+import os
 import arrow
 
 @app.route('/member/<login_name>')
@@ -27,10 +27,31 @@ def change_avatar_or_title():
     form = AvatarTitleForm(csrf_enabled=False)
     
     if form.validate_on_submit():
-        filename = str(user.pk) + "." + form.avatar.data.filename.split(".")[-1]
-        form.avatar.data.save(path.join(app.config["AVATAR_UPLOAD_DIR"],filename))
+        if form.avatar.data:
+            timestamp = str(arrow.utcnow().timestamp) + "_"
+            os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + user.avatar_extension))
+            os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_40" + user.avatar_extension))
+            os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_60" + user.avatar_extension))
+            
+            extension = "." + form.avatar.data.filename.split(".")[-1].lower()
+            if form.gif == True:
+                form.avatar.data.save(os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + extension))
+            else:
+                form.avatar_image.save(os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + extension))
+            
+            form.fourty_image.save(os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + "_40" + extension))
+            form.sixty_image.save(os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + "_60" + extension))
+            
+            user.avatar_extension = extension
+            user.avatar_timestamp = timestamp
+            user.avatar_full_x, user.avatar_full_y = form.avatar_image.size
+            user.avatar_40_x, user.avatar_40_y = form.fourty_image.size
+            user.avatar_60_x, user.avatar_60_y = form.sixty_image.size
+        user.title = form.title.data
+        user.save()
+        return redirect("/member/"+user.login_name)
     else:
         filename = None
         form.title.data = user.title
     
-    return render_template("profile/change_avatar.jade", profile=user, form=form, filename=filename)
+    return render_template("profile/change_avatar.jade", profile=user, form=form)

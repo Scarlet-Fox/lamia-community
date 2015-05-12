@@ -2,7 +2,16 @@
 
 {% block content %}
 .row
-  .col-lg-6.col-md-6.col-sm-8
+  .col-lg-6.col-md-6.col-sm-6
+    .panel.panel-default
+      .panel-heading {{current_user.display_name}}'s Profile
+      .panel-body.text-center
+        {% if current_user.avatar_extension != "" %}
+        img.center-block.profile-page-avatar#profile-avatar(src="{{current_user.get_avatar_url()}}", width="{{current_user.avatar_full_x}}", height="{{current_user.avatar_full_y}}")
+        {% else %}
+        img.center-block.profile-page-avatar#profile-avatar(src="")
+        {% endif %}
+        span.text-muted {{current_user.title}}
     h2 Change Avatar
     form(action="/member/change-avatar-title", method="post", enctype="multipart/form-data")
       {{ form.errors }}

@@ -11,6 +11,7 @@ login_manager.init_app(app)
 app.config["MONGODB_SETTINGS"] = {'DB': "woe_main"}
 app.config["SECRET_KEY"] = "woe"
 app.config["AVATAR_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'avatars')
+app.config["MAX_CONTENT_LENGTH"] = 10000000
 
 db = MongoEngine(app)
 bcrypt = Bcrypt(app)

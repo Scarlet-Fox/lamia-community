@@ -70,7 +70,7 @@ body(role='document')
           ul.nav.navbar-nav.navbar-right
             if current_user.is_authenticated()
               li
-                img(src='https://dl.dropboxusercontent.com/u/9060700/Commisions/Avatars/Key%20Gear%20-%20Flaret%20-%20avatar.png', height='40px', style='margin-top: 5px; margin-left: 15px;')
+                img(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 5px; margin-left: 15px;')
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                   | {{current_user.display_name}}
