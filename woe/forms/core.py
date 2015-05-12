@@ -1,6 +1,7 @@
 from flask_wtf import Form
 from wtforms import BooleanField, StringField, PasswordField, validators
 from woe.models.core import User
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 class LoginForm(Form):
     username = StringField('Username', [validators.InputRequired()])
@@ -22,3 +23,7 @@ class LoginForm(Form):
             raise validators.ValidationError("Invalid username or password.")
         
         self.user = user[0]
+        
+class AvatarTitleForm(Form):
+    avatar = FileField('Avatar')
+    title = StringField('Member Title')
