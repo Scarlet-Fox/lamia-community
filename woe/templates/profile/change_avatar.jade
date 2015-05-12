@@ -4,16 +4,16 @@
 .row
   .col-lg-6.col-md-6.col-sm-6
     .panel.panel-default
-      .panel-heading {{current_user.display_name}}'s Profile
+      .panel-heading {{profile.display_name}}'s Profile
       .panel-body.text-center
-        {% if current_user.avatar_extension != "" %}
-        img.center-block.profile-page-avatar#profile-avatar(src="{{current_user.get_avatar_url()}}", width="{{current_user.avatar_full_x}}", height="{{current_user.avatar_full_y}}")
+        {% if profile.avatar_extension != "" %}
+        img.center-block.profile-page-avatar#profile-avatar(src="{{profile.get_avatar_url()}}", width="{{profile.avatar_full_x}}", height="{{profile.avatar_full_y}}")
         {% else %}
         img.center-block.profile-page-avatar#profile-avatar(src="")
         {% endif %}
-        span.text-muted {{current_user.title}}
+        span.text-muted {{profile.title}}
     h2 Change Avatar
-    form(action="/member/change-avatar-title", method="post", enctype="multipart/form-data")
+    form(action="/member/{{profile.login_name}}/change-avatar-title", method="post", enctype="multipart/form-data")
       {{ form.errors }}
       .form-group
         {{ form.avatar.label }}
@@ -22,4 +22,18 @@
         {{ form.title.label }}
         {{ form.title(class="form-control") }}
       button(type="submit").btn.btn-default Submit
+      &nbsp;
+      a.btn.btn-default#remove-avatar(href="#") Remove Avatar
+{% endblock %}
+
+{% block script %}
+script(type="text/javascript")
+  $(document).ready(function(){
+    $("#remove-avatar").click(function(e) {
+      e.preventDefault();
+      $.post("/member/{{profile.login_name}}/remove-avatar", function(data) {
+        window.location = "/member/{{profile.login_name}}";
+      });
+    });
+  });
 {% endblock %}

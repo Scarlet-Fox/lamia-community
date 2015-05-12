@@ -140,6 +140,9 @@ class User(db.DynamicDocument):
     # Migration related
     old_member_id = db.IntField(default=0)
     
+    # Permissions
+    is_staff = db.BooleanField(default=False)
+    
     def __str__(self):
         return self.login_name
     

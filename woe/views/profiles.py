@@ -16,12 +16,15 @@ def view_profile(login_name):
         abort(404)
     return render_template("profile.jade", profile=user)
     
-@app.route('/member/change-avatar-title', methods=['GET', 'POST'])
+@app.route('/member/<login_name>/change-avatar-title', methods=['GET', 'POST'])
 @login_required
-def change_avatar_or_title():
+def change_avatar_or_title(login_name):
     try:
-        user = User.objects(login_name=current_user.login_name.strip().lower())[0]
+        user = User.objects(login_name=login_name.strip().lower())[0]
     except IndexError:
+        abort(404)
+        
+    if current_user != user and not current_user.is_staff:
         abort(404)
     
     form = AvatarTitleForm(csrf_enabled=False)
@@ -58,3 +61,19 @@ def change_avatar_or_title():
         form.title.data = user.title
     
     return render_template("profile/change_avatar.jade", profile=user, form=form)
+    
+@app.route('/member/<login_name>/remove-avatar', methods=['POST'])
+@login_required
+def remove_avatar(login_name):
+    try:
+        user = User.objects(login_name=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+        
+    if current_user != user and not current_user.is_staff:
+        abort(404)
+    
+    user.avatar_extension = None
+    user.avatar_timestamp = ""
+    user.save()
+    return redirect("/member/"+user.login_name)

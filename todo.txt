@@ -1,12 +1,17 @@
-- Inline content editor universal js (don't bother with attachments)
-- Generic full size editor (includes attachments)
-- Work safe toggles in base theme
-- time online counter
-- hide images about X size (post image introspection) - need an image library
-- pillow image library for avatar uploads
-- jquery upload support - http://blueimp.github.io/jQuery-File-Upload/basic.html
-- disable emotes
-
 Today:
 
-Editing profile About Me, Avatar, and User Profile.
+Editing profile About Me and User Profile Settings.
+
+Essential:
+
+- Allow staff to clear/set avatars
+- Inline content editor universal js (don't bother with attachments)
+- Work safe toggles in base theme
+- time online counter
+
+Later:
+
+- Generic full size editor (includes attachments)
+- hide images about X size (post image introspection) - need an image library
+- jquery upload support - http://blueimp.github.io/jQuery-File-Upload/basic.html
+- disable emotes
