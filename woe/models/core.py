@@ -2,8 +2,8 @@ from woe import db
 from woe import bcrypt
 
 class Fingerprint(db.DynamicDocument):
-    user = db.ReferenceField("User")
-    fingerprint = db.DictField()
+    user = db.ReferenceField("User", required=True)
+    fingerprint = db.DictField(required=True)
     last_seen = db.DateTimeField()
     
     def compute_similarity_score(self, stranger):
@@ -20,13 +20,12 @@ class Fingerprint(db.DynamicDocument):
         return float(len(self.fingerprint))
 
 class IPAddress(db.DynamicDocument):
-    user = db.ReferenceField("User")
-    ip_address = db.StringField()
+    user = db.ReferenceField("User", required=True)
+    ip_address = db.StringField(required=True)
     last_seen = db.DateTimeField()
     
 class Ban(db.DynamicDocument):
-    user = db.ReferenceField("User")
-    ip_address = db.StringField()
+    user = db.ReferenceField("User", required=True)
 
 class ModNote(db.DynamicEmbeddedDocument):
     date = db.DateTimeField(required=True)
@@ -39,12 +38,12 @@ class ModNote(db.DynamicEmbeddedDocument):
         ("Major", "Will Need a Talking To"),
         ("Extreme", "Worthy of Being Banned")
     )
-    incident_level = db.StringField(choices=INCIDENT_LEVELS)
+    incident_level = db.StringField(choices=INCIDENT_LEVELS, required=True)
 
 class UserActivity(db.DynamicEmbeddedDocument):
     content = db.GenericReferenceField()
-    category = db.StringField()
-    created = db.DateTimeField()
+    category = db.StringField(required=True)
+    created = db.DateTimeField(required=True)
     data = db.DictField()
 
 class User(db.DynamicDocument):
@@ -62,6 +61,10 @@ class User(db.DynamicDocument):
     
     information_fields = db.ListField(db.DictField())
     social_fields = db.ListField(db.DictField())
+    
+    # COPPA
+    birth_month = db.IntField()
+    birth_year = db.IntField()
     
     # Background details
 
@@ -153,37 +156,39 @@ class User(db.DynamicDocument):
         return bcrypt.check_password_hash(self.password_hash, password)
         
 class PrivateMessage(db.DynamicEmbeddedDocument):
-    message = db.StringField()
-    author = db.ReferenceField(User)
+    message = db.StringField(required=True)
+    topic = db.ReferenceField(User, required=True)
+    author = db.ReferenceField("PrivateMessageTopic", required=True)
     
-    created = db.DateTimeField()
+    created = db.DateTimeField(required=True)
     modified = db.DateTimeField()
 
 class PrivateMessageParticipant(db.DynamicEmbeddedDocument):
-    author = db.ReferenceField(User)
+    author = db.ReferenceField(User, required=True)
     left_pm = db.BooleanField(default=False)
 
 class PrivateMessageTopic(db.DynamicDocument):
-    title = db.StringField()
-    creator = db.ReferenceField(User)
-    created = db.DateTimeField()
+    title = db.StringField(required=True)
+    creator = db.ReferenceField(User, required=True)
+    created = db.DateTimeField(required=True)
     last_message = db.DateTimeField()
+    last_message_author = db.ReferenceField(User)
     
     messages = db.ListField(db.EmbeddedDocumentField(PrivateMessage))
-    participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant))
+    participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant), required=True)
     
     labels = db.ListField(db.StringField())
     
 class PrivateMessageWatch(db.DynamicDocument):
-    user = db.ReferenceField(User)
-    pm = db.ReferenceField(PrivateMessageTopic)
+    user = db.ReferenceField(User, required=True)
+    pm = db.ReferenceField(PrivateMessageTopic, required=True)
     
     do_not_notify = db.BooleanField(default=False)
     last_read = db.DateTimeField()
     
 class Notification(db.DynamicDocument):
-    user = db.ReferenceField(User)
-    text = db.StringField()
+    user = db.ReferenceField(User, required=True)
+    text = db.StringField(required=True)
     description = db.StringField()
     NOTIFICATION_CATEGORIES = (
         ("topic", "Topics"),
@@ -201,23 +206,23 @@ class Notification(db.DynamicDocument):
         ("user_activity", "Followed User Activity"),
         ("streaming", "Streaming")
     )
-    category = db.StringField(choices=NOTIFICATION_CATEGORIES)
-    created = db.DateTimeField()
-    url = db.StringField()
+    category = db.StringField(choices=NOTIFICATION_CATEGORIES, required=True)
+    created = db.DateTimeField(required=True)
+    url = db.StringField(required=True)
     content = db.GenericReferenceField()
-    author = db.ReferenceField(User)
+    author = db.ReferenceField(User, required=True)
     acknowledged = db.BooleanField(default=False)
     emailed = db.BooleanField(default=False)
 
 class ReportComment(db.DynamicDocument):
-    author = db.ReferenceField(User)
-    created = db.DateTimeField()
-    text = db.StringField()
+    author = db.ReferenceField(User, required=True)
+    created = db.DateTimeField(required=True)
+    text = db.StringField(required=True)
 
 class Report(db.DynamicDocument):
-    content = db.GenericReferenceField()
-    text = db.StringField()
-    initiated_by = db.ReferenceField(User)
+    content = db.GenericReferenceField(required=True)
+    text = db.StringField(required=True)
+    initiated_by = db.ReferenceField(User, required=True)
     STATUS_CHOICES = ( 
         ('closed', 'Closed'), 
         ('open', 'Open'), 
@@ -225,31 +230,31 @@ class Report(db.DynamicDocument):
         ('waiting', 'Waiting') 
     )
     status = db.StringField(choices=STATUS_CHOICES, default='open')
-    created = db.DateTimeField()
+    created = db.DateTimeField(required=True)
     
 class Log(db.DynamicDocument):
     content = db.GenericReferenceField()
-    user = db.ReferenceField(User)
-    ip_address = db.ReferenceField(IPAddress)
-    fingerprint = db.ReferenceField(Fingerprint)
-    action = db.StringField()
-    url = db.StringField()
+    user = db.ReferenceField(User, required=True)
+    ip_address = db.ReferenceField(IPAddress, required=True)
+    fingerprint = db.ReferenceField(Fingerprint, required=True)
+    action = db.StringField(required=True)
+    url = db.StringField(required=True)
     data = db.DictField()
-    logged_at_time = db.DateTimeField()
+    logged_at_time = db.DateTimeField(required=True)
 
 class StatusViewer(db.DynamicEmbeddedDocument):
-    last_seen = db.DateTimeField()
-    user = db.ReferenceField(User)
+    last_seen = db.DateTimeField(required=True)
+    user = db.ReferenceField(User, required=True)
     
 class StatusComment(db.DynamicEmbeddedDocument):
-    text = db.StringField()
-    author = db.ReferenceField(User)
-    created = db.DateTimeField()
+    text = db.StringField(required=True)
+    author = db.ReferenceField(User, required=True)
+    created = db.DateTimeField(required=True)
 
 class StatusUpdate(db.DynamicDocument):
     attached_to_user = db.ReferenceField(User)
-    author = db.ReferenceField(User)
-    message = db.StringField()
+    author = db.ReferenceField(User, required=True)
+    message = db.StringField(required=True)
     comments = db.ListField(db.EmbeddedDocumentField(StatusComment))
     
     # Realtime stuff
