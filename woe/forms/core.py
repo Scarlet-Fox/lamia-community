@@ -42,11 +42,14 @@ class AvatarTitleForm(Form):
         
         if extension == "gif" and (xsize > 200 or ysize > 200):
             raise validators.ValidationError("Your animated image is too large. (Resize to less than 200x200.)")
-        elif xsize > 200 or ysize > 200:
+            
+        if xsize > 200 or ysize > 200:
             resize_measure = min(200.0/float(xsize),200.0/float(ysize))
             self.avatar_image = image.copy()
             self.avatar_image.thumbnail([xsize*resize_measure,ysize*resize_measure])
-        
+        else:
+            self.avatar_image = image
+            
         print len(file.read()) 
         if len(file.read()) > 256*1024:
             raise validators.ValidationError("Your avatar filesize is too large. (Resize to less than 256kb.)")

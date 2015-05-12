@@ -169,8 +169,8 @@ class User(db.DynamicDocument):
         if size != "":
             size = "_"+size
         
-        if self.avatar_extension == "":
-            return False
+        if not self.avatar_extension:
+            return ""
         else:
             return "/static/avatars/"+str(self.avatar_timestamp)+str(self.pk)+size+self.avatar_extension
         
