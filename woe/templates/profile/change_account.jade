@@ -3,6 +3,7 @@
 {% block profile_content %}
 .panel.panel-default
   .panel-heading Change Account Details
+  .panel-body
     .row
       .col-lg-6.col-md-6.col-sm-8
         form(action="/member/{{profile.login_name}}/change-account", method="post")
