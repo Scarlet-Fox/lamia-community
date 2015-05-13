@@ -34,9 +34,20 @@
       .panel-heading About Me
         {% if current_user == profile or current_user.is_staff %}
         a(href="#")
-          span.glyphicon.glyphicon-cog.float-right
+          span.glyphicon.glyphicon-cog.float-right#about-me-cog-icon
         {% endif %}
       .panel-body
-        .user-profile-about-me!= profile.about_me
+        #user-profile-about-me!= profile.about_me
     {% endblock %}
+{% endblock %}
+
+{% block script %}
+script(src="/static/local/js/inline-editor.js")
+script(type="text/javascript")
+  $(document).ready(function(){
+    $("#about-me-cog-icon").click(function(e) {
+      e.preventDefault();
+      var editor = new InlineEditor("#user-profile-about-me");
+    });
+  });
 {% endblock %}
