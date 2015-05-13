@@ -34,9 +34,12 @@ def change_avatar_or_title(login_name):
             timestamp = str(arrow.utcnow().timestamp) + "_"
             
             if user.avatar_extension:
-                os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + user.avatar_extension))
-                os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_40" + user.avatar_extension))
-                os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_60" + user.avatar_extension))
+                try:
+                    os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + user.avatar_extension))
+                    os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_40" + user.avatar_extension))
+                    os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_60" + user.avatar_extension))
+                except OSError:
+                    pass
             
             extension = "." + form.avatar.data.filename.split(".")[-1].lower()
             if form.gif == True:
@@ -61,7 +64,9 @@ def change_avatar_or_title(login_name):
         form.title.data = user.title
     
     return render_template("profile/change_avatar.jade", profile=user, form=form)
-    
+
+@app.route('/member/')
+
 @app.route('/member/<login_name>/remove-avatar', methods=['POST'])
 @login_required
 def remove_avatar(login_name):
@@ -72,7 +77,12 @@ def remove_avatar(login_name):
         
     if current_user != user and not current_user.is_staff:
         abort(404)
-    
+    try:
+        os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + user.avatar_extension))
+        os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_40" + user.avatar_extension))
+        os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_60" + user.avatar_extension))
+    except OSError:
+        pass
     user.avatar_extension = None
     user.avatar_timestamp = ""
     user.save()
