@@ -85,6 +85,7 @@ def change_display_name_password(login_name):
             user.set_password(form.new_password.data)
             
         if form.display_name.data != user.display_name:
+            user.display_name_history.append({user.display_name: arrow.utcnow().timestamp})
             user.display_name = form.display_name.data
             
         if form.email != user.email_address:
