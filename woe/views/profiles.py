@@ -1,5 +1,5 @@
 from woe.models.core import User
-from woe.forms.core import AvatarTitleForm
+from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from flask.ext.login import login_required, current_user
@@ -65,7 +65,39 @@ def change_avatar_or_title(login_name):
     
     return render_template("profile/change_avatar.jade", profile=user, form=form)
 
-@app.route('/member/')
+@app.route('/member/<login_name>/change-account', methods=['GET', 'POST'])
+@login_required
+def change_display_name_password(login_name):
+    try:
+        user = User.objects(login_name=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+        
+    if current_user != user and not current_user.is_staff:
+        abort(404)
+        
+    form = DisplayNamePasswordForm(csrf_enabled=False)
+    form.user_object = user
+    form.current_user = current_user
+    
+    if form.validate_on_submit():
+        if form.new_password.data != "":
+            user.set_password(form.new_password.data)
+            
+        if form.display_name.data != user.display_name:
+            user.display_name = form.display_name.data
+            
+        if form.email != user.email_address:
+            user.email_address = form.email.data
+        
+        user.save()
+        
+        return redirect("/member/"+user.login_name)
+    else:
+        form.display_name.data = user.display_name
+        form.email.data = user.email_address
+        
+    return render_template("profile/change_account.jade", profile=user, form=form)
 
 @app.route('/member/<login_name>/remove-avatar', methods=['POST'])
 @login_required

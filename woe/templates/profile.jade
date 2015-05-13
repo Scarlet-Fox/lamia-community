@@ -21,6 +21,10 @@
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
           li(role="presentation")
             a(href="/member/{{profile.login_name}}") About Me
+          {% if current_user == profile or current_user.is_staff  %}
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}/change-account") Account
+          {% endif %}
           if current_user == profile
             li(role="presentation")
               a(href="/member/{{profile.login_name}}/settings") Settings

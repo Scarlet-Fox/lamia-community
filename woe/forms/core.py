@@ -24,7 +24,22 @@ class LoginForm(Form):
             raise validators.ValidationError("Invalid username or password.")
         
         self.user = user[0]
-        
+
+class DisplayNamePasswordForm(Form):
+    display_name = StringField('Display Name')
+    email = StringField('Email Address', [validators.Email()])
+    current_password = PasswordField('Current Password')
+    new_password = PasswordField('New Password')
+    confirm_new_password = PasswordField('Confirm New Password')
+    
+    def validate_current_password(self, field):
+        if not self.user_object.check_password(field.data) and self.current_user.is_staff == False:
+            raise validators.ValidationError("Please enter your current password to change your account details.")
+    
+    def validate_confirm_new_password(self, field):
+        if field.data != self.new_password.data:
+            raise validators.ValidationError("Password and confirmation must match.")
+    
 class AvatarTitleForm(Form):
     avatar = FileField('Avatar', 
             [FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Only jpg, png, and gifs allowed.')]
