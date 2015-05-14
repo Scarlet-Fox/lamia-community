@@ -82,13 +82,13 @@ def change_display_name_password(login_name):
     
     if form.validate_on_submit():
         if form.new_password.data != "":
-            user.set_password(form.new_password.data)
+            user.set_password(form.new_password.data.strip())
             
-        if form.display_name.data != user.display_name:
+        if form.display_name.data.strip() != user.display_name:
             user.display_name_history.append({user.display_name: arrow.utcnow().timestamp})
-            user.display_name = form.display_name.data
+            user.display_name = form.display_name.data.strip()
             
-        if form.email != user.email_address:
+        if form.email.data.strip() != user.email_address:
             user.email_address = form.email.data
         
         user.save()

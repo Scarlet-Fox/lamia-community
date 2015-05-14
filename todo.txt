@@ -15,3 +15,4 @@ Later:
 - hide images about X size (post image introspection) - need an image library
 - jquery upload support - http://blueimp.github.io/jQuery-File-Upload/basic.html
 - disable emotes
+- user titles (preset titles will exist, and they can be overriden on a per-profile basis)
