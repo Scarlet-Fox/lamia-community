@@ -5,8 +5,37 @@ $ ->
         return false
       @element = $(element)
       @element.before @toolbarHTML
+      @element.after @submitButtonHTML
       window.editor_is_active = true
+      window.editor_initial_html = @element.html()
+      @element.html(@editordivHTML())
       
+      $("#post-editor").html(window.editor_initial_html)
+      
+      window.editor = new wysihtml5.Editor 'post-editor',
+        toolbar: 'toolbar'
+        parserRules:  wysihtml5ParserRules
+            
+    submitButtonHTML: (fullpage_option=False) ->
+      if fullpage_option == true
+        return """
+          <div class="post-new-buttons">
+            <button type="button" class="btn btn-default post-post">Save</button>
+            <button type="button" class="btn btn-default post-fullpage">Full Page Editor</button>
+          </div>
+        """
+      else
+        return """
+          <div class="post-new-buttons">
+            <button type="button" class="btn btn-default post-post">Save</button>
+          </div>
+        """
+    
+    editordivHTML: () ->
+      return """
+        <div id="post-editor" data-placeholder=""></div>
+      """
+    
     toolbarHTML: () ->
       return """
         <div class="btn-toolbar center-block" role="toolbar" id="toolbar">
