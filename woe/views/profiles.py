@@ -6,6 +6,7 @@ from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow
+from woe.utilities import ForumHTMLCleaner
 
 @app.route('/member/<login_name>')
 @login_required
@@ -99,6 +100,23 @@ def change_display_name_password(login_name):
         form.email.data = user.email_address
         
     return render_template("profile/change_account.jade", profile=user, form=form)
+
+@app.route('/member/<login_name>/edit-profile', methods=['POST'])
+@login_required
+def edit_profile(login_name):
+    try:
+        user = User.objects(login_name=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+        
+    if current_user != user and not current_user.is_staff:
+        abort(404)
+    
+    cleaner = ForumHTMLCleaner()
+    user.about_me = cleaner.clean(request.form.get("about_me"))
+    user.save()
+    
+    return json.jsonify(about_me=user.about_me)
 
 @app.route('/member/<login_name>/remove-avatar', methods=['POST'])
 @login_required

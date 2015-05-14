@@ -42,14 +42,17 @@
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/wysihtml/wysihtml-toolbar.min.js")
-script(src="/static/assets/wysihtml/advanced_and_extended.js")
+script(src="/static/assets/quill/quill.js")
 script(src="/static/local/js/inline-editor.js")
 script(type="text/javascript")
   $(document).ready(function(){
     $("#about-me-cog-icon").click(function(e) {
       e.preventDefault();
-      var editor = new InlineEditor("#user-profile-about-me");
+      var editor = new InlineEditor("#user-profile-about-me", function(text) {
+        $.post("/member/{{profile.login_name}}/edit-profile", {"about_me": text},function(data) {
+          $("#user-profile-about-me").html(data.about_me);
+        });
+      });
     });
   });
 {% endblock %}

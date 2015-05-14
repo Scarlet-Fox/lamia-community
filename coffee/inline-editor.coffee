@@ -1,33 +1,51 @@
 $ ->
   class InlineEditor
-    constructor: (element) ->
-      if window.editor_is_active
-        return false
+    constructor: (element, saveFunction) ->
       @element = $(element)
+      if @element.data("editor_is_active")
+        return false
       @element.before @toolbarHTML
       @element.after @submitButtonHTML
-      window.editor_is_active = true
-      window.editor_initial_html = @element.html()
+      @element.data("editor_is_active", true)
+      @element.data("editor_initial_html", @element.html())
       @element.html(@editordivHTML())
       
-      $("#post-editor").html(window.editor_initial_html)
+      $("#post-editor").html(@element.data("editor_initial_html"))
+      quill = new Quill('#post-editor')
+      quill.addModule 'toolbar',
+        container: '#toolbar'
+        
+      @element.data("editor", quill)
       
-      window.editor = new wysihtml5.Editor 'post-editor',
-        toolbar: 'toolbar'
-        parserRules:  wysihtml5ParserRules
-            
+      $("#save-text").click (e) =>
+        e.preventDefault()
+        do @destroyEditor
+        saveFunction @element.data("editor").getHTML()
+        
+      $("#cancel-edit").click (e) =>
+        e.preventDefault()
+        do @destroyEditor
+        @element.html(@element.data("editor_initial_html"))
+    
+    destroyEditor: () ->
+      @element.data("editor_is_active", false)
+      do $("#inline-editor-buttons").remove
+      do $("#toolbar").remove
+      do $('#post-editor').remove
+    
     submitButtonHTML: (fullpage_option=False) ->
       if fullpage_option == true
         return """
-          <div class="post-new-buttons">
-            <button type="button" class="btn btn-default post-post">Save</button>
+          <div id="inline-editor-buttons">
+            <button type="button" class="btn btn-default post-post" id="save-text">Save</button>
             <button type="button" class="btn btn-default post-fullpage">Full Page Editor</button>
           </div>
         """
       else
         return """
-          <div class="post-new-buttons">
-            <button type="button" class="btn btn-default post-post">Save</button>
+          <div id="inline-editor-buttons">
+            <button type="button" class="btn btn-default" id="save-text">Save</button>
+            <button type="button" class="btn btn-default" id="cancel-edit">Cancel</button>
           </div>
         """
     
@@ -38,42 +56,12 @@ $ ->
     
     toolbarHTML: () ->
       return """
-        <div class="btn-toolbar center-block" role="toolbar" id="toolbar">
+        <div class="btn-toolbar" role="toolbar" id="toolbar">
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" data-wysihtml5-command="bold">
+            <button type="button" class="btn btn-default ql-bold">
               <span class="glyphicon glyphicon-bold" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default" data-wysihtml5-command="italic">
+            <button type="button" class="btn btn-default ql-italic">
               <span class="glyphicon glyphicon-italic" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default" data-wysihtml5-command="underline">
-              <span class="glyphicon glyphicon-text-width" aria-hidden="true"></span></button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" data-wysihtml5-command="insertUnorderedList">
-              <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default" data-wysihtml5-command="insertOrderedList">
-              <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" data-wysihtml5-command="justifyLeft">
-              <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default" data-wysihtml5-command="justifyCenter">
-              <span class="glyphicon glyphicon-align-center" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default" data-wysihtml5-command="justifyRight">
-              <span class="glyphicon glyphicon-align-right" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default" data-wysihtml5-command="justifyFull">
-              <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></button>
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="blockquote">
-              <span class="glyphicon glyphicon-comment" aria-hidden="true"></span></button>
-            <!-- <button type="button" class="btn btn-default" data-wysihtml5-command="">
-              <span class="glyphicon glyphicon-tint" aria-hidden="true"></span></button> -->
-          </div>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" data-wysihtml5-command="">
-              <span class="glyphicon glyphicon-picture" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default" data-wysihtml5-command="">
-              <span class="glyphicon glyphicon-link" aria-hidden="true"></span></button>
           </div>
         </div>
       """
