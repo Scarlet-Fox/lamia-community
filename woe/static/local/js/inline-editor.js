@@ -15,9 +15,14 @@
         this.element.data("editor_initial_html", this.element.html());
         this.element.html(this.editordivHTML());
         $("#post-editor").html(this.element.data("editor_initial_html"));
-        quill = new Quill('#post-editor');
-        quill.addModule('toolbar', {
-          container: '#toolbar'
+        quill = new Quill('#post-editor', {
+          modules: {
+            'toolbar': {
+              container: '#toolbar'
+            },
+            'link-tooltip': true
+          },
+          theme: 'snow'
         });
         this.element.data("editor", quill);
         $("#save-text").click((function(_this) {
@@ -59,7 +64,7 @@
       };
 
       InlineEditor.prototype.toolbarHTML = function() {
-        return "<div class=\"btn-toolbar\" role=\"toolbar\" id=\"toolbar\">\n  <div class=\"btn-group\" role=\"group\">\n    <button type=\"button\" class=\"btn btn-default ql-bold\">\n      <span class=\"glyphicon glyphicon-bold\" aria-hidden=\"true\"></span></button>\n    <button type=\"button\" class=\"btn btn-default ql-italic\">\n      <span class=\"glyphicon glyphicon-italic\" aria-hidden=\"true\"></span></button>\n  </div>\n</div>";
+        return "<div class=\"btn-toolbar\" role=\"toolbar\" id=\"toolbar\">\n  <div class=\"btn-group\" role=\"group\">\n    <button type=\"button\" class=\"btn btn-default ql-bold\"><b>b</b></button>\n    <button type=\"button\" class=\"btn btn-default ql-italic\"><i>i</i></button>\n    <button type=\"button\" class=\"btn btn-default ql-underline\"><u>u</u></button>\n    <button type=\"button\" class=\"btn btn-default ql-strike\"><s>s</s></button>\n    <button type=\"button\" class=\"btn btn-default ql-link\">url</button>\n  </div>\n</div>";
       };
 
       return InlineEditor;

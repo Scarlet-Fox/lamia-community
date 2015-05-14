@@ -41,6 +41,10 @@
     {% endblock %}
 {% endblock %}
 
+{% block header %}
+link(href='/static/assets/quill/quill.base.css', rel='stylesheet')
+{% endblock %}
+
 {% block script %}
 script(src="/static/assets/quill/quill.js")
 script(src="/static/local/js/inline-editor.js")
