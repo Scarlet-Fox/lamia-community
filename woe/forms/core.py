@@ -4,6 +4,19 @@ from woe.models.core import User
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from PIL import Image
 
+class RegistrationForm(Form):
+    username = StringField('Username', [validators.InputRequired()]) # TODO Regex validate
+    password = PasswordField('Password', [validators.InputRequired()])
+    email = StringField('Email Address', [validators.Email()])
+    question  = SelectField('Fill in the blank : Twilight Sparkle is __________.', choices=[
+        ('kaiju', 'a kaiju'), 
+        ('pony', 'a pony'), 
+        ('zoop', 'secretly pink')])
+    
+    def validate_question(self, field):
+        if field.data != "pony":
+            raise validators.ValidationError("You filled in the blank with the wrong thing. Are you a robot?")
+    
 class LoginForm(Form):
     username = StringField('Username', [validators.InputRequired()])
     password = PasswordField('Password', [validators.InputRequired()])
