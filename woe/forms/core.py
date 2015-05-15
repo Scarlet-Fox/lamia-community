@@ -1,21 +1,37 @@
 from flask_wtf import Form
-from wtforms import BooleanField, StringField, PasswordField, validators
+from wtforms import BooleanField, StringField, PasswordField, validators, SelectField
 from woe.models.core import User
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from PIL import Image
 
 class RegistrationForm(Form):
-    username = StringField('Username', [validators.InputRequired()]) # TODO Regex validate
+    username = StringField('Username', [validators.InputRequired(),
+        validators.Regexp("[A-Za-z\s0-9]", message="Your first username should be letters, numbers, and maybe a space. You can change how it looks to others, later.")]) # TODO Regex validate
     password = PasswordField('Password', [validators.InputRequired()])
-    email = StringField('Email Address', [validators.Email()])
+    confirm_password = PasswordField('Confirm Password', [validators.InputRequired()])
+    email = StringField('Email Address', [validators.Email(), validators.InputRequired()])
     question  = SelectField('Fill in the blank : Twilight Sparkle is __________.', choices=[
         ('kaiju', 'a kaiju'), 
         ('pony', 'a pony'), 
         ('zoop', 'secretly pink')])
+        
+    def validate_username(self, field):
+        user_count = len(User.objects(login_name=field.data.lower().strip())) + len(User.objects(display_name__iexact=field.data.strip()))
+        if user_count > 0:
+            raise validators.ValidationError("Your username is already taken.")
     
+    def validate_email(self, field):
+        user_count = len(User.objects(email_address=field.data.strip().lower()))
+        if user_count > 0:
+            raise validators.ValidationError("Your email address is already in use by another account.")
+                
     def validate_question(self, field):
         if field.data != "pony":
             raise validators.ValidationError("You filled in the blank with the wrong thing. Are you a robot?")
+    
+    def validate_confirm_password(self, field):
+        if field.data != self.password.data:
+            raise validators.ValidationError("Password and confirmation must match.")
     
 class LoginForm(Form):
     username = StringField('Username', [validators.InputRequired()])
@@ -44,6 +60,11 @@ class DisplayNamePasswordForm(Form):
     current_password = PasswordField('Current Password')
     new_password = PasswordField('New Password')
     confirm_new_password = PasswordField('Confirm New Password')
+    
+    def validate_display_name(self, field):
+        user_count = len(User.objects(display_name__iexact=field.data.strip()))
+        if user_count > 0:
+            raise validators.ValidationError("That name is already taken.")
     
     def validate_current_password(self, field):
         if not self.user_object.check_password(field.data) and self.current_user.is_staff == False:

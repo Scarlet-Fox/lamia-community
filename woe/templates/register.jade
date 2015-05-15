@@ -1,0 +1,31 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-lg-6.col-md-6.col-sm-8
+    h2 Join World of Equestria!
+    form(action="/register", method="post")
+      {{ form.errors }}
+      .form-group
+        {{ form.username.label }}
+        {{ form.username(class="form-control") }}
+      .form-group
+        {{ form.password.label }}
+        {{ form.password(class="form-control") }}
+        {{ form.confirm_password.label }}
+        {{ form.confirm_password(class="form-control") }}
+      .form-group
+        {{ form.email.label }}
+        {{ form.email(class="form-control") }}
+      .form-group
+        {{ form.question.label }}
+        {{ form.question(class="form-control") }}
+      button(type="submit").btn.btn-default Submit
+{% endblock %}
+
+{% block script %}
+script(type="text/javascript")
+  $(document).ready(function(){
+    $("#register-li").addClass("active");
+  });
+{% endblock %}

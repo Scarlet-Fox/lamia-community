@@ -64,7 +64,7 @@
       };
 
       InlineEditor.prototype.toolbarHTML = function() {
-        return "<div class=\"btn-toolbar\" role=\"toolbar\" id=\"toolbar\">\n  <div class=\"btn-group\" role=\"group\">\n    <button type=\"button\" class=\"btn btn-default ql-bold\"><b>b</b></button>\n    <button type=\"button\" class=\"btn btn-default ql-italic\"><i>i</i></button>\n    <button type=\"button\" class=\"btn btn-default ql-underline\"><u>u</u></button>\n    <button type=\"button\" class=\"btn btn-default ql-strike\"><s>s</s></button>\n    <button type=\"button\" class=\"btn btn-default ql-link\">url</button>\n  </div>\n</div>";
+        return "<div class=\"btn-toolbar\" role=\"toolbar\" id=\"toolbar\">\n  <div class=\"btn-group\" role=\"group\">\n    <button type=\"button\" class=\"btn btn-default ql-bold\"><b>b</b></button>\n    <button type=\"button\" class=\"btn btn-default ql-italic\"><i>i</i></button>\n    <button type=\"button\" class=\"btn btn-default ql-underline\"><u>u</u></button>\n    <button type=\"button\" class=\"btn btn-default ql-strike\"><s>s</s></button>\n  </div>\n  <div class=\"btn-group\" role=\"group\">\n    <button type=\"button\" class=\"btn btn-default ql-link\">url</button>\n  </div>\n</div>";
       };
 
       return InlineEditor;

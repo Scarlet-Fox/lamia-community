@@ -64,6 +64,8 @@ $ ->
             <button type="button" class="btn btn-default ql-italic"><i>i</i></button>
             <button type="button" class="btn btn-default ql-underline"><u>u</u></button>
             <button type="button" class="btn btn-default ql-strike"><s>s</s></button>
+          </div>
+          <div class="btn-group" role="group">
             <button type="button" class="btn btn-default ql-link">url</button>
           </div>
         </div>
