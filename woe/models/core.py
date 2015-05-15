@@ -127,7 +127,7 @@ class User(db.DynamicDocument):
     hellban = db.BooleanField(default=False)
     
     # Statistics
-    joined = db.DateTimeField()
+    joined = db.DateTimeField(required=True)
     posts = db.IntField(default=0)
     status_updates = db.IntField(default=0)
     status_comments = db.IntField(default=0)

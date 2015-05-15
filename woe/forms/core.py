@@ -53,6 +53,12 @@ class LoginForm(Form):
             raise validators.ValidationError("Invalid username or password.")
         
         self.user = user[0]
+        if self.user.validated == False:
+            raise validators.ValidationError("Your account is being validated, give us a moment. :)")
+            
+        if self.user.banned == True:
+            raise validators.ValidationError("I'm sorry, I'm so sorry, but it looks like you're banned.")
+        
 
 class DisplayNamePasswordForm(Form):
     display_name = StringField('Display Name')
