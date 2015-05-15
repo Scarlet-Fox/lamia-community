@@ -125,6 +125,7 @@ class User(db.DynamicDocument):
     disable_pm = db.BooleanField(default=False)
     disable_topics = db.BooleanField(default=False)
     hellban = db.BooleanField(default=False)
+    ban_date = db.DateTimeField()
     
     # Statistics
     joined = db.DateTimeField(required=True)
