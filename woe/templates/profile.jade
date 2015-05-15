@@ -52,10 +52,16 @@ script(type="text/javascript")
   $(document).ready(function(){
     $("#about-me-cog-icon").click(function(e) {
       e.preventDefault();
-      var editor = new InlineEditor("#user-profile-about-me", function(text) {
-        $.post("/member/{{profile.login_name}}/edit-profile", {"about_me": text},function(data) {
+      var editor = new InlineEditor("#user-profile-about-me");
+      editor.onSave(function (html) {
+        $.post("/member/{{profile.login_name}}/edit-profile", {"about_me": html},function(data) {
           $("#user-profile-about-me").html(data.about_me);
+          editor.destroyEditor();
         });
+      });
+      editor.onCancel(function (html) {
+        editor.destroyEditor()
+        editor.resetElementHtml();
       });
     });
   });

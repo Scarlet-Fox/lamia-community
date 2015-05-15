@@ -1,64 +1,82 @@
 $ ->
   class InlineEditor
-    constructor: (element, saveFunction) ->
+    constructor: (element, fullpage_option=false) ->
+      @quillID = do @getQuillID  
       @element = $(element)
       if @element.data("editor_is_active")
         return false
-      @element.before @toolbarHTML
-      @element.after @submitButtonHTML
       @element.data("editor_is_active", true)
       @element.data("editor_initial_html", @element.html())
       @element.html(@editordivHTML())
       
-      $("#post-editor").html(@element.data("editor_initial_html"))
-      quill = new Quill '#post-editor', 
+      @element.before @toolbarHTML
+      @element.after @submitButtonHTML fullpage_option
+      
+      $("#post-editor-#{@quillID}").html(@element.data("editor_initial_html"))
+      
+      quill = new Quill "#post-editor-#{@quillID}", 
         modules:
-          'toolbar': { container: '#toolbar' }
           'link-tooltip': true
-        theme: 'snow'
-        
+          'toolbar': { container: "#toolbar-#{@quillID}" }
+      
       @element.data("editor", quill)
       
-      $("#save-text").click (e) =>
+      $("#save-text-#{@quillID}").click (e) =>
         e.preventDefault()
-        do @destroyEditor
-        saveFunction @element.data("editor").getHTML()
+        if @saveFunction?
+          @saveFunction @element.data("editor").getHTML()
         
-      $("#cancel-edit").click (e) =>
+      $("#cancel-edit-#{@quillID}").click (e) =>
         e.preventDefault()
-        do @destroyEditor
-        @element.html(@element.data("editor_initial_html"))
+        if @cancelFunction?
+          @cancelFunction @element.data("editor").getHTML()
+    
+    getQuillID: () ->
+      return Quill.editors.length+1
+    
+    resetElementHtml: () ->
+      @element.html(@element.data("editor_initial_html"))
+    
+    onSave: (saveFunction) ->
+      @saveFunction = saveFunction
+    
+    onCancel: (cancelFunction) ->
+      @cancelFunction = cancelFunction
+    
+    onFullPage: (fullPageFunction) ->
+      @fullPageFunction = fullPageFunction
     
     destroyEditor: () ->
       @element.data("editor_is_active", false)
-      do $("#inline-editor-buttons").remove
-      do $("#toolbar").remove
-      do $('#post-editor').remove
+      do $("#inline-editor-buttons-#{@quillID}").remove
+      do $("#toolbar-#{@quillID}").remove
+      do $("#post-editor-#{@quillID}").remove
     
-    submitButtonHTML: (fullpage_option=False) ->
+    submitButtonHTML: (fullpage_option=False) =>
       if fullpage_option == true
         return """
-          <div id="inline-editor-buttons">
-            <button type="button" class="btn btn-default post-post" id="save-text">Save</button>
-            <button type="button" class="btn btn-default post-fullpage">Full Page Editor</button>
+          <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
+            <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default" id="cancel-edit-#{@quillID}">Cancel</button>
+            <button type="button" class="btn btn-default" id="fullpage-edit-#{@quillID}">Full Page Editor</button>
           </div>
         """
       else
         return """
-          <div id="inline-editor-buttons">
-            <button type="button" class="btn btn-default" id="save-text">Save</button>
-            <button type="button" class="btn btn-default" id="cancel-edit">Cancel</button>
+          <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
+            <button type="button" class="btn btn-default" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default" id="cancel-edit-#{@quillID}">Cancel</button>
           </div>
         """
     
-    editordivHTML: () ->
+    editordivHTML: () =>
       return """
-        <div id="post-editor" data-placeholder=""></div>
+        <div id="post-editor-#{@quillID}" class="editor-box" data-placeholder=""></div>
       """
     
-    toolbarHTML: () ->
+    toolbarHTML: () =>
       return """
-        <div class="btn-toolbar" role="toolbar" id="toolbar">
+        <div class="btn-toolbar" role="toolbar" id="toolbar-#{@quillID}">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default ql-bold"><b>b</b></button>
             <button type="button" class="btn btn-default ql-italic"><i>i</i></button>
