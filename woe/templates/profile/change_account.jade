@@ -9,7 +9,7 @@
         form(action="/member/{{profile.login_name}}/change-account", method="post")
           {{ form.errors }}
           .form-group
-            {{ form.current_password.label }}
+            {{ form.current_password.label }}*
             {{ form.current_password(class="form-control") }}
           hr
           .form-group

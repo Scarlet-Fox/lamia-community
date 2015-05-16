@@ -5,7 +5,7 @@
   .col-sm-4
     .panel.panel-default
       .panel-heading {{profile.display_name}}'s Profile
-        {% if current_user == profile or current_user.is_staff %}
+        {% if current_user == profile or current_user.is_admin %}
         a(href="/member/{{profile.login_name}}/change-avatar-title")
           span.glyphicon.glyphicon-cog.float-right
         {% endif %}
@@ -21,7 +21,7 @@
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
           li(role="presentation")
             a(href="/member/{{profile.login_name}}") About Me
-          {% if current_user == profile or current_user.is_staff  %}
+          {% if current_user == profile or current_user.is_admin  %}
           li(role="presentation")
             a(href="/member/{{profile.login_name}}/change-account") Account
           {% endif %}
@@ -32,7 +32,7 @@
     {% block profile_content %}
     .panel.panel-default
       .panel-heading About Me
-        {% if current_user == profile or current_user.is_staff %}
+        {% if current_user == profile or current_user.is_admin %}
         a(href="#")
           span.glyphicon.glyphicon-cog.float-right#about-me-cog-icon
         {% endif %}

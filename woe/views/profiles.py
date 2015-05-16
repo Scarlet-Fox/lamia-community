@@ -26,7 +26,7 @@ def change_avatar_or_title(login_name):
     except IndexError:
         abort(404)
         
-    if current_user != user and not current_user.is_staff:
+    if current_user != user and not current_user.is_admin:
         abort(404)
     
     form = AvatarTitleForm(csrf_enabled=False)
@@ -75,7 +75,7 @@ def change_display_name_password(login_name):
     except IndexError:
         abort(404)
         
-    if current_user != user and not current_user.is_staff:
+    if current_user != user and not current_user.is_admin:
         abort(404)
         
     form = DisplayNamePasswordForm(csrf_enabled=False)
@@ -87,7 +87,7 @@ def change_display_name_password(login_name):
             user.set_password(form.new_password.data.strip())
             
         if form.display_name.data.strip() != user.display_name:
-            user.display_name_history.append({user.display_name: arrow.utcnow().timestamp})
+            user.display_name_history.append({user.display_name: str(arrow.utcnow().datetime)})
             user.display_name = form.display_name.data.strip()
             
         if form.email.data.strip() != user.email_address:
@@ -110,7 +110,7 @@ def edit_profile(login_name):
     except IndexError:
         abort(404)
         
-    if current_user != user and not current_user.is_staff:
+    if current_user != user and not current_user.is_admin:
         abort(404)
     
     if request.method == 'POST':
@@ -131,7 +131,7 @@ def remove_avatar(login_name):
     except IndexError:
         abort(404)
         
-    if current_user != user and not current_user.is_staff:
+    if current_user != user and not current_user.is_admin:
         abort(404)
     try:
         os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + user.avatar_extension))

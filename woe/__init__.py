@@ -2,6 +2,7 @@ from flask import Flask
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
+from flask.ext.admin import Admin
 from os import path
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ import views.core
 import views.topics
 import views.dashboard
 import views.profiles
+import views.admin
 
 if __name__ == '__main__':
     app.run()

@@ -149,7 +149,8 @@ class User(db.DynamicDocument):
     ipb_hash = db.StringField()
     
     # Permissions
-    is_staff = db.BooleanField(default=False)
+    is_admin = db.BooleanField(default=False)
+    is_mod = db.BooleanField(default=False)
     
     def __str__(self):
         return self.login_name

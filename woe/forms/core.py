@@ -74,7 +74,7 @@ class DisplayNamePasswordForm(Form):
             raise validators.ValidationError("That name is already taken.")
     
     def validate_current_password(self, field):
-        if not self.user_object.check_password(field.data) and self.current_user.is_staff == False:
+        if not self.user_object.check_password(field.data) and self.current_user.is_admin == False:
             raise validators.ValidationError("Please enter your current password to change your account details.")
     
     def validate_confirm_new_password(self, field):

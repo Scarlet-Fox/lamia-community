@@ -28,7 +28,7 @@ for u in c.fetchall():
         m.banned = False
         
     if m.login_name == "luminescence":
-        m.is_staff = True
+        m.is_admin = True
     
     try:
         m.title = u["title"].encode("latin1")
