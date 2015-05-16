@@ -9,7 +9,6 @@ import arrow
 from woe.utilities import ForumHTMLCleaner, ForumPostParser
 
 @app.route('/member/<login_name>')
-@login_required
 def view_profile(login_name):
     try:
         user = User.objects(login_name=login_name.strip().lower())[0]

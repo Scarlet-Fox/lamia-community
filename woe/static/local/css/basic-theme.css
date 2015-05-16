@@ -343,3 +343,7 @@ body {
   background-color: #e6e6e6 !important;
   border-color: #adadad !important;
 }
+
+img {
+  max-width: 100%;
+}

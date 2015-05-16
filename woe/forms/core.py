@@ -48,7 +48,8 @@ class LoginForm(Form):
         user = self.__get_user__(self.username.data.lower().strip())
         if not user:
             raise validators.ValidationError("Invalid username or password.")
-            
+        
+        print field.data.strip()
         if not user[0].check_password(field.data.strip()):
             raise validators.ValidationError("Invalid username or password.")
         

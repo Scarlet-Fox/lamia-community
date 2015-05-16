@@ -1,5 +1,6 @@
 from woe import db
 from woe import bcrypt
+from woe.utilities import ipb_password_check
 
 class Fingerprint(db.DynamicDocument):
     user = db.ReferenceField("User", required=True)
@@ -58,7 +59,6 @@ class User(db.DynamicDocument):
     title = db.StringField(default="")
     location = db.StringField(default="")
     about = db.StringField(default="")
-    about_html = db.StringField(default="")
     avatar_extension = db.StringField()
     
     # avatar_sizes
@@ -73,9 +73,9 @@ class User(db.DynamicDocument):
     information_fields = db.ListField(db.DictField())
     social_fields = db.ListField(db.DictField())
     
-    # COPPA
-    birth_month = db.IntField()
-    birth_year = db.IntField()
+    # Restoring account
+    password_token = db.StringField()
+    password_token_age = db.DateTimeField()
     
     # Background details
 
@@ -85,6 +85,9 @@ class User(db.DynamicDocument):
     
     signatures = db.ListField(db.StringField())
     timezone = db.IntField(default=0) # Relative to UTC
+    birth_d = db.IntField()
+    birth_m = db.IntField()
+    birth_y = db.IntField()
     hide_age = db.BooleanField(default=True)
     hide_birthday = db.BooleanField(default=True)
     hide_login = db.BooleanField(default=False)
@@ -141,6 +144,9 @@ class User(db.DynamicDocument):
     
     # Migration related
     old_member_id = db.IntField(default=0)
+    legacy_password = db.BooleanField(default=False)
+    ipb_salt = db.StringField()
+    ipb_hash = db.StringField()
     
     # Permissions
     is_staff = db.BooleanField(default=False)
@@ -164,11 +170,22 @@ class User(db.DynamicDocument):
     def is_anonymous(self):
         return False # Will only ever return False. Anonymous = guest user. We don't support those.
     
-    def set_password(self, password):
-        self.password_hash = bcrypt.generate_password_hash(password.strip(),12)
+    def set_password(self, password, rounds=12):
+        self.password_hash = bcrypt.generate_password_hash(password.strip(),rounds)
         
     def check_password(self, password):
-        return bcrypt.check_password_hash(self.password_hash, password)
+        if self.legacy_password:
+            if ipb_password_check(self.ipb_salt, self.ipb_hash, password):
+                self.set_password(password)
+                self.legacy_password = False
+                self.ipb_salt = ""
+                self.ipb_hash = ""
+                self.save()
+                return True
+            else:
+                return False
+        else:
+            return bcrypt.check_password_hash(self.password_hash, password)
         
     def get_avatar_url(self, size=""):
         if size != "":
