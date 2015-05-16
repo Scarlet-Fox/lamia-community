@@ -5,6 +5,7 @@ import flask_admin as admin
 from flask_admin import helpers, expose
 from flask_admin.contrib.mongoengine import ModelView
 from woe.models.core import User
+from woe.models.forum import Category
 
 class AuthAdminIndexView(admin.AdminIndexView):
     @expose('/')
@@ -24,5 +25,14 @@ class UserView(ModelView):
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
-            
+
+class CategoryView(ModelView):
+    can_delete = False
+    column_list = ("name", "parent", "weight")
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+    
+
 admin.add_view(UserView(User))
+admin.add_view(CategoryView(Category))

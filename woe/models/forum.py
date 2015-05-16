@@ -80,6 +80,7 @@ class Topic(db.DynamicDocument):
 
 class Category(db.DynamicDocument):
     name = db.StringField(required=True)
+    slug = db.StringField(required=True, unique=True)
     parent = db.ReferenceField("Category")
     root_category = db.BooleanField(default=True)
     
@@ -90,17 +91,28 @@ class Category(db.DynamicDocument):
     data = db.DictField()
     
     # Security
-    restricted = db.BooleanField(default=False)
+    restricted = db.BooleanField(default=True)
     allow_only = db.ListField(db.ReferenceField(core.User))
     
     # Tracking
     prefix_frequency = db.DictField()
+    topic_count = db.IntField(default=0)
     post_count = db.IntField(default=0)
     view_count = db.IntField(default=0)
     last_topic_name = db.StringField()
     last_post_by = db.ReferenceField(core.User)
     last_post_date = db.DateTimeField()
     last_post_author_avatar = db.StringField()
+    
+    # IPB migration
+    old_ipb_id = db.IntField()
+    
+    meta = {
+        'ordering': ['parent','weight']
+    }
+    
+    def __unicode__(self):
+        return self.name
 
 class Attachment(db.DynamicDocument):
     filename = db.StringField(required=True)
