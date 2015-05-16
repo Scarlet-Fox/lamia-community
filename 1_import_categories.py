@@ -11,8 +11,8 @@ def import_categories(parent=-1):
     
     for cat in c:
         category = Category()
-        category.name = cat["name"]
-        category.slug = cat["name"].strip().lower().replace(" ", "-")
+        category.name = cat["name"].encode("latin1")
+        category.slug = cat["name"].encode("latin1").strip().lower().replace(" ", "-")
         
         if parent == -1:
             category.root_category = True
