@@ -100,6 +100,7 @@ $ ->
               <option value="10px">Small</option>
               <option value="14px" selected>Normal</option>
               <option value="18px">Large</option>
+              <option value="24px">Larger</option>
               <option value="32px">Huge</option>
             </select>
           </span>
