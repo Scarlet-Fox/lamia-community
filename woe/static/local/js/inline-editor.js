@@ -43,16 +43,17 @@
         this.element.html(this.editordivHTML());
         this.element.before(this.toolbarHTML);
         this.element.after(this.submitButtonHTML(fullpage_option));
-        $("#post-editor-" + this.quillID).html(this.element.data("editor_initial_html"));
         quill = new Quill("#post-editor-" + this.quillID, {
           modules: {
             'link-tooltip': true,
+            'image-tooltip': true,
             'toolbar': {
               container: "#toolbar-" + this.quillID
             }
           },
           theme: 'snow'
         });
+        quill.setHTML(this.element.data("editor_initial_html"));
         this.element.data("editor", quill);
         $("#save-text-" + this.quillID).click((function(_this) {
           return function(e) {

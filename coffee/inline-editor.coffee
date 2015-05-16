@@ -22,13 +22,14 @@ $ ->
       @element.before @toolbarHTML
       @element.after @submitButtonHTML fullpage_option
       
-      $("#post-editor-#{@quillID}").html(@element.data("editor_initial_html"))
-      
       quill = new Quill "#post-editor-#{@quillID}", 
         modules:
           'link-tooltip': true
+          'image-tooltip': true
           'toolbar': { container: "#toolbar-#{@quillID}" }
         theme: 'snow'
+        
+      quill.setHTML @element.data("editor_initial_html")
       
       @element.data("editor", quill)
       

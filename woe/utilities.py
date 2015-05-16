@@ -28,12 +28,17 @@ class ForumHTMLCleaner(object):
         )
         
     def clean(self, dirty_html):
-        return self.cleaner.clean_html(dirty_html)
+        html = self.cleaner.clean_html(dirty_html)
+        if html[0:5] == "<div>":
+            html = html[5:]
+        if html[-6:] == "</div>":
+            html = html[:-6]
+        return html
         
 class ForumPostParser(object):
     def __init__(self):
         pass
         
-    def parse(self, text):
-        text = text.replace("[hr]", "<hr>")
-        return text
+    def parse(self, html):
+        html = html.replace("[hr]", "<hr>")
+        return html

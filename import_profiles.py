@@ -4,20 +4,20 @@ from woe.models.core import User
 import arrow, os, shutil
 from PIL import Image
 
-db = MySQLdb.connect(user="root", db="woe", cursorclass=MySQLdb.cursors.DictCursor)
+db = MySQLdb.connect(user="root", db="woe", cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
 c=db.cursor()
 c.execute("select * from ipsmembers m left join ipsprofile_portal p ON m.member_id=p.pp_member_id;")
 
 for u in c.fetchall():
     m = User()
-    m.login_name = u["members_l_username"]
-    m.display_name = u["members_display_name"]
+    m.login_name = u["members_l_username"].encode("latin1")
+    m.display_name = u["members_display_name"].encode("latin1")
     m.birth_d = u["bday_day"]
     m.birth_m = u["bday_month"]
     m.birth_y = u["bday_year"]
     m.old_member_id = u["member_id"]
     m.email_address = u["email"]
-    m.about_me = u["pp_about_me"]
+    m.about_me = u["pp_about_me"].encode("latin1")
     m.joined = arrow.get(u["joined"]).datetime
     m.legacy_password = True
     m.ipb_salt = u["members_pass_salt"]
@@ -30,7 +30,10 @@ for u in c.fetchall():
     if m.login_name == "luminescence":
         m.is_staff = True
     
-    m.title = u["title"]
+    try:
+        m.title = u["title"].encode("latin1")
+    except AttributeError:
+        m.title = ""
     timestamp = str(arrow.utcnow().timestamp) + "_"
     m.set_password(str(timestamp)+str(arrow.utcnow().timestamp),3)
     m.validated = True
