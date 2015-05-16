@@ -6,7 +6,7 @@ from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow
-from woe.utilities import ForumHTMLCleaner
+from woe.utilities import ForumHTMLCleaner, ForumPostParser
 
 @app.route('/member/<login_name>')
 @login_required
@@ -15,6 +15,8 @@ def view_profile(login_name):
         user = User.objects(login_name=login_name.strip().lower())[0]
     except IndexError:
         abort(404)
+    parser = ForumPostParser()
+    user.about_me = parser.parse(user.about_me)
     return render_template("profile.jade", profile=user)
     
 @app.route('/member/<login_name>/change-avatar-title', methods=['GET', 'POST'])
@@ -101,7 +103,7 @@ def change_display_name_password(login_name):
         
     return render_template("profile/change_account.jade", profile=user, form=form)
 
-@app.route('/member/<login_name>/edit-profile', methods=['POST'])
+@app.route('/member/<login_name>/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile(login_name):
     try:
@@ -112,11 +114,15 @@ def edit_profile(login_name):
     if current_user != user and not current_user.is_staff:
         abort(404)
     
-    cleaner = ForumHTMLCleaner()
-    user.about_me = cleaner.clean(request.form.get("about_me"))
-    user.save()
-    
-    return json.jsonify(about_me=user.about_me)
+    if request.method == 'POST':
+        cleaner = ForumHTMLCleaner()
+        user.about_me = cleaner.clean(request.form.get("about_me"))
+        user.save()
+        parser = ForumPostParser()
+        user.about_me = parser.parse(user.about_me)
+        return json.jsonify(about_me=user.about_me)
+    else:
+        return json.jsonify(content=user.about_me)
 
 @app.route('/member/<login_name>/remove-avatar', methods=['POST'])
 @login_required

@@ -94,7 +94,7 @@
       };
 
       InlineEditor.prototype.toolbarHTML = function() {
-        return "<div class=\"btn-toolbar\" role=\"toolbar\" id=\"toolbar-" + this.quillID + "\">\n  <div class=\"btn-group\" role=\"group\">\n    <button type=\"button\" class=\"btn btn-default ql-bold\"><b>b</b></button>\n    <button type=\"button\" class=\"btn btn-default ql-italic\"><i>i</i></button>\n    <button type=\"button\" class=\"btn btn-default ql-underline\"><u>u</u></button>\n    <button type=\"button\" class=\"btn btn-default ql-strike\"><s>s</s></button>\n  </div>\n  <div class=\"btn-group\" role=\"group\">\n    <button type=\"button\" class=\"btn btn-default ql-link\">url</button>\n  </div>\n</div>";
+        return "<div class=\"btn-toolbar\" role=\"toolbar\" id=\"toolbar-" + this.quillID + "\">\n  <div class=\"btn-group\" role=\"group\">\n    <button type=\"button\" class=\"btn btn-default ql-bold\"><b>b</b></button>\n    <button type=\"button\" class=\"btn btn-default ql-italic\"><i>i</i></button>\n    <button type=\"button\" class=\"btn btn-default ql-underline\"><u>u</u></button>\n    <button type=\"button\" class=\"btn btn-default ql-strike\"><s>s</s></button>\n  </div>\n  <div class=\"btn-group\" role=\"group\">\n    <select title=\"Size\" class=\"ql-size\">\n      <option value=\"10px\">Small</option>\n      <option value=\"13px\" selected=\"\">Normal</option>\n      <option value=\"18px\">Large</option>\n      <option value=\"32px\">Huge</option>\n    </select>\n    <button type=\"button\" class=\"btn btn-default ql-link\"><span class=\"glyphicon glyphicon-link\"</span></button>\n  </div>\n</div>";
       };
 
       return InlineEditor;

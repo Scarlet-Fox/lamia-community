@@ -1,12 +1,22 @@
 $ ->
   class InlineEditor
-    constructor: (element, fullpage_option=false) ->
+    constructor: (element, url = "", fullpage_option=false) ->
       @quillID = do @getQuillID  
       @element = $(element)
       if @element.data("editor_is_active")
         return false
       @element.data("editor_is_active", true)
-      @element.data("editor_initial_html", @element.html())
+      
+      if url != ""
+        $.get url, (data) =>
+          @element.data("editor_initial_html", data.content)
+          do @setupEditor
+      else
+        @element.data("editor_initial_html", @element.html())
+        do @setupEditor
+        
+    
+    setupEditor: () =>
       @element.html(@editordivHTML())
       
       @element.before @toolbarHTML
@@ -84,7 +94,13 @@ $ ->
             <button type="button" class="btn btn-default ql-strike"><s>s</s></button>
           </div>
           <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default ql-link">url</button>
+            <select title="Size" class="ql-size">
+              <option value="10px">Small</option>
+              <option value="13px" selected="">Normal</option>
+              <option value="18px">Large</option>
+              <option value="32px">Huge</option>
+            </select>
+            <button type="button" class="btn btn-default ql-link"><span class="glyphicon glyphicon-link"</span></button>
           </div>
         </div>
       """

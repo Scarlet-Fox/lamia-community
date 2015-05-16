@@ -12,3 +12,10 @@ class ForumHTMLCleaner(object):
         
     def clean(self, dirty_html):
         return self.cleaner.clean_html(dirty_html)
+        
+class ForumPostParser(object):
+    def __init__(self):
+        pass
+        
+    def parse(self, text):
+        return text

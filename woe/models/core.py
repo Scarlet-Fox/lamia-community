@@ -58,6 +58,7 @@ class User(db.DynamicDocument):
     title = db.StringField(default="")
     location = db.StringField(default="")
     about = db.StringField(default="")
+    about_html = db.StringField(default="")
     avatar_extension = db.StringField()
     
     # avatar_sizes
