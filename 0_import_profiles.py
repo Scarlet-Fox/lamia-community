@@ -4,6 +4,7 @@ from woe.models.core import User
 import arrow, os, shutil
 from PIL import Image
 import phpserialize
+import HTMLParser
 
 db = MySQLdb.connect(user="root", db="woe", cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
 c=db.cursor()
@@ -18,8 +19,8 @@ for u in c.fetchall():
     except:
         blocks[u["member_id"]] = {}
     m = User()
-    m.login_name = u["members_l_username"].encode("latin1")
-    m.display_name = u["members_display_name"].encode("latin1")
+    m.login_name = HTMLParser.HTMLParser().unescape(u["members_l_username"].encode("latin1"))
+    m.display_name = HTMLParser.HTMLParser().unescape(u["members_display_name"].encode("latin1"))
     m.birth_d = u["bday_day"]
     m.birth_m = u["bday_month"]
     m.birth_y = u["bday_year"]

@@ -48,7 +48,10 @@ for t in c:
     
     topic.category = Category.objects(old_ipb_id=t["forum_id"])[0] 
     topic.old_ipb_id = t["tid"]
-    topic.title = t["title"].encode("latin1")
+    try:
+        topic.title = HTMLParser.HTMLParser().unescape(t["title"].encode("latin1"))
+    except:
+        topic.title = t["title"].encode("latin1")
     topic.slug = get_topic_slug(topic.title)
     if t["state"] == "closed":
         topic.closed = True
