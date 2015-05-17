@@ -4,7 +4,7 @@ from flask.ext.login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose
 from flask_admin.contrib.mongoengine import ModelView
-from woe.models.core import User, StatusUpdate, Attachment
+from woe.models.core import User, StatusUpdate, Attachment, PrivateMessageTopic, PrivateMessage
 from woe.models.forum import Category, Topic, Prefix, Post
 
 class AuthAdminIndexView(admin.AdminIndexView):
@@ -73,11 +73,28 @@ class AttachView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
-admin.add_view(UserView(User))
-admin.add_view(CategoryView(Category))
-admin.add_view(TopicView(Topic))
-admin.add_view(PostView(Post))
-admin.add_view(AttachView(Attachment))
-admin.add_view(PrefixView(Prefix))
-admin.add_view(StatusView(StatusUpdate))
+class PrivateMessageTopicView(ModelView):
+    can_delete = False
+    column_list = ("title", "creator_name", "created", "last_reply_time", "last_reply_name", "message_count", "participant_count")
+    column_filters = ("creator_name","title","last_reply_name")
+    
+    def is_accessible(self):
+        return current_user.login_name in ["luminescence", "zoop"]
 
+class PrivateMessageView(ModelView):
+    can_delete = False
+    column_list = ("topic_name", "topic_creator_name", "created", "author_name", "message")
+    column_filters = ("topic_name", "topic_creator_name", "author_name", "message")    
+    
+    def is_accessible(self):
+        return current_user.login_name in ["luminescence", "zoop"]
+
+admin.add_view(UserView(User))
+admin.add_view(StatusView(StatusUpdate))
+admin.add_view(PrivateMessageTopicView(PrivateMessageTopic, category='Private Messages'))
+admin.add_view(PrivateMessageView(PrivateMessage, category='Private Messages'))
+admin.add_view(CategoryView(Category, category='Forum'))
+admin.add_view(TopicView(Topic, category='Forum'))
+admin.add_view(PostView(Post, category='Forum'))
+admin.add_view(PrefixView(Prefix, category='Forum'))
+admin.add_view(AttachView(Attachment))

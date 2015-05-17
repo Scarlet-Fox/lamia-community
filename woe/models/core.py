@@ -215,36 +215,62 @@ class User(db.DynamicDocument):
         else:
             return "/static/avatars/"+str(self.avatar_timestamp)+str(self.pk)+size+self.avatar_extension
         
-class PrivateMessage(db.DynamicEmbeddedDocument):
+class PrivateMessage(db.DynamicDocument):
     message = db.StringField(required=True)
-    topic = db.ReferenceField(User, required=True)
-    author = db.ReferenceField("PrivateMessageTopic", required=True)
-    
+    author = db.ReferenceField(User, required=True)
+    author_name = db.StringField(required=True)
+    topic = db.ReferenceField("PrivateMessageTopic")
+    topic_name = db.StringField(required=True)
+    topic_creator_name = db.StringField(required=True)
     created = db.DateTimeField(required=True)
     modified = db.DateTimeField()
+    
+    meta = {
+        'ordering': ['created'],
+        'indexes': [
+            'created',
+            {
+                'fields': ['$message',],
+                'default_language': 'english'
+            }
+        ]
+    }
+    
 
 class PrivateMessageParticipant(db.DynamicEmbeddedDocument):
-    author = db.ReferenceField(User, required=True)
+    user = db.ReferenceField(User, required=True)
     left_pm = db.BooleanField(default=False)
+    do_not_notify = db.BooleanField(default=False)
+    last_read = db.DateTimeField()
 
 class PrivateMessageTopic(db.DynamicDocument):
     title = db.StringField(required=True)
     creator = db.ReferenceField(User, required=True)
+    creator_name = db.StringField(required=True)
     created = db.DateTimeField(required=True)
-    last_message = db.DateTimeField()
-    last_message_author = db.ReferenceField(User)
     
-    messages = db.ListField(db.EmbeddedDocumentField(PrivateMessage))
-    participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant), required=True)
+    last_reply_by = db.ReferenceField(User)
+    last_reply_name = db.StringField()
+    last_reply_time = db.DateTimeField()
+    
+    message_count = db.IntField(default=0)
+    participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant))
+    participant_count = db.IntField(default=0)
     
     labels = db.ListField(db.StringField())
+    old_ipb_id = db.IntField()
     
-class PrivateMessageWatch(db.DynamicDocument):
-    user = db.ReferenceField(User, required=True)
-    pm = db.ReferenceField(PrivateMessageTopic, required=True)
-    
-    do_not_notify = db.BooleanField(default=False)
-    last_read = db.DateTimeField()
+    meta = {
+        'ordering': ['-last_reply_time'],
+        'indexes': [
+            'old_ipb_id',
+            '-last_reply_time',
+            {
+                'fields': ['$title',],
+                'default_language': 'english'
+            }
+        ]
+    }
     
 class Notification(db.DynamicDocument):
     user = db.ReferenceField(User, required=True)

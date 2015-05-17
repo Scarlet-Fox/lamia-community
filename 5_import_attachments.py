@@ -10,11 +10,11 @@ c.execute("select * from ipsattachments;")
 
 for a in c.fetchall():
     attach = Attachment()
-    attach.path = a["attach_location"]
+    attach.path = a["attach_location"].encode("latin1")
     attach.mimetype = mimetypes.guess_type(a["attach_location"])[0]
     if attach.mimetype == None:
         continue
-    attach.extension = a["attach_ext"]
+    attach.extension = a["attach_ext"].encode("latin1")
     if attach.extension not in ["zip", "png", "gif", "jpg", "jpeg", "mp3"]:
         continue
     attach.size_in_bytes = a["attach_filesize"]
