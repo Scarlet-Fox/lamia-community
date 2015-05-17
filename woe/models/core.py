@@ -70,8 +70,8 @@ class User(db.DynamicDocument):
     avatar_40_y = db.IntField()
     avatar_timestamp = db.StringField(default="")
     
-    information_fields = db.ListField(db.DictField())
-    social_fields = db.ListField(db.DictField())
+    information_fields = db.ListField(db.DictField()) # TODO: Create Field Class
+    social_fields = db.ListField(db.DictField()) # TODO: Create Field Class
     
     # Restoring account
     password_token = db.StringField()
@@ -96,7 +96,7 @@ class User(db.DynamicDocument):
     
     warning_points = db.IntField(default=0)
     
-    display_name_history = db.ListField(db.DictField())
+    display_name_history = db.ListField(db.DictField()) # TODO: Create history embed
     mod_notes = db.ListField(db.EmbeddedDocumentField("ModNote"))
     
     ALLOWED_INFO_FIELDS = (
