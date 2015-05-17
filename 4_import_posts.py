@@ -54,9 +54,9 @@ for h in history_c.fetchall():
     
 for topic in Topic.objects():
     topic_posts = Post.objects(topic=topic)
-    topic.post_count = len(topic_posts)
+    topic.post_count = Post.objects(topic=topic).count()
     try:
-        recent_post = topic_posts[len(topic_posts)-1]
+        recent_post = Post.objects(topic=topic).order_by("-created")[0]
     except IndexError:
         continue
     topic.last_post_by = recent_post.author

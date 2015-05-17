@@ -341,7 +341,15 @@ class StatusUpdate(db.DynamicDocument):
     old_ipb_id = db.IntField()
     
     meta = {
-        'ordering': ['-created']
+        'ordering': ['-created'],
+        'indexes': [
+            'old_ipb_id',
+            '-created',
+            {
+                'fields': ['$**',],
+                'default_language': 'english'
+            }
+        ]
     }
 
 class Attachment(db.DynamicDocument):
@@ -352,3 +360,4 @@ class Attachment(db.DynamicDocument):
     created_date = db.DateTimeField(required=True)
     owner = db.ReferenceField(User, required=True)
     present_in = db.ListField(db.GenericReferenceField())
+    old_ipb_id = db.IntField()

@@ -60,7 +60,7 @@ class StatusView(ModelView):
 class PostView(ModelView):
     can_delete = False
     column_list = ("topic_name", "created", "author_name", "boop_count")
-    column_filters = ('topic_name', 'author_name', 'html')
+    column_filters = ('topic_name', 'author_name', 'html', 'old_ipb_id')
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)

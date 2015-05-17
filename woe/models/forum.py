@@ -42,6 +42,11 @@ class Post(db.DynamicDocument):
     meta = {
         'indexes': [
             'old_ipb_id',
+            'created',
+            {
+                'fields': ['$html',],
+                'default_language': 'english'
+            }
         ],
         'ordering': ['created']
     }
@@ -107,6 +112,12 @@ class Topic(db.DynamicDocument):
         'ordering': ['sticky', '-created'],
         'indexes': [
             'old_ipb_id',
+            '-created',
+            'created',
+            {
+                'fields': ['$title',],
+                'default_language': 'english'
+            }
         ]
     }
 
