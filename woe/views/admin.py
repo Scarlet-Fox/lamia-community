@@ -28,7 +28,7 @@ class UserView(ModelView):
 
 class CategoryView(ModelView):
     can_delete = False
-    column_list = ("name", "parent", "weight", "view_count", "topic_count")
+    column_list = ("name", "parent", "weight", "view_count", "post_count", "topic_count")
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)

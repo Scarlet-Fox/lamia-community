@@ -7,7 +7,7 @@ from PIL import Image
 
 db = MySQLdb.connect(user="root", db="woe", cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
 c=db.cursor()
-c.execute("select * from ipsposts limit 100;")
+c.execute("select * from ipsposts;")
 
 for p in c.fetchall():
     post = Post()
@@ -66,7 +66,7 @@ for topic in Topic.objects():
     post_counts = {} #u.pk: count
     
     for post in topic_posts:
-        if not post_counts.has_key(str(post.author.pk):
+        if not post_counts.has_key(str(post.author.pk)):
             post_counts[str(post.author.pk)] = 0
             
         post_counts[str(post.author.pk)] += 1
@@ -83,5 +83,6 @@ for category in Category.objects():
     category.last_post_by = category_most_recent_topic.last_post_by
     category.last_post_date = category_most_recent_topic.last_post_date
     category.last_post_author_avatar = category_most_recent_topic.last_post_author_avatar
+    category.post_count = sum(Topic.objects(category=category).scalar("post_count"))
     
     category.save()
