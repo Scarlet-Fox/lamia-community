@@ -20,10 +20,10 @@ for s in c.fetchall():
     status.author = User.objects(old_member_id=s["status_author_id"])[0]
     status.author_name = status.author.login_name
     
-    if not user_status_count.has_key(status.author):
-        user_status_count[status.author] = 1
+    if not user_status_count.has_key(status.author.pk):
+        user_status_count[status.author.pk] = 1
     else:
-        user_status_count[status.author] += 1
+        user_status_count[status.author.pk] += 1
     
     status.message = s["status_content"].encode("latin1")
     status.created = arrow.get(s["status_date"]).datetime
@@ -38,10 +38,10 @@ for s in c.fetchall():
         comment.text = status_reply["reply_content"].encode("latin1")
         comment.created = arrow.get(status_reply["reply_date"]).datetime
         comment.author = User.objects(old_member_id=status_reply["reply_member_id"])[0]
-        if not user_comment_count.has_key(comment.author):
-            user_comment_count[comment.author] = 1
+        if not user_comment_count.has_key(comment.author.pk):
+            user_comment_count[comment.author.pk] = 1
         else:
-            user_comment_count[comment.author] += 1
+            user_comment_count[comment.author.pk] += 1
         participants[comment.author] = 1
         status.comments.append(comment)
     
@@ -50,11 +50,11 @@ for s in c.fetchall():
     status.save()
 
 for u in user_status_count.keys():
-    u = User.objects(pk=u.pk)
-    u.status_count = user_status_count[u]
-    u.save()
+    user = User.objects(pk=u)[0]
+    user.status_count = user_status_count[u]
+    user.save()
     
 for u in user_comment_count.keys():
-    u = User.objects(pk=u.pk)
-    u.status_comment_count = user_comment_count[u]
-    u.save()
+    user = User.objects(pk=u)[0]
+    user.status_comment_count = user_comment_count[u]
+    user.save()
