@@ -1,6 +1,7 @@
 import MySQLdb
 import MySQLdb.cursors
 from woe.models.forum import Category
+from slugify import slugify
 
 def import_categories(parent=-1):
     exclude = [14,]
@@ -12,7 +13,7 @@ def import_categories(parent=-1):
     for cat in c:
         category = Category()
         category.name = cat["name"].encode("latin1")
-        category.slug = cat["name"].encode("latin1").strip().lower().replace(" ", "-")
+        category.slug = slugify(cat["name"].encode("latin1").strip().lower().replace(" ", "-"), max_length=100, word_boundary=True, save_order=True)
         
         if parent == -1:
             category.root_category = True

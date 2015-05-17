@@ -152,7 +152,7 @@ class User(db.DynamicDocument):
     is_admin = db.BooleanField(default=False)
     is_mod = db.BooleanField(default=False)
     
-    def __str__(self):
+    def __unicode__(self):
         return self.login_name
     
     def is_active(self):

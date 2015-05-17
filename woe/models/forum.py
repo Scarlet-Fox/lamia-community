@@ -38,13 +38,18 @@ class Prefix(db.DynamicDocument):
     post_html = db.StringField()
     prefix = db.StringField(required=True)
 
+class PollChoice(db.DynamicEmbeddedDocument):
+    user = db.ReferenceField(core.User)
+    choice = db.IntField()
+
 class Poll(db.DynamicEmbeddedDocument):
     poll_question = db.StringField(required=True)
     poll_options = db.ListField(db.StringField(), required=True)
-    poll_votes = db.DictField() # User : Question
+    poll_votes = db.ListField(db.EmbeddedDocumentField(PollChoice)) # User : Question
 
 class Topic(db.DynamicDocument):
     # Basics
+    slug = db.StringField(required=True, unique=True)
     category = db.ReferenceField("Category", required=True)
     title = db.StringField(required=True)
     creator = db.ReferenceField(core.User, required=True)
@@ -66,6 +71,7 @@ class Topic(db.DynamicDocument):
     
     # Background info
     watchers = db.ListField(db.ReferenceField(core.User))
+    boops = db.ListField(db.ReferenceField(core.User))
     topic_moderators = db.ListField(db.ReferenceField(core.User))
     user_post_counts = db.DictField()
     data = db.DictField()
@@ -77,6 +83,13 @@ class Topic(db.DynamicDocument):
     last_post_by = db.ReferenceField(core.User)
     last_post_date = db.DateTimeField()
     last_post_author_avatar = db.StringField()
+    
+    # IPB migration
+    old_ipb_id = db.IntField()
+    
+    meta = {
+        'ordering': ['sticky', '-created']
+    }
 
 class Category(db.DynamicDocument):
     name = db.StringField(required=True)
