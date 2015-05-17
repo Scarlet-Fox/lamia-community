@@ -35,8 +35,9 @@ for u in c.fetchall():
     else:
         m.banned = False
         
-    if m.login_name == "luminescence":
+    if m.login_name == "luminescence" or m.login_name == "zoop":
         m.is_admin = True
+        m.is_mod = True
     
     try:
         m.title = u["title"].encode("latin1")

@@ -138,7 +138,7 @@ class User(db.DynamicDocument):
     joined = db.DateTimeField(required=True)
     posts_count = db.IntField(default=0)
     topic_count = db.IntField(default=0)
-    status_update_count = db.IntField(default=0)
+    status_count = db.IntField(default=0)
     status_comment_count = db.IntField(default=0)
     last_seen = db.DateTimeField()
     last_at = db.StringField(default="Watching forum index.")
@@ -299,7 +299,9 @@ class StatusComment(db.DynamicEmbeddedDocument):
 
 class StatusUpdate(db.DynamicDocument):
     attached_to_user = db.ReferenceField(User)
+    attached_to_user_name = db.StringField(default="")
     author = db.ReferenceField(User, required=True)
+    author_name = db.StringField(default="")
     message = db.StringField(required=True)
     comments = db.ListField(db.EmbeddedDocumentField(StatusComment))
     
@@ -312,12 +314,18 @@ class StatusUpdate(db.DynamicDocument):
     
     # Mod stuff
     hidden = db.BooleanField(default=False)
-    hide_message = db.StringField(default=False)
+    hide_message = db.BooleanField(default=False)
     
     # Tracking
+    view_count = db.IntField(default=0)
     viewers = db.IntField(default=0)
+    participant_count = db.IntField(default=0)
     created = db.DateTimeField()
     replies = db.IntField(default=0)
     hot_score = db.IntField(default=0) # Replies - Age (basically)
     
     old_ipb_id = db.IntField()
+    
+    meta = {
+        'ordering': ['-created']
+    }
