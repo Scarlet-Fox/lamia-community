@@ -19,7 +19,7 @@ admin = admin.Admin(app, index_view=AuthAdminIndexView())
 class UserView(ModelView):
     can_create = False
     can_delete = False
-    column_list = ("login_name", "display_name", "email_address", "banned", "validated", "status_count", "status_comment_count")
+    column_list = ("login_name", "display_name", "email_address", "banned", "validated", "status_count", "status_comment_count","last_seen")
     column_filters = ["banned","validated","disable_posts","disable_status","disable_status_participation","disable_pm","disable_topics","old_member_id"]
     column_searchable_list = ('login_name', 'display_name','about')
     

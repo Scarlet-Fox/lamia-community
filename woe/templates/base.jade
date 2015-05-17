@@ -129,6 +129,9 @@ body(role='document')
   if current_user.is_authenticated()
     script(type="text/javascript")
       $(document).ready(function(){
+        $(".href_span").click(function (e) {
+          window.location = $(this).attr("href");
+        });
         $("#sign-out").click(function(e) {
           e.preventDefault();
           $.post("/sign-out", function(data) {

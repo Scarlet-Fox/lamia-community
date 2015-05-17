@@ -1,0 +1,66 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-md-8
+    {% for category_list in categories.values() %}
+    ul.list-group.category 
+      {% for category in category_list %}
+      {% if loop.first %}
+      li.list-group-item.section-header {{category.name}}
+      {% else %}
+      li.list-group-item.subcategory
+        div
+          .row
+            .col-xs-12.col-sm-6
+              span.subcategory-listing-name 
+                a(href="/category/{{category.slug}}") {{category.name}}
+            {% if category.post_count != 0 %}
+            .col-sm-6.hidden-xs.hidden-sm
+              span.subcategory-listing-recent-image
+                a(href="{{url_for('view_profile', login_name=category.last_post_by.login_name)}}")
+                  img(src="{{category.last_post_author_avatar}}", width="40px", height="40px")
+              span.subcategory-listing-recent
+                a(href="/topic/{{category.get_last_topic().slug}}") {{category.get_last_topic().title}}
+                br
+                a(href="#") {{category.last_post_date|humanize_time}}
+            {% endif %}
+      {% endif %}
+      {% endfor %}
+    {% endfor %}
+  .col-md-4
+    ul.list-group
+      li.list-group-item.section-header Status Updates
+      {% for status in status_updates %}
+      li.list-group-item.front-page-status
+        a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+          img(src="{{ status.author.get_avatar_url("40") }}", width="40px", height="40px")
+        p
+          a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+          span &nbsp;says:
+          span.discuss 
+            a(href="/status/{{status.pk}}") Discuss
+        p.status-text {{ status.message }}
+      {% endfor %}
+.row 
+  .col-md-12
+    center
+      p.front-page-stats
+        span.label.label-default {{post_count}}
+        span &nbsp;Posts &nbsp; &nbsp; &nbsp; &nbsp;
+        span.label.label-default {{member_count}}
+        span &nbsp;Members &nbsp; &nbsp; &nbsp; &nbsp;
+        span.label.label-default 
+          span.href_span(href="{{url_for('view_profile', login_name=newest_member.login_name)}}") {{newest_member.display_name}}
+        span &nbsp;Newest Member
+.row
+  .col-md-12
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title {{online_user_count}} Users Online
+      .panel-body
+        {% for u in online_users %}
+        a(href="{{url_for('view_profile', login_name=u.login_name)}}") {{u.display_name}}
+        span {% if not loop.last %},{% endif %} 
+        {% endfor %}
+{% endblock %}

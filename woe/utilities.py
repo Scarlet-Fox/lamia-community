@@ -1,5 +1,7 @@
 from lxml.html.clean import Cleaner
 import hashlib
+import arrow
+from woe import app
 
 def md5(txt):
     return hashlib.md5(txt).hexdigest()
@@ -42,3 +44,12 @@ class ForumPostParser(object):
     def parse(self, html):
         html = html.replace("[hr]", "<hr>")
         return html
+
+@app.template_filter('humanize_time')
+def humanize(time):
+    a = arrow.get(time)
+    b = arrow.utcnow().replace(hours=-24)
+    if a > b:
+        return a.humanize()
+    else:
+        return a.format("MMM D, h:m a")

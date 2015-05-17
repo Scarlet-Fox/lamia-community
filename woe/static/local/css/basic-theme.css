@@ -117,6 +117,9 @@
 .front-page-status p {
   overflow: hidden;
 }
+.front-page-status p.status-text {
+  font-size: 90%;
+}
 .front-page-status .discuss {
   float: right;
 }
@@ -142,7 +145,12 @@
 
 /* Subcategories */
 
-.subcategory {
+.category .section-header {
+  font-size: 120%;
+}
+
+.subcategory .section-header {
+  font-size: 120%;
 }
 .subcategory-listing-name {
   vertical-align: middle;
@@ -333,4 +341,12 @@ body {
 
 img {
   max-width: 100%;
+}
+
+.href_span {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
 }
