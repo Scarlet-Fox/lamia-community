@@ -6,9 +6,9 @@ from slugify import slugify
 def import_categories(parent=-1):
     exclude = [14,]
     db = MySQLdb.connect(user="root", db="woe", cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
-    c=db.cursor()
-    c.execute("select * from ipsforums where parent_id=%s;", [parent,])
-    c = c.fetchall()
+    cursor=db.cursor()
+    cursor.execute("select * from ipsforums where parent_id=%s;", [parent,])
+    c = cursor.fetchall()
     
     for cat in c:
         category = Category()
@@ -26,5 +26,7 @@ def import_categories(parent=-1):
         if category.old_ipb_id not in exclude:
             category.save()
             import_categories(parent=category.old_ipb_id)
+    
+    cursor.close()
         
 import_categories()

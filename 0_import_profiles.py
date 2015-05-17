@@ -62,18 +62,21 @@ for u in c.fetchall():
         fourty_image = image.copy()
         fourty_image.thumbnail([xsize*resize_measure,ysize*resize_measure]) 
         fourty_image.save(os.path.join(new_avatar_dir,timestamp+str(m.pk)+"_40"+extension))
+        fourty_image.close()
         
         resize_measure = min(60.0/float(xsize),60.0/float(ysize))
         sixty_image = image.copy()
         sixty_image.thumbnail([xsize*resize_measure,ysize*resize_measure]) 
         sixty_image.save(os.path.join(new_avatar_dir,timestamp+str(m.pk)+"_60"+extension))
+        sixty_image.close()
         
         m.avatar_extension = extension
         m.avatar_timestamp = timestamp
         m.avatar_full_x, m.avatar_full_y = image.size
         m.avatar_40_x, m.avatar_40_y = fourty_image.size
         m.avatar_60_x, m.avatar_60_y = sixty_image.size
-        
+
+        image.close()
         m.save()
         
 for u in User.objects():
@@ -89,3 +92,5 @@ for u in User.objects():
             u.ignored_user_signatures.append(blocked_user)
     
     u.save()
+    
+c.close()

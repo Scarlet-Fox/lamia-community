@@ -14,7 +14,8 @@ for msg in c.fetchall():
     topic.created = arrow.get(msg["mt_start_time"]).replace(hours=-12).datetime
     topic.old_ipb_id = msg["mt_id"]
     topic.save()
-    
+c.close()
+
 msg_cursor = db.cursor()
 msg_cursor.execute("select * from ipsmessage_posts order by msg_date")
 for reply in msg_cursor.fetchall():
@@ -33,6 +34,7 @@ for reply in msg_cursor.fetchall():
     topic.update(last_reply_name=m.author.login_name)
     topic.update(last_reply_time=m.created)
     topic.update(inc__message_count=1)
+msg_cursor.close()
     
 peep = db.cursor()
 peep.execute("select * from ipsmessage_topic_user_map")
@@ -45,4 +47,5 @@ for p in peep.fetchall():
     participant.last_read = arrow.get(p["map_read_time"]).replace(hours=-12).datetime
     topic.update(add_to_set__participants=participant)
     topic.update(inc__participant_count=1)
+peep.close()
     

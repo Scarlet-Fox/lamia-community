@@ -1,0 +1,3 @@
+For PyPy:
+
+* pip install git+git://github.com/surfly/gevent.git#egg=gevent

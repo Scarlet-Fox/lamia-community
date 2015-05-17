@@ -42,7 +42,9 @@ class Post(db.DynamicDocument):
     meta = {
         'indexes': [
             'old_ipb_id',
+            '-created',
             'created',
+            'topic',
             {
                 'fields': ['$html',],
                 'default_language': 'english'

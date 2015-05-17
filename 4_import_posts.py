@@ -28,6 +28,8 @@ for p in c.fetchall():
         post.hidden = False
     post.save()
     
+c.close()
+    
 likes_c = db.cursor()
 likes_c.execute("select * from ipsreputation_index where type='pid';")
 for l in likes_c.fetchall():
@@ -38,7 +40,8 @@ for l in likes_c.fetchall():
     user = User.objects(old_member_id=l["member_id"])[0]
     post.update(add_to_set__boops=user)
     post.update(inc__boop_count=1)
-        
+likes_c.close()
+  
 history_c = db.cursor()
 history_c.execute("select * from ipspost_history;")
 for h in history_c.fetchall():
@@ -51,7 +54,8 @@ for h in history_c.fetchall():
     history.created = arrow.get(h["post_date"]).replace(hours=-12).datetime
     history.html = h["post"].encode("latin1")
     post.update(add_to_set__history=history)
-    
+history_c.close()
+ 
 for topic in Topic.objects():
     topic_posts = Post.objects(topic=topic)
     topic.post_count = Post.objects(topic=topic).count()
@@ -90,3 +94,4 @@ for category in Category.objects():
 for u in User.objects():
     u.update(post_count=Post.objects(author=u).count())
     u.update(topic_count=Topic.objects(creator=u).count())
+    

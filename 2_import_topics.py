@@ -9,9 +9,9 @@ from unidecode import unidecode
 import phpserialize
 
 db = MySQLdb.connect(user="root", db="woe", cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
-c = db.cursor()
-c.execute("select * from ipstopics;")
-c = c.fetchall()
+cursor = db.cursor()
+cursor.execute("select * from ipstopics;")
+c = cursor.fetchall()
 h = HTMLParser.HTMLParser()
 
 def get_topic_slug(title):
@@ -101,8 +101,12 @@ for t in c:
                 except KeyError:
                     continue
                 new_poll.poll_votes.append(vote)
+                
+            poll_votes.close()
             
             topic.polls.append(new_poll)
+            
+    poll_cursor.close()
         
     topic_prefix_cursor = db.cursor()
     topic_prefix_cursor.execute("select * from ipscore_tags where tag_meta_area='topics' and tag_prefix=1 and tag_meta_id=%s", [topic.old_ipb_id,])
@@ -115,7 +119,10 @@ for t in c:
         topic.prefix = prefix.prefix
         topic.prefix_reference = prefix
     
+    topic_prefix_cursor.close()
     topic.save()
+
+cursor.close()
 
 for u in User.objects():
     u.topics = Topic.objects(creator=u).count()

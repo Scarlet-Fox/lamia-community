@@ -26,7 +26,8 @@ for a in c.fetchall():
         continue
     attach.old_ipb_id = a["attach_id"]
     attach.save()
-    
+c.close()
+
 for a in Attachment.objects():
     try:
         post = Post.objects(html__contains="[attachment=%s:" % a.old_ipb_id)[0]

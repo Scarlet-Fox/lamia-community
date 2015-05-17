@@ -45,9 +45,12 @@ for s in c.fetchall():
         participants[comment.author] = 1
         status.comments.append(comment)
     
+    status_reply_cursor.close()
     status.replies = len(status.comments)
     status.participant_count = len(participants.keys())
     status.save()
+
+c.close()
 
 for u in user_status_count.keys():
     user = User.objects(pk=u)[0]

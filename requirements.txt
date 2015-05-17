@@ -9,10 +9,10 @@ flask-mongoengine==0.7.1
 Flask-Script==2.0.5
 Flask-SocketIO==0.6.0
 Flask-WTF==0.11
-gevent==1.0.1
+gevent==1.1
 gevent-socketio==0.3.6
 gevent-websocket==0.9.3
-greenlet==0.4.6
+greenlet==0.4.5
 html5lib==0.999
 itsdangerous==0.24
 Jinja2==2.7.3
@@ -29,6 +29,7 @@ python-bcrypt==0.3.1
 python-dateutil==2.4.2
 python-slugify==1.0.2
 pytz==2015.4
+readline==6.2.4.1
 six==1.9.0
 Unidecode==0.4.17
 Werkzeug==0.10.4
