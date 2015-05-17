@@ -5,7 +5,7 @@ import flask_admin as admin
 from flask_admin import helpers, expose
 from flask_admin.contrib.mongoengine import ModelView
 from woe.models.core import User, StatusUpdate
-from woe.models.forum import Category, Topic, Prefix
+from woe.models.forum import Category, Topic, Prefix, Post
 
 class AuthAdminIndexView(admin.AdminIndexView):
     @expose('/')
@@ -35,7 +35,7 @@ class CategoryView(ModelView):
 
 class TopicView(ModelView):
     can_delete = False
-    column_list = ("title","created","creator", 'view_count')
+    column_list = ("title","created","creator", 'view_count', 'post_count')
     column_filters = ["sticky","hidden","closed","prefix"]
     column_searchable_list = ('title',)
     
@@ -56,10 +56,19 @@ class StatusView(ModelView):
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
+
+class PostView(ModelView):
+    can_delete = False
+    column_list = ("topic_name", "created", "author_name", "boop_count")
+    column_filters = ('topic_name', 'author_name', 'html')
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
     
 admin.add_view(UserView(User))
 admin.add_view(CategoryView(Category))
 admin.add_view(TopicView(Topic))
+admin.add_view(PostView(Post))
 admin.add_view(PrefixView(Prefix))
 admin.add_view(StatusView(StatusUpdate))
 

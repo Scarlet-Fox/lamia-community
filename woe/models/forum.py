@@ -16,7 +16,9 @@ class Post(db.DynamicDocument):
     # Basics
     html = db.StringField(required=True)
     author = db.ReferenceField(core.User, required=True)
+    author_name = db.StringField(required=True)
     topic = db.ReferenceField("Topic", required=True)
+    topic_name = db.StringField(required=True)
     
     created = db.DateTimeField(required=True)
     modified = db.DateTimeField()
@@ -33,13 +35,15 @@ class Post(db.DynamicDocument):
     flag_clear_date = db.DateTimeField()
     flags = db.ListField(db.EmbeddedDocumentField(Flag))
     boops = db.ListField(db.ReferenceField(core.User))
+    boop_count = db.IntField(default=0)
     
     old_ipb_id = db.IntField()
 
     meta = {
         'indexes': [
             'old_ipb_id',
-        ]
+        ],
+        'ordering': ['created']
     }
 
 class Prefix(db.DynamicDocument):
@@ -141,12 +145,3 @@ class Category(db.DynamicDocument):
     
     def __unicode__(self):
         return self.name
-
-class Attachment(db.DynamicDocument):
-    filename = db.StringField(required=True)
-    mimetype = db.StringField(required=True)
-    size_in_bytes = db.IntField(required=True)
-    created_date = db.DateTimeField(required=True)
-    last_modified_date = db.DateTimeField()
-    owner = db.ReferenceField(core.User, required=True)
-    present_in = db.ListField(db.GenericReferenceField())

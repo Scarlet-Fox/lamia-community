@@ -343,3 +343,12 @@ class StatusUpdate(db.DynamicDocument):
     meta = {
         'ordering': ['-created']
     }
+
+class Attachment(db.DynamicDocument):
+    path = db.StringField(required=True)
+    mimetype = db.StringField(required=True)
+    extension = db.StringField(required=True)
+    size_in_bytes = db.IntField(required=True)
+    created_date = db.DateTimeField(required=True)
+    owner = db.ReferenceField(User, required=True)
+    present_in = db.ListField(db.GenericReferenceField())
