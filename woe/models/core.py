@@ -86,6 +86,7 @@ class User(db.DynamicDocument):
     password_token_age = db.DateTimeField()
     
     # Background details
+    pagination = db.IntField(default=20)
 
     last_sent_notification_email = db.DateTimeField()
     auto_acknowledge_notifications_after = db.IntField()
@@ -371,6 +372,7 @@ class StatusUpdate(db.DynamicDocument):
         'indexes': [
             'old_ipb_id',
             '-created',
+            'attached_to_user',
             {
                 'fields': ['$**',],
                 'default_language': 'english'
