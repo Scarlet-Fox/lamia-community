@@ -36,7 +36,10 @@ class Post(db.DynamicDocument):
 class Prefix(db.DynamicDocument):
     pre_html = db.StringField()
     post_html = db.StringField()
-    prefix = db.StringField(required=True)
+    prefix = db.StringField(required=True, unique=True)
+    
+    def __unicode__(self):
+        return self.prefix
 
 class PollChoice(db.DynamicEmbeddedDocument):
     user = db.ReferenceField(core.User)
@@ -68,6 +71,7 @@ class Topic(db.DynamicDocument):
     pre_html = db.StringField()
     post_html = db.StringField()
     prefix = db.StringField()
+    prefix_reference = db.ReferenceField(Prefix)
     
     # Background info
     watchers = db.ListField(db.ReferenceField(core.User))

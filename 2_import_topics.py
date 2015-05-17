@@ -1,6 +1,6 @@
 import MySQLdb
 import MySQLdb.cursors
-from woe.models.forum import Topic, Category, Poll, PollChoice
+from woe.models.forum import Topic, Category, Poll, PollChoice, Prefix
 from woe.models.core import User
 from slugify import slugify
 import HTMLParser
@@ -29,6 +29,17 @@ def get_topic_slug(title):
     
     return try_slug(slug)
     
+prefix_cursor = db.cursor()
+prefix_cursor.execute("select * from ipstopic_prefixes;")
+prefixes = prefix_cursor.fetchall()
+
+for p in prefixes:
+    prefix = Prefix()
+    prefix.pre_html = p["prefix_pre"].replace("ipsBadge", "badge prefix")
+    prefix.post_html = p["prefix_post"]
+    prefix.prefix = p["prefix_title"]
+    prefix.save()
+
 for t in c:
     topic = Topic()
     
@@ -90,6 +101,17 @@ for t in c:
             
             topic.polls.append(new_poll)
         
+    topic_prefix_cursor = db.cursor()
+    topic_prefix_cursor.execute("select * from ipscore_tags where tag_meta_area='topics' and tag_prefix=1 and tag_meta_id=%s", [topic.old_ipb_id,])
+    topic_prefix_cursor.fetchall()
+    
+    for prefix in topic_prefix_cursor:
+        prefix = Prefix.objects(prefix=prefix["tag_text"])[0]
+        topic.pre_html = prefix.pre_html
+        topic.post_html = prefix.post_html
+        topic.prefix = prefix.prefix
+        topic.prefix_reference = prefix
+    
     topic.save()
             
 categories = Category.objects()
