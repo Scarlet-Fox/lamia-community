@@ -136,9 +136,10 @@ class User(db.DynamicDocument):
     
     # Statistics
     joined = db.DateTimeField(required=True)
-    posts = db.IntField(default=0)
-    status_updates = db.IntField(default=0)
-    status_comments = db.IntField(default=0)
+    posts_count = db.IntField(default=0)
+    topic_count = db.IntField(default=0)
+    status_update_count = db.IntField(default=0)
+    status_comment_count = db.IntField(default=0)
     last_seen = db.DateTimeField()
     last_at = db.StringField(default="Watching forum index.")
     last_at_url = db.StringField(default="/")
@@ -318,3 +319,5 @@ class StatusUpdate(db.DynamicDocument):
     created = db.DateTimeField()
     replies = db.IntField(default=0)
     hot_score = db.IntField(default=0) # Replies - Age (basically)
+    
+    old_ipb_id = db.IntField()

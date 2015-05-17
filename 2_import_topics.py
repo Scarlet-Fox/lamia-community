@@ -113,7 +113,11 @@ for t in c:
         topic.prefix_reference = prefix
     
     topic.save()
-            
+
+for u in User.objects():
+    u.topics = Topic.objects(creator=u).count()
+    u.save()
+
 categories = Category.objects()
 for cat in categories:
     topics = Topic.objects(category=cat)
