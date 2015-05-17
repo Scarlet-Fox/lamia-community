@@ -86,3 +86,7 @@ for category in Category.objects():
     category.post_count = sum(Topic.objects(category=category).scalar("post_count"))
     
     category.save()
+    
+for u in User.objects():
+    u.update(post_count=Post.objects(author=u).count())
+    u.update(topic_count=Topic.objects(creator=u).count())

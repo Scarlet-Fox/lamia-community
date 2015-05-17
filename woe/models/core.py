@@ -353,6 +353,7 @@ class StatusUpdate(db.DynamicDocument):
     }
 
 class Attachment(db.DynamicDocument):
+    owner_name = db.StringField(required=True)
     path = db.StringField(required=True)
     mimetype = db.StringField(required=True)
     extension = db.StringField(required=True)

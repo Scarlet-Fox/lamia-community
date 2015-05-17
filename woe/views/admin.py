@@ -4,7 +4,7 @@ from flask.ext.login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose
 from flask_admin.contrib.mongoengine import ModelView
-from woe.models.core import User, StatusUpdate
+from woe.models.core import User, StatusUpdate, Attachment
 from woe.models.forum import Category, Topic, Prefix, Post
 
 class AuthAdminIndexView(admin.AdminIndexView):
@@ -20,7 +20,7 @@ class UserView(ModelView):
     can_create = False
     can_delete = False
     column_list = ("login_name", "display_name", "email_address", "banned", "validated", "status_count", "status_comment_count")
-    column_filters = ["banned","validated","disable_posts","disable_status","disable_status_participation","disable_pm","disable_topics"]
+    column_filters = ["banned","validated","disable_posts","disable_status","disable_status_participation","disable_pm","disable_topics","old_member_id"]
     column_searchable_list = ('login_name', 'display_name','about')
     
     def is_accessible(self):
@@ -64,11 +64,20 @@ class PostView(ModelView):
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
+
+class AttachView(ModelView):
+    can_delete = False
+    column_list = ("owner_name", "path", "mimetype", "size_in_bytes", "created", "used_in")
+    column_filters = ("owner_name",)
     
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 admin.add_view(UserView(User))
 admin.add_view(CategoryView(Category))
 admin.add_view(TopicView(Topic))
 admin.add_view(PostView(Post))
+admin.add_view(AttachView(Attachment))
 admin.add_view(PrefixView(Prefix))
 admin.add_view(StatusView(StatusUpdate))
 

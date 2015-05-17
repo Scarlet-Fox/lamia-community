@@ -21,6 +21,7 @@ for a in c.fetchall():
     attach.created_date = arrow.get(a["attach_date"]).replace(hours=-12).datetime
     try:
         attach.owner = User.objects(old_member_id=a["attach_member_id"])[0]
+        attach.owner_name = attach.owner.login_name
     except IndexError:
         continue
     attach.old_ipb_id = a["attach_id"]
