@@ -339,7 +339,7 @@ body {
   background: #fff;
 }
 
-img {
+.post-content-area img {
   max-width: 100%;
 }
 
@@ -347,6 +347,6 @@ img {
   cursor: pointer;
 }
 
-a {
+a.inherit_colors {
   color: inherit;
 }

@@ -24,6 +24,7 @@ redis_store = FlaskRedis(app)
 
 import utilities
 import views.core
+import views.forum
 import views.topics
 import views.dashboard
 import views.profiles

@@ -86,7 +86,8 @@ class User(db.DynamicDocument):
     password_token_age = db.DateTimeField()
     
     # Background details
-    pagination = db.IntField(default=20)
+    topic_pagination = db.IntField(default=20)
+    post_pagination = db.IntField(default=20)
 
     last_sent_notification_email = db.DateTimeField()
     auto_acknowledge_notifications_after = db.IntField()
