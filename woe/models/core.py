@@ -112,7 +112,10 @@ class User(db.DynamicDocument):
         'Tumblr'
     )
     
-    ignored_users = db.ListField(db.ReferenceField("User"))
+    # Blocks
+    ignored_users = db.ListField(db.ReferenceField("User")) # Topics, Blogs, Statuses, PMs
+    ignored_user_signatures = db.ListField(db.ReferenceField("User"))
+    
     remain_anonymous = db.BooleanField(default=False)
     
     # NOTE MOD NOTES ARE AUTO SENT VIA BOTH

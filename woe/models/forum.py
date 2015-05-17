@@ -32,6 +32,7 @@ class Post(db.DynamicDocument):
     flag_score = db.IntField(default=0)
     flag_clear_date = db.DateTimeField()
     flags = db.ListField(db.EmbeddedDocumentField(Flag))
+    boops = db.ListField(db.ReferenceField(core.User))
 
 class Prefix(db.DynamicDocument):
     pre_html = db.StringField()
@@ -75,7 +76,6 @@ class Topic(db.DynamicDocument):
     
     # Background info
     watchers = db.ListField(db.ReferenceField(core.User))
-    boops = db.ListField(db.ReferenceField(core.User))
     topic_moderators = db.ListField(db.ReferenceField(core.User))
     user_post_counts = db.DictField()
     data = db.DictField()

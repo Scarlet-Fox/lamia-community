@@ -3,12 +3,20 @@ import MySQLdb.cursors
 from woe.models.core import User
 import arrow, os, shutil
 from PIL import Image
+import phpserialize
 
 db = MySQLdb.connect(user="root", db="woe", cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
 c=db.cursor()
 c.execute("select * from ipsmembers m left join ipsprofile_portal p ON m.member_id=p.pp_member_id;")
 
+blocks = {}
+
+
 for u in c.fetchall():
+    try:
+        blocks[u["member_id"]] = phpserialize.loads(u["ignored_users"])
+    except:
+        blocks[u["member_id"]] = {}
     m = User()
     m.login_name = u["members_l_username"].encode("latin1")
     m.display_name = u["members_display_name"].encode("latin1")
@@ -65,3 +73,17 @@ for u in c.fetchall():
         m.avatar_60_x, m.avatar_60_y = sixty_image.size
         
         m.save()
+        
+for u in User.objects():
+    user_blocks = blocks.get(u.old_member_id,{})
+    for user in user_blocks.keys():
+        blocked_user = User.objects(old_member_id=user)[0]
+        blocks_against_user = user_blocks[user]
+        
+        if blocks_against_user.get("ignore_topics") == "1" or blocks_against_user.get("ignore_messages") == "1":
+            u.ignored_users.append(blocked_user)
+            
+        if blocks_against_user.get("ignore_signatures") == "1":
+            u.ignored_user_signatures.append(blocked_user)
+    
+    u.save()
