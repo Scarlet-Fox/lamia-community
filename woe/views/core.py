@@ -1,6 +1,6 @@
 from woe import login_manager
 from woe import app
-from woe.models.core import User
+from woe.models.core import User, DisplayNameHistory
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from flask.ext.login import login_user, logout_user

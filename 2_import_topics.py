@@ -70,7 +70,7 @@ for t in c:
     
     topic.view_count = t["views"]
     
-    topic.created = arrow.get(t["start_date"]).datetime
+    topic.created = arrow.get(t["start_date"]).replace(hours=-12).datetime
     topic.creator = User.objects(old_member_id=t["starter_id"])[0]
     topic.save()
     

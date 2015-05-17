@@ -26,7 +26,7 @@ for s in c.fetchall():
         user_status_count[status.author.pk] += 1
     
     status.message = s["status_content"].encode("latin1")
-    status.created = arrow.get(s["status_date"]).datetime
+    status.created = arrow.get(s["status_date"]).replace(hours=-12).datetime
     status.old_ipb_id = s["status_id"]
     
     status_reply_cursor = db.cursor()
@@ -36,7 +36,7 @@ for s in c.fetchall():
     for status_reply in status_reply_cursor.fetchall():
         comment = StatusComment()
         comment.text = status_reply["reply_content"].encode("latin1")
-        comment.created = arrow.get(status_reply["reply_date"]).datetime
+        comment.created = arrow.get(status_reply["reply_date"]).replace(hours=-12).datetime
         comment.author = User.objects(old_member_id=status_reply["reply_member_id"])[0]
         if not user_comment_count.has_key(comment.author.pk):
             user_comment_count[comment.author.pk] = 1

@@ -1,4 +1,4 @@
-from woe.models.core import User
+from woe.models.core import User, DisplayNameHistory
 from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
@@ -87,7 +87,8 @@ def change_display_name_password(login_name):
             user.set_password(form.new_password.data.strip())
             
         if form.display_name.data.strip() != user.display_name:
-            user.display_name_history.append({user.display_name: str(arrow.utcnow().datetime)})
+            dnh = DisplayNameHistory(name=user.display_name, date=arrow.utcnow().datetime)
+            user.display_name_history.append(dnh)
             user.display_name = form.display_name.data.strip()
             
         if form.email.data.strip() != user.email_address:

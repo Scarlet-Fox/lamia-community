@@ -33,6 +33,14 @@ class Post(db.DynamicDocument):
     flag_clear_date = db.DateTimeField()
     flags = db.ListField(db.EmbeddedDocumentField(Flag))
     boops = db.ListField(db.ReferenceField(core.User))
+    
+    old_ipb_id = db.IntField()
+
+    meta = {
+        'indexes': [
+            'old_ipb_id',
+        ]
+    }
 
 class Prefix(db.DynamicDocument):
     pre_html = db.StringField()
@@ -90,9 +98,12 @@ class Topic(db.DynamicDocument):
     
     # IPB migration
     old_ipb_id = db.IntField()
-    
+
     meta = {
-        'ordering': ['sticky', '-created']
+        'ordering': ['sticky', '-created'],
+        'indexes': [
+            'old_ipb_id',
+        ]
     }
 
 class Category(db.DynamicDocument):

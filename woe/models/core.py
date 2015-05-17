@@ -47,6 +47,14 @@ class UserActivity(db.DynamicEmbeddedDocument):
     created = db.DateTimeField(required=True)
     data = db.DictField()
 
+class DisplayNameHistory(db.DynamicEmbeddedDocument):
+    name = db.StringField(required=True)
+    date = db.DateTimeField(required=True)
+
+class ProfileField(db.DynamicEmbeddedDocument):
+    field = db.StringField(required=True)
+    value = db.StringField(required=True)
+
 class User(db.DynamicDocument):
     login_name = db.StringField(required=True, unique=True)
     display_name = db.StringField(required=True, unique=True)
@@ -70,8 +78,8 @@ class User(db.DynamicDocument):
     avatar_40_y = db.IntField()
     avatar_timestamp = db.StringField(default="")
     
-    information_fields = db.ListField(db.DictField()) # TODO: Create Field Class
-    social_fields = db.ListField(db.DictField()) # TODO: Create Field Class
+    information_fields = db.ListField(db.EmbeddedDocumentField(ProfileField))
+    social_fields = db.ListField(db.EmbeddedDocumentField(ProfileField))
     
     # Restoring account
     password_token = db.StringField()
@@ -96,7 +104,7 @@ class User(db.DynamicDocument):
     
     warning_points = db.IntField(default=0)
     
-    display_name_history = db.ListField(db.DictField()) # TODO: Create history embed
+    display_name_history = db.ListField(db.EmbeddedDocumentField(DisplayNameHistory))
     mod_notes = db.ListField(db.EmbeddedDocumentField("ModNote"))
     
     ALLOWED_INFO_FIELDS = (
@@ -155,6 +163,12 @@ class User(db.DynamicDocument):
     # Permissions
     is_admin = db.BooleanField(default=False)
     is_mod = db.BooleanField(default=False)
+    
+    meta = {
+        'indexes': [
+            'old_member_id',
+        ]
+    }
     
     def __unicode__(self):
         return self.login_name
