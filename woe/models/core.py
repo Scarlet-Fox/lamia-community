@@ -360,4 +360,5 @@ class Attachment(db.DynamicDocument):
     created_date = db.DateTimeField(required=True)
     owner = db.ReferenceField(User, required=True)
     present_in = db.ListField(db.GenericReferenceField())
+    used_in = db.IntField(default=0)
     old_ipb_id = db.IntField()
