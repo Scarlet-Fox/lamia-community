@@ -330,7 +330,7 @@ span.topic-listing-name span.prefix {
   max-width: 100%;
 }
 
-/* IPB Hacks */
+/* Hacks */
 
 .bbc_center {
   text-align: center;
@@ -350,4 +350,8 @@ body {
 
 a.inherit_colors {
   color: inherit;
+}
+
+.status-message {
+  font-size: 12px;
 }

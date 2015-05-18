@@ -39,6 +39,7 @@ def category_filter_preferences(slug):
 
 @app.route('/category/<slug>/topics', methods=['POST'])
 def category_topics(slug):
+    t = time.time()
     try:
         category = Category.objects(slug=slug)[0]
     except IndexError:
@@ -90,6 +91,7 @@ def category_topics(slug):
             
         parsed_topics.append(parsed_topic)
     
+    print time.time()-t
     return app.jsonify(topics=parsed_topics, count=topic_count)
 
 @app.route('/category/<slug>')

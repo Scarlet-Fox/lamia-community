@@ -41,8 +41,10 @@
           span &nbsp;says:
           span.discuss 
             a(href="/status/{{status.pk}}") Discuss
-          p {{ status.message }}
-          p.status-reply-time 
+          br
+          span.status-message {{ status.message }}
+          br
+          span.status-reply-time 
             a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
       {% endfor %}
 .row 
