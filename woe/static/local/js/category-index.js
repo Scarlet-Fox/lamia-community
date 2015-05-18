@@ -135,20 +135,19 @@
       Category.prototype.getPreferences = function() {
         return $.get("/category/" + this.slug + "/filter-preferences", (function(_this) {
           return function(data) {
-            var prefix, results;
+            var prefix;
             _this.preferences = data.preferences;
             if ($.isEmptyObject(_this.preferences)) {
-              return _this.disablePrefixFiltering();
+              _this.disablePrefixFiltering();
             } else {
               $(".prefix-filter-action").children("span").removeClass("glyphicon-ok");
               $(".prefix-filter-action").children("span").addClass("glyphicon-remove");
-              results = [];
               for (prefix in _this.preferences) {
                 $("[data-prefix='" + prefix + "']").children("span").removeClass("glyphicon-remove");
-                results.push($("[data-prefix='" + prefix + "']").children("span").addClass("glyphicon-ok"));
+                $("[data-prefix='" + prefix + "']").children("span").addClass("glyphicon-ok");
               }
-              return results;
             }
+            return _this.refreshTopics();
           };
         })(this));
       };

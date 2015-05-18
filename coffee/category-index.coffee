@@ -159,5 +159,7 @@ $ ->
           for prefix of @preferences
             $("[data-prefix='#{prefix}']").children("span").removeClass("glyphicon-remove")
             $("[data-prefix='#{prefix}']").children("span").addClass("glyphicon-ok")
+
+        do @refreshTopics
   
   window.category = new Category($(".topic-listing").data("slug"))
