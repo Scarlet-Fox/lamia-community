@@ -4,6 +4,7 @@ from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
 from flask.ext.admin import Admin
 from flask.ext.redis import FlaskRedis
+from flask.ext.cache import Cache
 from os import path
 
 REDIS_URL = "redis://127.0.0.1:6379/0"
@@ -16,7 +17,10 @@ app.config["MONGODB_SETTINGS"] = {'DB': "woe_main"}
 app.config["SECRET_KEY"] = "woe"
 app.config["AVATAR_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'avatars')
 app.config["MAX_CONTENT_LENGTH"] = 1000000000
+app.config['DEBUG'] = True
 
+cache = Cache(config={'CACHE_TYPE': 'simple'})
+cache.init_app(app)
 db = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(db)
 bcrypt = Bcrypt(app)

@@ -50,8 +50,10 @@ def category_topics(slug):
     else:
         prefixes = []
     
-    page = request.form.get("page", 1)
-    pagination = request.form.get("pagination", 20)
+    request_json = request.get_json(force=True)
+    page = request_json.get("page", 1)
+    pagination = request_json.get("pagination", 20)
+    print request_json
     
     try:
         minimum = (int(page)-1)*int(pagination)
@@ -62,10 +64,10 @@ def category_topics(slug):
     
     if prefixes:
         topics = Topic.objects(category=category, prefix__in=prefixes, hidden=False).order_by("-last_post_date")[minimum:maximum]
+        topic_count = Topic.objects(category=category, prefix__in=prefixes, hidden=False).count()
     else:
         topics = Topic.objects(category=category)[minimum:maximum]
-    
-    topic_count = Topic.objects(category=category, prefix__in=prefixes, hidden=False).count()
+        topic_count = Topic.objects(category=category).count()
     
     parsed_topics = []
     for topic in topics:

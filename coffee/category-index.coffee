@@ -4,11 +4,12 @@ $ ->
       @slug = slug
       category = @
       @page = 1
+      @max_pages = 1
       @pagination = $(".topic-listing").data("pagination")
       @topicHTML = Handlebars.compile(@topicHTMLTemplate())
+      @paginationHTML = Handlebars.compile(@paginationHTMLTeplate())
       
       do @getPreferences
-      do @refreshTopics
       
       $("#prefix-filter-show-all").click (e) =>
         e.preventDefault()
@@ -25,6 +26,48 @@ $ ->
           element.children("span").addClass "glyphicon-ok"
         do category.setPreferences
         
+      $("nav.pagination-listing").delegate ".change-page", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        $(".page-link-#{category.page}").parent().removeClass("active")
+        category.page = parseInt(element.text())
+        do category.refreshTopics
+        
+      $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        if category.page != 1
+          $(".change-page").parent().removeClass("active")
+          category.page--
+          do category.refreshTopics
+        
+      $("nav.pagination-listing").delegate "#next-page", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        if category.page != category.max_pages
+          $(".change-page").parent().removeClass("active")
+          category.page++
+          do category.refreshTopics
+    
+    paginationHTMLTeplate: () ->
+      return """
+          <ul class="pagination">
+            <li>
+              <a href="#" aria-label="Previous" id="previous-page">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            {{#each pages}}
+            <li><a href="#" class="change-page page-link-{{this}}">{{this}}</a></li>
+            {{/each}}
+            <li>
+              <a href="#" aria-label="Next" id="next-page">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+      """
+    
     topicHTMLTemplate: () ->
       return """
         <div class="row">
@@ -64,15 +107,25 @@ $ ->
           </div>
         </div>
       </div>
+      {{#unless last}}
       <hr>
+      {{/unless}}
       """  
       
     refreshTopics: () ->
       new_topic_html = ""
       $.post "/category/#{@slug}/topics", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
-        for topic in data.topics
+        for topic, i in data.topics
+          if i == data.topics.length-1
+            topic.last = true
           new_topic_html = new_topic_html + @topicHTML topic
+        pages = [1..Math.round data.count/@pagination]
+        @max_pages = pages.length
+        pagination_html = @paginationHTML {pages: pages}
+        
         $(".topic-listing").html(new_topic_html)
+        $(".pagination-listing").html(pagination_html)
+        $(".page-link-#{@page}").parent().addClass("active")
       
     disablePrefixFiltering: () ->
       @preferences = {}

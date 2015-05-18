@@ -116,6 +116,7 @@ class Topic(db.DynamicDocument):
             'old_ipb_id',
             '-created',
             'created',
+            'category',
             {
                 'fields': ['$title',],
                 'default_language': 'english'
