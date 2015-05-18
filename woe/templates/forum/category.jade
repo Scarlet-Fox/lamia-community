@@ -1,0 +1,70 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.breadcrumb
+  li
+    a(href="/") Home
+  {% if category.parent != None and category.parent.root_category != True %}
+  li.active 
+    a(href="{{url_for('category_index', slug=category.parent.slug)}}") {{category.parent.name}}
+  {% endif %}
+  li.active 
+    a(href="{{url_for('category_index', slug=category.slug)}}") {{category.name}}
+.row
+  {% if subcategories %}
+  .col-md-12
+    ul.list-group.category
+      li.list-group-item.section-header Subcategories
+      {% for subcategory in subcategories %}
+      li.list-group-item.subcategory
+        div
+          .row
+            .col-xs-12.col-sm-6
+              .subcategory-listing-name 
+                a(href="{{url_for('category_index', slug=subcategory.slug)}}") {{ subcategory.name }}
+            .col-sm-6.hidden-xs.hidden-sm
+              .subcategory-listing-recent-image
+                a(href="{{url_for('view_profile', login_name=subcategory.last_post_by.login_name)}}")
+                  img(src="{{subcategory.last_post_author_avatar}}", width="40px", height="40px")
+              .subcategory-listing-recent
+                a(href="/topic/{{subcategory.last_topic.slug}}") {{subcategory.last_topic.title}}
+                br
+                a(href="/topic/{{subcategory.last_topic.slug}}") {{subcategory.last_post_date|humanize_time}}
+      {% endfor %}
+  {% endif %}
+.row
+  .col-md-12
+    ul.list-group.category
+      li.list-group-item.section-header
+        if prefixes[0]
+          .btn-group
+              button.btn.btn-default.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                | Prefix Filter 
+                span.caret
+              ul.dropdown-menu(role='menu')
+                {% for prefix in prefixes[0] %}
+                li
+                  a.prefix-filter-action(href='#', data-prefix='{{prefix}}') {{prefix}} <span class="glyphicon glyphicon-ok float-right"></span> 
+                {% endfor %}
+                li.divider
+                li
+                  a#prefix-filter-clear(href='#') Clear All
+            //- .btn-group(style='float: right;')
+            //-   {% if current_user.is_mod %}
+            //-   button.btn.btn-default.btn-xs(type='button') Moderate
+            //-   button.btn.btn-default.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+            //-     | Actions
+            //-     span.caret
+            //-   ul.dropdown-menu(role='menu')
+            //-     li
+            //-       a(href='#') Action
+            //-     li
+            //-       a(href='#') Another action
+            //-     li
+            //-       a(href='#') Something else here
+            //-     li.divider
+            //-     li
+            //-       a(href='#') Separated link
+            //-   {% endif %}
+      li.list-group-item.topic-listing
+{% endblock %}

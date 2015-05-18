@@ -144,23 +144,22 @@ class Category(db.DynamicDocument):
     topic_count = db.IntField(default=0)
     post_count = db.IntField(default=0)
     view_count = db.IntField(default=0)
-    last_topic = db.ReferenceField(Topic) # TODO
+    last_topic = db.ReferenceField(Topic)
     last_topic_name = db.StringField()
     last_post_by = db.ReferenceField(core.User)
     last_post_date = db.DateTimeField()
     last_post_author_avatar = db.StringField()
     
-    def get_last_topic(self):
-        try:
-            return Topic.objects(title=self.last_topic_name)[0]
-        except:
-            return ""
-    
     # IPB migration
     old_ipb_id = db.IntField()
     
     meta = {
-        'ordering': ['parent','weight']
+        'ordering': ['parent','weight'],
+        'indexes': [
+            'parent',
+            'root_category',
+            'weight'
+        ]
     }
     
     def __unicode__(self):

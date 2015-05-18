@@ -83,6 +83,7 @@ for category in Category.objects():
         category_most_recent_topic = Topic.objects(category=category).order_by("-last_post_date")[0]
     except IndexError:
         continue
+    category.last_topic = category_most_recent_topic
     category.last_topic_name = category_most_recent_topic.title
     category.last_post_by = category_most_recent_topic.last_post_by
     category.last_post_date = category_most_recent_topic.last_post_date

@@ -56,6 +56,7 @@ class ProfileField(db.DynamicEmbeddedDocument):
     value = db.StringField(required=True)
 
 class User(db.DynamicDocument):
+    data = db.DictField(default={})
     login_name = db.StringField(required=True, unique=True)
     display_name = db.StringField(required=True, unique=True)
     password_hash = db.StringField()

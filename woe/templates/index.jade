@@ -21,9 +21,9 @@
                 a(href="{{url_for('view_profile', login_name=category.last_post_by.login_name)}}")
                   img(src="{{category.last_post_author_avatar}}", width="40px", height="40px")
               span.subcategory-listing-recent
-                a(href="/topic/{{category.get_last_topic().slug}}") {{category.get_last_topic().title}}
+                a(href="/topic/{{category.last_topic.slug}}") {{category.last_topic.title}}
                 br
-                a(href="#") {{category.last_post_date|humanize_time}}
+                a(href="/topic/{{category.last_topic.slug}}") {{category.last_post_date|humanize_time}}
             {% endif %}
       {% endif %}
       {% endfor %}
@@ -42,7 +42,8 @@
           span.discuss 
             a(href="/status/{{status.pk}}") Discuss
           p {{ status.message }}
-          p.status-reply-time {{ status.created|humanize_time }}
+          p.status-reply-time 
+            a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
       {% endfor %}
 .row 
   .col-md-12

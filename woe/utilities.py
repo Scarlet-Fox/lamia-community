@@ -3,6 +3,20 @@ import hashlib
 import arrow
 from woe import app
 
+def get_top_frequences(frequencies, trim, floor=10):
+    inside_out = {}
+    
+    for key, value in frequencies.items():
+        if value > floor:
+            inside_out[value] = key
+
+    values = inside_out.keys()
+    values.sort()
+    values.reverse()
+    keys = [inside_out[v] for v in values]
+    
+    return ([keys[:trim], values[:trim]])
+    
 def md5(txt):
     return hashlib.md5(txt).hexdigest()
 
