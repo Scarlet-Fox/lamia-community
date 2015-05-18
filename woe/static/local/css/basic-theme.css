@@ -135,7 +135,7 @@
 }
 .status-reply .status-reply-time {
   font-style: italic;
-  font-size: 80%;
+  font-size: 12px;
 }
 .status-replies {
   overflow-y: scroll;
