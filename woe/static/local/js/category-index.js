@@ -86,11 +86,12 @@
               if (i === data.topics.length - 1) {
                 topic.last = true;
               }
+              topic.last_page = Math.ceil(topic.last_page);
               new_topic_html = new_topic_html + _this.topicHTML(topic);
             }
             pages = (function() {
               results = [];
-              for (var k = 1, ref1 = Math.round(data.count / _this.pagination); 1 <= ref1 ? k <= ref1 : k >= ref1; 1 <= ref1 ? k++ : k--){ results.push(k); }
+              for (var k = 1, ref1 = Math.ceil(data.count / _this.pagination); 1 <= ref1 ? k <= ref1 : k >= ref1; 1 <= ref1 ? k++ : k--){ results.push(k); }
               return results;
             }).apply(this);
             _this.max_pages = pages[pages.length - 1];

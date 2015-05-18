@@ -83,7 +83,7 @@ def category_topics(slug):
         parsed_topic["post_count"] = "{:,}".format(topic.post_count)
         parsed_topic["view_count"] = "{:,}".format(topic.view_count)
         try:
-            parsed_topic["last_page"] = topic.post_count/pagination
+            parsed_topic["last_page"] = float(topic.post_count)/float(pagination)
         except:
             parsed_topic["last_page"] = 1
         parsed_topic["last_pages"] = parsed_topic["last_page"] > 1

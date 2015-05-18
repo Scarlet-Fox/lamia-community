@@ -119,8 +119,9 @@ $ ->
         for topic, i in data.topics
           if i == data.topics.length-1
             topic.last = true
+          topic.last_page = Math.ceil topic.last_page
           new_topic_html = new_topic_html + @topicHTML topic
-        pages = [1..Math.round data.count/@pagination]
+        pages = [1..Math.ceil data.count/@pagination]
         @max_pages = pages[pages.length-1]
         pagination_html = @paginationHTML {pages: pages}
         
