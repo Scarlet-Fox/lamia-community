@@ -48,6 +48,7 @@
                 {% endfor %}
                 li.divider
                 li
+                  a#prefix-filter-show-all(href='#') Show All
                   a#prefix-filter-clear(href='#') Clear All
             //- .btn-group(style='float: right;')
             //-   {% if current_user.is_mod %}
@@ -66,5 +67,5 @@
             //-     li
             //-       a(href='#') Separated link
             //-   {% endif %}
-      li.list-group-item.topic-listing
+      li.list-group-item.topic-listing(data-pagination='{{current_user.topic_pagination}}')
 {% endblock %}

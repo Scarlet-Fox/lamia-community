@@ -3,6 +3,14 @@ import hashlib
 import arrow
 from woe import app
 
+def scrub_json(list_of_json, fields_to_scrub=[]):
+    for o in list_of_json:
+        for f in fields_to_scrub:
+            try:
+                del o[f]
+            except KeyError:
+                continue
+
 def get_top_frequences(frequencies, trim, floor=10):
     inside_out = {}
     
