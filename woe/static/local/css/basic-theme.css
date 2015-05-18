@@ -264,7 +264,8 @@
   float: left;
 }
 span.topic-listing-name span.prefix {
-  font-size: 70%;
+  font-size: 90%;
+  font-weight: normal;
   vertical-align: top;
   margin-top: 2px;
 }

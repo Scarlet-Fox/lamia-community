@@ -49,7 +49,6 @@
                 li.divider
                 li
                   a#prefix-filter-show-all(href='#') Show All
-                  a#prefix-filter-clear(href='#') Clear All
             //- .btn-group(style='float: right;')
             //-   {% if current_user.is_mod %}
             //-   button.btn.btn-default.btn-xs(type='button') Moderate
@@ -67,5 +66,15 @@
             //-     li
             //-       a(href='#') Separated link
             //-   {% endif %}
-      li.list-group-item.topic-listing(data-pagination='{{current_user.topic_pagination}}')
+      li.list-group-item.topic-listing(data-pagination='{{current_user.topic_pagination}}',data-slug='{{category.slug}}')
+{% endblock %}
+
+{% block script %}
+script(src="/static/assets/moment.min.js")
+script(src="/static/assets/handlebars.min.js")
+script(src="/static/local/js/category-index.js")
+script(type="text/javascript")
+  $(document).ready(function(){
+    $('#forum-li').addClass('active');
+  });
 {% endblock %}

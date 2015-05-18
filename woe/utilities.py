@@ -75,3 +75,11 @@ def humanize(time):
         return a.humanize()
     else:
         return a.format("MMM D, h:m a")
+        
+def humanize_time(time, format_str="MMM D, h:m a"):
+    a = arrow.get(time)
+    b = arrow.utcnow().replace(hours=-24)
+    if a > b:
+        return a.humanize()
+    else:
+        return a.format(format_str)
