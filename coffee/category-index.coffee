@@ -45,6 +45,7 @@ $ ->
         e.preventDefault()
         element = $(this)
         if category.page != category.max_pages
+          console.log $(".page-link-#{category.page}").parent().next().children("a").text()
           $(".change-page").parent().removeClass("active")
           category.page++
           do category.refreshTopics
@@ -120,7 +121,7 @@ $ ->
             topic.last = true
           new_topic_html = new_topic_html + @topicHTML topic
         pages = [1..Math.round data.count/@pagination]
-        @max_pages = pages.length
+        @max_pages = pages[pages.length-1]
         pagination_html = @paginationHTML {pages: pages}
         
         $(".topic-listing").html(new_topic_html)

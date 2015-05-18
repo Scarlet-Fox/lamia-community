@@ -55,6 +55,7 @@
           e.preventDefault();
           element = $(this);
           if (category.page !== category.max_pages) {
+            console.log($(".page-link-" + category.page).parent().next().children("a").text());
             $(".change-page").parent().removeClass("active");
             category.page++;
             return category.refreshTopics();
@@ -92,7 +93,7 @@
               for (var k = 1, ref1 = Math.round(data.count / _this.pagination); 1 <= ref1 ? k <= ref1 : k >= ref1; 1 <= ref1 ? k++ : k--){ results.push(k); }
               return results;
             }).apply(this);
-            _this.max_pages = pages.length;
+            _this.max_pages = pages[pages.length - 1];
             pagination_html = _this.paginationHTML({
               pages: pages
             });

@@ -58,27 +58,28 @@ def category_topics(slug):
     try:
         minimum = (int(page)-1)*int(pagination)
         maximum = int(page)*int(pagination)
-    except TypeError:
+    except:
         minimum = 0
         maximum = 20
     
     if prefixes:
-        topics = Topic.objects(category=category, prefix__in=prefixes, hidden=False).order_by("-last_post_date")[minimum:maximum]
-        topic_count = Topic.objects(category=category, prefix__in=prefixes, hidden=False).count()
+        topics = Topic.objects(category=category, prefix__in=prefixes, hidden=False, post_count__gt=0).order_by("-last_post_date")[minimum:maximum]
+        topic_count = Topic.objects(category=category, prefix__in=prefixes, hidden=False, post_count__gt=0).count()
     else:
-        topics = Topic.objects(category=category)[minimum:maximum]
-        topic_count = Topic.objects(category=category).count()
+        topics = Topic.objects(category=category, post_count__gt=0)[minimum:maximum]
+        topic_count = Topic.objects(category=category, post_count__gt=0).count()
     
     parsed_topics = []
     for topic in topics:
         parsed_topic = topic.to_mongo().to_dict()
         parsed_topic["creator"] = topic.creator.display_name
         parsed_topic["created"] = humanize_time(topic.created, "MMM D YYYY")
-        parsed_topic["last_post_date"] = humanize_time(topic.last_post_date)
-        parsed_topic["last_post_by"] = topic.last_post_by.display_name
-        parsed_topic["last_post_x"] = topic.last_post_by.avatar_40_x
-        parsed_topic["last_post_y"] = topic.last_post_by.avatar_40_y
-        parsed_topic["last_post_by_login_name"] = topic.last_post_by.login_name
+        if topic.last_post_date:
+            parsed_topic["last_post_date"] = humanize_time(topic.last_post_date)
+            parsed_topic["last_post_by"] = topic.last_post_by.display_name
+            parsed_topic["last_post_x"] = topic.last_post_by.avatar_40_x
+            parsed_topic["last_post_y"] = topic.last_post_by.avatar_40_y
+            parsed_topic["last_post_by_login_name"] = topic.last_post_by.login_name
         parsed_topic["post_count"] = "{:,}".format(topic.post_count)
         parsed_topic["view_count"] = "{:,}".format(topic.view_count)
         try:
