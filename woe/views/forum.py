@@ -15,10 +15,10 @@ def category_filter_preferences(slug):
         category = Category.objects(slug=slug)[0]
     except IndexError:
         return abort(404)
+    if not current_user.is_authenticated():
+        return json.jsonify(preferences={})
             
     if request.method == 'POST':
-        if not current_user.is_authenticated:
-            return json.jsonify(preferences={})
         
         request_json = request.get_json(force=True)
         try:
@@ -31,9 +31,6 @@ def category_filter_preferences(slug):
         preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
         return json.jsonify(preferences=preferences)
     else:        
-        if not current_user.is_authenticated:
-            return json.jsonify(preferences={})
-    
         preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
         return json.jsonify(preferences=preferences)
 
@@ -45,7 +42,7 @@ def category_topics(slug):
     except IndexError:
         return abort(404)
     
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
         prefixes = preferences.keys()
     else:
@@ -54,7 +51,6 @@ def category_topics(slug):
     request_json = request.get_json(force=True)
     page = request_json.get("page", 1)
     pagination = request_json.get("pagination", 20)
-    print request_json
     
     try:
         minimum = (int(page)-1)*int(pagination)
@@ -63,7 +59,7 @@ def category_topics(slug):
         minimum = 0
         maximum = 20
     
-    if prefixes:
+    if len(prefixes) > 0:
         topics = Topic.objects(category=category, prefix__in=prefixes, hidden=False, post_count__gt=0).order_by("-last_post_date")[minimum:maximum]
         topic_count = Topic.objects(category=category, prefix__in=prefixes, hidden=False, post_count__gt=0).count()
     else:

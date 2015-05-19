@@ -133,7 +133,7 @@
 .status-reply p {
   overflow: hidden;
 }
-.status-reply .status-reply-time {
+.status-reply-time {
   font-style: italic;
   font-size: 12px;
 }
