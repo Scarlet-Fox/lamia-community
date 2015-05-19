@@ -7,9 +7,9 @@
     ul.list-group.category 
       {% for category in category_list %}
       {% if loop.first %}
-      li.list-group-item.section-header {{category.name}}
+      li.list-group-item.section-header.category-section-header {{category.name}}
       {% else %}
-      li.list-group-item.subcategory
+      li.list-group-item.subcategory.category-subcategories
         div
           .row
             .col-xs-12.col-sm-6
@@ -30,9 +30,9 @@
     {% endfor %}
   .col-md-4
     ul.list-group
-      li.list-group-item.section-header Status Updates
+      li.list-group-item.section-header.sidebar-section-header Status Updates
       {% for status in status_updates %}
-      li.list-group-item.front-page-status
+      li.list-group-item.front-page-status.side-status-section
         .media-left
           a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
             img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="40px", height="40px")
