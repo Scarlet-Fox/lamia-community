@@ -32,7 +32,7 @@
     ul.list-group
       li.list-group-item.section-header.sidebar-section-header Status Updates
       {% for status in status_updates %}
-      li.list-group-item.front-page-status.side-status-section
+      li.list-group-item.front-page-status.sidebar-status-section
         .media-left
           a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
             img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="40px", height="40px")
