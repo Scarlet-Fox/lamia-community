@@ -14,11 +14,12 @@
     a(href="{{url_for('topic_index', slug=topic.slug)}}") {{topic.title}}
 .row
   .col-md-12
-    ul.list-group.category#post-container
-
+    ul.list-group.category#post-container(data-slug="{{topic.slug}}")
       li.list-group-item(style="overflow: hidden;")
         #new-post-box
-        
+          if current_user.is_authenticated() == False:
+            p.text-muted Please login to make a reply to this topic.
+
 {% endblock %}
 
 {% block header %}
@@ -27,12 +28,32 @@ link(href='/static/assets/quill/quill.snow.css', rel='stylesheet')
 {% endblock %}
 
 {% block script %}
+script(src="/static/assets/handlebars.min.js")
 script(src="/static/assets/quill/quill.js")
 script(src="/static/local/js/inline-editor.js")
+script(src="/static/local/js/post-index.js")
 script(type="text/javascript")
-  $(document).ready(function(){
+  $(document).ready(function(){  
+    {% if current_user.is_authenticated() == True %}
+    window._pagination={{current_user.post_pagination}};
+    window._is_topic_mod={{topic.is_topic_mod(current_user)}};
+    {% else %}
+    window._pagination=true;
+    window._is_topic_mod=false;
+    {% endif %}
+    
+    window._initial_page={{initial_page}};
+    
+    {% if initial_post == "" %}
+    window._initial_post="";
+    {% else %}
+    window._initial_post={{initial_post}};
+    {% endif %}
+    
+    {% if current_user.is_authenticated() == True %}
     var editor = new InlineEditor("#new-post-box", "", false);
     editor.onSave(function (html) {
     });
+    {% endif %}
   });
 {% endblock %}

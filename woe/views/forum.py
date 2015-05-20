@@ -7,16 +7,66 @@ from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user
 import arrow, time
-from woe.utilities import get_top_frequences, scrub_json, humanize_time
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser
 
-@app.route('/topic/<slug>', methods=['GET'])
-def topic_index(slug):
+@app.route('/topic/<slug>/posts', methods=['POST'])
+def topic_posts(slug):
     try:
         topic = Topic.objects(slug=slug)[0]
     except IndexError:
         return abort(404)
+    # TODO : Check if someone is topic banned.
+
+    request_json = request.get_json(force=True)
+    
+    try:
+        pagination = int(request_json.get("pagination", 20))
+        page = int(request_json.get("page", 1))
+    except:
+        pagination = 20
+        page = 1
         
-    return render_template("forum/topic.jade", topic=topic)
+    posts = Post.objects(hidden=False, topic=topic)[(page-1)*pagination:page*pagination]
+    post_count = Post.objects(hidden=False, topic=topic).count()
+    parsed_posts = []
+    
+    for post in posts:
+        clean_html_parser = ForumPostParser()
+        parsed_post = post.to_mongo().to_dict()
+        parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
+        parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
+        parsed_post["html"] = clean_html_parser.parse(post.html)
+        parsed_post["user_avatar"] = post.author.get_avatar_url()
+        parsed_post["user_avatar_x"] = post.author.avatar_full_x
+        parsed_post["user_avatar_y"] = post.author.avatar_full_y
+        parsed_posts.append(post)
+        
+    return json.jsonify(posts=parsed_posts, count=post_count)    
+
+@app.route('/topic/<slug>', methods=['GET'], defaults={'page': 1, 'post': ""})
+@app.route('/topic/<slug>/page/<page>', methods=['GET'], defaults={'post': ""})
+@app.route('/topic/<slug>/page/<page>/post/<post>', methods=['GET'])
+def topic_index(slug, page, post):
+    try:
+        topic = Topic.objects(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+    # TODO : Check if someone is topic banned.
+    
+    try:
+        page = int(page)
+    except:
+        page = 1
+        
+    if post != "":
+        try:
+            post = Post.objects(topic=topic, pk=post)
+        except:
+            return abort(404)
+    else:
+        post = ""
+
+    return render_template("forum/topic.jade", topic=topic, initial_page=page, initial_post="")
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
@@ -45,7 +95,6 @@ def category_filter_preferences(slug):
 
 @app.route('/category/<slug>/topics', methods=['POST'])
 def category_topics(slug):
-    t = time.time()
     try:
         category = Category.objects(slug=slug)[0]
     except IndexError:
@@ -96,7 +145,6 @@ def category_topics(slug):
             
         parsed_topics.append(parsed_topic)
     
-    print time.time()-t
     return app.jsonify(topics=parsed_topics, count=topic_count)
 
 @app.route('/category/<slug>', methods=['GET'])

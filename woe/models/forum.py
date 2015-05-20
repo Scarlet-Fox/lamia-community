@@ -109,6 +109,12 @@ class Topic(db.DynamicDocument):
     
     # IPB migration
     old_ipb_id = db.IntField()
+    
+    def is_topic_mod(self, user):
+        if user in self.topic_moderators:
+            return 1
+        else:
+            return 0
 
     meta = {
         'ordering': ['sticky', '-created'],
