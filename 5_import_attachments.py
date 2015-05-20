@@ -35,7 +35,7 @@ for a in Attachment.objects():
         continue
     
     html = post.html
-    attachment_tags = re.findall("(\[attachment=(\d+).*\])", post.html)
+    attachment_tags = re.findall("(\[attachment=(\d+).*?\])", post.html)
     for result in attachment_tags:
         html = html.replace(result[0],"[attachment=%s]" % (str(a.pk), ))
         
