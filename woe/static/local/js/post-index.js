@@ -12,6 +12,7 @@
         this.pagination = window._pagination;
         this.postHTML = Handlebars.compile(this.postHTMLTemplate());
         this.paginationHTML = Handlebars.compile(this.paginationHTMLTeplate());
+        this.is_mod = window._is_topic_mod;
         this.refreshPosts();
       }
 
@@ -20,7 +21,7 @@
       };
 
       Topic.prototype.postHTMLTemplate = function() {
-        return "      ";
+        return "<li class=\"list-group-item post-listing-info\">\n  <div class=\"row\">\n    <div class=\"col-xs-4 hidden-md hidden-lg\">\n      <img src=\"{{user_avatar_60}}\" width=\"{{user_avatar_x_60}}\" height=\"{{user_avatar_y_60}}\" class=\"\">\n    </div>\n    <div class=\"col-md-3 col-xs-8\">\n      {{#if author_online}}\n      <b><span class=\"glyphicon glyphicon-ok-sign\" aria-hidden=\"true\"></span> {{author_name}}</b>\n      {{else}}\n      <b><span class=\"glyphicon glyphicon-minus-sign\" aria-hidden=\"true\"></span> {{author_name}}</b>\n      {{/if}}\n      <span style=\"color:#F88379;\"><strong>Members</strong></span><br>\n      <span class=\"hidden-md hidden-lg\">Posted {{created}}</span>\n    </div>\n    <div class=\"col-md-9 hidden-xs hidden-sm\">\n      <span id=\"post-number-1\" class=\"post-number\" style=\"vertical-align: top;\"><a href=\"#\">#1</a></span>\n      Posted {{created}}\n    </div>\n  </div>\n</li>";
       };
 
       Topic.prototype.refreshPosts = function() {
@@ -31,7 +32,13 @@
           pagination: this.pagination
         }), (function(_this) {
           return function(data) {
-            return console.log(data);
+            var i, len, post, ref;
+            ref = data.posts;
+            for (i = 0, len = ref.length; i < len; i++) {
+              post = ref[i];
+              new_post_html = new_post_html + _this.postHTML(post);
+            }
+            return $("#post-container").html(new_post_html);
           };
         })(this));
       };

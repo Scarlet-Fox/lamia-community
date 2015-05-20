@@ -1,6 +1,7 @@
 from woe import db
 from woe import bcrypt
 from woe.utilities import ipb_password_check
+import arrow
 
 class Fingerprint(db.DynamicDocument):
     user = db.ReferenceField("User", required=True)

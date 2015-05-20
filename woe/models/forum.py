@@ -111,7 +111,7 @@ class Topic(db.DynamicDocument):
     old_ipb_id = db.IntField()
     
     def is_topic_mod(self, user):
-        if user in self.topic_moderators:
+        if user in self.topic_moderators or user.is_mod or user.is_admin:
             return 1
         else:
             return 0

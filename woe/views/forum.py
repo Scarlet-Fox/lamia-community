@@ -39,9 +39,20 @@ def topic_posts(slug):
         parsed_post["user_avatar"] = post.author.get_avatar_url()
         parsed_post["user_avatar_x"] = post.author.avatar_full_x
         parsed_post["user_avatar_y"] = post.author.avatar_full_y
-        parsed_posts.append(post)
+        parsed_post["user_avatar_60"] = post.author.get_avatar_url("60")
+        parsed_post["user_avatar_x_60"] = post.author.avatar_60_x
+        parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
+        parsed_post["user_title"] = post.author.title
+        try:
+            if post.author.last_seen > arrow.utcnow().replace(minutes=-15).datetime:
+                parsed_post["author_online"] = True
+            else:
+                parsed_post["author_online"] = False
+        except:
+            parsed_post["author_online"] = False
+        parsed_posts.append(parsed_post)
         
-    return json.jsonify(posts=parsed_posts, count=post_count)    
+    return app.jsonify(posts=parsed_posts, count=post_count)    
 
 @app.route('/topic/<slug>', methods=['GET'], defaults={'page': 1, 'post': ""})
 @app.route('/topic/<slug>/page/<page>', methods=['GET'], defaults={'post': ""})
