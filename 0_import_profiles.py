@@ -41,9 +41,12 @@ for u in c.fetchall():
         m.is_mod = True
     
     try:
-        m.title = u["title"].encode("latin1")
-    except AttributeError:
-        m.title = ""
+        m.title = HTMLParser.HTMLParser().unescape(u["title"].encode("latin1"))
+    except:
+        try:
+            m.title = u["title"].encode("latin1")
+        except:
+            m.title = ""
     timestamp = str(arrow.utcnow().timestamp) + "_"
     m.set_password(str(timestamp)+str(arrow.utcnow().timestamp),3)
     m.validated = True
