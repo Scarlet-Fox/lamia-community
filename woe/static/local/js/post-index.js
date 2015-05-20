@@ -13,6 +13,7 @@
         this.postHTML = Handlebars.compile(this.postHTMLTemplate());
         this.paginationHTML = Handlebars.compile(this.paginationHTMLTeplate());
         this.is_mod = window._is_topic_mod;
+        this.is_logged_in = window.is_logged_in;
         this.refreshPosts();
       }
 
@@ -21,7 +22,7 @@
       };
 
       Topic.prototype.postHTMLTemplate = function() {
-        return "<li class=\"list-group-item post-listing-info\">\n  <div class=\"row\">\n    <div class=\"col-xs-4 hidden-md hidden-lg\">\n      <img src=\"{{user_avatar_60}}\" width=\"{{user_avatar_x_60}}\" height=\"{{user_avatar_y_60}}\" class=\"\">\n    </div>\n    <div class=\"col-md-3 col-xs-8\">\n      {{#if author_online}}\n      <b><span class=\"glyphicon glyphicon-ok-sign\" aria-hidden=\"true\"></span> {{author_name}}</b>\n      {{else}}\n      <b><span class=\"glyphicon glyphicon-minus-sign\" aria-hidden=\"true\"></span> {{author_name}}</b>\n      {{/if}}\n      <span style=\"color:#F88379;\"><strong>Members</strong></span><br>\n      <span class=\"hidden-md hidden-lg\">Posted {{created}}</span>\n    </div>\n    <div class=\"col-md-9 hidden-xs hidden-sm\">\n      <span id=\"post-number-1\" class=\"post-number\" style=\"vertical-align: top;\"><a href=\"#\">#1</a></span>\n      Posted {{created}}\n    </div>\n  </div>\n</li>";
+        return "<li class=\"list-group-item post-listing-info\">\n  <div class=\"row\">\n    <div class=\"col-xs-4 hidden-md hidden-lg\">\n      <img src=\"{{user_avatar_60}}\" width=\"{{user_avatar_x_60}}\" height=\"{{user_avatar_y_60}}\" class=\"\">\n    </div>\n    <div class=\"col-md-3 col-xs-8\">\n      {{#if author_online}}\n      <b><span class=\"glyphicon glyphicon-ok-sign\" aria-hidden=\"true\"></span> {{author_name}}</b>\n      {{else}}\n      <b><span class=\"glyphicon glyphicon-minus-sign\" aria-hidden=\"true\"></span> {{author_name}}</b>\n      {{/if}}\n      <span style=\"color:#F88379;\"><strong>Members</strong></span><br>\n      <span class=\"hidden-md hidden-lg\">Posted {{created}}</span>\n    </div>\n    <div class=\"col-md-9 hidden-xs hidden-sm\">\n      <span id=\"post-number-1\" class=\"post-number\" style=\"vertical-align: top;\"><a href=\"#\">#1</a></span>\n      Posted {{created}}\n    </div>\n  </div>\n</li>\n<li class=\"list-group-item post-listing-post\">\n  <div class=\"row\">\n    <div class=\"col-md-3\" style=\"text-align: center;\">\n      <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}\" height=\"{{user_avatar_y}}\" class=\"post-member-avatar hidden-xs hidden-sm\">\n      <span class=\"hidden-xs hidden-sm\"><br><br>\n      <div class=\"post-member-self-title\">{{user_title}}</div>\n        <hr></span>\n      <div class=\"post-meta\">\n      </div>\n    </div>\n    <div class=\"col-md-9 post-right\">\n      <div class=\".post-content\" id=\"{{pk}}\">\n        {{{html}}}\n      </div>\n      <div class=\"row post-edit-likes-info\">\n          <div class=\"col-md-8\">\n            {{#if _is_logged_in}}\n            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n              <button type=\"button\" class=\"btn btn-default\">Report</button>\n              <div class=\"btn-group\">\n                <button type=\"button\" class=\"btn btn-default\">Reply</button>\n                <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n                  <span class=\"caret\"></span>\n                  <span class=\"sr-only\">Toggle Dropdown</span>\n                </button>\n                <ul class=\"dropdown-menu\" role=\"menu\">\n                  <li><a href=\"#\">Quote</a></li>\n                  <li><a href=\"#\">Multiquote</a></li>\n                </ul>\n              </div>\n            {{/if}}\n              <div class=\"btn-group\" style=\"display: none;\">\n                <button type=\"button\" class=\"btn btn-default\">Options</button>\n                <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n                  <span class=\"caret\"></span>\n                  <span class=\"sr-only\">Toggle Dropdown</span>\n                </button>\n                {{#if _is_topic_mod}}\n                <ul class=\"dropdown-menu\" role=\"menu\">\n                  <li><a href=\"#\">Edit</a></li>\n                  <li><a href=\"#\">Hide</a></li>\n                </ul>\n                {{/if}}\n              </div>\n            </div>\n        </div>\n        <div class=\"col-md-4 post-likes\">\n        </div>\n      </div>\n      <hr>\n      <div class=\"post-signature\">\n      </div>\n    </div>";
       };
 
       Topic.prototype.refreshPosts = function() {
@@ -36,6 +37,8 @@
             ref = data.posts;
             for (i = 0, len = ref.length; i < len; i++) {
               post = ref[i];
+              post._is_topic_mod = _this.is_mod;
+              post._is_logged_in = _this.is_logged_in;
               new_post_html = new_post_html + _this.postHTML(post);
             }
             return $("#post-container").html(new_post_html);

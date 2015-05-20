@@ -37,9 +37,11 @@ script(type="text/javascript")
     {% if current_user.is_authenticated() == True %}
     window._pagination={{current_user.post_pagination}};
     window._is_topic_mod={{topic.is_topic_mod(current_user)}};
+    window._is_logged_in=true;
     {% else %}
-    window._pagination=true;
+    window._pagination=20;
     window._is_topic_mod=false;
+    window._is_logged_in=false;
     {% endif %}
     
     window._initial_page={{initial_page}};

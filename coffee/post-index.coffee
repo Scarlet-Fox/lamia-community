@@ -9,6 +9,7 @@ $ ->
       @postHTML = Handlebars.compile(@postHTMLTemplate())
       @paginationHTML = Handlebars.compile(@paginationHTMLTeplate())
       @is_mod = window._is_topic_mod
+      @is_logged_in = window.is_logged_in
       
       do @refreshPosts
       
@@ -53,12 +54,67 @@ $ ->
                 </div>
               </div>
             </li>
+            <li class="list-group-item post-listing-post">
+              <div class="row">
+                <div class="col-md-3" style="text-align: center;">
+                  <img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm">
+                  <span class="hidden-xs hidden-sm"><br><br>
+                  <div class="post-member-self-title">{{user_title}}</div>
+                    <hr></span>
+                  <div class="post-meta">
+                  </div>
+                </div>
+                <div class="col-md-9 post-right">
+                  <div class=".post-content" id="{{pk}}">
+                    {{{html}}}
+                  </div>
+                  <div class="row post-edit-likes-info">
+                      <div class="col-md-8">
+                        {{#if _is_logged_in}}
+                        <div class="btn-group" role="group" aria-label="...">
+                          <button type="button" class="btn btn-default">Report</button>
+                          <div class="btn-group">
+                            <button type="button" class="btn btn-default">Reply</button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                              <span class="caret"></span>
+                              <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                              <li><a href="#">Quote</a></li>
+                              <li><a href="#">Multiquote</a></li>
+                            </ul>
+                          </div>
+                        {{/if}}
+                          <div class="btn-group" style="display: none;">
+                            <button type="button" class="btn btn-default">Options</button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                              <span class="caret"></span>
+                              <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            {{#if _is_topic_mod}}
+                            <ul class="dropdown-menu" role="menu">
+                              <li><a href="#">Edit</a></li>
+                              <li><a href="#">Hide</a></li>
+                            </ul>
+                            {{/if}}
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 post-likes">
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="post-signature">
+                  </div>
+                </div>
       """
       
     refreshPosts: () ->
       new_post_html = ""
       $.post "/topic/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
         for post in data.posts
+          post._is_topic_mod = @is_mod
+          post._is_logged_in = @is_logged_in
           new_post_html = new_post_html + @postHTML post
         
         $("#post-container").html new_post_html
