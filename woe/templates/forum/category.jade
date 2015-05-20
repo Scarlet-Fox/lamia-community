@@ -9,7 +9,8 @@
     a(href="{{url_for('category_index', slug=category.parent.slug)}}") {{category.parent.name}}
   {% endif %}
   li.active 
-    a(href="{{url_for('category_index', slug=category.slug)}}") {{category.name}}
+    b
+      a(href="{{url_for('category_index', slug=category.slug)}}") {{category.name}}
 .row
   {% if subcategories %}
   .col-md-12

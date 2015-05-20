@@ -44,6 +44,7 @@ def topic_posts(slug):
         parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
+        parsed_post["author_login_name"] = post.author.login_name
         if post.author.pk == current_user.pk:
             parsed_post["is_author"] = True
         else:

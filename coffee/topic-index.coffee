@@ -37,13 +37,13 @@ $ ->
             <li class="list-group-item post-listing-info">
               <div class="row">
                 <div class="col-xs-4 hidden-md hidden-lg">
-                  <img src="{{user_avatar_60}}" width="{{user_avatar_x_60}}" height="{{user_avatar_y_60}}" class="">
+                  <img src="{{user_avatar_60}}" width="{{user_avatar_x_60}}" height="{{user_avatar_y_60}}" class="avatar-mini">
                 </div>
                 <div class="col-md-3 col-xs-8">
                   {{#if author_online}}
-                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> {{author_name}}</b>
+                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> <a href="/member/{{author_login_name}}">{{author_name}}</a></b>
                   {{else}}
-                  <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> {{author_name}}</b>
+                  <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <a href="/member/{{author_login_name}}" class="inherit_colors">{{author_name}}</a></b>
                   {{/if}}
                   <span style="color:#F88379;"><strong>Members</strong></span><br>
                   <span class="hidden-md hidden-lg">Posted {{created}}</span>

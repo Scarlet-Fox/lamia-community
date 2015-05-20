@@ -357,3 +357,9 @@ a.inherit_colors {
 .status-message {
   font-size: 12px;
 }
+.post-member-avatar {
+  border: 1px solid lightgray;
+}
+.avatar-mini {
+  border: 1px solid lightgray;
+}

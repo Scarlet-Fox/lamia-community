@@ -19,7 +19,7 @@
             .col-sm-6.hidden-xs.hidden-sm
               span.subcategory-listing-recent-image
                 a(href="{{url_for('view_profile', login_name=category.last_post_by.login_name)}}")
-                  img(src="{{category.last_post_author_avatar}}", width="40px", height="40px")
+                  img(src="{{category.last_post_author_avatar}}", width="{{category.last_post_by.avatar_40_x}}", height="{{category.last_post_by.avatar_40_y}}", class="avatar-mini")
               span.subcategory-listing-recent
                 a(href="/topic/{{category.last_topic.slug}}") {{category.last_topic.title}}
                 br
@@ -35,7 +35,7 @@
       li.list-group-item.front-page-status.sidebar-status-section
         .media-left
           a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
-            img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="40px", height="40px")
+            img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="40px", height="40px", class="avatar-mini")
         .media-body
           a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
           span &nbsp;says:
