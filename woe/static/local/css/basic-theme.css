@@ -170,7 +170,9 @@
 .inline-editor-buttons {
   float: right;
 }
-
+.post-right img {
+  max-width: 100%;
+}
 .fast-post-area {
   overflow: hidden;
 }

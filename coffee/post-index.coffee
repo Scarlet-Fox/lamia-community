@@ -9,7 +9,7 @@ $ ->
       @postHTML = Handlebars.compile(@postHTMLTemplate())
       @paginationHTML = Handlebars.compile(@paginationHTMLTeplate())
       @is_mod = window._is_topic_mod
-      @is_logged_in = window.is_logged_in
+      @is_logged_in = window._is_logged_in
       
       do @refreshPosts
       
@@ -49,7 +49,7 @@ $ ->
                   <span class="hidden-md hidden-lg">Posted {{created}}</span>
                 </div>
                 <div class="col-md-9 hidden-xs hidden-sm">
-                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="#">#1</a></span>
+                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}">\#{{count}}</a></span>
                   Posted {{created}}
                 </div>
               </div>
@@ -65,9 +65,10 @@ $ ->
                   </div>
                 </div>
                 <div class="col-md-9 post-right">
-                  <div class=".post-content" id="{{pk}}">
+                  <div class=".post-content" id="post-{{_id}}">
                     {{{html}}}
                   </div>
+                  <br>
                   <div class="row post-edit-likes-info">
                       <div class="col-md-8">
                         {{#if _is_logged_in}}
@@ -85,17 +86,28 @@ $ ->
                             </ul>
                           </div>
                         {{/if}}
-                          <div class="btn-group" style="display: none;">
+                          <div class="btn-group" style="">
+                            {{#if _is_topic_mod}}
                             <button type="button" class="btn btn-default">Options</button>
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
-                            {{#if _is_topic_mod}}
                             <ul class="dropdown-menu" role="menu">
                               <li><a href="#">Edit</a></li>
                               <li><a href="#">Hide</a></li>
                             </ul>
+                            {{else}}
+                              {{#if is_author}}
+                                <button type="button" class="btn btn-default">Options</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                  <span class="caret"></span>
+                                  <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                  <li><a href="#">Edit</a></li>
+                                </ul>
+                              {{/if}}
                             {{/if}}
                           </div>
                         </div>
@@ -112,9 +124,13 @@ $ ->
     refreshPosts: () ->
       new_post_html = ""
       $.post "/topic/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
-        for post in data.posts
+        first_post = ((@page-1)*@pagination)+1
+        for post, i in data.posts
+          post.count = first_post+i
+          console.log post.count
           post._is_topic_mod = @is_mod
           post._is_logged_in = @is_logged_in
+          post.direct_url = "/topic/#{@slug}/page/#{@page}/post/#{post._id}"
           new_post_html = new_post_html + @postHTML post
         
         $("#post-container").html new_post_html

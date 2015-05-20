@@ -43,6 +43,12 @@ def topic_posts(slug):
         parsed_post["user_avatar_x_60"] = post.author.avatar_60_x
         parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
         parsed_post["user_title"] = post.author.title
+        parsed_post["author_name"] = post.author.display_name
+        if post.author.pk == current_user.pk:
+            parsed_post["is_author"] = True
+        else:
+            parsed_post["is_author"] = False
+            
         try:
             if post.author.last_seen > arrow.utcnow().replace(minutes=-15).datetime:
                 parsed_post["author_online"] = True
