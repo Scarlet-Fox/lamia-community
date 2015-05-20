@@ -53,7 +53,7 @@ script(type="text/javascript")
   $(document).ready(function(){
     $("#about-me-cog-icon").click(function(e) {
       e.preventDefault();
-      var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.login_name}}/edit-profile");
+      var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.login_name}}/edit-profile", true);
       editor.onSave(function (html) {
         $.post("/member/{{profile.login_name}}/edit-profile", {"about_me": html},function(data) {
           $("#user-profile-about-me").html(data.about_me);

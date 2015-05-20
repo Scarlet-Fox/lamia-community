@@ -77,7 +77,7 @@ $ ->
             {{#if prefix}}
             {{{pre_html}}}{{{prefix}}}{{{post_html}}}
             {{/if}}
-            <a href="#">{{title}}</a><br>
+            <a href="/topic/{{slug}}">{{title}}</a><br>
             <span class="topic-author">
               Started by {{creator}}, {{created}}
             </span>

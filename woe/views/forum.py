@@ -9,6 +9,15 @@ from flask.ext.login import login_user, logout_user, current_user
 import arrow, time
 from woe.utilities import get_top_frequences, scrub_json, humanize_time
 
+@app.route('/topic/<slug>', methods=['GET'])
+def topic_index(slug):
+    try:
+        topic = Topic.objects(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+        
+    return render_template("forum/topic.jade", topic=topic)
+
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
     try:
@@ -90,7 +99,7 @@ def category_topics(slug):
     print time.time()-t
     return app.jsonify(topics=parsed_topics, count=topic_count)
 
-@app.route('/category/<slug>')
+@app.route('/category/<slug>', methods=['GET'])
 def category_index(slug):
     try:
         category = Category.objects(slug=slug)[0]

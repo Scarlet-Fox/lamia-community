@@ -1,6 +1,6 @@
 $ ->
   class InlineEditor
-    constructor: (element, url = "", fullpage_option=false) ->
+    constructor: (element, url = "", cancel_button=false) ->
       @quillID = do @getQuillID  
       @element = $(element)
       if @element.data("editor_is_active")
@@ -10,17 +10,17 @@ $ ->
       if url != ""
         $.get url, (data) =>
           @element.data("editor_initial_html", data.content)
-          @setupEditor fullpage_option
+          @setupEditor cancel_button
       else
         @element.data("editor_initial_html", @element.html())
-        @setupEditor fullpage_option
+        @setupEditor cancel_button
         
     
-    setupEditor: (fullpage_option=false) =>
+    setupEditor: (cancel_button=false) =>
       @element.html(@editordivHTML())
       
       @element.before @toolbarHTML
-      @element.after @submitButtonHTML fullpage_option
+      @element.after @submitButtonHTML cancel_button
       
       quill = new Quill "#post-editor-#{@quillID}", 
         modules:
@@ -64,20 +64,18 @@ $ ->
       do $("#toolbar-#{@quillID}").remove
       do $("#post-editor-#{@quillID}").remove
     
-    submitButtonHTML: (fullpage_option=False) =>
-      if fullpage_option == true
+    submitButtonHTML: (cancel_button=false) =>
+      if cancel_button == true
         return """
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
             <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
             <button type="button" class="btn btn-default" id="cancel-edit-#{@quillID}">Cancel</button>
-            <button type="button" class="btn btn-default" id="fullpage-edit-#{@quillID}">Full Page Editor</button>
           </div>
         """
       else
         return """
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
             <button type="button" class="btn btn-default" id="save-text-#{@quillID}">Save</button>
-            <button type="button" class="btn btn-default" id="cancel-edit-#{@quillID}">Cancel</button>
           </div>
         """
     

@@ -5,12 +5,12 @@
   $(function() {
     var InlineEditor;
     InlineEditor = (function() {
-      function InlineEditor(element, url, fullpage_option) {
+      function InlineEditor(element, url, cancel_button) {
         if (url == null) {
           url = "";
         }
-        if (fullpage_option == null) {
-          fullpage_option = false;
+        if (cancel_button == null) {
+          cancel_button = false;
         }
         this.toolbarHTML = bind(this.toolbarHTML, this);
         this.editordivHTML = bind(this.editordivHTML, this);
@@ -26,23 +26,23 @@
           $.get(url, (function(_this) {
             return function(data) {
               _this.element.data("editor_initial_html", data.content);
-              return _this.setupEditor(fullpage_option);
+              return _this.setupEditor(cancel_button);
             };
           })(this));
         } else {
           this.element.data("editor_initial_html", this.element.html());
-          this.setupEditor(fullpage_option);
+          this.setupEditor(cancel_button);
         }
       }
 
-      InlineEditor.prototype.setupEditor = function(fullpage_option) {
+      InlineEditor.prototype.setupEditor = function(cancel_button) {
         var quill;
-        if (fullpage_option == null) {
-          fullpage_option = false;
+        if (cancel_button == null) {
+          cancel_button = false;
         }
         this.element.html(this.editordivHTML());
         this.element.before(this.toolbarHTML);
-        this.element.after(this.submitButtonHTML(fullpage_option));
+        this.element.after(this.submitButtonHTML(cancel_button));
         quill = new Quill("#post-editor-" + this.quillID, {
           modules: {
             'link-tooltip': true,
@@ -100,14 +100,14 @@
         return $("#post-editor-" + this.quillID).remove();
       };
 
-      InlineEditor.prototype.submitButtonHTML = function(fullpage_option) {
-        if (fullpage_option == null) {
-          fullpage_option = False;
+      InlineEditor.prototype.submitButtonHTML = function(cancel_button) {
+        if (cancel_button == null) {
+          cancel_button = false;
         }
-        if (fullpage_option === true) {
-          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"cancel-edit-" + this.quillID + "\">Cancel</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"fullpage-edit-" + this.quillID + "\">Full Page Editor</button>\n</div>";
+        if (cancel_button === true) {
+          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"cancel-edit-" + this.quillID + "\">Cancel</button>\n</div>";
         } else {
-          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"cancel-edit-" + this.quillID + "\">Cancel</button>\n</div>";
+          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default\" id=\"save-text-" + this.quillID + "\">Save</button>\n</div>";
         }
       };
 
