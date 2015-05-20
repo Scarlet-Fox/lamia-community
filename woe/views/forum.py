@@ -45,10 +45,14 @@ def topic_posts(slug):
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
         parsed_post["author_login_name"] = post.author.login_name
-        if post.author.pk == current_user.pk:
-            parsed_post["is_author"] = True
+        
+        if current_user.is_authenticated():
+            if post.author.pk == current_user.pk:
+                parsed_post["is_author"] = True
+            else:
+                parsed_post["is_author"] = False   
         else:
-            parsed_post["is_author"] = False
+            parsed_post["is_author"] = False   
             
         try:
             if post.author.last_seen > arrow.utcnow().replace(minutes=-15).datetime:
