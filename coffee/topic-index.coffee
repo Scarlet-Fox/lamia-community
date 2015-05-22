@@ -45,7 +45,11 @@ $ ->
                   {{else}}
                   <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <a href="/member/{{author_login_name}}" class="inherit_colors">{{author_name}}</a></b>
                   {{/if}}
+                  {{#unless author_group_name}}
                   <span style="color:#F88379;"><strong>Members</strong></span><br>
+                  {{else}}
+                  {{group_pre_html}}{{author_group_name}}{{group_post_html}}
+                  {{/unless}}
                   <span class="hidden-md hidden-lg">Posted {{created}}</span>
                 </div>
                 <div class="col-md-9 hidden-xs hidden-sm">
