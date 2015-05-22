@@ -71,6 +71,11 @@ class User(db.DynamicDocument):
     about = db.StringField(default="")
     avatar_extension = db.StringField()
     
+    # User group names!
+    group_pre_html = db.StringField(default="")
+    group_name = db.StringField(default="")
+    group_post_html = db.StringField(default="")
+    
     # avatar_sizes
     avatar_full_x = db.IntField()
     avatar_full_y = db.IntField()
