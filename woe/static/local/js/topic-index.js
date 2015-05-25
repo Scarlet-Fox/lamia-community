@@ -15,10 +15,31 @@
         this.is_mod = window._is_topic_mod;
         this.is_logged_in = window._is_logged_in;
         this.refreshPosts();
+        $("nav.pagination-listing").delegate("#previous-page", "click", function(e) {
+          var element;
+          e.preventDefault();
+          element = $(this);
+          if (topic.page !== 1) {
+            $(".change-page").parent().removeClass("active");
+            topic.page--;
+            return topic.refreshPosts();
+          }
+        });
+        $("nav.pagination-listing").delegate("#next-page", "click", function(e) {
+          var element;
+          e.preventDefault();
+          element = $(this);
+          if (topic.page !== topic.max_pages) {
+            console.log($(".page-link-" + topic.page).parent().next().children("a").text());
+            $(".change-page").parent().removeClass("active");
+            topic.page++;
+            return topic.refreshPosts();
+          }
+        });
       }
 
       Topic.prototype.paginationHTMLTeplate = function() {
-        return "<ul class=\"pagination\">\n  <li>\n    <a href=\"#\" aria-label=\"Previous\" id=\"previous-page\">\n      <span aria-hidden=\"true\">&laquo;</span>\n    </a>\n  </li>\n  {{#each pages}}\n  <li><a href=\"#\" class=\"change-page page-link-{{this}}\">{{this}}</a></li>\n  {{/each}}\n  <li>\n    <a href=\"#\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">&raquo;</span>\n    </a>\n  </li>\n</ul>";
+        return "<ul class=\"pagination\">\n  <li>\n    <a href=\"#\" aria-label=\"Previous\" id=\"previous-page\">\n      <span aria-hidden=\"true\">&laquo;</span>\n    </a>\n  </li>\n  {{#each pages}}\n  <li><a href=\"#\" class=\"change-page page-link-{{this}}\">{{this}}</a></li>\n  {{/each}}\n  <li>\n    <a href=\"#\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">&raquo;</span>\n    </a>\n  </li>\n  <li>\n    <a href=\"#\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">Go to End</span>\n    </a>\n  </li>\n</ul>";
       };
 
       Topic.prototype.postHTMLTemplate = function() {
@@ -33,18 +54,53 @@
           pagination: this.pagination
         }), (function(_this) {
           return function(data) {
-            var first_post, i, j, len, post, ref;
+            var first_post, i, j, k, l, len, m, n, pages, pagination_html, post, ref, ref1, ref2, ref3, ref4, ref5, ref6, results, results1, results2, results3;
+            history.pushState({
+              id: 'topic-page-2'
+            }, '', '/page/2');
             first_post = ((_this.page - 1) * _this.pagination) + 1;
             ref = data.posts;
             for (i = j = 0, len = ref.length; j < len; i = ++j) {
               post = ref[i];
               post.count = first_post + i;
-              console.log(post.count);
               post._is_topic_mod = _this.is_mod;
               post._is_logged_in = _this.is_logged_in;
               post.direct_url = "/topic/" + _this.slug + "/page/" + _this.page + "/post/" + post._id;
               new_post_html = new_post_html + _this.postHTML(post);
             }
+            pages = [];
+            _this.max_pages = Math.ceil(data.count / _this.pagination);
+            if (_this.max_pages > 5) {
+              if (_this.page > 3 && _this.page < _this.max_pages - 5) {
+                pages = (function() {
+                  results = [];
+                  for (var k = ref1 = _this.page - 2, ref2 = _this.page + 5; ref1 <= ref2 ? k <= ref2 : k >= ref2; ref1 <= ref2 ? k++ : k--){ results.push(k); }
+                  return results;
+                }).apply(this);
+              } else if (_this.page > 3) {
+                pages = (function() {
+                  results1 = [];
+                  for (var l = ref3 = _this.page - 2, ref4 = _this.max_pages; ref3 <= ref4 ? l <= ref4 : l >= ref4; ref3 <= ref4 ? l++ : l--){ results1.push(l); }
+                  return results1;
+                }).apply(this);
+              } else if (_this.page <= 3) {
+                pages = (function() {
+                  results2 = [];
+                  for (var m = 1, ref5 = _this.page + 5; 1 <= ref5 ? m <= ref5 : m >= ref5; 1 <= ref5 ? m++ : m--){ results2.push(m); }
+                  return results2;
+                }).apply(this);
+              }
+            } else {
+              pages = (function() {
+                results3 = [];
+                for (var n = 1, ref6 = Math.ceil(data.count / _this.pagination); 1 <= ref6 ? n <= ref6 : n >= ref6; 1 <= ref6 ? n++ : n--){ results3.push(n); }
+                return results3;
+              }).apply(this);
+            }
+            pagination_html = _this.paginationHTML({
+              pages: pages
+            });
+            $(".pagination-listing").html(pagination_html);
             return $("#post-container").html(new_post_html);
           };
         })(this));

@@ -12,6 +12,23 @@ $ ->
       @is_logged_in = window._is_logged_in
       
       do @refreshPosts
+        
+      $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        if topic.page != 1
+          $(".change-page").parent().removeClass("active")
+          topic.page--
+          do topic.refreshPosts
+        
+      $("nav.pagination-listing").delegate "#next-page", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        if topic.page != topic.max_pages
+          console.log $(".page-link-#{topic.page}").parent().next().children("a").text()
+          $(".change-page").parent().removeClass("active")
+          topic.page++
+          do topic.refreshPosts
       
     paginationHTMLTeplate: () ->
       return """
@@ -27,6 +44,11 @@ $ ->
             <li>
               <a href="#" aria-label="Next" id="next-page">
                 <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" aria-label="Next" id="next-page">
+                <span aria-hidden="true">Go to End</span>
               </a>
             </li>
           </ul>
@@ -124,15 +146,29 @@ $ ->
     refreshPosts: () ->
       new_post_html = ""
       $.post "/topic/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
+        history.pushState({id: 'topic-page-2'}, '', '/page/2');
         first_post = ((@page-1)*@pagination)+1
         for post, i in data.posts
           post.count = first_post+i
-          console.log post.count
           post._is_topic_mod = @is_mod
           post._is_logged_in = @is_logged_in
           post.direct_url = "/topic/#{@slug}/page/#{@page}/post/#{post._id}"
           new_post_html = new_post_html + @postHTML post
         
+        pages = []
+        @max_pages = Math.ceil data.count/@pagination
+        if @max_pages > 5
+          if @page > 3 and @page < @max_pages-5
+            pages = [@page-2..@page+5]
+          else if @page > 3
+            pages = [@page-2..@max_pages]
+          else if @page <= 3
+            pages = [1..@page+5]
+        else
+          pages = [1..Math.ceil data.count/@pagination]
+        pagination_html = @paginationHTML {pages: pages}
+        
+        $(".pagination-listing").html(pagination_html)
         $("#post-container").html new_post_html
         
   window.topic = new Topic($("#post-container").data("slug"))
