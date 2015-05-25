@@ -45,6 +45,9 @@ def topic_posts(slug):
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
         parsed_post["author_login_name"] = post.author.login_name
+        parsed_post["group_pre_html"] = post.author.group_pre_html
+        parsed_post["author_group_name"] = post.author.group_name
+        parsed_post["group_post_html"] = post.author.group_post_html
         
         if current_user.is_authenticated():
             if post.author.pk == current_user.pk:
