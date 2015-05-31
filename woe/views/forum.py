@@ -9,13 +9,30 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import arrow, time
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser
 
+@app.route('/topic/<slug>/new-post', methods=['POST'])
+def new_post_in_topic(slug):
+    try:
+        topic = Topic.objects(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+    
+    if current_user._get_current_object() in topic.banned_from_topic:
+        return abort(404)
+
+    request_json = request.get_json(force=True)
+    
+    
+    
+
 @app.route('/topic/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
     try:
         topic = Topic.objects(slug=slug)[0]
     except IndexError:
         return abort(404)
-    # TODO : Check if someone is topic banned.
+    
+    if current_user._get_current_object() in topic.banned_from_topic:
+        return abort(404)
 
     request_json = request.get_json(force=True)
     
@@ -78,6 +95,9 @@ def topic_index(slug, page, post):
         return abort(404)
     # TODO : Check if someone is topic banned.
     
+    if current_user._get_current_object() in topic.banned_from_topic:
+        return abort(404)
+        
     try:
         page = int(page)
     except:
@@ -151,6 +171,8 @@ def category_topics(slug):
     
     parsed_topics = []
     for topic in topics:
+        if current_user._get_current_object() in topic.banned_from_topic:
+            continue
         parsed_topic = topic.to_mongo().to_dict()
         parsed_topic["creator"] = topic.creator.display_name
         parsed_topic["created"] = humanize_time(topic.created, "MMM D YYYY")

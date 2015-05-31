@@ -46,6 +46,10 @@ $ ->
         element = $(this)
         topic.page = 1
         do topic.refreshPosts
+        
+      $("#new-post-box").delegate ".save-button", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
               
     paginationHTMLTeplate: () ->
       return """

@@ -75,7 +75,7 @@ $ ->
       else
         return """
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
-            <button type="button" class="btn btn-default" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default save-button" id="save-text-#{@quillID}">Save</button>
           </div>
         """
     

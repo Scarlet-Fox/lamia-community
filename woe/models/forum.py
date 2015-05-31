@@ -96,6 +96,7 @@ class Topic(db.DynamicDocument):
     # Background info
     watchers = db.ListField(db.ReferenceField(core.User))
     topic_moderators = db.ListField(db.ReferenceField(core.User))
+    banned_from_topic = db.ListField(db.ReferenceField(core.User))
     user_post_counts = db.DictField()
     data = db.DictField()
     last_seen_by = db.DictField() # User : last_seen_utc

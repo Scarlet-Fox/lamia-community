@@ -56,6 +56,11 @@
           topic.page = 1;
           return topic.refreshPosts();
         });
+        $("#new-post-box").delegate(".save-button", "click", function(e) {
+          var element;
+          e.preventDefault();
+          return element = $(this);
+        });
       }
 
       Topic.prototype.paginationHTMLTeplate = function() {
