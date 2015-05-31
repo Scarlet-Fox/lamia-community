@@ -40,10 +40,21 @@ $ ->
         element = $(this)
         topic.page = parseInt(topic.max_pages)
         do topic.refreshPosts
+        
+      $("nav.pagination-listing").delegate "#go-to-start", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        topic.page = 1
+        do topic.refreshPosts
               
     paginationHTMLTeplate: () ->
       return """
           <ul class="pagination">
+            <li>
+              <a href="#" aria-label="Start" id="go-to-start">
+                <span aria-hidden="true">Go to Start</span>
+              </a>
+            </li>
             <li>
               <a href="#" aria-label="Previous" id="previous-page">
                 <span aria-hidden="true">&laquo;</span>
