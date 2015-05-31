@@ -3,7 +3,7 @@ $ ->
     constructor: (slug) ->
       @slug = slug
       topic = @
-      @page = 1
+      @page = window._initial_page
       @max_pages = 1
       @pagination = window._pagination
       @postHTML = Handlebars.compile(@postHTMLTemplate())
@@ -150,7 +150,7 @@ $ ->
     refreshPosts: () ->
       new_post_html = ""
       $.post "/topic/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
-        history.pushState({id: 'topic-page-2'}, '', '/page/2');
+        history.pushState({id: "topic-page-#{@page}"}, '', "/topic/#{@slug}/page/#{@page}");
         first_post = ((@page-1)*@pagination)+1
         for post, i in data.posts
           post.count = first_post+i
@@ -161,6 +161,7 @@ $ ->
         
         pages = []
         @max_pages = Math.ceil data.count/@pagination
+        console.log @max_pages
         if @max_pages > 5
           if @page > 3 and @page < @max_pages-5
             pages = [@page-2..@page+5]
@@ -172,7 +173,8 @@ $ ->
           pages = [1..Math.ceil data.count/@pagination]
         pagination_html = @paginationHTML {pages: pages}
         
-        $(".pagination-listing").html(pagination_html)
+        $(".pagination-listing").html pagination_html
         $("#post-container").html new_post_html
+        $(".page-link-#{@page}").parent().addClass("active")
         
   window.topic = new Topic($("#post-container").data("slug"))
