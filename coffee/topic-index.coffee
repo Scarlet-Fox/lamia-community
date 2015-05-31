@@ -25,11 +25,22 @@ $ ->
         e.preventDefault()
         element = $(this)
         if topic.page != topic.max_pages
-          console.log $(".page-link-#{topic.page}").parent().next().children("a").text()
           $(".change-page").parent().removeClass("active")
           topic.page++
           do topic.refreshPosts
       
+      $("nav.pagination-listing").delegate ".change-page", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        topic.page = parseInt(element.text())
+        do topic.refreshPosts
+        
+      $("nav.pagination-listing").delegate "#go-to-end", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        topic.page = parseInt(topic.max_pages)
+        do topic.refreshPosts
+              
     paginationHTMLTeplate: () ->
       return """
           <ul class="pagination">
@@ -47,7 +58,7 @@ $ ->
               </a>
             </li>
             <li>
-              <a href="#" aria-label="Next" id="next-page">
+              <a href="#" aria-label="End" id="go-to-end">
                 <span aria-hidden="true">Go to End</span>
               </a>
             </li>
@@ -161,7 +172,6 @@ $ ->
         
         pages = []
         @max_pages = Math.ceil data.count/@pagination
-        console.log @max_pages
         if @max_pages > 5
           if @page > 3 and @page < @max_pages-5
             pages = [@page-2..@page+5]
@@ -173,8 +183,9 @@ $ ->
           pages = [1..Math.ceil data.count/@pagination]
         pagination_html = @paginationHTML {pages: pages}
         
+        $("#topic-breadcrumb")[0].scrollIntoView()
         $(".pagination-listing").html pagination_html
         $("#post-container").html new_post_html
         $(".page-link-#{@page}").parent().addClass("active")
-        
+                
   window.topic = new Topic($("#post-container").data("slug"))

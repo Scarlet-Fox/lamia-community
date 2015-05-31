@@ -30,16 +30,29 @@
           e.preventDefault();
           element = $(this);
           if (topic.page !== topic.max_pages) {
-            console.log($(".page-link-" + topic.page).parent().next().children("a").text());
             $(".change-page").parent().removeClass("active");
             topic.page++;
             return topic.refreshPosts();
           }
         });
+        $("nav.pagination-listing").delegate(".change-page", "click", function(e) {
+          var element;
+          e.preventDefault();
+          element = $(this);
+          topic.page = parseInt(element.text());
+          return topic.refreshPosts();
+        });
+        $("nav.pagination-listing").delegate("#go-to-end", "click", function(e) {
+          var element;
+          e.preventDefault();
+          element = $(this);
+          topic.page = parseInt(topic.max_pages);
+          return topic.refreshPosts();
+        });
       }
 
       Topic.prototype.paginationHTMLTeplate = function() {
-        return "<ul class=\"pagination\">\n  <li>\n    <a href=\"#\" aria-label=\"Previous\" id=\"previous-page\">\n      <span aria-hidden=\"true\">&laquo;</span>\n    </a>\n  </li>\n  {{#each pages}}\n  <li><a href=\"#\" class=\"change-page page-link-{{this}}\">{{this}}</a></li>\n  {{/each}}\n  <li>\n    <a href=\"#\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">&raquo;</span>\n    </a>\n  </li>\n  <li>\n    <a href=\"#\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">Go to End</span>\n    </a>\n  </li>\n</ul>";
+        return "<ul class=\"pagination\">\n  <li>\n    <a href=\"#\" aria-label=\"Previous\" id=\"previous-page\">\n      <span aria-hidden=\"true\">&laquo;</span>\n    </a>\n  </li>\n  {{#each pages}}\n  <li><a href=\"#\" class=\"change-page page-link-{{this}}\">{{this}}</a></li>\n  {{/each}}\n  <li>\n    <a href=\"#\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">&raquo;</span>\n    </a>\n  </li>\n  <li>\n    <a href=\"#\" aria-label=\"End\" id=\"go-to-end\">\n      <span aria-hidden=\"true\">Go to End</span>\n    </a>\n  </li>\n</ul>";
       };
 
       Topic.prototype.postHTMLTemplate = function() {
@@ -70,7 +83,6 @@
             }
             pages = [];
             _this.max_pages = Math.ceil(data.count / _this.pagination);
-            console.log(_this.max_pages);
             if (_this.max_pages > 5) {
               if (_this.page > 3 && _this.page < _this.max_pages - 5) {
                 pages = (function() {
@@ -101,6 +113,7 @@
             pagination_html = _this.paginationHTML({
               pages: pages
             });
+            $("#topic-breadcrumb")[0].scrollIntoView();
             $(".pagination-listing").html(pagination_html);
             $("#post-container").html(new_post_html);
             return $(".page-link-" + _this.page).parent().addClass("active");

@@ -1,7 +1,7 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.breadcrumb
+.breadcrumb#topic-breadcrumb
   li
     a(href="/") Home
   {% if topic.category.parent != None and topic.category.parent.root_category != True %}
