@@ -5,6 +5,7 @@ from flask.ext.login import LoginManager
 from flask.ext.admin import Admin
 from flask.ext.redis import FlaskRedis
 from flask.ext.cache import Cache
+from flask_socketio import SocketIO
 from os import path
 
 REDIS_URL = "redis://127.0.0.1:6379/0"
@@ -25,6 +26,7 @@ db = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(db)
 bcrypt = Bcrypt(app)
 redis_store = FlaskRedis(app)
+socketio = SocketIO(app)
 
 try:
     import simplejson as json
@@ -45,7 +47,10 @@ class MongoJsonEncoder(json.JSONEncoder):
         elif isinstance(obj, ObjectId):
             return unicode(obj)
         return json.JSONEncoder.default(self, obj)
- 
+
+def jsonclean(*args, **kwargs):
+    return json.loads(json.dumps(dict(*args, **kwargs), cls=MongoJsonEncoder))
+
 def jsonify(*args, **kwargs):
     """ jsonify with support for MongoDB ObjectId
     """
@@ -53,6 +58,7 @@ def jsonify(*args, **kwargs):
 
 app.jsonify = jsonify
 
+import sockets.forum_socket
 import utilities
 import views.core
 import views.forum
@@ -61,4 +67,5 @@ import views.profiles
 import views.admin
 
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app)
+    # app.run()

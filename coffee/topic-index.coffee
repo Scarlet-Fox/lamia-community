@@ -39,7 +39,19 @@ $ ->
                 topic.max_pages = Math.ceil data.count/topic.pagination
                 topic.page = topic.max_pages
                 do topic.refreshPosts
+      
+      socket = io.connect("/topic")
+      
+      socket.emit "join",
+        topic: topic.slug
         
+      socket.on "new post",
+        console.log "ok"
+        console.log topic.page 
+        console.log topic.max_pages
+        if topic.page == topic.max_pages
+          $("#post-container").append topic.postHTML data.newest_post
+       
       $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
         e.preventDefault()
         element = $(this)

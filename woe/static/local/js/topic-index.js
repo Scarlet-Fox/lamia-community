@@ -4,7 +4,7 @@
     var Topic;
     Topic = (function() {
       function Topic(slug) {
-        var topic;
+        var socket, topic;
         this.slug = slug;
         topic = this;
         this.page = window._initial_page;
@@ -44,6 +44,11 @@
             })(this));
           });
         }
+        socket = io.connect("/topic");
+        socket.emit("join", {
+          topic: topic.slug
+        });
+        socket.on("new post", console.log("ok"), console.log(topic.page), console.log(topic.max_pages), topic.page === topic.max_pages ? $("#post-container").append(topic.postHTML(data.newest_post)) : void 0);
         $("nav.pagination-listing").delegate("#previous-page", "click", function(e) {
           var element;
           e.preventDefault();

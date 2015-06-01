@@ -1,5 +1,5 @@
 from woe import login_manager
-from woe import app
+from woe import app, socketio, jsonclean
 from woe.models.core import User, DisplayNameHistory, StatusUpdate
 from woe.models.forum import Category, Post, Topic
 from collections import OrderedDict
@@ -61,8 +61,14 @@ def new_post_in_topic(slug):
     parsed_post["group_post_html"] = new_post.author.group_post_html
     
     post_count = Post.objects(hidden=False, topic=topic).count()
+    socketio.emit('new post', "test", namespace='/topic')
     
     return app.jsonify(newest_post=parsed_post, count=post_count, success=True)    
+
+@app.route('/topic/<slug>/test', methods=['POST'])
+def blah(slug):
+    socketio.emit('new post', "test", namespace='/topic', broadcast=True)
+    return ""
 
 @app.route('/topic/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
