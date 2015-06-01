@@ -5,7 +5,6 @@ from woe.models.core import User
 from slugify import slugify
 import HTMLParser
 import arrow
-from unidecode import unidecode
 import phpserialize
 
 db = MySQLdb.connect(user="root", db="woe", cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
