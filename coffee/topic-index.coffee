@@ -11,6 +11,23 @@ $ ->
       @is_mod = window._is_topic_mod
       @is_logged_in = window._is_logged_in
       
+      socket = io.connect('http://' + document.domain + ':3000' + '');
+      
+      socket.on "connect", () =>
+        socket.emit 'join', "topic--#{@slug}"
+      
+      socket.on "console", (data) ->
+        console.log data
+        
+      socket.on "event", (data) ->
+        if data.post?
+          if topic.page == topic.max_pages
+            $("#post-container").append topic.postHTML data.post
+          else
+            topic.max_pages = Math.ceil data.count/topic.pagination
+      
+      window.socket = socket
+      
       do @refreshPosts
 
       if window._can_edit?
@@ -33,6 +50,11 @@ $ ->
                 </div>"""
               
             if data.success?
+              socket.emit "event", 
+                room: "topic--#{topic.slug}"
+                post: data.newest_post
+                count: data.count
+                
               if topic.page == topic.max_pages
                 $("#post-container").append topic.postHTML data.newest_post
               else
