@@ -60,7 +60,7 @@
           return function(e) {
             e.preventDefault();
             if (_this.saveFunction != null) {
-              return _this.saveFunction(_this.element.data("editor").getHTML());
+              return _this.saveFunction(_this.element.data("editor").getHTML(), _this.element.data("editor").getText());
             }
           };
         })(this));
@@ -68,7 +68,7 @@
           return function(e) {
             e.preventDefault();
             if (_this.cancelFunction != null) {
-              return _this.cancelFunction(_this.element.data("editor").getHTML());
+              return _this.cancelFunction(_this.element.data("editor").getHTML(), _this.element.data("editor").getText());
             }
           };
         })(this));

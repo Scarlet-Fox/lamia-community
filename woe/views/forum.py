@@ -18,9 +18,15 @@ def new_post_in_topic(slug):
     
     if current_user._get_current_object() in topic.banned_from_topic:
         return abort(404)
+    
+    if topic.closed:
+        return app.jsonify(closed_topic=True, closed_message=topic.close_message)
 
     request_json = request.get_json(force=True)
     
+    if request_json.get("text", "").strip() == "":
+        return app.jsonify(no_content=True)
+        
     cleaner = ForumHTMLCleaner()
     try:
         post_html = cleaner.clean(request_json.get("post", ""))
@@ -56,7 +62,7 @@ def new_post_in_topic(slug):
     
     post_count = Post.objects(hidden=False, topic=topic).count()
     
-    return app.jsonify(newest_post=parsed_post, count=post_count)    
+    return app.jsonify(newest_post=parsed_post, count=post_count, success=True)    
 
 @app.route('/topic/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
@@ -107,14 +113,15 @@ def topic_posts(slug):
                 parsed_post["is_author"] = False   
         else:
             parsed_post["is_author"] = False   
-            
-        try:
-            if post.author.last_seen > arrow.utcnow().replace(minutes=-15).datetime:
+        
+        if post.author.last_seen != None:
+            if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime:
                 parsed_post["author_online"] = True
             else:
                 parsed_post["author_online"] = False
-        except:
+        else:
             parsed_post["author_online"] = False
+
         parsed_posts.append(parsed_post)
         
     return app.jsonify(posts=parsed_posts, count=post_count)    

@@ -14,25 +14,36 @@
         this.paginationHTML = Handlebars.compile(this.paginationHTMLTeplate());
         this.is_mod = window._is_topic_mod;
         this.is_logged_in = window._is_logged_in;
+        this.refreshPosts();
         if (window._can_edit != null) {
           this.inline_editor = new InlineEditor("#new-post-box", "", false);
+          this.inline_editor.onSave(function(html, text) {
+            return $.post("/topic/" + topic.slug + "/new-post", JSON.stringify({
+              post: html,
+              text: text
+            }), (function(_this) {
+              return function(data) {
+                if (data.closed_topic != null) {
+                  $("#new-post-box").parent().children(".alert").remove();
+                  $("#new-post-box").parent().prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  Topic Closed: " + data.closed_message + "\n</div>");
+                }
+                if (data.no_content != null) {
+                  $("#new-post-box").parent().children(".alert").remove();
+                  $("#new-post-box").parent().prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  Your post has no text.\n</div>");
+                }
+                if (data.success != null) {
+                  if (topic.page === topic.max_pages) {
+                    return $("#post-container").append(topic.postHTML(data.newest_post));
+                  } else {
+                    topic.max_pages = Math.ceil(data.count / topic.pagination);
+                    topic.page = topic.max_pages;
+                    return topic.refreshPosts();
+                  }
+                }
+              };
+            })(this));
+          });
         }
-        this.inline_editor.onSave(function(html) {
-          return $.post("/topic/" + topic.slug + "/new-post", JSON.stringify({
-            post: html
-          }), (function(_this) {
-            return function(data) {
-              if (topic.page === topic.max_pages) {
-                return $("#post-container").append(topic.postHTML(data.newest_post));
-              } else {
-                topic.max_pages = Math.ceil(data.count / topic.pagination);
-                topic.page = topic.max_pages;
-                return topic.refreshPosts();
-              }
-            };
-          })(this));
-        });
-        this.refreshPosts();
         $("nav.pagination-listing").delegate("#previous-page", "click", function(e) {
           var element;
           e.preventDefault();

@@ -37,12 +37,12 @@ $ ->
       $("#save-text-#{@quillID}").click (e) =>
         e.preventDefault()
         if @saveFunction?
-          @saveFunction @element.data("editor").getHTML()
+          @saveFunction @element.data("editor").getHTML(), @element.data("editor").getText()
         
       $("#cancel-edit-#{@quillID}").click (e) =>
         e.preventDefault()
         if @cancelFunction?
-          @cancelFunction @element.data("editor").getHTML()
+          @cancelFunction @element.data("editor").getHTML(), @element.data("editor").getText()
     
     getQuillID: () ->
       return Quill.editors.length+1

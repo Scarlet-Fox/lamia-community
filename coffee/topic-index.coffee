@@ -10,19 +10,35 @@ $ ->
       @paginationHTML = Handlebars.compile(@paginationHTMLTeplate())
       @is_mod = window._is_topic_mod
       @is_logged_in = window._is_logged_in
+      
+      do @refreshPosts
+
       if window._can_edit?
         @inline_editor = new InlineEditor "#new-post-box", "", false
       
-      @inline_editor.onSave (html) ->
-        $.post "/topic/#{topic.slug}/new-post", JSON.stringify({post: html}), (data) =>
-          if topic.page == topic.max_pages
-            $("#post-container").append topic.postHTML data.newest_post
-          else
-            topic.max_pages = Math.ceil data.count/topic.pagination
-            topic.page = topic.max_pages
-            do topic.refreshPosts
-      
-      do @refreshPosts
+        @inline_editor.onSave (html, text) ->
+          $.post "/topic/#{topic.slug}/new-post", JSON.stringify({post: html, text: text}), (data) =>
+            if data.closed_topic?
+              $("#new-post-box").parent().children(".alert").remove()
+              $("#new-post-box").parent().prepend """<div class="alert alert-danger alert-dismissible fade in" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                  Topic Closed: #{data.closed_message}
+                </div>"""
+                
+            if data.no_content?
+              $("#new-post-box").parent().children(".alert").remove()
+              $("#new-post-box").parent().prepend """<div class="alert alert-danger alert-dismissible fade in" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                  Your post has no text.
+                </div>"""
+              
+            if data.success?
+              if topic.page == topic.max_pages
+                $("#post-container").append topic.postHTML data.newest_post
+              else
+                topic.max_pages = Math.ceil data.count/topic.pagination
+                topic.page = topic.max_pages
+                do topic.refreshPosts
         
       $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
         e.preventDefault()
