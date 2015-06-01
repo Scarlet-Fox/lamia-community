@@ -28,7 +28,8 @@
             if (topic.page === topic.max_pages) {
               return $("#post-container").append(topic.postHTML(data.post));
             } else {
-              return topic.max_pages = Math.ceil(data.count / topic.pagination);
+              topic.max_pages = Math.ceil(data.count / topic.pagination);
+              return topic.page = topic.max_pages;
             }
           }
         });

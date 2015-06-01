@@ -25,6 +25,7 @@ $ ->
             $("#post-container").append topic.postHTML data.post
           else
             topic.max_pages = Math.ceil data.count/topic.pagination
+            topic.page = topic.max_pages
       
       window.socket = socket
       
