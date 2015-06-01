@@ -7,7 +7,7 @@ from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 
 @app.route('/topic/<slug>/new-post', methods=['POST'])
 def new_post_in_topic(slug):
@@ -21,8 +21,42 @@ def new_post_in_topic(slug):
 
     request_json = request.get_json(force=True)
     
+    cleaner = ForumHTMLCleaner()
+    try:
+        post_html = cleaner.clean(request_json.get("post", ""))
+    except:
+        return abort(500)
+        
+    new_post = Post()
+    new_post.html = post_html
+    new_post.author = current_user._get_current_object()
+    new_post.author_name = current_user.login_name
+    new_post.topic = topic
+    new_post.topic_name = topic.title
+    new_post.created = arrow.utcnow().datetime
+    new_post.save()
     
+    clean_html_parser = ForumPostParser()
+    parsed_post = new_post.to_mongo().to_dict()
+    parsed_post["created"] = humanize_time(new_post.created, "MMM D YYYY")
+    parsed_post["modified"] = humanize_time(new_post.modified, "MMM D YYYY")
+    parsed_post["html"] = clean_html_parser.parse(new_post.html)
+    parsed_post["user_avatar"] = new_post.author.get_avatar_url()
+    parsed_post["user_avatar_x"] = new_post.author.avatar_full_x
+    parsed_post["user_avatar_y"] = new_post.author.avatar_full_y
+    parsed_post["user_avatar_60"] = new_post.author.get_avatar_url("60")
+    parsed_post["user_avatar_x_60"] = new_post.author.avatar_60_x
+    parsed_post["user_avatar_y_60"] = new_post.author.avatar_60_y
+    parsed_post["user_title"] = new_post.author.title
+    parsed_post["author_name"] = new_post.author.display_name
+    parsed_post["author_login_name"] = new_post.author.login_name
+    parsed_post["group_pre_html"] = new_post.author.group_pre_html
+    parsed_post["author_group_name"] = new_post.author.group_name
+    parsed_post["group_post_html"] = new_post.author.group_post_html
     
+    post_count = Post.objects(hidden=False, topic=topic).count()
+    
+    return app.jsonify(newest_post=parsed_post, count=post_count)    
 
 @app.route('/topic/<slug>/posts', methods=['POST'])
 def topic_posts(slug):

@@ -31,6 +31,7 @@ $ ->
         
       quill.setHTML @element.data("editor_initial_html")
       
+      @element.data("_editor", this)
       @element.data("editor", quill)
       
       $("#save-text-#{@quillID}").click (e) =>

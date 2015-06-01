@@ -10,6 +10,17 @@ $ ->
       @paginationHTML = Handlebars.compile(@paginationHTMLTeplate())
       @is_mod = window._is_topic_mod
       @is_logged_in = window._is_logged_in
+      if window._can_edit?
+        @inline_editor = new InlineEditor "#new-post-box", "", false
+      
+      @inline_editor.onSave (html) ->
+        $.post "/topic/#{topic.slug}/new-post", JSON.stringify({post: html}), (data) =>
+          if topic.page == topic.max_pages
+            $("#post-container").append topic.postHTML data.newest_post
+          else
+            topic.max_pages = Math.ceil data.count/topic.pagination
+            topic.page = topic.max_pages
+            do topic.refreshPosts
       
       do @refreshPosts
         
@@ -46,10 +57,6 @@ $ ->
         element = $(this)
         topic.page = 1
         do topic.refreshPosts
-        
-      $("#new-post-box").delegate ".save-button", "click", (e) ->
-        e.preventDefault()
-        element = $(this)
               
     paginationHTMLTeplate: () ->
       return """

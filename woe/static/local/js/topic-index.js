@@ -14,6 +14,24 @@
         this.paginationHTML = Handlebars.compile(this.paginationHTMLTeplate());
         this.is_mod = window._is_topic_mod;
         this.is_logged_in = window._is_logged_in;
+        if (window._can_edit != null) {
+          this.inline_editor = new InlineEditor("#new-post-box", "", false);
+        }
+        this.inline_editor.onSave(function(html) {
+          return $.post("/topic/" + topic.slug + "/new-post", JSON.stringify({
+            post: html
+          }), (function(_this) {
+            return function(data) {
+              if (topic.page === topic.max_pages) {
+                return $("#post-container").append(topic.postHTML(data.newest_post));
+              } else {
+                topic.max_pages = Math.ceil(data.count / topic.pagination);
+                topic.page = topic.max_pages;
+                return topic.refreshPosts();
+              }
+            };
+          })(this));
+        });
         this.refreshPosts();
         $("nav.pagination-listing").delegate("#previous-page", "click", function(e) {
           var element;
@@ -55,11 +73,6 @@
           element = $(this);
           topic.page = 1;
           return topic.refreshPosts();
-        });
-        $("#new-post-box").delegate(".save-button", "click", function(e) {
-          var element;
-          e.preventDefault();
-          return element = $(this);
         });
       }
 

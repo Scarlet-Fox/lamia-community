@@ -54,6 +54,7 @@
           theme: 'snow'
         });
         quill.setHTML(this.element.data("editor_initial_html"));
+        this.element.data("_editor", this);
         this.element.data("editor", quill);
         $("#save-text-" + this.quillID).click((function(_this) {
           return function(e) {

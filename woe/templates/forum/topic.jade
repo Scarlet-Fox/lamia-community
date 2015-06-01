@@ -54,9 +54,7 @@ script(type="text/javascript")
     {% endif %}
     
     {% if current_user.is_authenticated() == True %}
-    var editor = new InlineEditor("#new-post-box", "", false);
-    editor.onSave(function (html) {
-    });
+    window._can_edit = true;
     {% endif %}
   });
 script(src="/static/local/js/topic-index.js")
