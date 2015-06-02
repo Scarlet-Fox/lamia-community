@@ -5,8 +5,34 @@ from woe.models.forum import Category, Post
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
-from flask.ext.login import login_user, logout_user
+from flask.ext.login import login_user, logout_user, login_required, current_user
 import arrow
+
+@app.route('/status/<status>', methods=['GET'])
+@login_required
+def display_status_update(status):
+    try:
+        status = StatusUpdate.objects(id=status)
+    except:
+        return abort(404)
+        
+    if current_user.is_admin == True or current_user._get_current_object() == status.author:
+        mod = True
+    else:
+        mod = False
+        
+    status_updates = StatusUpdate.objects(attached_to_user=None)[:10]
+    cleaned_statuses = []
+    user_already_posted = []
+    for status in status_updates:
+        if status.author_name in user_already_posted:
+            continue
+        
+        user_already_posted.append(status.author_name)
+        cleaned_statuses.append(status)
+            
+    return render_template("status_update.jade", status_updates=cleaned_statuses, status=status, mod=mod)
+
 
 @login_manager.user_loader
 def load_user(login_name):

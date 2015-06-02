@@ -1,0 +1,54 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-md-8
+    ul.list-group.category
+      li.list-group-item.section-header
+        .btn-group(style="float: right;")
+          {% if mod == True %}
+          button(type="button").btn.btn-default.btn-xs#hide-button Hide
+          {% endif %}
+          {% if current_user in status.ignoring %}
+          button(type="button").btn.btn-default.btn-xs#subscribe-button Follow
+          {% else %}
+          button(type="button").btn.btn-default.btn-xs#subscribe-button Ignore
+          {% endif %}
+      li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}")
+        img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
+        p
+          a(href="#") {{ status.author.display_name }}
+          span &nbsp;says:
+          span.status-time {{ status.created }} 
+        p {{ status.message }}
+      li.list-group-item.status-replies#status-replies
+      li.list-group-item.status-reply-form
+        form.form-inline
+          .form-group.status-reply-box
+            input.form-control#status-reply(type="text")
+          button#submit-reply.btn.btn-default(type="submit") Reply
+  .col-md-4
+    # TODO NEW STATUS
+    ul.list-group.category
+      li.list-group-item.section-header(style="font-size: 14px;") Recent Status Updates
+      {% for status in status_updates %}
+      li.list-group-item.front-page-status.sidebar-status-section
+        .media-left
+          a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+            img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="40px", height="40px", class="avatar-mini")
+        .media-body
+          a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+          span &nbsp;says:
+          span.discuss 
+            a(href="/status/{{status.pk}}") Discuss
+          br
+          span.status-message {{ status.message }}
+          br
+          span.status-reply-time 
+            a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
+      {% endfor %}
+{% endblock %}
+
+{% block script %}
+script(src="/static/local/js/status_updates.js")
+{% endblock %}
