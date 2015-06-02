@@ -6,14 +6,43 @@ from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, login_required, current_user
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 import arrow
+
+@app.route('/status/<status>/replies', methods=['GET'])
+@login_required
+def status_update_replies(status):
+    try:
+        status = StatusUpdate.objects(id=status)[0]
+    except:
+        return abort(404)
+        
+    if status.hidden == True:
+        return abort(404)
+        
+    replies = []
+    for reply in status.comments:
+        parsed_reply = reply.to_mongo().to_dict()
+        parsed_reply["user_name"] = reply.author.display_name
+        parsed_reply["user_avatar"] = reply.author.get_avatar_url("40")
+        parsed_reply["user_avatar_x"] = reply.author.avatar_40_x
+        parsed_reply["user_avatar_y"] = reply.author.avatar_40_y
+        parsed_reply["time"] = humanize_time(reply.created)
+        replies.append(parsed_reply)
+        
+    return app.jsonify(replies=replies)
 
 @app.route('/status/<status>', methods=['GET'])
 @login_required
 def display_status_update(status):
+    print status
+    
     try:
-        status = StatusUpdate.objects(id=status)
+        status = StatusUpdate.objects(id=status)[0]
     except:
+        return abort(404)
+        
+    if status.hidden == True:
         return abort(404)
         
     if current_user.is_admin == True or current_user._get_current_object() == status.author:
@@ -24,12 +53,12 @@ def display_status_update(status):
     status_updates = StatusUpdate.objects(attached_to_user=None)[:10]
     cleaned_statuses = []
     user_already_posted = []
-    for status in status_updates:
-        if status.author_name in user_already_posted:
+    for recent_status in status_updates:
+        if recent_status.author_name in user_already_posted:
             continue
         
-        user_already_posted.append(status.author_name)
-        cleaned_statuses.append(status)
+        user_already_posted.append(recent_status.author_name)
+        cleaned_statuses.append(recent_status)
             
     return render_template("status_update.jade", status_updates=cleaned_statuses, status=status, mod=mod)
 
