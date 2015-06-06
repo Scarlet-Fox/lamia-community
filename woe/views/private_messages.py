@@ -1,5 +1,5 @@
 from woe import app
-from woe.models.core import PrivateMessageTopic, PrivateMessageParticipant, User
+from woe.models.core import PrivateMessageTopic, PrivateMessageParticipant, User, PrivateMessage
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time
@@ -38,6 +38,7 @@ def create_message():
         
     participant = PrivateMessageParticipant()
     participant.user = current_user._get_current_object()
+    participant.last_read = arrow.utcnow().datetime
     topic.participants.append(participant)
     topic.participating_users.append(participant.user)
     
@@ -52,7 +53,22 @@ def create_message():
     topic.creator_name = current_user._get_current_object().display_name
     topic.created = arrow.utcnow().datetime
     topic.participant_count = len(topic.participants)
+    topic.last_reply_by = current_user._get_current_object()
+    topic.last_reply_name = current_user._get_current_object().display_name
+    topic.last_reply_time = arrow.utcnow().datetime
+    topic.message_count = 1
     topic.save()
+    
+    message = PrivateMessage()
+    message.message = request_json.get("html", "").strip()
+    message.author = current_user._get_current_object()
+    message.created = arrow.utcnow().datetime
+    message.author_name = current_user._get_current_object().login_name
+    message.topic = topic
+    message.topic_name = topic.title
+    message.topic_creator_name = topic.creator_name
+    message.save()
+
         
 @app.route('/new-message', methods=['GET'])
 @login_required
