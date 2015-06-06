@@ -213,8 +213,6 @@ def new_topic(slug):
             
         try:
             prefix = Prefix.objects(prefix=request_json.get("prefix", "").strip())[0]
-            pre_html = prefix.pre_html
-            post_html = prefix.post_html
         except IndexError:
             prefix = ""
         
@@ -225,9 +223,9 @@ def new_topic(slug):
         new_topic.creator = current_user._get_current_object()
         new_topic.created = arrow.utcnow().datetime
         if prefix != "":
-            new_topic.pre_html = pre_html
+            new_topic.pre_html = prefix.pre_html
             new_topic.prefix = prefix.prefix
-            new_topic.post_html = post_html
+            new_topic.post_html = prefix.post_html
             new_topic.prefix_reference = prefix
         new_topic.last_post_by = current_user._get_current_object()
         new_topic.last_post_date = new_topic.created

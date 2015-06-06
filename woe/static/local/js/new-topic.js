@@ -16,6 +16,8 @@
           prefix = $("#prefix").val();
           meta = new_topic.meta;
           poll = new_topic.poll;
+          console.log(html);
+          console.log(text);
           return $.post("/category/" + slug + "/new-topic", JSON.stringify({
             html: html,
             text: text,
