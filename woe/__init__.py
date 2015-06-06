@@ -55,6 +55,7 @@ import views.forum
 import views.dashboard
 import views.profiles
 import views.admin
+import views.private_messages
 
 if __name__ == '__main__':
     app.run()

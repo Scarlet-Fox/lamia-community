@@ -1,4 +1,3 @@
-from woe import login_manager
 from woe import app
 from woe.models.core import User, DisplayNameHistory, StatusUpdate
 from woe.models.forum import Category, Post, Topic, Prefix, get_topic_slug

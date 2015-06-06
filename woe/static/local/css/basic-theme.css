@@ -57,8 +57,9 @@
 .section-header {
   background-color: black;
   color: white;
-/*  overflow: hidden;
-*/}
+  overflow: hidden;
+  height: 44px;
+}
 
 /* Profile Pages */
 

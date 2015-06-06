@@ -66,7 +66,6 @@ def display_status_update(status):
 @login_manager.user_loader
 def load_user(login_name):
     try:
-        print "updating..."
         user = User.objects(login_name=login_name)[0]
         user.update(last_seen=arrow.utcnow().datetime)
         return user

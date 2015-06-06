@@ -46,6 +46,7 @@ for p in peep.fetchall():
         participant.left_pm = True
     participant.last_read = arrow.get(p["map_read_time"]).replace(hours=-12).datetime
     topic.update(add_to_set__participants=participant)
+    topic.update(add_to_set__participating_users=participant.user)
     topic.update(inc__participant_count=1)
 peep.close()
     

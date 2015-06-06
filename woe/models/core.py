@@ -249,6 +249,7 @@ class PrivateMessage(db.DynamicDocument):
 class PrivateMessageParticipant(db.DynamicEmbeddedDocument):
     user = db.ReferenceField(User, required=True)
     left_pm = db.BooleanField(default=False)
+    blocked = db.BooleanField(default=False)
     do_not_notify = db.BooleanField(default=False)
     last_read = db.DateTimeField()
 
@@ -263,6 +264,7 @@ class PrivateMessageTopic(db.DynamicDocument):
     last_reply_time = db.DateTimeField()
     
     message_count = db.IntField(default=0)
+    participating_users = db.ListField(db.ReferenceField(User))
     participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant))
     participant_count = db.IntField(default=0)
     
@@ -277,7 +279,8 @@ class PrivateMessageTopic(db.DynamicDocument):
             {
                 'fields': ['$title',],
                 'default_language': 'english'
-            }
+            },
+            'participating_users'
         ]
     }
     
