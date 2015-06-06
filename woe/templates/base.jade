@@ -1,5 +1,16 @@
 !!! 5
 doctype html(lang="en")
+{% macro form_errors(form) %}
+{% if form.errors %}
+<ul class="errors">
+{% for field_name, field_errors in form.errors|dictsort if field_errors %}
+{% for error in field_errors %}
+<li>{{ form[field_name].label }}: {{ error }}</li>
+{% endfor %}
+{% endfor %}
+</ul>
+{% endif %}
+{% endmacro %}
 head
     meta(http-equiv='content-type', content='text/html; charset=UTF-8')
     meta(charset='utf-8')
@@ -124,6 +135,7 @@ body(role='document')
       {% endblock %}
   
   script(src="/static/assets/jquery.js")
+  script(src="https://cdn.socket.io/socket.io-1.3.5.js")
   script(src="/static/assets/bootstrap.js")
   script(src="/static/assets/ie10-viewport-bug-workaround.js")
   if current_user.is_authenticated()
@@ -141,3 +153,4 @@ body(role='document')
       });
   {% block script %}
   {% endblock %}
+  

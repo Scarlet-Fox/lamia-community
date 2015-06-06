@@ -1,0 +1,48 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.breadcrumb#topic-breadcrumb
+  li
+    a(href="/") Home
+  {% if category.parent != None and category.parent.root_category != True %}
+  li.active 
+    a(href="{{url_for('category_index', slug=category.parent.slug)}}") {{category.parent.name}}
+  {% endif %}
+  li.active 
+    a(href="{{url_for('category_index', slug=category.slug)}}") {{category.name}}
+  li.active
+    b
+      a(href="{{url_for('new_topic', slug=category.slug)}}") New Topic
+.row
+  .col-md-12
+    h2 Create a Topic
+    form#new-topic-form(action="/", method="post", data-slug="{{category.slug}}")
+      .row
+        .form-group.col-md-8
+          label(for="title") Title
+          input.form-control#title(value="")
+      .row
+        .form-group.col-md-4
+          label(for="title") Prefix
+          select.form-control
+      .row
+        .form-group.col-md-12
+          #new-post-box
+nav.pagination-listing
+{% endblock %}
+
+{% block header %}
+link(href='/static/assets/quill/quill.base.css', rel='stylesheet')
+link(href='/static/assets/quill/quill.snow.css', rel='stylesheet')
+{% endblock %}
+
+{% block script %}
+script(src="/static/assets/handlebars.min.js")
+script(src="/static/assets/quill/quill.js")
+script(src="/static/local/js/inline-editor.js")
+script(type="text/javascript")
+  $(document).ready(function(){  
+  
+  });
+script(src="/static/local/js/new-topic.js")
+{% endblock %}

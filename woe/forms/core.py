@@ -6,14 +6,14 @@ from PIL import Image
 
 class RegistrationForm(Form):
     username = StringField('Username', [validators.InputRequired(),
-        validators.Regexp("[A-Za-z\s0-9]", message="Your first username should be letters, numbers, and maybe a space. You can change how it looks to others, later.")]) # TODO Regex validate
+        validators.Regexp("[A-Za-z\s0-9]", message="Your first username should be letters, numbers, and maybe a space. You can change how it looks to others, later.")])
     password = PasswordField('Password', [validators.InputRequired()])
     confirm_password = PasswordField('Confirm Password', [validators.InputRequired()])
     email = StringField('Email Address', [validators.Email(), validators.InputRequired()])
     question  = SelectField('Fill in the blank : Twilight Sparkle is __________.', choices=[
         ('kaiju', 'a kaiju'), 
         ('pony', 'a pony'), 
-        ('zoop', 'secretly pink')])
+        ('darkestdungeon', 'an eldritch abomination')])
         
     def validate_username(self, field):
         user_count = len(User.objects(login_name=field.data.lower().strip())) + len(User.objects(display_name__iexact=field.data.strip()))

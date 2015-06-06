@@ -146,6 +146,7 @@ class Category(db.DynamicDocument):
     # Security
     restricted = db.BooleanField(default=True)
     allow_only = db.ListField(db.ReferenceField(core.User))
+    allowed_prefixes = db.ListField(db.ReferenceField("Prefix"))
     
     # Tracking
     prefix_frequency = db.DictField()

@@ -10,6 +10,7 @@ import arrow, time
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 
 @app.route('/topic/<slug>/new-post', methods=['POST'])
+@login_required
 def new_post_in_topic(slug):
     try:
         topic = Topic.objects(slug=slug)[0]
@@ -178,6 +179,17 @@ def category_filter_preferences(slug):
     else:        
         preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
         return json.jsonify(preferences=preferences)
+
+@app.route('/category/<slug>/new-topic', methods=['GET'])
+@login_required
+def new_topic(slug):
+    try:
+        category = Category.objects(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+        
+    return render_template("forum/new_topic.jade", category=category)
+
 
 @app.route('/category/<slug>/topics', methods=['POST'])
 def category_topics(slug):
