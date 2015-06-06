@@ -5,6 +5,26 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import arrow, time
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 
+
+
+@app.route('/messages/<pk>', methods=['GET'], defaults={'page': 1})
+@app.route('/messages/<pk>/page/<page>', methods=['GET'])
+def message_index(pk, page):
+    try:
+        topic = PrivateMessageTopic.objects(pk=pk)[0]
+    except IndexError:
+        return abort(404)
+    
+    if not current_user._get_current_object() in topic.participating_users:
+        return abort(404)
+        
+    try:
+        page = int(page)
+    except:
+        page = 1
+
+    return render_template("core/messages_topic.jade", topic=topic, initial_page=page,)
+
 @app.route('/new-message', methods=['POST'])
 @login_required
 def create_message():
