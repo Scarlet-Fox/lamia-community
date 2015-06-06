@@ -5,7 +5,67 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import arrow, time
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 
+@app.route('/messages/<pk>/posts', methods=['POST'])
+def private_message_posts(pk):
+    try:
+        topic = PrivateMessageTopic.objects(pk=pk)[0]
+    except IndexError:
+        return abort(404)
+    
+    if not current_user._get_current_object() in topic.participating_users:
+        return abort(404)
 
+    request_json = request.get_json(force=True)
+    
+    try:
+        pagination = int(request_json.get("pagination", 20))
+        page = int(request_json.get("page", 1))
+    except:
+        pagination = 20
+        page = 1
+        
+    posts = PrivateMessage.objects(topic=topic)[(page-1)*pagination:page*pagination]
+    post_count = PrivateMessage.objects(topic=topic).count()
+    parsed_posts = []
+    
+    for post in posts:
+        clean_html_parser = ForumPostParser()
+        parsed_post = post.to_mongo().to_dict()
+        parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
+        parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
+        parsed_post["html"] = clean_html_parser.parse(post.message)
+        parsed_post["user_avatar"] = post.author.get_avatar_url()
+        parsed_post["user_avatar_x"] = post.author.avatar_full_x
+        parsed_post["user_avatar_y"] = post.author.avatar_full_y
+        parsed_post["user_avatar_60"] = post.author.get_avatar_url("60")
+        parsed_post["user_avatar_x_60"] = post.author.avatar_60_x
+        parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
+        parsed_post["user_title"] = post.author.title
+        parsed_post["author_name"] = post.author.display_name
+        parsed_post["author_login_name"] = post.author.login_name
+        parsed_post["group_pre_html"] = post.author.group_pre_html
+        parsed_post["author_group_name"] = post.author.group_name
+        parsed_post["group_post_html"] = post.author.group_post_html
+        
+        if current_user.is_authenticated():
+            if post.author.pk == current_user.pk:
+                parsed_post["is_author"] = True
+            else:
+                parsed_post["is_author"] = False   
+        else:
+            parsed_post["is_author"] = False   
+        
+        if post.author.last_seen != None:
+            if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime:
+                parsed_post["author_online"] = True
+            else:
+                parsed_post["author_online"] = False
+        else:
+            parsed_post["author_online"] = False
+
+        parsed_posts.append(parsed_post)
+        
+    return app.jsonify(posts=parsed_posts, count=post_count)   
 
 @app.route('/messages/<pk>', methods=['GET'], defaults={'page': 1})
 @app.route('/messages/<pk>/page/<page>', methods=['GET'])
