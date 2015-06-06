@@ -7,6 +7,7 @@ from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
+from mongoengine.queryset import Q
 import arrow
 
 @app.route('/status/<status>/replies', methods=['GET'])
@@ -110,3 +111,12 @@ def sign_in():
 def sign_out():
     logout_user()
     return redirect('/')
+    
+@app.route('/user-list-api', methods=['GET'])
+@login_required
+def user_list_api():
+    query = request.args.get("q", "")[0:100]
+    if len(query) < 2:
+        return app.jsonify(results=[])
+    results = [{"text": unicode(u.display_name), "id": str(u.pk)} for u in User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query))]
+    return app.jsonify(results=results)

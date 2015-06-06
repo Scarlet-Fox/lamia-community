@@ -1,0 +1,50 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.breadcrumb#topic-breadcrumb
+.breadcrumb
+  li
+    a(href="/") Home
+  li 
+    a(href="{{url_for('messages_topics',)}}") Private Messages
+  li.active 
+    b
+      a(href="#") New Private Message
+.row
+  .col-md-12
+    h2 Send a New Private Message
+    form#new-topic-form(method="post")
+      .row
+        .col-md-8
+          .row
+            .form-group.col-md-8
+              label(for="title") Title
+              input.form-control#title(value="")
+          .row
+            .form-group.col-md-6
+              label(for="title") To
+              select#to.form-control(multiple="multiple")
+          .row
+            .form-group.col-md-12
+              #new-post-box
+nav.pagination-listing
+{% endblock %}
+
+{% block header %}
+link(href='/static/assets/quill/quill.base.css', rel='stylesheet')
+link(href='/static/assets/quill/quill.snow.css', rel='stylesheet')
+link(href='/static/assets/select2/select2.min.css', rel='stylesheet')
+link(href='/static/assets/select2/select2-bootstrap.css', rel='stylesheet')
+{% endblock %}
+
+{% block script %}
+script(src="/static/assets/handlebars.min.js")
+script(src="/static/assets/quill/quill.js")
+script(src="/static/assets/select2/select2.full.min.js")
+script(src="/static/local/js/inline-editor.js")
+script(type="text/javascript")
+  $(document).ready(function(){  
+  
+  });
+script(src="/static/local/js/new-private-message.js")
+{% endblock %}

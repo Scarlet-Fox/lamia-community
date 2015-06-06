@@ -3,28 +3,43 @@
   $(function() {
     var NewTopic;
     NewTopic = (function() {
-      function NewTopic(slug) {
+      function NewTopic() {
         var new_topic;
-        this.slug = slug;
         this.inline_editor = new InlineEditor("#new-post-box", "", false);
-        this.meta = {};
-        this.poll = {};
         new_topic = self;
+        $("#to").select2({
+          ajax: {
+            url: "/user-list-api",
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+              return {
+                q: params.term
+              };
+            },
+            processResults: function(data, page) {
+              console.log({
+                results: data.results
+              });
+              return {
+                results: data.results
+              };
+            },
+            cache: true
+          },
+          minimumInputLength: 2
+        });
         this.inline_editor.onSave(function(html, text) {
-          var meta, poll, prefix, title;
+          var prefix, title, to;
           title = $("#title").val();
           prefix = $("#prefix").val();
-          meta = new_topic.meta;
-          poll = new_topic.poll;
-          console.log(html);
-          console.log(text);
-          return $.post("/category/" + slug + "/new-topic", JSON.stringify({
+          to = $("#to").val();
+          return $.post("/new-message", JSON.stringify({
             html: html,
             text: text,
-            meta: meta,
             title: title,
             prefix: prefix,
-            poll: poll
+            to: to
           }), (function(_this) {
             return function(data) {
               if (data.error != null) {
@@ -40,7 +55,7 @@
       return NewTopic;
 
     })();
-    return window.topic = new NewTopic($("#new-topic-form").data("slug"));
+    return window.topic = new NewTopic();
   });
 
 }).call(this);

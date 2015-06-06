@@ -1,9 +1,63 @@
 from woe import app
-from woe.models.core import PrivateMessageTopic
+from woe.models.core import PrivateMessageTopic, PrivateMessageParticipant, User
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
+
+@app.route('/new-message', methods=['POST'])
+@login_required
+def create_message():
+    request_json = request.get_json(force=True)
+    print request_json
+
+    if len(request_json.get("title", "").strip()) == 0:
+        return app.jsonify(error="Please enter a title.")
+
+    if request_json.get("text", "").strip() == "":
+        return app.jsonify(error="Please enter actual text for your message.")
+    
+    if request_json.get("to") == None or not len(request_json.get("to", [""])) > 0:
+        return app.jsonify(error="Choose who should receive your message.")
+        
+    participant_users = []
+    for user_pk in request_json.get("to"):
+        if user_pk == current_user._get_current_object().pk:
+            continue 
+            
+        try:
+            u = User.objects(pk=user_pk)[0]
+            participant_users.append(u)
+        except IndexError:
+            continue
+            
+    if len(participant_users) == 0:
+        return app.jsonify(error="Your member list is invalid.")
+        
+    topic = PrivateMessageTopic()
+        
+    participant = PrivateMessageParticipant()
+    participant.user = current_user._get_current_object()
+    topic.participants.append(participant)
+    topic.participating_users.append(participant.user)
+    
+    topic.participating_users.extend(participant_users)
+    for _p in participant_users:
+        participant = PrivateMessageParticipant()
+        participant.user = _p
+        topic.participants.append(participant)
+    
+    topic.title = request_json.get("title", "").strip()
+    topic.creator = current_user._get_current_object()
+    topic.creator_name = current_user._get_current_object().display_name
+    topic.created = arrow.utcnow().datetime
+    topic.participant_count = len(topic.participants)
+    topic.save()
+        
+@app.route('/new-message', methods=['GET'])
+@login_required
+def create_message_index():
+    return render_template("core/new_message.jade")
 
 @app.route('/message-topics', methods=['POST'])
 @login_required
