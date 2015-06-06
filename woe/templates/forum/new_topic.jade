@@ -16,18 +16,23 @@
 .row
   .col-md-12
     h2 Create a Topic
-    form#new-topic-form(action="/", method="post", data-slug="{{category.slug}}")
+    form#new-topic-form(method="post", data-slug="{{category.slug}}")
       .row
-        .form-group.col-md-8
-          label(for="title") Title
-          input.form-control#title(value="")
-      .row
-        .form-group.col-md-4
-          label(for="title") Prefix
-          select.form-control
-      .row
-        .form-group.col-md-12
-          #new-post-box
+        .col-md-8
+          .row
+            .form-group.col-md-8
+              label(for="title") Title
+              input.form-control#title(value="")
+          if category.allowed_prefixes
+            .row
+              .form-group.col-md-6
+                label(for="title") Prefix
+                select#prefix.form-control
+                  for prefix in category.allowed_prefixes
+                    option(value="{{prefix}}") {{prefix}}
+          .row
+            .form-group.col-md-12
+              #new-post-box
 nav.pagination-listing
 {% endblock %}
 

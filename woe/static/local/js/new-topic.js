@@ -4,8 +4,34 @@
     var NewTopic;
     NewTopic = (function() {
       function NewTopic(slug) {
+        var new_topic;
         this.slug = slug;
         this.inline_editor = new InlineEditor("#new-post-box", "", false);
+        this.meta = {};
+        this.poll = {};
+        new_topic = self;
+        this.inline_editor.onSave(function(html, text) {
+          var meta, poll, prefix, title;
+          title = $("#title").val();
+          prefix = $("#prefix").val();
+          meta = new_topic.meta;
+          poll = new_topic.poll;
+          return $.post("/category/" + slug + "/new-topic", JSON.stringify({
+            html: html,
+            text: text,
+            meta: meta,
+            title: title,
+            prefix: prefix,
+            poll: poll
+          }), (function(_this) {
+            return function(data) {
+              if (data.error != null) {
+                topic.inline_editor.flashError(error);
+              }
+              return window.location = data.url;
+            };
+          })(this));
+        });
       }
 
       return NewTopic;

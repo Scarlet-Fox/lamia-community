@@ -44,12 +44,10 @@
             }), (function(_this) {
               return function(data) {
                 if (data.closed_topic != null) {
-                  $("#new-post-box").parent().children(".alert").remove();
-                  $("#new-post-box").parent().prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  Topic Closed: " + data.closed_message + "\n</div>");
+                  topic.inline_editor.flashError("Topic Closed: " + data.closed_message);
                 }
                 if (data.no_content != null) {
-                  $("#new-post-box").parent().children(".alert").remove();
-                  $("#new-post-box").parent().prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  Your post has no text.\n</div>");
+                  topic.inline_editor.flashError("Your post has no text.");
                 }
                 if (data.success != null) {
                   socket.emit("event", {

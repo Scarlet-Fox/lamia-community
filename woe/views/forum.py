@@ -1,7 +1,7 @@
 from woe import login_manager
 from woe import app
 from woe.models.core import User, DisplayNameHistory, StatusUpdate
-from woe.models.forum import Category, Post, Topic
+from woe.models.forum import Category, Post, Topic, Prefix, get_topic_slug
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
@@ -180,15 +180,78 @@ def category_filter_preferences(slug):
         preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
         return json.jsonify(preferences=preferences)
 
-@app.route('/category/<slug>/new-topic', methods=['GET'])
+@app.route('/category/<slug>/new-topic', methods=['GET', 'POST'])
 @login_required
 def new_topic(slug):
-    try:
-        category = Category.objects(slug=slug)[0]
-    except IndexError:
-        return abort(404)
+    if request.method == 'POST':
+        try:
+            category = Category.objects(slug=slug)[0]
+        except IndexError:
+            print "Error?"
+            return abort(404)
         
-    return render_template("forum/new_topic.jade", category=category)
+        request_json = request.get_json(force=True)
+    
+        if request_json.get("title", "").strip() == "":
+            return app.jsonify(error="Please enter a title.")
+    
+        if request_json.get("text", "").strip() == "":
+            return app.jsonify(error="Please enter actual text for your post.")
+    
+        if len(category.allowed_prefixes) > 0:
+            if request_json.get("prefix", "").strip() == "":
+                return app.jsonify(error="Please choose a prefix.")
+        
+            if not request_json.get("prefix", "").strip() in category.allowed_prefixes:
+                return app.jsonify(error="Please choose a valid prefix.")
+        
+        cleaner = ForumHTMLCleaner()
+        try:
+            post_html = cleaner.clean(request_json.get("html", ""))
+        except:
+            return abort(500)
+            
+        try:
+            prefix = Prefix.objects(prefix=request_json.get("prefix", "").strip())[0]
+            pre_html = prefix.pre_html
+            post_html = prefix.post_html
+        except IndexError:
+            prefix = ""
+        
+        new_topic = Topic()
+        new_topic.category = category
+        new_topic.title = request_json.get("title")
+        new_topic.slug = get_topic_slug(new_topic.title)
+        new_topic.creator = current_user._get_current_object()
+        new_topic.created = arrow.utcnow().datetime
+        if prefix != "":
+            new_topic.pre_html = pre_html
+            new_topic.prefix = prefix.prefix
+            new_topic.post_html = post_html
+            new_topic.prefix_reference = prefix
+        new_topic.last_post_by = current_user._get_current_object()
+        new_topic.last_post_date = new_topic.created
+        new_topic.last_post_author_avatar = current_user._get_current_object().get_avatar_url("40")
+        new_topic.post_count = 1
+        new_topic.save()
+        
+        new_post = Post()
+        new_post.html = post_html
+        new_post.author = current_user._get_current_object()
+        new_post.author_name = current_user.login_name
+        new_post.topic = new_topic
+        new_post.topic_name = new_topic.title
+        new_post.created = arrow.utcnow().datetime
+        new_post.save()
+        
+        return app.jsonify(url="/topic/"+new_topic.slug)
+    else:
+        try:
+            category = Category.objects(slug=slug)[0]
+        except IndexError:
+            return abort(404)
+        
+        return render_template("forum/new_topic.jade", category=category)
 
 
 @app.route('/category/<slug>/topics', methods=['POST'])

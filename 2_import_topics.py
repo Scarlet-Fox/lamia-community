@@ -130,6 +130,9 @@ for u in User.objects():
 categories = Category.objects()
 for cat in categories:
     topics = Topic.objects(category=cat)
+    prefixes = Topic.objects(category=cat, prefix__ne=None).item_frequencies("prefix")
+    for key, value in prefixes.items():
+        cat.allowed_prefixes.append(key)
     category_views = 0
     category_topics = 0
     for topic in topics:

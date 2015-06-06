@@ -94,6 +94,11 @@
         return this.fullPageFunction = fullPageFunction;
       };
 
+      InlineEditor.prototype.flashError = function(message) {
+        this.element.parent().children(".alert").remove();
+        return $("#new-post-box").parent().prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  " + message + "\n</div>");
+      };
+
       InlineEditor.prototype.destroyEditor = function() {
         this.element.data("editor_is_active", false);
         $("#inline-editor-buttons-" + this.quillID).remove();

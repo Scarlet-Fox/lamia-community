@@ -50,8 +50,8 @@
                 li.divider
                 li
                   a#prefix-filter-show-all(href='#') Show All
-            .btn-group(style='float: right;')
-              a.btn.btn-default.btn-xs(href="/category/{{category.slug}}/new-topic/") New Topic
+        .btn-group(style='float: right;')
+          a.btn.btn-default.btn-xs(href="/category/{{category.slug}}/new-topic") New Topic
               
             //-   {% if current_user.is_mod %}
             //-   button.btn.btn-default.btn-xs(type='button') Moderate

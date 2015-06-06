@@ -37,18 +37,10 @@ $ ->
         @inline_editor.onSave (html, text) ->
           $.post "/topic/#{topic.slug}/new-post", JSON.stringify({post: html, text: text}), (data) =>
             if data.closed_topic?
-              $("#new-post-box").parent().children(".alert").remove()
-              $("#new-post-box").parent().prepend """<div class="alert alert-danger alert-dismissible fade in" role="alert">
-                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                  Topic Closed: #{data.closed_message}
-                </div>"""
+              topic.inline_editor.flashError "Topic Closed: #{data.closed_message}"
                 
             if data.no_content?
-              $("#new-post-box").parent().children(".alert").remove()
-              $("#new-post-box").parent().prepend """<div class="alert alert-danger alert-dismissible fade in" role="alert">
-                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                  Your post has no text.
-                </div>"""
+              topic.inline_editor.flashError "Your post has no text."
               
             if data.success?
               socket.emit "event", 

@@ -1,4 +1,5 @@
 from woe import db
+from slugify import slugify
 from . import core
 
 class Flag(db.DynamicEmbeddedDocument):
@@ -146,7 +147,7 @@ class Category(db.DynamicDocument):
     # Security
     restricted = db.BooleanField(default=True)
     allow_only = db.ListField(db.ReferenceField(core.User))
-    allowed_prefixes = db.ListField(db.ReferenceField("Prefix"))
+    allowed_prefixes = db.ListField(db.StringField())
     
     # Tracking
     prefix_frequency = db.DictField()
@@ -173,3 +174,18 @@ class Category(db.DynamicDocument):
     
     def __unicode__(self):
         return self.name
+
+def get_topic_slug(title):
+    slug = slugify(title, max_length=100, word_boundary=True, save_order=True)
+    
+    def try_slug(slug, count=0):
+        new_slug = slug
+        if count > 0:
+            new_slug = slug+"-"+str(count)
+            
+        if len(Topic.objects(slug=new_slug)) == 0:
+            return new_slug
+        else:
+            return try_slug(slug, count+1)
+    
+    return try_slug(slug)
