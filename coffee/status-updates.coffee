@@ -5,6 +5,20 @@ $ ->
       status = this
       @replyHTML = Handlebars.compile(@replyHTMLTemplate())
       do @refreshView
+      
+      @socket = io.connect('http://' + document.domain + ':3000' + '');
+      
+      @socket.on "connect", () =>
+        @socket.emit 'join', "status--#{@id}"
+      
+      @socket.on "console", (data) ->
+        console.log data
+        
+      @socket.on "event", (data) ->
+        if data.reply?
+          console.log data.reply
+          $("#status-replies").append status.replyHTML(data.reply)
+          $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
     
       $("#submit-reply").click (e) ->
         e.preventDefault()
@@ -13,7 +27,11 @@ $ ->
     addReply: () ->
       $.post "/status/#{@id}/reply", JSON.stringify({reply: $("#status-reply").val()}), (data) =>
         $("#status-reply").val("")
-        @refreshView(true)
+        @socket.emit "event", 
+          room: "status--#{@id}"
+          reply: data.newest_reply
+        $("#status-replies").append @replyHTML(data.newest_reply)
+        $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
     
     replyHTMLTemplate: () ->
       return """

@@ -9,6 +9,22 @@
         status = this;
         this.replyHTML = Handlebars.compile(this.replyHTMLTemplate());
         this.refreshView();
+        this.socket = io.connect('http://' + document.domain + ':3000' + '');
+        this.socket.on("connect", (function(_this) {
+          return function() {
+            return _this.socket.emit('join', "status--" + _this.id);
+          };
+        })(this));
+        this.socket.on("console", function(data) {
+          return console.log(data);
+        });
+        this.socket.on("event", function(data) {
+          if (data.reply != null) {
+            console.log(data.reply);
+            $("#status-replies").append(status.replyHTML(data.reply));
+            return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
+          }
+        });
         $("#submit-reply").click(function(e) {
           e.preventDefault();
           return status.addReply();
@@ -21,7 +37,12 @@
         }), (function(_this) {
           return function(data) {
             $("#status-reply").val("");
-            return _this.refreshView(true);
+            _this.socket.emit("event", {
+              room: "status--" + _this.id,
+              reply: data.newest_reply
+            });
+            $("#status-replies").append(_this.replyHTML(data.newest_reply));
+            return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
           };
         })(this));
       };
