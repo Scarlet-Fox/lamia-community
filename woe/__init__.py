@@ -18,6 +18,7 @@ app.config["SECRET_KEY"] = settings_file["secret_key"]
 app.config["AVATAR_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'avatars')
 app.config["MAX_CONTENT_LENGTH"] = 1000000000
 app.config['DEBUG'] = settings_file["debug"]
+app.settings_file = settings_file
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 cache.init_app(app)
