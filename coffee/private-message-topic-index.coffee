@@ -143,7 +143,7 @@ $ ->
             </li>
             <li class="list-group-item post-listing-post">
               <div class="row">
-                <div class="col-md-3" style="text-align: center;">
+                <div class="col-lg-3 col-md-4" style="text-align: center;">
                   <img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm">
                   <span class="hidden-xs hidden-sm"><br><br>
                   <div class="post-member-self-title">{{user_title}}</div>
@@ -151,7 +151,7 @@ $ ->
                   <div class="post-meta">
                   </div>
                 </div>
-                <div class="col-md-9 post-right">
+                <div class="col-lg-9 col-md-8 post-right">
                   <div class=".post-content" id="post-{{_id}}">
                     {{{html}}}
                   </div>

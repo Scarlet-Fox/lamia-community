@@ -207,7 +207,7 @@ def create_message():
     message.topic_name = topic.title
     message.topic_creator_name = topic.creator_name
     message.save()
-
+    return app.jsonify(url="/messages/"+str(topic.pk))
         
 @app.route('/new-message', methods=['GET'])
 @login_required

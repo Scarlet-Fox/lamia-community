@@ -11,13 +11,30 @@
     b
       a(href="/messages/{{topic.pk}}") {{topic.title}}
 .row
-  .col-md-12
+  .col-md-9
     ul.list-group.category
       #post-container(data-pk="{{topic.pk}}")
       li.list-group-item(style="overflow: hidden;")
         #new-post-box
           if current_user.is_authenticated() == False:
             p.text-muted Please login to make a reply to this topic.
+  .col-md-3
+    ul.list-group.category
+      li.list-group-item.sidebar-section-header.section-header Participants
+      for participant in topic.participants
+        li.list-group-item
+          .media-left
+            a(href="{{url_for('view_profile', login_name=participant.user.login_name)}}")
+              img.media-object(src="{{ participant.user.get_avatar_url("40") }}", width="40px", height="40px", class="avatar-mini")
+          .media-body
+            a.hover_user(href="{{url_for('view_profile', login_name=participant.user.login_name)}}") {{ participant.user.display_name }}
+            if current_user == participant.user:
+              br
+              a.inherit_colors(href="/messages/{{topic.pk}}/leave-topic") (Leave Topic)
+            elif current_user != participant.user and current_user == topic.creator:
+              br
+              a.inherit_colors(href="/messages/{{topic.pk}}/leave-topic") (Kick)
+            
 nav.pagination-listing
 {% endblock %}
 
