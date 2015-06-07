@@ -51,6 +51,31 @@ $ ->
                 topic.max_pages = Math.ceil data.count/topic.pagination
                 topic.page = topic.max_pages
                 do topic.refreshPosts
+      
+      $("#post-container").delegate ".post-edit", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        post_content = $("#post-"+element.data("pk"))
+        post_buttons = $("#post-buttons-"+element.data("pk"))
+        post_buttons.hide()
+        
+        inline_editor = new InlineEditor "#post-"+element.data("pk"), "", true
+        
+        inline_editor.onSave (html, text, edit_reason) ->
+          console.log edit_reason
+          $.post "/messages/#{topic.pk}/edit-post", JSON.stringify({pk: element.data("pk"), post: html, text: text}), (data) =>
+            if data.error?
+              topic.inline_editor.flashError data.error
+            
+            if data.success?
+              inline_editor.destroyEditor()
+              post_content.html data.html
+              post_buttons.show()
+        
+        inline_editor.onCancel (html, text) ->
+          inline_editor.destroyEditor()
+          inline_editor.resetElementHtml()
+          post_buttons.show()
                    
       $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
         e.preventDefault()
@@ -156,7 +181,7 @@ $ ->
                     {{{html}}}
                   </div>
                   <br>
-                  <div class="row post-edit-likes-info">
+                  <div class="row post-edit-likes-info" id="post-buttons-{{_id}}">
                       <div class="col-md-8">
                         {{#if _is_logged_in}}
                         <div class="btn-group" role="group" aria-label="...">
@@ -169,7 +194,6 @@ $ ->
                             </button>
                             <ul class="dropdown-menu" role="menu">
                               <li><a href="#">Quote</a></li>
-                              <li><a href="#">Multiquote</a></li>
                             </ul>
                           </div>
                         {{/if}}
@@ -181,8 +205,7 @@ $ ->
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                              <li><a href="#">Edit</a></li>
-                              <li><a href="#">Hide</a></li>
+                                  <li><a href="#" class="post-edit" data-pk="{{_id}}">Edit</a></li>
                             </ul>
                             {{else}}
                               {{#if is_author}}
@@ -192,7 +215,7 @@ $ ->
                                   <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                  <li><a href="#">Edit</a></li>
+                                  <li><a href="#" class="post-edit" data-pk="{{_id}}">Edit</a></li>
                                 </ul>
                               {{/if}}
                             {{/if}}

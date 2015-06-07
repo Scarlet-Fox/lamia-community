@@ -5,16 +5,20 @@
   $(function() {
     var InlineEditor;
     InlineEditor = (function() {
-      function InlineEditor(element, url, cancel_button) {
+      function InlineEditor(element, url, cancel_button, edit_reason) {
         if (url == null) {
           url = "";
         }
         if (cancel_button == null) {
           cancel_button = false;
         }
+        if (edit_reason == null) {
+          edit_reason = false;
+        }
         this.toolbarHTML = bind(this.toolbarHTML, this);
         this.editordivHTML = bind(this.editordivHTML, this);
         this.submitButtonHTML = bind(this.submitButtonHTML, this);
+        this.editReasonHTML = bind(this.editReasonHTML, this);
         this.setupEditor = bind(this.setupEditor, this);
         this.quillID = this.getQuillID();
         this.element = $(element);
@@ -22,6 +26,7 @@
           return false;
         }
         this.element.data("editor_is_active", true);
+        this.edit_reason = edit_reason;
         if (url !== "") {
           $.get(url, (function(_this) {
             return function(data) {
@@ -42,6 +47,9 @@
         }
         this.element.html(this.editordivHTML());
         this.element.before(this.toolbarHTML);
+        if (this.edit_reason) {
+          this.element.after(this.editReasonHTML);
+        }
         this.element.after(this.submitButtonHTML(cancel_button));
         quill = new Quill("#post-editor-" + this.quillID, {
           modules: {
@@ -60,7 +68,11 @@
           return function(e) {
             e.preventDefault();
             if (_this.saveFunction != null) {
-              return _this.saveFunction(_this.element.data("editor").getHTML(), _this.element.data("editor").getText());
+              if (_this.edit_reason) {
+                return _this.saveFunction(_this.element.data("editor").getHTML(), _this.element.data("editor").getText(), $("#edit-reason-" + _this.quillID).val());
+              } else {
+                return _this.saveFunction(_this.element.data("editor").getHTML(), _this.element.data("editor").getText());
+              }
             }
           };
         })(this));
@@ -103,7 +115,12 @@
         this.element.data("editor_is_active", false);
         $("#inline-editor-buttons-" + this.quillID).remove();
         $("#toolbar-" + this.quillID).remove();
-        return $("#post-editor-" + this.quillID).remove();
+        $("#post-editor-" + this.quillID).remove();
+        return $("#edit-reason-" + this.quillID).parent().parent().remove();
+      };
+
+      InlineEditor.prototype.editReasonHTML = function() {
+        return "<form class=\"form-inline\">\n  <div class=\"form-group\">\n    <label>Edit Reason: </label>\n    <input class=\"form-control\" id=\"edit-reason-" + this.quillID + "\" type=\"text\" initial=\"\"></input>\n  </div>\n</form>";
       };
 
       InlineEditor.prototype.submitButtonHTML = function(cancel_button) {

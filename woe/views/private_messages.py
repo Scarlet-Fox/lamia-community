@@ -5,6 +5,42 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import arrow, time
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 
+@app.route('/messages/<pk>/edit-post', methods=['POST'])
+@login_required
+def edit_post_in_pm_topic(pk):
+    try:
+        topic = PrivateMessageTopic.objects(pk=pk)[0]
+    except IndexError:
+        return abort(404)
+    
+    if not current_user._get_current_object() in topic.participating_users:
+        return abort(404)
+
+    request_json = request.get_json(force=True)
+    
+    try:
+        message = PrivateMessage.objects(topic=topic, pk=request_json.get("pk"))[0]
+    except IndexError:
+        return abort(404)
+    
+    if request_json.get("text", "").strip() == "":
+        return app.jsonify(error="Your post is empty.")
+        
+    cleaner = ForumHTMLCleaner()
+    try:
+        post_html = cleaner.clean(request_json.get("post", ""))
+    except:
+        return abort(500)
+        
+    message.message = post_html
+    message.modified = arrow.utcnow().datetime
+    message.save()
+    
+    clean_html_parser = ForumPostParser()
+    
+    
+    return app.jsonify(html=clean_html_parser.parse(message.message), success=True)
+
 @app.route('/messages/<pk>/new-post', methods=['POST'])
 @login_required
 def new_message_in_pm_topic(pk):
@@ -34,7 +70,7 @@ def new_message_in_pm_topic(pk):
     topic.save()
     
     message = PrivateMessage()
-    message.message = request_json.get("post", "").strip()
+    message.message = post_html
     message.author = current_user._get_current_object()
     message.created = arrow.utcnow().datetime
     message.author_name = current_user._get_current_object().login_name

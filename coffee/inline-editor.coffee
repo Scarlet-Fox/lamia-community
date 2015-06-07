@@ -1,11 +1,12 @@
 $ ->
   class InlineEditor
-    constructor: (element, url = "", cancel_button=false) ->
+    constructor: (element, url = "", cancel_button=false, edit_reason=false) ->
       @quillID = do @getQuillID  
       @element = $(element)
       if @element.data("editor_is_active")
         return false
       @element.data("editor_is_active", true)
+      @edit_reason = edit_reason
       
       if url != ""
         $.get url, (data) =>
@@ -20,6 +21,8 @@ $ ->
       @element.html(@editordivHTML())
       
       @element.before @toolbarHTML
+      if @edit_reason
+        @element.after @editReasonHTML
       @element.after @submitButtonHTML cancel_button
       
       quill = new Quill "#post-editor-#{@quillID}", 
@@ -37,8 +40,11 @@ $ ->
       $("#save-text-#{@quillID}").click (e) =>
         e.preventDefault()
         if @saveFunction?
-          @saveFunction @element.data("editor").getHTML(), @element.data("editor").getText()
-        
+          if @edit_reason
+            @saveFunction @element.data("editor").getHTML(), @element.data("editor").getText(), $("#edit-reason-#{@quillID}").val()
+          else
+            @saveFunction @element.data("editor").getHTML(), @element.data("editor").getText()
+            
       $("#cancel-edit-#{@quillID}").click (e) =>
         e.preventDefault()
         if @cancelFunction?
@@ -71,6 +77,17 @@ $ ->
       do $("#inline-editor-buttons-#{@quillID}").remove
       do $("#toolbar-#{@quillID}").remove
       do $("#post-editor-#{@quillID}").remove
+      do $("#edit-reason-#{@quillID}").parent().parent().remove
+    
+    editReasonHTML: () =>
+      return """
+        <form class="form-inline">
+          <div class="form-group">
+            <label>Edit Reason: </label>
+            <input class="form-control" id="edit-reason-#{@quillID}" type="text" initial=""></input>
+          </div>
+        </form>
+      """
     
     submitButtonHTML: (cancel_button=false) =>
       if cancel_button == true

@@ -33,7 +33,7 @@
               a.inherit_colors(href="/messages/{{topic.pk}}/leave-topic") (Leave Topic)
             elif current_user != participant.user and current_user == topic.creator:
               br
-              a.inherit_colors(href="/messages/{{topic.pk}}/leave-topic") (Kick)
+              a.inherit_colors(href="/messages/{{topic.pk}}/kick-from-topic/{{participant.user.pk}}") (Kick)
             
 nav.pagination-listing
 {% endblock %}
