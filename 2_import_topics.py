@@ -9,7 +9,7 @@ import phpserialize
 import json
 settings_file = json.loads(open("config.json").read())
 
-db = MySQLdb.connect(user=settings_file["woe_old_user"], db="woe_old", passwd=settings_file["woe_old_pass"], cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
+db = MySQLdb.connect(user=settings_file["woe_old_user"], db=settings_file["woe_old_db"], passwd=settings_file["woe_old_pass"], cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
 cursor = db.cursor()
 cursor.execute("select * from ipstopics;")
 c = cursor.fetchall()
