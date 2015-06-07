@@ -6,6 +6,7 @@
       function Status() {
         var status;
         this.id = $("#status").attr("data-id");
+        this.max_length = 250;
         status = this;
         this.replyHTML = Handlebars.compile(this.replyHTMLTemplate());
         this.refreshView();
@@ -21,6 +22,7 @@
         this.socket.on("event", function(data) {
           if (data.reply != null) {
             console.log(data.reply);
+            this.updateReplyCount(data.count);
             $("#status-replies").append(status.replyHTML(data.reply));
             return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
           }
@@ -29,6 +31,12 @@
           e.preventDefault();
           return status.addReply();
         });
+        $("#status-reply").bind("propertychange change click keyup input paste", function(e) {
+          if ($("#status-reply").val().length >= this.max_length) {
+            e.preventDefault();
+          }
+          return status.updateCount($("#status-reply").val().length);
+        });
       }
 
       Status.prototype.addReply = function() {
@@ -36,19 +44,51 @@
           reply: $("#status-reply").val()
         }), (function(_this) {
           return function(data) {
-            $("#status-reply").val("");
-            _this.socket.emit("event", {
-              room: "status--" + _this.id,
-              reply: data.newest_reply
-            });
-            $("#status-replies").append(_this.replyHTML(data.newest_reply));
-            return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
+            if (data.error != null) {
+              return _this.flashError(data.error);
+            } else {
+              $("#status-reply").val("");
+              _this.socket.emit("event", {
+                room: "status--" + _this.id,
+                reply: data.newest_reply,
+                count: data.count
+              });
+              _this.updateReplyCount(data.count);
+              $("#status-replies").append(_this.replyHTML(data.newest_reply));
+              return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
+            }
           };
         })(this));
       };
 
+      Status.prototype.flashError = function(error) {
+        $(".status-reply-form").children(".alert").remove();
+        return $(".status-reply-form").prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  " + error + "\n</div>");
+      };
+
+      Status.prototype.updateReplyCount = function(c) {
+        if (c > 99) {
+          this.flashError("This status update is full.");
+          $("#submit-reply").addClass("disabled");
+        }
+        return $("#status-status").text("Status Update - " + c + " / 100 Replies");
+      };
+
+      Status.prototype.updateCount = function(c) {
+        var n, style;
+        n = parseInt(c);
+        c = parseInt(n / this.max_length * 100);
+        style = "progress-bar-info";
+        if (c > 80) {
+          style = "progress-bar-danger";
+        } else if (c > 40) {
+          style = "progress-bar-warning";
+        }
+        return $("#status-comment-count").html("<br><br>\n<div class=\"progress\" style=\"width: 79%;\">\n  <div class=\"progress-bar " + style + "\" role=\"progressbar\" aria-valuenow=\"" + c + "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: " + c + "%;\">\n    <span class=\"sr-only\">" + c + "%</span>\n    " + n + " / " + this.max_length + "\n  </div>\n</div>");
+      };
+
       Status.prototype.replyHTMLTemplate = function() {
-        return "<div class=\"status-reply\" data-id=\"{{pk}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"#\">{{user_name}}</a><span class=\"status-mod-controls\"></span>\n    <br>{{text}}\n    <br><span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>";
+        return "{{#unless hidden}}\n<div class=\"status-reply\" data-id=\"{{idx}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"#\">{{user_name}}</a><span class=\"status-mod-controls\"></span>\n    <br>{{text}}\n    <br><span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>\n{{/unless}}";
       };
 
       Status.prototype.refreshView = function(scrolldown) {
@@ -59,6 +99,7 @@
           return function(response) {
             var comment, i, len, ref;
             $("#status-replies").html("");
+            _this.updateReplyCount(response.count);
             ref = response.replies;
             for (i = 0, len = ref.length; i < len; i++) {
               comment = ref[i];

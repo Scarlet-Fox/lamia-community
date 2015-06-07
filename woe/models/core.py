@@ -348,6 +348,7 @@ class StatusComment(db.DynamicEmbeddedDocument):
     text = db.StringField(required=True)
     author = db.ReferenceField(User, required=True)
     created = db.DateTimeField(required=True)
+    hidden = db.BooleanField(default=False)
 
 class StatusUpdate(db.DynamicDocument):
     attached_to_user = db.ReferenceField(User)
@@ -392,7 +393,11 @@ class StatusUpdate(db.DynamicDocument):
     }
     
     def get_comment_count(self):
-        return len(self.comments)+1
+        count = 0
+        for c in self.comments:
+            if not c.hidden:
+                count += 1
+        return count
 
 class Attachment(db.DynamicDocument):
     owner_name = db.StringField(required=True)

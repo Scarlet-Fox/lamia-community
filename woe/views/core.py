@@ -21,6 +21,9 @@ def make_status_update_reply(status):
     if status.hidden == True:
         return abort(404)
         
+    if status.get_comment_count() > 99:
+        return app.jsonify(error="This status update is full!")
+        
     request_json = request.get_json(force=True)
 
     cleaner = ForumHTMLCleaner()
@@ -30,10 +33,11 @@ def make_status_update_reply(status):
         return abort(500)
         
     sc = StatusComment()
-    sc.text = _html
+    sc.text = _html[0:250]
     sc.author = current_user._get_current_object()
     sc.created = arrow.utcnow().datetime
     status.comments.append(sc)
+    status.replies = status.get_comment_count()
     status.save()
     
     clean_html_parser = ForumPostParser()
@@ -44,7 +48,7 @@ def make_status_update_reply(status):
     parsed_reply["user_avatar_y"] = sc.author.avatar_40_y
     parsed_reply["time"] = humanize_time(sc.created)
     
-    return app.jsonify(newest_reply=parsed_reply, success=True)
+    return app.jsonify(newest_reply=parsed_reply, count=status.get_comment_count(), success=True)
 
 @app.route('/status/<status>/replies', methods=['GET'])
 @login_required
@@ -58,6 +62,7 @@ def status_update_replies(status):
         return abort(404)
         
     replies = []
+    idx = 0
     for reply in status.comments:
         parsed_reply = reply.to_mongo().to_dict()
         parsed_reply["user_name"] = reply.author.display_name
@@ -65,9 +70,11 @@ def status_update_replies(status):
         parsed_reply["user_avatar_x"] = reply.author.avatar_40_x
         parsed_reply["user_avatar_y"] = reply.author.avatar_40_y
         parsed_reply["time"] = humanize_time(reply.created)
+        parsed_reply["idx"] = idx
         replies.append(parsed_reply)
+        idx+=1
         
-    return app.jsonify(replies=replies)
+    return app.jsonify(replies=replies, count=status.get_comment_count())
 
 @app.route('/status/<status>', methods=['GET'])
 @login_required

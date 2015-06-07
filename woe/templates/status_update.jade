@@ -4,7 +4,9 @@
 .row
   .col-md-8
     ul.list-group.category
-      li.list-group-item.section-header
+      li.list-group-item.section-header.sidebar-status-section(style="font-size: 14px;")
+        span#status-status
+        
         .btn-group(style="float: right;")
           {% if mod == True %}
           button(type="button").btn.btn-default.btn-xs#hide-button Hide
@@ -27,8 +29,17 @@
           .form-group.status-reply-box
             input.form-control#status-reply(type="text")
           button#submit-reply.btn.btn-default(type="submit") Reply
+          &nbsp;
+          span#status-comment-count
+          
   .col-md-4
-    # TODO NEW STATUS
+    ul.list-group.category
+      li.list-group-item.section-header(style="font-size: 14px;") New Status Update
+      li.list-group-item
+        form.form-group.status-reply-box
+          input.form-control#status-new(type="text")
+        button#new-status.btn.btn-default(type="submit") Create
+    
     ul.list-group.category
       li.list-group-item.section-header(style="font-size: 14px;") Recent Status Updates
       {% for status in status_updates %}
