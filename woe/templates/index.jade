@@ -17,13 +17,15 @@
                 a(href="/category/{{category.slug}}") {{category.name}}
             {% if category.post_count != 0 %}
             .col-sm-6.hidden-xs.hidden-sm
-              span.subcategory-listing-recent-image
-                a(href="{{url_for('view_profile', login_name=category.last_post_by.login_name)}}")
-                  img(src="{{category.last_post_author_avatar}}", width="{{category.last_post_by.avatar_40_x}}", height="{{category.last_post_by.avatar_40_y}}", class="avatar-mini")
-              span.subcategory-listing-recent
-                a(href="/topic/{{category.last_topic.slug}}") {{category.last_topic.title}}
-                br
-                a(href="/topic/{{category.last_topic.slug}}") {{category.last_post_date|humanize_time}}
+              .media-left
+                span.subcategory-listing-recent-image
+                  a(href="{{url_for('view_profile', login_name=category.last_post_by.login_name)}}")
+                    img(src="{{category.last_post_author_avatar}}", width="{{category.last_post_by.avatar_40_x}}", height="{{category.last_post_by.avatar_40_y}}", class="avatar-mini")
+              .media-body
+                span.subcategory-listing-recent
+                  a(href="/topic/{{category.last_topic.slug}}") {{category.last_topic.title}}
+                  br
+                  a(href="/topic/{{category.last_topic.slug}}") {{category.last_post_date|humanize_time}}
             {% endif %}
       {% endif %}
       {% endfor %}
