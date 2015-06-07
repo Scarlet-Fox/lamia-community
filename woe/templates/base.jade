@@ -150,6 +150,12 @@ body(role='document')
             window.location = "/";
           });
         });
+        $(".post-link").click(function (e) {
+          e.preventDefault();
+          $.post($(this).attr("href"), function(data) {
+            window.location = data.url;
+          });
+        });
       });
   {% block script %}
   {% endblock %}

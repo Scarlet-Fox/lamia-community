@@ -14,6 +14,53 @@ import arrow
 def static_from_root():
     return send_from_directory(app.static_folder, app.settings_file.get("robots-alt", request.path[1:]))
 
+@app.route('/status/<status>/toggle-ignore', methods=['POST'])
+@login_required
+def toggle_status_ignoring(status):
+    try:
+        status = StatusUpdate.objects(id=status)[0]
+    except:
+        return abort(404)
+    
+    if not current_user._get_current_object() in status.ignoring:
+        status.update(add_to_set__ignoring=current_user._get_current_object())
+    else:
+        try:
+            status.ignoring.remove(current_user._get_current_object())
+        except:
+            pass
+        status.save()
+    
+    return app.jsonify(url="/status/"+unicode(status.pk))
+
+@app.route('/status/<status>/toggle-mute', methods=['POST'])
+@login_required
+def toggle_status_mute(status):
+    try:
+        status = StatusUpdate.objects(id=status)[0]
+    except:
+        return abort(404)
+        
+    if current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True:
+        return abort(404)
+        
+    status.update(muted=not status.muted)
+    return app.jsonify(url="/status/"+unicode(status.pk))
+
+@app.route('/status/<status>/toggle-lock', methods=['POST'])
+@login_required
+def toggle_status_lock(status):
+    try:
+        status = StatusUpdate.objects(id=status)[0]
+    except:
+        return abort(404)
+        
+    if current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True:
+        return abort(404)
+        
+    status.update(locked=not status.locked)
+    return app.jsonify(url="/status/"+unicode(status.pk))
+
 @app.route('/status/<status>/reply', methods=['POST'])
 @login_required
 def make_status_update_reply(status):
@@ -24,6 +71,12 @@ def make_status_update_reply(status):
         
     if status.hidden == True:
         return abort(404)
+        
+    if status.muted and current_user._get_current_object() != status.author:
+        return app.jsonify(error="This status update is silenced. Shhh!")
+        
+    if status.locked:
+        return app.jsonify(error="This status update is locked.")
         
     if status.get_comment_count() > 99:
         return app.jsonify(error="This status update is full!")
@@ -44,6 +97,9 @@ def make_status_update_reply(status):
     status.replies = status.get_comment_count()
     status.save()
     
+    if not current_user._get_current_object() in status.participants:
+        status.update(add_to_set__participants=current_user._get_current_object())
+        
     clean_html_parser = ForumPostParser()
     parsed_reply = sc.to_mongo().to_dict()
     parsed_reply["user_name"] = sc.author.display_name

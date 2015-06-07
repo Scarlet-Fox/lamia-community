@@ -30,9 +30,6 @@
           e.preventDefault();
           return status.addReply();
         });
-        $("#status-reply").bind("propertychange change click keyup input paste", function(e) {
-          return status.updateCount($("#status-reply").val().length);
-        });
       }
 
       Status.prototype.addReply = function() {
@@ -43,6 +40,7 @@
             if (data.error != null) {
               return _this.flashError(data.error);
             } else {
+              $(".status-reply-form").children(".alert").remove();
               $("#status-reply").val("");
               _this.socket.emit("event", {
                 room: "status--" + _this.id,
@@ -102,7 +100,11 @@
               $("#status-replies").append(_this.replyHTML(comment));
             }
             if (scrolldown) {
-              return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
+              $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
+            }
+            if ($("#status").data("locked") === "True") {
+              _this.flashError("This status update is locked.");
+              return $("#submit-reply").addClass("disabled");
             }
           };
         })(this));

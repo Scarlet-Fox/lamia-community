@@ -367,7 +367,8 @@ class StatusUpdate(db.DynamicDocument):
     
     # Mod stuff
     hidden = db.BooleanField(default=False)
-    hide_message = db.BooleanField(default=False)
+    locked = db.BooleanField(default=False)
+    muted = db.BooleanField(default=False)
     
     # Tracking
     view_count = db.IntField(default=0)

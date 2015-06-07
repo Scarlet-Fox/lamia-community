@@ -6,23 +6,30 @@
     ul.list-group.category
       li.list-group-item.section-header.sidebar-status-section(style="font-size: 14px;")
         span#status-status
-        
         .btn-group(style="float: right;")
           {% if mod == True %}
           button(type="button").btn.btn-default.btn-xs#hide-button Hide
           {% endif %}
           {% if mod == True %}
-          button(type="button").btn.btn-default.btn-xs#lock-button Lock
+          {% if status.locked %}
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-lock") Unlock
+          {% else %}
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-lock") Lock
+          {% endif %}
           {% endif %}
           {% if current_user == status.author %}
-          button(type="button").btn.btn-default.btn-xs#mute-button Mute
-          {% endif %}
-          {% if current_user in status.ignoring %}
-          button(type="button").btn.btn-default.btn-xs#subscribe-button Follow
+          {% if status.muted %}
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-mute") Unmute
           {% else %}
-          button(type="button").btn.btn-default.btn-xs#subscribe-button Ignore
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-mute") Mute
           {% endif %}
-      li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}")
+          {% endif %}
+          {% if current_user in status.ignoring or not current_user in status.participants %}
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-ignore") Follow
+          {% else %}
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-ignore") Ignore
+          {% endif %}
+      li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}")
         img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
         p
           a(href="#") {{ status.author.display_name }}

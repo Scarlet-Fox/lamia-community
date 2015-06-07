@@ -25,14 +25,15 @@ $ ->
         e.preventDefault()
         do status.addReply
         
-      $("#status-reply").bind "propertychange change click keyup input paste", (e) ->
-        status.updateCount $("#status-reply").val().length
+      # $("#status-reply").bind "propertychange change click keyup input paste", (e) ->
+      #   status.updateCount $("#status-reply").val().length
       
     addReply: () ->
       $.post "/status/#{@id}/reply", JSON.stringify({reply: $("#status-reply").val()}), (data) =>
         if data.error?
           @flashError data.error
         else
+          $(".status-reply-form").children(".alert").remove()
           $("#status-reply").val("")
           @socket.emit "event", 
             room: "status--#{@id}"
@@ -103,5 +104,9 @@ $ ->
                   
         if scrolldown
           $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
+        
+        if $("#status").data("locked") == "True"
+          @flashError "This status update is locked."
+          $("#submit-reply").addClass "disabled"
         
   window.status_ = new Status()
