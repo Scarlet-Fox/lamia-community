@@ -27,8 +27,6 @@ $ ->
         do status.addReply
         
       $("#status-reply").bind "propertychange change click keyup input paste", (e) ->
-        if $("#status-reply").val().length >= @max_length
-          e.preventDefault()
         status.updateCount $("#status-reply").val().length
       
     addReply: () ->

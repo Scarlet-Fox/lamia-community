@@ -32,9 +32,6 @@
           return status.addReply();
         });
         $("#status-reply").bind("propertychange change click keyup input paste", function(e) {
-          if ($("#status-reply").val().length >= this.max_length) {
-            e.preventDefault();
-          }
           return status.updateCount($("#status-reply").val().length);
         });
       }
