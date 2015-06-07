@@ -54,8 +54,8 @@ for u in c.fetchall():
     m.validated = True
     m.save()
     
-    old_avatar_location = os.path.join("/Users/Luminescence/Dropbox/WoE",u["pp_main_photo"])
-    new_avatar_dir = "/Users/Luminescence/Documents/woe/woe/static/avatars/"
+    old_avatar_location = os.path.join(settings_file["woe_ipb_avatar_dir"],u["pp_main_photo"])
+    new_avatar_dir = os.path.join(os.getcwd(),"woe/static/avatars/")
     
     if os.path.isfile(old_avatar_location):
         extension = "." + u["pp_main_photo"].split(".")[-1]
