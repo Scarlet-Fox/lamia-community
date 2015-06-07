@@ -17,8 +17,7 @@ $ ->
         
       @socket.on "event", (data) ->
         if data.reply?
-          console.log data.reply
-          @updateReplyCount data.count
+          status.updateReplyCount data.count
           $("#status-replies").append status.replyHTML(data.reply)
           $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
     

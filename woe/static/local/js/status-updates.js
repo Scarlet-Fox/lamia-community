@@ -21,8 +21,7 @@
         });
         this.socket.on("event", function(data) {
           if (data.reply != null) {
-            console.log(data.reply);
-            this.updateReplyCount(data.count);
+            status.updateReplyCount(data.count);
             $("#status-replies").append(status.replyHTML(data.reply));
             return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
           }
