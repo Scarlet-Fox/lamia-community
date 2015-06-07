@@ -364,6 +364,7 @@ class StatusUpdate(db.DynamicDocument):
     # Notification stuff
     participants = db.ListField(db.ReferenceField(User))
     ignoring = db.ListField(db.ReferenceField(User))
+    blocked = db.ListField(db.ReferenceField(User))
     
     # Mod stuff
     hidden = db.BooleanField(default=False)

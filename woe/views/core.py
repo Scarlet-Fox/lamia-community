@@ -14,6 +14,29 @@ import arrow
 def static_from_root():
     return send_from_directory(app.static_folder, app.settings_file.get("robots-alt", request.path[1:]))
 
+@app.route('/status/<status>/toggle-silence/<user>', methods=['POST'])
+@login_required
+def toggle_status_blocking(status, user):
+    try:
+        status = StatusUpdate.objects(id=status)[0]
+        user = User.objects(id=user)[0]
+    except:
+        return abort(404)
+        
+    if user == current_user._get_current_object():
+        return abort(404)
+        
+    if not user in status.blocked:
+        status.update(add_to_set__blocked=user)
+    else:
+        try:
+            status.blocked.remove(user)
+        except:
+            pass
+        status.save()
+    
+    return app.jsonify(url="/status/"+unicode(status.pk))
+
 @app.route('/status/<status>/toggle-ignore', methods=['POST'])
 @login_required
 def toggle_status_ignoring(status):
@@ -74,6 +97,9 @@ def make_status_update_reply(status):
         
     if status.muted and current_user._get_current_object() != status.author:
         return app.jsonify(error="This status update is silenced. Shhh!")
+    
+    if not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod) and (current_user._get_current_object() in status.blocked):
+        return app.jsonify(error="You have been blocked from this status update.")
         
     if status.locked:
         return app.jsonify(error="This status update is locked.")
