@@ -2,8 +2,10 @@ import MySQLdb
 import MySQLdb.cursors
 from woe.models.core import User, StatusUpdate, StatusComment
 import arrow
+import json
+settings_file = json.loads(open("config.json").read())
 
-db = MySQLdb.connect(user="root", db="woe", cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
+db = MySQLdb.connect(user=settings_file["woe_old_user"], db="woe_old", passwd=settings_file["woe_old_pass"], cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
 c=db.cursor()
 c.execute("select * from ipsmember_status_updates;")
 
