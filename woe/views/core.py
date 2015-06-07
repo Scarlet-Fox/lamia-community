@@ -22,18 +22,19 @@ def make_status_update_reply(status):
         return abort(404)
         
     request_json = request.get_json(force=True)
-    
+
     cleaner = ForumHTMLCleaner()
     try:
-        _html = cleaner.clean(request_json.get("reply", ""))
+        _html = cleaner.clean("<div>"+request_json.get("reply", "")+"</div>")
     except:
         return abort(500)
-    
+        
     sc = StatusComment()
     sc.text = _html
     sc.author = current_user._get_current_object()
     sc.created = arrow.utcnow().datetime
-    sc.save()
+    status.comments.append(sc)
+    status.save()
     
     clean_html_parser = ForumPostParser()
     parsed_reply = sc.to_mongo().to_dict()

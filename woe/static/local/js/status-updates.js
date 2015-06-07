@@ -4,24 +4,30 @@
     var Status;
     Status = (function() {
       function Status() {
+        var status;
         this.id = $("#status").attr("data-id");
+        status = this;
+        this.replyHTML = Handlebars.compile(this.replyHTMLTemplate());
         this.refreshView();
+        $("#submit-reply").click(function(e) {
+          e.preventDefault();
+          return status.addReply();
+        });
       }
 
       Status.prototype.addReply = function() {
-        return $.post("/status/" + this.id + "/", {
-          text: $("#status-reply")[0].value,
-          reply: true
-        }, (function(_this) {
-          return function(response) {
-            $("#status-reply")[0].value = "";
+        return $.post("/status/" + this.id + "/reply", JSON.stringify({
+          reply: $("#status-reply").val()
+        }), (function(_this) {
+          return function(data) {
+            $("#status-reply").val("");
             return _this.refreshView(true);
           };
         })(this));
       };
 
-      Status.prototype.replyTMPL = function(vars) {
-        return "<div class=\"status-reply\" data-id=\"" + vars.pk + "\">  \n  <img src=\"" + vars.user_avatar + "\" width=\"" + vars.user_avatar_x + "px\" height=\"" + vars.user_avatar_y + "px\">\n  <p><a href=\"#\">" + vars.user_name + "</a><span class=\"status-mod-controls\"></span>\n  <br>" + vars.text + "\n  <br><span class=\"status-reply-time\">" + vars.time + "</span></p>\n  <hr>\n</div>";
+      Status.prototype.replyHTMLTemplate = function() {
+        return "<div class=\"status-reply\" data-id=\"{{pk}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"#\">{{user_name}}</a><span class=\"status-mod-controls\"></span>\n    <br>{{text}}\n    <br><span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>";
       };
 
       Status.prototype.refreshView = function(scrolldown) {
@@ -35,7 +41,7 @@
             ref = response.replies;
             for (i = 0, len = ref.length; i < len; i++) {
               comment = ref[i];
-              $("#status-replies").append(_this.replyTMPL(comment));
+              $("#status-replies").append(_this.replyHTML(comment));
             }
             if (scrolldown) {
               return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
@@ -47,11 +53,7 @@
       return Status;
 
     })();
-    window.status_ = new Status;
-    return $("#submit-reply").click(function(e) {
-      e.preventDefault();
-      return s.addReply();
-    });
+    return window.status_ = new Status();
   });
 
 }).call(this);
