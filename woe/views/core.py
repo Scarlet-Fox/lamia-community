@@ -4,11 +4,15 @@ from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusCommen
 from woe.models.forum import Category, Post
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
-from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
+from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 from mongoengine.queryset import Q
 import arrow
+
+@app.route('/robots.txt')
+def static_from_root():
+    return send_from_directory(app.static_folder, request.path[1:])
 
 @app.route('/status/<status>/reply', methods=['POST'])
 @login_required
