@@ -17,7 +17,7 @@
         socket = io.connect('http://' + document.domain + ':3000' + '');
         socket.on("connect", (function(_this) {
           return function() {
-            return socket.emit('join', "pm--" + _this.pk);
+            return socket.emit('join', "pm--" + topic.pk);
           };
         })(this));
         socket.on("console", function(data) {
@@ -48,7 +48,7 @@
                 }
                 if (data.success != null) {
                   socket.emit("event", {
-                    room: "pm--" + _this.pk,
+                    room: "pm--" + topic.pk,
                     post: data.newest_post,
                     count: data.count
                   });

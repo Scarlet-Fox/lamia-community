@@ -14,7 +14,7 @@ $ ->
       socket = io.connect('http://' + document.domain + ':3000' + '');
       
       socket.on "connect", () =>
-        socket.emit 'join', "pm--#{@pk}"
+        socket.emit 'join', "pm--#{topic.pk}"
       
       socket.on "console", (data) ->
         console.log data
@@ -41,7 +41,7 @@ $ ->
               
             if data.success?
               socket.emit "event", 
-                room: "pm--#{@pk}"
+                room: "pm--#{topic.pk}"
                 post: data.newest_post
                 count: data.count
                 

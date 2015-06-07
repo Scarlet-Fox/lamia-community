@@ -5,6 +5,65 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import arrow, time
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 
+@app.route('/messages/<pk>/new-post', methods=['POST'])
+@login_required
+def new_message_in_pm_topic(pk):
+    try:
+        topic = PrivateMessageTopic.objects(pk=pk)[0]
+    except IndexError:
+        return abort(404)
+    
+    if not current_user._get_current_object() in topic.participating_users:
+        return abort(404)
+
+    request_json = request.get_json(force=True)
+    
+    if request_json.get("text", "").strip() == "":
+        return app.jsonify(error="Your post is empty.")
+        
+    cleaner = ForumHTMLCleaner()
+    try:
+        post_html = cleaner.clean(request_json.get("post", ""))
+    except:
+        return abort(500)
+        
+    topic.last_reply_by = current_user._get_current_object()
+    topic.last_reply_name = current_user._get_current_object().display_name
+    topic.last_reply_time = arrow.utcnow().datetime
+    topic.message_count = topic.message_count + 1
+    topic.save()
+    
+    message = PrivateMessage()
+    message.message = request_json.get("post", "").strip()
+    message.author = current_user._get_current_object()
+    message.created = arrow.utcnow().datetime
+    message.author_name = current_user._get_current_object().login_name
+    message.topic = topic
+    message.topic_name = topic.title
+    message.topic_creator_name = topic.creator_name
+    message.save()
+    
+    clean_html_parser = ForumPostParser()
+    parsed_post = message.to_mongo().to_dict()
+    parsed_post["created"] = humanize_time(message.created, "MMM D YYYY")
+    parsed_post["modified"] = humanize_time(message.modified, "MMM D YYYY")
+    parsed_post["html"] = clean_html_parser.parse(message.message)
+    parsed_post["user_avatar"] = message.author.get_avatar_url()
+    parsed_post["user_avatar_x"] = message.author.avatar_full_x
+    parsed_post["user_avatar_y"] = message.author.avatar_full_y
+    parsed_post["user_avatar_60"] = message.author.get_avatar_url("60")
+    parsed_post["user_avatar_x_60"] = message.author.avatar_60_x
+    parsed_post["user_avatar_y_60"] = message.author.avatar_60_y
+    parsed_post["user_title"] = message.author.title
+    parsed_post["author_name"] = message.author.display_name
+    parsed_post["author_login_name"] = message.author.login_name
+    parsed_post["group_pre_html"] = message.author.group_pre_html
+    parsed_post["author_group_name"] = message.author.group_name
+    parsed_post["group_post_html"] = message.author.group_post_html    
+    post_count = PrivateMessage.objects(topic=topic).count()
+    
+    return app.jsonify(newest_post=parsed_post, count=post_count, success=True)    
+
 @app.route('/messages/<pk>/posts', methods=['POST'])
 def private_message_posts(pk):
     try:
