@@ -390,6 +390,9 @@ class StatusUpdate(db.DynamicDocument):
             }
         ]
     }
+    
+    def get_comment_count(self):
+        return len(self.comments)+1
 
 class Attachment(db.DynamicDocument):
     owner_name = db.StringField(required=True)

@@ -1,6 +1,6 @@
 from woe import login_manager
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment
 from woe.models.forum import Category, Post
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
@@ -9,6 +9,41 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 from mongoengine.queryset import Q
 import arrow
+
+@app.route('/status/<status>/reply', methods=['POST'])
+@login_required
+def make_status_update_reply(status):
+    try:
+        status = StatusUpdate.objects(id=status)[0]
+    except:
+        return abort(404)
+        
+    if status.hidden == True:
+        return abort(404)
+        
+    request_json = request.get_json(force=True)
+    
+    cleaner = ForumHTMLCleaner()
+    try:
+        _html = cleaner.clean(request_json.get("reply", ""))
+    except:
+        return abort(500)
+    
+    sc = StatusComment()
+    sc.text = _html
+    sc.author = current_user._get_current_object()
+    sc.created = arrow.utcnow().datetime
+    sc.save()
+    
+    clean_html_parser = ForumPostParser()
+    parsed_reply = sc.to_mongo().to_dict()
+    parsed_reply["user_name"] = sc.author.display_name
+    parsed_reply["user_avatar"] = sc.author.get_avatar_url("40")
+    parsed_reply["user_avatar_x"] = sc.author.avatar_40_x
+    parsed_reply["user_avatar_y"] = sc.author.avatar_40_y
+    parsed_reply["time"] = humanize_time(sc.created)
+    
+    return app.jsonify(newest_reply=parsed_reply, success=True)
 
 @app.route('/status/<status>/replies', methods=['GET'])
 @login_required
@@ -46,7 +81,7 @@ def display_status_update(status):
     if status.hidden == True:
         return abort(404)
         
-    if current_user.is_admin == True or current_user._get_current_object() == status.author:
+    if current_user._get_current_object().is_admin == True or current_user._get_current_object() == status.author:
         mod = True
     else:
         mod = False

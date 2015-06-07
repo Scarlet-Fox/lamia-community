@@ -40,7 +40,7 @@
           a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
           span &nbsp;says:
           span.discuss 
-            a(href="/status/{{status.pk}}") Discuss
+            a(href="/status/{{status.pk}}") Discuss {% if status.get_comment_count() %}({{status.get_comment_count()}}){% endif %}
           br
           span.status-message {{ status.message }}
           br
