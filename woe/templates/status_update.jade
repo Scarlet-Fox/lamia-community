@@ -11,6 +11,12 @@
           {% if mod == True %}
           button(type="button").btn.btn-default.btn-xs#hide-button Hide
           {% endif %}
+          {% if mod == True %}
+          button(type="button").btn.btn-default.btn-xs#lock-button Lock
+          {% endif %}
+          {% if current_user == status.author %}
+          button(type="button").btn.btn-default.btn-xs#mute-button Mute
+          {% endif %}
           {% if current_user in status.ignoring %}
           button(type="button").btn.btn-default.btn-xs#subscribe-button Follow
           {% else %}
@@ -41,23 +47,7 @@
         button#new-status.btn.btn-default(type="submit") Create
     
     ul.list-group.category
-      li.list-group-item.section-header(style="font-size: 14px;") Recent Status Updates
-      {% for status in status_updates %}
-      li.list-group-item.front-page-status.sidebar-status-section
-        .media-left
-          a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
-            img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="40px", height="40px", class="avatar-mini")
-        .media-body
-          a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
-          span &nbsp;says:
-          span.discuss 
-            a(href="/status/{{status.pk}}") Discuss {% if status.get_comment_count() %}({{status.get_comment_count()}}){% endif %}
-          br
-          span.status-message {{ status.message }}
-          br
-          span.status-reply-time 
-            a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
-      {% endfor %}
+      li.list-group-item.section-header(style="font-size: 14px;") Participants
 {% endblock %}
 
 {% block script %}

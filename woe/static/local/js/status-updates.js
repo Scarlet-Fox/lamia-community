@@ -88,7 +88,7 @@
       };
 
       Status.prototype.replyHTMLTemplate = function() {
-        return "{{#unless hidden}}\n<div class=\"status-reply\" data-id=\"{{idx}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"#\">{{user_name}}</a><span class=\"status-mod-controls\"></span>\n    <br>{{text}}\n    <br><span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>\n{{/unless}}";
+        return "{{#unless hidden}}\n<div class=\"status-reply\" data-id=\"{{idx}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"#\">{{user_name}}</a><span class=\"status-mod-controls\"></span>\n    <br>{{{text}}}\n    <br><span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>\n{{/unless}}";
       };
 
       Status.prototype.refreshView = function(scrolldown) {

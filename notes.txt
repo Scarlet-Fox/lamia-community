@@ -1,3 +1,5 @@
 For PyPy:
 
 * pip install git+git://github.com/surfly/gevent.git#egg=gevent
+
+* gunicorn --worker-class eventlet --workers 1 --error-logfile=- --access-logfile=- woe:app  -b 0.0.0.0:5000

@@ -89,22 +89,12 @@ def display_status_update(status):
     if status.hidden == True:
         return abort(404)
         
-    if current_user._get_current_object().is_admin == True or current_user._get_current_object() == status.author:
+    if current_user._get_current_object().is_admin == True:
         mod = True
     else:
         mod = False
-        
-    status_updates = StatusUpdate.objects(attached_to_user=None)[:10]
-    cleaned_statuses = []
-    user_already_posted = []
-    for recent_status in status_updates:
-        if recent_status.author_name in user_already_posted:
-            continue
-        
-        user_already_posted.append(recent_status.author_name)
-        cleaned_statuses.append(recent_status)
             
-    return render_template("status_update.jade", status_updates=cleaned_statuses, status=status, mod=mod)
+    return render_template("status_update.jade", status=status, mod=mod)
 
 
 @login_manager.user_loader

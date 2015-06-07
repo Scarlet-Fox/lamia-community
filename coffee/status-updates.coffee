@@ -87,7 +87,7 @@ $ ->
         </div>
         <div class="media-body">
           <p><a href="#">{{user_name}}</a><span class="status-mod-controls"></span>
-          <br>{{text}}
+          <br>{{{text}}}
           <br><span class="status-reply-time">{{time}}</span></p>
         </div>
         <hr>

@@ -42,6 +42,10 @@ $ ->
             if data.no_content?
               topic.inline_editor.flashError "Your post has no text."
               
+
+            data.newest_post._is_topic_mod = @is_mod
+            data.newest_post._is_logged_in = @is_logged_in
+              
             if data.success?
               socket.emit "event", 
                 room: "topic--#{topic.slug}"
