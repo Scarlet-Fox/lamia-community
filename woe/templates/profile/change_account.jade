@@ -7,7 +7,7 @@
     .row
       .col-lg-6.col-md-6.col-sm-8
         form(action="/member/{{profile.login_name}}/change-account", method="post")
-          {{ form.errors }}
+          {{ form_errors(form) }}
           .form-group
             {{ form.current_password.label }}*
             {{ form.current_password(class="form-control") }}

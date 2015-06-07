@@ -14,7 +14,7 @@
         span.text-muted {{profile.title}}
     h2 Change Avatar
     form(action="/member/{{profile.login_name}}/change-avatar-title", method="post", enctype="multipart/form-data")
-      {{ form.errors }}
+      {{ form_errors(form) }}
       .form-group
         {{ form.avatar.label }}
         {{ form.avatar(class="form-control") }}
