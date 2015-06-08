@@ -22,6 +22,8 @@ $ ->
       socket.on "event", (data) ->
         if data.post?
           if topic.page == topic.max_pages
+            data.post._is_topic_mod = topic.is_mod
+            data.post._is_logged_in = topic.is_logged_in
             $("#post-container").append topic.postHTML data.post
           else
             topic.max_pages = Math.ceil data.count/topic.pagination
@@ -41,10 +43,7 @@ $ ->
                 
             if data.no_content?
               topic.inline_editor.flashError "Your post has no text."
-              
 
-            data.newest_post._is_topic_mod = @is_mod
-            data.newest_post._is_logged_in = @is_logged_in
             data.newest_post.author_online = true
               
             if data.success?
