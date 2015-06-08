@@ -41,8 +41,8 @@ $ ->
           if data.success?
             $("#reply-"+reply_idx).remove()
       
-      # $("#status-reply").bind "propertychange change click keyup input paste", (e) ->
-      #   status.updateCount $("#status-reply").val().length
+      $("#status-reply").on "keyup", (e) ->
+        status.updateCount $("#status-reply").val().length
       
     addReply: () ->
       $.post "/status/#{@id}/reply", JSON.stringify({reply: $("#status-reply").val()}), (data) =>
@@ -102,7 +102,7 @@ $ ->
         <div class="media-body">
           <p><a href="#">{{user_name}}</a><span class="status-mod-controls"><a href="{{idx}}" class="inherit_colors hide-reply">(hide)</a></span>
           <br>{{{text}}}
-          <br><span class="status-reply-time">{{time}}</span></p>
+          <span class="status-reply-time">{{time}}</span></p>
         </div>
         <hr>
       </div>
