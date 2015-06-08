@@ -60,9 +60,13 @@ history_c.close()
  
 for topic in Topic.objects():
     topic_posts = Post.objects(topic=topic)
-    topic.post_count = Post.objects(topic=topic).count()
+    topic.post_count = Post.objects(topic=topic, hidden=False).count()
     try:
         recent_post = Post.objects(topic=topic).order_by("-created")[0]
+    except IndexError:
+        continue
+    try:
+        topic.first_post = Post.objects(topic=topic, hidden=False).order_by("created")[0]
     except IndexError:
         continue
     topic.last_post_by = recent_post.author
