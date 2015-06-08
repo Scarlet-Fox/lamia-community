@@ -1,6 +1,8 @@
 {% extends "base.jade" %}
 
 {% block content %}
+#confirm-hide-modal.modal.fade
+  test
 .row
   .col-md-8
     ul.list-group.category
@@ -8,7 +10,11 @@
         span#status-status
         .btn-group(style="float: right;")
           {% if mod == True %}
-          button(type="button").btn.btn-default.btn-xs#hide-button Hide
+          {% if status.hidden %}
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-hidden") Show
+          {% else %}
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-hidden") Hide
+          {% endif %}
           {% endif %}
           {% if mod == True %}
           {% if status.locked %}

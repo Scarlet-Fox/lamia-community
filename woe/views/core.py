@@ -14,6 +14,22 @@ import arrow
 def static_from_root():
     return send_from_directory(app.static_folder, app.settings_file.get("robots-alt", request.path[1:]))
 
+@app.route('/status/<status>/hide-reply/<idx>', methods=['POST'])
+@login_required
+def status_hide_reply(status, idx):
+    try:
+        status = StatusUpdate.objects(id=status)[0]
+    except:
+        return abort(404)
+    
+    try:
+        status.comments[int(idx)].hidden = True
+        status.save()
+    except:
+        pass
+        
+    return app.jsonify(success=True)
+    
 @app.route('/status/<status>/toggle-silence/<user>', methods=['POST'])
 @login_required
 def toggle_status_blocking(status, user):
@@ -56,6 +72,20 @@ def toggle_status_ignoring(status):
     
     return app.jsonify(url="/status/"+unicode(status.pk))
 
+@app.route('/status/<status>/toggle-hidden', methods=['POST'])
+@login_required
+def toggle_status_hide(status):
+    try:
+        status = StatusUpdate.objects(id=status)[0]
+    except:
+        return abort(404)
+        
+    if current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True:
+        return abort(404)
+        
+    status.update(hidden=not status.hidden)
+    return app.jsonify(url="/status/"+unicode(status.pk))
+    
 @app.route('/status/<status>/toggle-mute', methods=['POST'])
 @login_required
 def toggle_status_mute(status):
@@ -92,7 +122,7 @@ def make_status_update_reply(status):
     except:
         return abort(404)
         
-    if status.hidden == True:
+    if status.hidden == True and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
         return abort(404)
         
     if status.muted and current_user._get_current_object() != status.author:
@@ -144,7 +174,7 @@ def status_update_replies(status):
     except:
         return abort(404)
         
-    if status.hidden == True:
+    if status.hidden == True and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
         return abort(404)
         
     replies = []
@@ -172,7 +202,7 @@ def display_status_update(status):
     except:
         return abort(404)
         
-    if status.hidden == True:
+    if status.hidden == True and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
         return abort(404)
         
     if current_user._get_current_object().is_admin == True:

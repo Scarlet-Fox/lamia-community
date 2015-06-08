@@ -5,6 +5,7 @@ $ ->
       @max_length = 250
       status = this
       @replyHTML = Handlebars.compile(@replyHTMLTemplate())
+      @confirmModelHTML = Handlebars.compile(@confirmModelHTMLTemplate())
       do @refreshView
       
       @socket = io.connect('http://' + document.domain + ':3000' + '');
@@ -24,7 +25,22 @@ $ ->
       $("#submit-reply").click (e) ->
         e.preventDefault()
         do status.addReply
+      
+      $("#status-replies").delegate ".hide-reply", "click", (e) ->
+        e.preventDefault()
+        $("#confirm-hide-modal").modal('hide')
+        $("#confirm-hide-modal").data("idx", $("#reply-"+$(this).attr("href")).data("idx"))
+        $("#confirm-hide-modal").html status.confirmModelHTML({})
+        $("#confirm-hide-modal").modal('show')
         
+      $("#confirm-hide-modal").delegate "#confirm-hide", "click", (e) =>
+        e.preventDefault()
+        $("#confirm-hide-modal").modal('hide')
+        reply_idx = $("#confirm-hide-modal").data("idx")
+        $.post "/status/#{status.id}/hide-reply/#{reply_idx}", {}, (data) =>
+          if data.success?
+            $("#reply-"+reply_idx).remove()
+      
       # $("#status-reply").bind "propertychange change click keyup input paste", (e) ->
       #   status.updateCount $("#status-reply").val().length
       
@@ -79,18 +95,37 @@ $ ->
     replyHTMLTemplate: () ->
       return """
       {{#unless hidden}}
-      <div class="status-reply" data-id="{{idx}}">
+      <div class="status-reply" id="reply-{{idx}}" data-idx="{{idx}}">
         <div class="media-left">
           <img src="{{user_avatar}}" width="{{user_avatar_x}}px" height="{{user_avatar_y}}px">
         </div>
         <div class="media-body">
-          <p><a href="#">{{user_name}}</a><span class="status-mod-controls"></span>
+          <p><a href="#">{{user_name}}</a><span class="status-mod-controls"><a href="{{idx}}" class="inherit_colors hide-reply">(hide)</a></span>
           <br>{{{text}}}
           <br><span class="status-reply-time">{{time}}</span></p>
         </div>
         <hr>
       </div>
       {{/unless}}
+      """
+      
+    confirmModelHTMLTemplate: () ->
+      return """
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Modal title</h4>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to hide this reply?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="confirm-hide">Hide</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
       """
       
     refreshView: (scrolldown=false) ->

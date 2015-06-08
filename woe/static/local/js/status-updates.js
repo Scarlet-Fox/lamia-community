@@ -9,6 +9,7 @@
         this.max_length = 250;
         status = this;
         this.replyHTML = Handlebars.compile(this.replyHTMLTemplate());
+        this.confirmModelHTML = Handlebars.compile(this.confirmModelHTMLTemplate());
         this.refreshView();
         this.socket = io.connect('http://' + document.domain + ':3000' + '');
         this.socket.on("connect", (function(_this) {
@@ -30,6 +31,26 @@
           e.preventDefault();
           return status.addReply();
         });
+        $("#status-replies").delegate(".hide-reply", "click", function(e) {
+          e.preventDefault();
+          $("#confirm-hide-modal").modal('hide');
+          $("#confirm-hide-modal").data("idx", $("#reply-" + $(this).attr("href")).data("idx"));
+          $("#confirm-hide-modal").html(status.confirmModelHTML({}));
+          return $("#confirm-hide-modal").modal('show');
+        });
+        $("#confirm-hide-modal").delegate("#confirm-hide", "click", (function(_this) {
+          return function(e) {
+            var reply_idx;
+            e.preventDefault();
+            $("#confirm-hide-modal").modal('hide');
+            reply_idx = $("#confirm-hide-modal").data("idx");
+            return $.post("/status/" + status.id + "/hide-reply/" + reply_idx, {}, function(data) {
+              if (data.success != null) {
+                return $("#reply-" + reply_idx).remove();
+              }
+            });
+          };
+        })(this));
       }
 
       Status.prototype.addReply = function() {
@@ -82,7 +103,11 @@
       };
 
       Status.prototype.replyHTMLTemplate = function() {
-        return "{{#unless hidden}}\n<div class=\"status-reply\" data-id=\"{{idx}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"#\">{{user_name}}</a><span class=\"status-mod-controls\"></span>\n    <br>{{{text}}}\n    <br><span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>\n{{/unless}}";
+        return "{{#unless hidden}}\n<div class=\"status-reply\" id=\"reply-{{idx}}\" data-idx=\"{{idx}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"#\">{{user_name}}</a><span class=\"status-mod-controls\"><a href=\"{{idx}}\" class=\"inherit_colors hide-reply\">(hide)</a></span>\n    <br>{{{text}}}\n    <br><span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>\n{{/unless}}";
+      };
+
+      Status.prototype.confirmModelHTMLTemplate = function() {
+        return "<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n    <div class=\"modal-header\">\n      <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n      <h4 class=\"modal-title\">Modal title</h4>\n    </div>\n    <div class=\"modal-body\">\n      Are you sure you want to hide this reply?\n    </div>\n    <div class=\"modal-footer\">\n      <button type=\"button\" class=\"btn btn-primary\" id=\"confirm-hide\">Hide</button>\n      <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel</button>\n    </div>\n  </div><!-- /.modal-content -->\n</div><!-- /.modal-dialog -->";
       };
 
       Status.prototype.refreshView = function(scrolldown) {
