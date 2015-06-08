@@ -1,7 +1,30 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.row
+.row#status-container
+  .col-sm-4.col-md-4#controls
+    .panel.panel-default
+      .panel-heading 
+        span Status Controls
+      .panel-body
+        form
+          .form-group.form-group-sm
+            label.control-label Display 
+            select.form-control#how-many
+              option(value) 20
+              option(value) 40
+              option(value) 80
+              option(value) 100
+        form
+          .form-group.form-group-sm
+            label.control-label Author
+            select.form-control#by-who
+        form
+          .form-group.form-group-sm
+            label.control-label Search
+            input.form-control 
+          button.btn.btn-default#update-statuses(type="submit") Update
+
 
 {% endblock %}
 

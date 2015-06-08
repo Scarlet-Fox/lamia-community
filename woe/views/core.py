@@ -10,6 +10,11 @@ from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPo
 from mongoengine.queryset import Q
 import arrow
 
+@app.route('/status-updates', methods=['GET'])
+@login_required
+def status_update_index():
+    return render_template("core/status_index.jade")
+
 @app.route('/robots.txt')
 def static_from_root():
     return send_from_directory(app.static_folder, app.settings_file.get("robots-alt", request.path[1:]))
@@ -244,7 +249,6 @@ def display_status_update(status):
         mod = False
         
     status.update(last_viewed=arrow.utcnow().datetime)
-    
     
     has_viewed = False
     for viewer in status.viewing:
