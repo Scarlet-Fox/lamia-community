@@ -82,10 +82,10 @@ $ ->
               Started by {{creator}}, {{created}}
             </span>
             <span class="topic-listing-jumps">
-              <span class="badge" style=""><a class="inherit_colors" href="#">1</a></span>
+              <span class="badge" style=""><a class="inherit_colors" href="/topic/{{slug}}/page/1">1</a></span>
               {{#if last_pages}}
               <span class="badge" style="">...</span>
-              <span class="badge" style=""><a class="inherit_colors" href="#">{{last_page}}</a></span>
+              <span class="badge" style=""><a class="inherit_colors" href="/topic/{{slug}}/page/{{last_page}}">{{last_page}}</a></span>
               {{/if}}
             </span>
           </div>
