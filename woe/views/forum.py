@@ -5,7 +5,7 @@ from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
-import arrow, time
+import arrow, time, math
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 
 @app.route('/topic/<slug>/new-post', methods=['POST'])
@@ -45,7 +45,7 @@ def new_post_in_topic(slug):
     topic.last_post_by = current_user._get_current_object()
     topic.last_post_date = new_post.created
     topic.last_post_author_avatar = current_user._get_current_object().get_avatar_url("40")
-    topic.post_count = Post.objects(topic=topic).count()
+    topic.post_count = Post.objects(topic=topic, hidden=False).count()
     topic.save()
     
     category = topic.category
@@ -97,9 +97,13 @@ def topic_posts(slug):
     except:
         pagination = 20
         page = 1
-        
-    posts = Post.objects(hidden=False, topic=topic)[(page-1)*pagination:page*pagination]
+
     post_count = Post.objects(hidden=False, topic=topic).count()
+    max_page = math.ceil(float(topic.post_count)/float(pagination))
+    if page > max_page:
+        page = max_page
+    posts = Post.objects(hidden=False, topic=topic)[(page-1)*pagination:page*pagination]
+    topic.update(post_count=post_count)
     parsed_posts = []
     
     for post in posts:
@@ -272,7 +276,6 @@ def new_topic(slug):
             return abort(404)
         
         return render_template("forum/new_topic.jade", category=category)
-
 
 @app.route('/category/<slug>/topics', methods=['POST'])
 def category_topics(slug):
