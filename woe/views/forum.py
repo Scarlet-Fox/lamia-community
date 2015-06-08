@@ -42,6 +42,21 @@ def new_post_in_topic(slug):
     new_post.created = arrow.utcnow().datetime
     new_post.save()
     
+    topic.last_post_by = current_user._get_current_object()
+    topic.last_post_date = new_post.created
+    topic.last_post_author_avatar = current_user._get_current_object().get_avatar_url("40")
+    topic.post_count = Post.objects(topic=topic).count()
+    topic.save()
+    
+    category = topic.category
+    category.last_topic = topic
+    category.last_topic_name = topic.title
+    category.last_post_by = topic.last_post_by
+    category.last_post_date = topic.last_post_date
+    category.last_post_author_avatar = topic.last_post_author_avatar
+    category.post_count = category.post_count + 1
+    category.save()
+    
     clean_html_parser = ForumPostParser()
     parsed_post = new_post.to_mongo().to_dict()
     parsed_post["created"] = humanize_time(new_post.created, "MMM D YYYY")
@@ -231,6 +246,14 @@ def new_topic(slug):
         new_topic.last_post_author_avatar = current_user._get_current_object().get_avatar_url("40")
         new_topic.post_count = 1
         new_topic.save()
+        
+        category.last_topic = new_topic
+        category.last_topic_name = new_topic.title
+        category.last_post_by = new_topic.last_post_by
+        category.last_post_date = new_topic.last_post_date
+        category.last_post_author_avatar = new_topic.last_post_author_avatar
+        category.post_count = category.post_count + 1
+        category.save()
         
         new_post = Post()
         new_post.html = post_html
