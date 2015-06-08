@@ -1,6 +1,6 @@
 from woe import login_manager
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer
 from woe.models.forum import Category, Post
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
@@ -183,6 +183,7 @@ def make_status_update_reply(status):
     sc.created = arrow.utcnow().datetime
     status.comments.append(sc)
     status.replies = status.get_comment_count()
+    status.last_replied = arrow.utcnow().datetime
     status.save()
     
     if not current_user._get_current_object() in status.participants:
@@ -241,6 +242,20 @@ def display_status_update(status):
         mod = True
     else:
         mod = False
+        
+    status.update(last_viewed=arrow.utcnow().datetime)
+    
+    
+    has_viewed = False
+    for viewer in status.viewing:
+        if viewer.user == current_user._get_current_object():
+            viewer.last_seen = arrow.utcnow().datetime
+            has_viewed = True
+    
+    if has_viewed == False:
+        status.viewing.append(StatusViewer(user=current_user._get_current_object(), last_seen=arrow.utcnow().datetime))
+        
+    status.save()
             
     return render_template("status_update.jade", status=status, mod=mod)
 

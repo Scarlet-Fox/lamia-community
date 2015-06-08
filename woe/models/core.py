@@ -358,7 +358,7 @@ class StatusUpdate(db.DynamicDocument):
     message = db.StringField(required=True)
     comments = db.ListField(db.EmbeddedDocumentField(StatusComment))
     
-    # Realtime stuff
+    # Fake-Realtime stuff
     viewing = db.ListField(db.EmbeddedDocumentField(StatusViewer))
     
     # Notification stuff
@@ -376,6 +376,8 @@ class StatusUpdate(db.DynamicDocument):
     viewers = db.IntField(default=0)
     participant_count = db.IntField(default=0)
     created = db.DateTimeField()
+    last_replied = db.DateTimeField()
+    last_viewed = db.DateTimeField()
     replies = db.IntField(default=0)
     hot_score = db.IntField(default=0) # Replies - Age (basically)
     
