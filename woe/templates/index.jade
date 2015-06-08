@@ -31,13 +31,14 @@
       {% endfor %}
     {% endfor %}
   .col-md-4
-    ul.list-group.category
-      li.list-group-item.section-header(style="font-size: 14px;") New Status Update
-      li.list-group-item
-        form.form-group.status-reply-box
-          input.form-control#status-new(type="text")
-          br
-          button#new-status.btn.btn-default(type="submit") Create
+    if current_user.is_authenticated()
+      ul.list-group.category
+        li.list-group-item.section-header(style="font-size: 14px;") New Status Update
+        li.list-group-item
+          form.form-group.status-reply-box
+            input.form-control#status-new(type="text")
+            br
+            button#new-status.btn.btn-default(type="submit") Create
     ul.list-group
       li.list-group-item.section-header.sidebar-section-header Status Updates
       {% for status in status_updates %}
