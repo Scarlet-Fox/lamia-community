@@ -36,7 +36,8 @@
       li.list-group-item
         form.form-group.status-reply-box
           input.form-control#status-new(type="text")
-        button#new-status.btn.btn-default(type="submit") Create
+          br
+          button#new-status.btn.btn-default(type="submit") Create
     ul.list-group
       li.list-group-item.section-header.sidebar-section-header Status Updates
       {% for status in status_updates %}
@@ -50,8 +51,10 @@
           span.discuss 
             a(href="/status/{{status.pk}}") Discuss
           br
-          span.status-message {{ status.message }}
-          br
+          if status.old_ipb_id
+            p.status-message {{ status.message }}
+          else
+            span.status-message {{ status.message }}
           span.status-reply-time 
             a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
       {% endfor %}
@@ -79,6 +82,7 @@
 {% endblock %}
 
 {% block script %}
+script(src="/static/local/js/create-status.js")
 script(type="text/javascript")
   $(document).ready(function(){
     $('#forum-li').addClass('active');

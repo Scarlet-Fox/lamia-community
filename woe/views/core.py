@@ -14,6 +14,31 @@ import arrow
 def static_from_root():
     return send_from_directory(app.static_folder, app.settings_file.get("robots-alt", request.path[1:]))
 
+@app.route('/create-status', methods=['POST'])
+@login_required
+def create_new_status():
+    request_json = request.get_json(force=True)
+        
+    status = StatusUpdate()
+    status.author = current_user._get_current_object()
+    status.author_name = current_user._get_current_object().login_name
+
+    if len(request_json.get("message", "")) == 0:
+        return app.jsonify(error="Your status update is empty.")
+    
+    cleaner = ForumHTMLCleaner()
+    try:
+        _html = cleaner.clean(request_json.get("message", "").strip())
+    except:
+        return abort(500)
+        
+    status.message = _html[0:250]
+    status.participants.append(status.author)
+    status.created = arrow.utcnow().datetime
+    status.save()
+    
+    return app.jsonify(url="/status/"+unicode(status.pk))
+
 @app.route('/status/<status>/hide-reply/<idx>', methods=['POST'])
 @login_required
 def status_hide_reply(status, idx):
@@ -141,7 +166,7 @@ def make_status_update_reply(status):
 
     cleaner = ForumHTMLCleaner()
     try:
-        _html = cleaner.clean("<div>"+request_json.get("reply", "")+"</div>")
+        _html = cleaner.clean(request_json.get("reply", ""))
     except:
         return abort(500)
         

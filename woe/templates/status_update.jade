@@ -36,12 +36,14 @@
           a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-ignore") Ignore
           {% endif %}
       li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}")
-        img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
-        p
-          a(href="#") {{ status.author.display_name }}
-          span &nbsp;says:
-          span.status-time {{ status.created }} 
-        p {{ status.message }}
+        .media-left
+          img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
+        .media-body
+          p
+            a(href="#") {{ status.author.display_name }}
+            span &nbsp;says:
+            span.status-time {{ status.created|humanize_time }} 
+          p {{ status.message }}
       li.list-group-item.status-replies#status-replies
       li.list-group-item.status-reply-form
         form.form-inline
@@ -57,8 +59,8 @@
       li.list-group-item
         form.form-group.status-reply-box
           input.form-control#status-new(type="text")
-        button#new-status.btn.btn-default(type="submit") Create
-    
+          br
+          button#new-status.btn.btn-default(type="submit") Create
     ul.list-group.category
       li.list-group-item.section-header(style="font-size: 14px;") Participants
         for participant in status.participants
@@ -82,4 +84,5 @@
 {% block script %}
 script(src="/static/assets/handlebars.min.js")
 script(src="/static/local/js/status-updates.js")
+script(src="/static/local/js/create-status.js")
 {% endblock %}
