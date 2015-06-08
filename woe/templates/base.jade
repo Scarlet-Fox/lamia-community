@@ -43,6 +43,13 @@ body(role='document')
           a.navbar-brand(href='#')
         #navbar.navbar-collapse.collapse
           ul.nav.navbar-nav
+            if not current_user.is_authenticated()
+              li#sign-in-li.hidden-sm.hidden-md.hidden-lg
+                a(href='/sign-in')
+                  | Sign In
+              li#register-li.hidden-sm.hidden-md.hidden-lg
+                a(href='/register')
+                  | Register
             li#forum-li
               a(href='/')
                 | Forum
@@ -100,10 +107,10 @@ body(role='document')
                     li
                       a(href='#')#sign-out Sign Out
             else
-              li#sign-in-li
+              li#sign-in-li.hidden-xs
                 a(href='/sign-in')
                   | Sign In
-              li#register-li
+              li#register-li.hidden-xs
                 a(href='/register')
                   | Register
             if current_user.is_authenticated()
