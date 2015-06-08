@@ -32,7 +32,7 @@ def create_new_status():
     except:
         return abort(500)
         
-    status.message = _html[0:250]
+    status.message = _html
     status.participants.append(status.author)
     status.created = arrow.utcnow().datetime
     status.save()
@@ -45,6 +45,9 @@ def status_hide_reply(status, idx):
     try:
         status = StatusUpdate.objects(id=status)[0]
     except:
+        return abort(404)
+        
+    if current_user._get_current_object() != status.author:
         return abort(404)
     
     try:
@@ -63,6 +66,10 @@ def toggle_status_blocking(status, user):
         user = User.objects(id=user)[0]
     except:
         return abort(404)
+         
+    if current_user._get_current_object() != status.author:
+        if (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
+            return abort(404)
         
     if user == current_user._get_current_object():
         return abort(404)
@@ -118,8 +125,8 @@ def toggle_status_mute(status):
         status = StatusUpdate.objects(id=status)[0]
     except:
         return abort(404)
-        
-    if current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True:
+                
+    if current_user._get_current_object() != status.author or current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True:
         return abort(404)
         
     status.update(muted=not status.muted)
@@ -171,7 +178,7 @@ def make_status_update_reply(status):
         return abort(500)
         
     sc = StatusComment()
-    sc.text = _html[0:250]
+    sc.text = _html
     sc.author = current_user._get_current_object()
     sc.created = arrow.utcnow().datetime
     status.comments.append(sc)
