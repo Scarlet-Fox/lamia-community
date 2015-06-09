@@ -176,6 +176,9 @@ class User(db.DynamicDocument):
     meta = {
         'indexes': [
             'old_member_id',
+            'display_name',
+            'login_name',
+            'email_address'
         ]
     }
     
@@ -237,6 +240,7 @@ class PrivateMessage(db.DynamicDocument):
     meta = {
         'ordering': ['created'],
         'indexes': [
+            'topic',
             'created',
             {
                 'fields': ['$message',],

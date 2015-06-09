@@ -46,6 +46,7 @@ class Post(db.DynamicDocument):
             '-created',
             'created',
             'topic',
+            'hidden',
             {
                 'fields': ['$html',],
                 'default_language': 'english'
@@ -126,6 +127,7 @@ class Topic(db.DynamicDocument):
             '-created',
             'created',
             'category',
+            'slug',
             {
                 'fields': ['$title',],
                 'default_language': 'english'
@@ -169,7 +171,8 @@ class Category(db.DynamicDocument):
         'indexes': [
             'parent',
             'root_category',
-            'weight'
+            'weight',
+            'slug'
         ]
     }
     
