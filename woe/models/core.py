@@ -176,6 +176,7 @@ class User(db.DynamicDocument):
     meta = {
         'indexes': [
             'old_member_id',
+            'last_seen'
         ]
     }
     

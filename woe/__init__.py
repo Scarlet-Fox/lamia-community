@@ -22,6 +22,7 @@ app.settings_file = settings_file
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 cache.init_app(app)
+app.cache = cache
 db = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(db)
 bcrypt = Bcrypt(app)
