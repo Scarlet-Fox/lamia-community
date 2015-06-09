@@ -348,55 +348,30 @@ def category_index(slug):
 
 @app.route('/')
 def index():
+    start = time.time()
+    categories = OrderedDict()
     
-    @app.cache.cached(timeout=60, key_prefix='index_get_categories')
-    def get_categories():
-        categories = OrderedDict()
+    for category in Category.objects(root_category=True):
+        categories[category.name] = [category,]
+        for subcategory in Category.objects(parent=category):
+            categories[category.name].append(subcategory)
     
-        for category in Category.objects(root_category=True):
-            categories[category.name] = [category,]
-            for subcategory in Category.objects(parent=category):
-                categories[category.name].append(subcategory)
-                
-        return categories
-    
-    categories = get_categories()
-    
-    @app.cache.cached(timeout=60, key_prefix='index_get_status_updates')
-    def get_status_updates():
-        status_updates = StatusUpdate.objects(attached_to_user=None)[:30]
-        cleaned_statuses = []
-        user_already_posted = []
-        for status in status_updates:
-            if status.author_name in user_already_posted:
-                continue
+    status_updates = StatusUpdate.objects(attached_to_user=None)[:10]
+    cleaned_statuses = []
+    user_already_posted = []
+    for status in status_updates:
+        if status.author_name in user_already_posted:
+            continue
         
-            user_already_posted.append(status.author_name)
-            cleaned_statuses.append(status)
-        return cleaned_statuses
+        user_already_posted.append(status.author_name)
+        cleaned_statuses.append(status)
     
-    cleaned_statuses = get_status_updates()
-    
-    @app.cache.cached(timeout=60, key_prefix='index_online_users')
-    def get_online_users():
-        online_users = User.objects(last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
-        return list(online_users)
-        
-    @app.cache.cached(timeout=60, key_prefix='index_get_footer_stats')
-    def get_footer_stats():
-        post_count = Post.objects().count()
-        member_count = User.objects(banned=False).count()
-        newest_member = User.objects().order_by("-joined")[0]
-        
-        return [ post_count, member_count, newest_member]
-        
-    stats = get_footer_stats()
-    online_users = get_online_users()
-    post_count = stats[0]
-    member_count = stats[1]
-    newest_member = stats[2]
+    online_users = User.objects(last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
+    post_count = Post.objects().count()
+    member_count = User.objects(banned=False).count()
+    newest_member = User.objects().order_by("-joined")[0]
     
     return render_template("index.jade", 
         categories=categories, status_updates=cleaned_statuses[:5], online_users=online_users,
         post_count=post_count, member_count=member_count, newest_member=newest_member, 
-        online_user_count=len(online_users))
+        online_user_count=online_users.count())
