@@ -6,12 +6,18 @@ from woe import app
 
 manager = Manager(app)
 
-# Turn on debugger by default and reloader
 manager.add_command("runserver", Server(
     use_debugger = True,
     use_reloader = True,
     host = '0.0.0.0')
 )
+
+@manager.command
+def runprofiler():
+    from werkzeug.contrib.profiler import ProfilerMiddleware
+    app.config['PROFILE'] = True
+    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[30])
+    app.run(debug = True, host = '0.0.0.0')
 
 if __name__ == "__main__":
     manager.run()
