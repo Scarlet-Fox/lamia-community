@@ -356,7 +356,7 @@ def index():
         for subcategory in Category.objects(parent=category):
             categories[category.name].append(subcategory)
     
-    status_updates = StatusUpdate.objects(attached_to_user=None)[:10]
+    status_updates = StatusUpdate.objects(attached_to_user=None)[:30]
     cleaned_statuses = []
     user_already_posted = []
     for status in status_updates:
