@@ -54,6 +54,7 @@ def status_update_index():
         query["author__in"]=list(users)
         
     if search != "":
+        # TODO : WRITE A SEARCH TERM PARSER
         query["message__icontains"]=search
         
     status_updates = StatusUpdate.objects(**query)[:count]

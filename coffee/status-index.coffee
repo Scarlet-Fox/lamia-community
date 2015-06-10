@@ -69,10 +69,10 @@ $ ->
     
     $.post "/status-updates", JSON.stringify({ count: how_many, authors: authors, search: search}), (data) ->
       $('#msg-container').html("")
+      $grid.shuffle("remove", $('.status-index-panel'))
       if data.status_updates.length == 0
         $('#msg-container').html("<p>No results...</p>")
       else
-        $grid.shuffle("remove", $('.status-index-panel'))
         items = []
         for status, i in data.status_updates
           if i == 0

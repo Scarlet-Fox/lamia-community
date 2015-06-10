@@ -61,10 +61,10 @@
       }), function(data) {
         var i, items, k, len1, ref1, status;
         $('#msg-container').html("");
+        $grid.shuffle("remove", $('.status-index-panel'));
         if (data.status_updates.length === 0) {
           return $('#msg-container').html("<p>No results...</p>");
         } else {
-          $grid.shuffle("remove", $('.status-index-panel'));
           items = [];
           ref1 = data.status_updates;
           for (i = k = 0, len1 = ref1.length; k < len1; i = ++k) {
