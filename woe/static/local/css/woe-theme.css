@@ -6,6 +6,10 @@ a {
     color: #02005A; 
 }
 
+.btn-group, .btn-group-vertical
+{
+text-shadow:none;
+}
 .dropdown-menu {
     text-shadow: none; }
 
@@ -25,6 +29,8 @@ a {
 }
 .breadcrumb {
     background: url("https://dl.dropboxusercontent.com/u/73230601/backgroundsmall.jpg");
+
+  
     box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
     background-attachment: fixed;
 }
@@ -48,7 +54,8 @@ border-radius:0px;
 
 .panel-title {
     color: white;
-      font-weight: bold;
+  
+    font-weight: bold;
     font-size: 12px;
 }
 
@@ -127,6 +134,20 @@ border-radius:0px;
   font-size: 14px !important;
   box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
 }
+
+
+.ql-snow.ql-toolbar .ql-picker.ql-font .ql-picker-label, .ql-snow.ql-toolbar .ql-picker.ql-size .ql-picker-label {
+background-color: rgb(248, 248, 248);}
+.ql-snow.ql-toolbar .ql-picker.ql-font .ql-picker-label, .ql-snow.ql-toolbar .ql-picker.ql-size .ql-picker-label {
+background-color: rgb(248, 248, 248);}
+.ql-snow.ql-toolbar .ql-format-button.ql-left, .ql-snow.ql-toolbar .ql-picker.ql-left .ql-picker-label, .ql-snow.ql-toolbar .ql-picker .ql-picker-label[data-value=left], .ql-snow.ql-toolbar .ql-picker .ql-picker-item[data-value=left] {
+background-color: rgb(248, 248, 248);}
+.ql-snow.ql-toolbar .ql-format-button.ql-background, .ql-snow.ql-toolbar .ql-picker.ql-background .ql-picker-label, .ql-snow.ql-toolbar .ql-picker .ql-picker-label[data-value=background], .ql-snow.ql-toolbar .ql-picker .ql-picker-item[data-value=background] {
+background-color: rgb(248, 248, 248);}
+.ql-snow.ql-toolbar .ql-format-button.ql-color, .ql-snow.ql-toolbar .ql-picker.ql-color .ql-picker-label, .ql-snow.ql-toolbar .ql-picker .ql-picker-label[data-value=color], .ql-snow.ql-toolbar .ql-picker .ql-picker-item[data-value=color] {
+background-color: rgb(248, 248, 248);}
+
+
 
 /* Profile Pages */
 
@@ -211,7 +232,7 @@ border-radius:0px;
 .status-replies {
   overflow-y: scroll;
   overflow-x: hidden;
-  height: 300px; 
+  height: 600px; 
 }
 
 /* Subcategories */
