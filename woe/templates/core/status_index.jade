@@ -1,16 +1,17 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.row#status-container
-  .col-sm-4.col-md-4#controls
+.row
+  .col-sm-12
     .panel.panel-default
       .panel-heading 
-        span Status Controls
-      .panel-body
+        span Filtering
+      .panel-body.hidden-md.hidden-lg.hidden-sm
         form
           .form-group.form-group-sm
             label.control-label Display 
             select.form-control#how-many
+              option(value) 10
               option(value) 20
               option(value) 40
               option(value) 80
@@ -23,8 +24,62 @@
           .form-group.form-group-sm
             label.control-label Search
             input.form-control 
-          button.btn.btn-default#update-statuses(type="submit") Update
-
+          button.btn.btn-default.update-statuses(type="submit") Update
+      .panel-body.hidden-xs
+        form.form-inline.float-left
+          .form-group.form-group-sm
+            label.control-label Display 
+            select.form-control#how-many
+              option(value) 10
+              option(value) 20
+              option(value) 40
+              option(value) 80
+              option(value) 100
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+        form.form-inline.float-left
+          .form-group.form-group-sm
+            label.control-label Author
+            select.form-control#by-who
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+        form.form-inline.float-left
+          .form-group.form-group-sm
+            label.control-label Search
+            input.form-control 
+          button.btn.btn-default.update-statuses(type="submit") Update
+  .col-sm-12
+    .panel.panel-default
+      .panel-heading
+        span Status Updates
+      .panel-body.body-background
+      .panel-body.body-background#status-container
+        {% for status in status_updates %}
+        .col-md-4.status-index-panel
+          .panel.panel-default
+            .panel-body
+              .media-left
+                a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+                  img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="40px", height="40px", class="avatar-mini")
+              .media-body
+                a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+                span &nbsp;says:
+                span.discuss 
+                  a.status-reply-time.float-right(href="/status/{{status.pk}}") Discuss
+                br
+                if status.old_ipb_id
+                  p.status-message {{ status.message }}
+                else
+                  span.status-message {{ status.message }}
+                span.status-reply-time 
+                  a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
+        {% endfor %}
 
 {% endblock %}
 

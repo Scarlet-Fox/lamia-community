@@ -13,7 +13,9 @@ import arrow
 @app.route('/status-updates', methods=['GET'])
 @login_required
 def status_update_index():
-    return render_template("core/status_index.jade")
+    status_updates = StatusUpdate.objects()[:50]
+    
+    return render_template("core/status_index.jade", status_updates=status_updates)
 
 @app.route('/robots.txt')
 def static_from_root():
