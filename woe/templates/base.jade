@@ -20,7 +20,7 @@ head
     meta(name='author', content='')
     title {{ page_title }}
     link(href='/static/assets/bootstrap.css', rel='stylesheet')
-    link(href='/static/local/css/basic-theme.css', rel='stylesheet')
+    link(href='/static/local/css/woe-theme.css', rel='stylesheet')
     {% block header %}
     {% endblock %}
     script(src='/static/assets/ie-emulation-modes-warning.js')
@@ -30,7 +30,8 @@ head
       |       
       script(src='https://oss.maxcdn.com/respond/1.4.2/respond.min.js')
 body(role='document')
-  .site-background.hidden-xs
+  a(href="/")
+    .site-background.hidden-xs
   .container#site-container
     nav.navbar.navbar-default
       .container-fluid
