@@ -138,6 +138,11 @@
           topic.page = 1;
           return topic.refreshPosts();
         });
+        $(window).on("popstate", function(e) {
+          return setTimeout(function() {
+            return window.location = window.location;
+          }, 0);
+        });
       }
 
       Topic.prototype.paginationHTMLTeplate = function() {

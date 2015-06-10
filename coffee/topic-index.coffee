@@ -92,6 +92,11 @@ $ ->
         element = $(this)
         topic.page = 1
         do topic.refreshPosts
+        
+      $(window).on "popstate", (e) ->
+        setTimeout(() ->
+          window.location = window.location
+        , 0)
               
     paginationHTMLTeplate: () ->
       return """
