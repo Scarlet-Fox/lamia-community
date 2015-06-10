@@ -9,13 +9,75 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
 from mongoengine.queryset import Q
 import arrow
+import json
 
-@app.route('/status-updates', methods=['GET'])
+@app.route('/status-updates', methods=['GET', 'POST'])
 @login_required
 def status_update_index():
-    status_updates = StatusUpdate.objects()[:50]
+    count = session.get("count", 10)
+    authors = session.get("authors", [])
+    search = session.get("search", "")
     
-    return render_template("core/status_index.jade", status_updates=status_updates)
+    if request.method == 'POST':
+        request_json = request.get_json(force=True)
+        
+        try:
+            count = int(request_json.get("count"), 10)
+            if count > 100:
+                count = 100
+            session["count"] = count
+        except:
+            pass
+            
+        try:
+            authors = request_json.get("authors", [])
+            session["authors"] = authors
+        except:
+            pass
+            
+        try:
+            search = request_json.get("search", "")[0:100]
+            session["search"] = search
+        except:
+            pass
+    
+    query = {}
+    
+    try:
+        users = User.objects(pk__in=authors)  
+        authors = [{"id": unicode(u.pk), "text": u.display_name} for u in users]
+    except:
+        users = []
+        authors = []
+    
+    if len(users) > 0:
+        query["author__in"]=list(users)
+        
+    if search != "":
+        query["message__icontains"]=search
+        
+    status_updates = StatusUpdate.objects(**query)[:count]
+    
+    if request.method == 'POST':
+        parsed_statuses = []
+        for status in status_updates:
+            parsed_status = status.to_mongo().to_dict()
+            parsed_status["profile_address"] = url_for('view_profile', login_name=status.author.login_name)
+            parsed_status["user_name"] = status.author.display_name
+            parsed_status["message"] = status.message
+            if status.old_ipb_id != None:
+                parsed_status["ipb"] = True
+            else:
+                parsed_status["ipb"] = False
+            parsed_status["user_avatar"] = status.author.get_avatar_url("40")
+            parsed_status["user_avatar_x"] = status.author.avatar_40_x
+            parsed_status["user_avatar_y"] = status.author.avatar_40_y
+            parsed_status["created"] = humanize_time(status.created)
+            del parsed_status["comments"]
+            parsed_statuses.append(parsed_status)
+        return app.jsonify(status_updates=parsed_statuses)
+    else:
+        return render_template("core/status_index.jade", status_updates=status_updates, count=count, search=search, authors=json.dumps(authors))
 
 @app.route('/robots.txt')
 def static_from_root():

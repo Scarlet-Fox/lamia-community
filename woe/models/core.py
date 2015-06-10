@@ -392,6 +392,7 @@ class StatusUpdate(db.DynamicDocument):
         'indexes': [
             'old_ipb_id',
             '-created',
+            'author',
             'attached_to_user',
             {
                 'fields': ['$**',],
