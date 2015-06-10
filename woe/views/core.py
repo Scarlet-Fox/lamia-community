@@ -315,14 +315,14 @@ def display_status_update(status):
         
     status.update(last_viewed=arrow.utcnow().datetime)
     
-    has_viewed = False
-    for viewer in status.viewing:
-        if viewer.user == current_user._get_current_object():
-            viewer.last_seen = arrow.utcnow().datetime
-            has_viewed = True
-    
-    if has_viewed == False:
-        status.viewing.append(StatusViewer(user=current_user._get_current_object(), last_seen=arrow.utcnow().datetime))
+    # has_viewed = False
+    # for viewer in status.viewing:
+    #     if viewer.user == current_user._get_current_object():
+    #         viewer.last_seen = arrow.utcnow().datetime
+    #         has_viewed = True
+    #
+    # if has_viewed == False:
+    #     status.viewing.append(StatusViewer(user=current_user._get_current_object(), last_seen=arrow.utcnow().datetime))
         
     status.save()
             
