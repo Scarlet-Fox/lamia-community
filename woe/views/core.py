@@ -23,8 +23,8 @@ def status_update_index():
         
         try:
             count = int(request_json.get("count"), 10)
-            if count > 100:
-                count = 100
+            if count > 1000:
+                count = 1000
             session["count"] = count
         except:
             pass
