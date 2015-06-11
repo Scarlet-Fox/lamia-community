@@ -6,7 +6,7 @@ from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_user, logout_user, login_required, current_user
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner, parse_search_string_return_q
 from mongoengine.queryset import Q
 import arrow
 import json
@@ -50,14 +50,15 @@ def status_update_index():
         users = []
         authors = []
     
+    user_q_ = Q()
     if len(users) > 0:
-        query["author__in"]=list(users)
-        
+        user_q_ = Q(author__in=list(users))
+    
+    search_q_ = Q()
     if search != "":
-        # TODO : WRITE A SEARCH TERM PARSER
-        query["message__icontains"]=search
+        search_q_ = parse_search_string_return_q(search, ["message",])
         
-    status_updates = StatusUpdate.objects(**query)[:count]
+    status_updates = StatusUpdate.objects(user_q_ & search_q_)[:count]
     
     if request.method == 'POST':
         parsed_statuses = []

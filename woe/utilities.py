@@ -63,7 +63,7 @@ def parse_search_string_return_q(search_text, fields_to_search):
     q_to_return = Q(**q_params[0])
     
     for q_parameter in q_params[1:]:
-        q_to_return = q_to_return | Q(**q_parameter)
+        q_to_return = q_to_return & Q(**q_parameter)
         
     return q_to_return
 
