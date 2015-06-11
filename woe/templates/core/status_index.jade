@@ -90,7 +90,10 @@
                   img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}px", height="{{status.author.avatar_40_y}}px", class="avatar-mini")
               .media-body
                 a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
-                span &nbsp;says:
+                if status.attached_to_user != None
+                  span &nbsp;says to <a href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}">{{status.attached_to_user.display_name}}</a>:
+                else
+                  span &nbsp;says:
                 span.discuss 
                   a.status-reply-time.float-right(href="/status/{{status.pk}}") Discuss
                 br

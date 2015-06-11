@@ -3,6 +3,25 @@ import hashlib
 import arrow
 from woe import app
 
+def parse_search_string_return_q(search_text, fields_to_search):
+    and_terms = []
+    not_terms = []
+    
+    search_tokens = search_text.split(" ")
+    
+    for token in search_tokens:
+        current_value_of_token = ""
+        negative = False
+        quote_active = True
+        
+        if token[0] == "-":
+            negative = True
+            token = token[1:]    
+        
+        if token[0] == "\"":
+            print
+    
+
 def scrub_json(list_of_json, fields_to_scrub=[]):
     for o in list_of_json:
         for f in fields_to_scrub:

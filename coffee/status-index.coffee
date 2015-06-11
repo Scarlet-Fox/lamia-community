@@ -11,7 +11,13 @@ $ ->
       <div class="panel-body">
         <div class="media-left"><a href="{{profile_address}}"><img src="{{user_avatar}}" width="{{user_avatar_x}}px" height="{{user_avatar_y}}px" class="media-object avatar-mini"></a>
         </div>
-        <div class="media-body"><a href="{{profile_address}}" class="hover_user">{{user_name}}</a><span>&nbsp;says:</span><span class="discuss"><a href="/status/{{id}}" class="status-reply-time float-right">Discuss</a></span><br><span class="status-message">
+        <div class="media-body"><a href="{{profile_address}}" class="hover_user">{{user_name}}</a>
+        {{#unless attached_to_user}}
+        <span>&nbsp;says:</span>
+        {{else}}
+        <span>&nbsp;says to <a href="{{attached_to_user_url}}" class="hover_user">{{attached_to_user}}</a>:</span>
+        {{/unless}}
+        <span class="discuss"><a href="/status/{{id}}" class="status-reply-time float-right">Discuss</a></span><br><span class="status-message">
         {{#if ipb}}
         <p>{{{message}}}</p>
         {{else}}

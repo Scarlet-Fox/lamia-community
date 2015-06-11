@@ -71,6 +71,11 @@ def status_update_index():
             else:
                 parsed_status["ipb"] = False
             parsed_status["user_avatar"] = status.author.get_avatar_url("40")
+            if status.attached_to_user != None:
+                parsed_status["attached_to_user"] = status.attached_to_user.display_name
+                parsed_status["attached_to_user_url"] = url_for('view_profile', login_name=status.attached_to_user.login_name)
+            else:
+                parsed_status["attached_to_user"] = False
             parsed_status["user_avatar_x"] = status.author.avatar_40_x
             parsed_status["user_avatar_y"] = status.author.avatar_40_y
             parsed_status["created"] = humanize_time(status.created)
