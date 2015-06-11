@@ -267,7 +267,7 @@ def new_topic(slug):
         new_post.topic_name = new_topic.title
         new_post.created = arrow.utcnow().datetime
         new_post.save()
-        topic.update(first_post=new_post)
+        new_topic.update(first_post=new_post)
         
         return app.jsonify(url="/topic/"+new_topic.slug)
     else:
