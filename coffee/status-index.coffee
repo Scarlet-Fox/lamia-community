@@ -17,7 +17,7 @@ $ ->
         {{else}}
         <span>&nbsp;says to <a href="{{attached_to_user_url}}" class="hover_user">{{attached_to_user}}</a>:</span>
         {{/unless}}
-        <span class="discuss"><a href="/status/{{id}}" class="status-reply-time float-right">Discuss</a></span><br><span class="status-message">
+        <span class="discuss"><a href="/status/{{id}}" class="status-reply-time float-right">Discuss{{#if comment_count}} ({{comment_count}}){{/if}}</a></span><br><span class="status-message">
         {{#if ipb}}
         <p>{{{message}}}</p>
         {{else}}

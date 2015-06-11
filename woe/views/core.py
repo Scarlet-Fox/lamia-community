@@ -80,6 +80,7 @@ def status_update_index():
             parsed_status["user_avatar_x"] = status.author.avatar_40_x
             parsed_status["user_avatar_y"] = status.author.avatar_40_y
             parsed_status["created"] = humanize_time(status.created)
+            parsed_status["comment_count"] = status.get_comment_count()
             del parsed_status["comments"]
             parsed_statuses.append(parsed_status)
         return app.jsonify(status_updates=parsed_statuses)
