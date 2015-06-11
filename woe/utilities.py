@@ -9,18 +9,41 @@ def parse_search_string_return_q(search_text, fields_to_search):
     
     search_tokens = search_text.split(" ")
     
-    for token in search_tokens:
-        current_value_of_token = ""
-        negative = False
-        quote_active = True
-        
+    token_buffer = ""
+    quote_active = False
+    negative = False
+    for i, token in enumerate(search_tokens):  
         if token[0] == "-":
             negative = True
-            token = token[1:]    
+            token = token[1:]
+        else:
+            if not quote_active:
+                negative = False
         
         if token[0] == "\"":
-            print
-    
+            for look_forward_token in search_tokens[i:]:
+                if look_forward_token[len(look_forward_token)-1] == "\"":
+                    quote_active = True
+            token = token[1:]
+        
+        if token[len(token)-1] == "\"":
+            token_buffer = token_buffer.strip() + " " + token[:len(token)-1]
+            quote_active = False
+            
+        if quote_active:
+            token_buffer = token_buffer.strip() + " " + token + " "
+        else:
+            if token_buffer == "":
+                token_buffer = token
+            
+            if negative:
+                not_terms.append(token_buffer)
+            else:
+                and_terms.append(token_buffer)
+            token_buffer = ""            
+            
+    print not_terms
+    print and_terms
 
 def scrub_json(list_of_json, fields_to_scrub=[]):
     for o in list_of_json:
