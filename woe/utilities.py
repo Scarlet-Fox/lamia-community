@@ -2,6 +2,7 @@ from lxml.html.clean import Cleaner
 import hashlib
 import arrow
 from woe import app
+from mongoengine.queryset import Q
 
 def parse_search_string_return_q(search_text, fields_to_search):
     and_terms = []
@@ -41,9 +42,30 @@ def parse_search_string_return_q(search_text, fields_to_search):
             else:
                 and_terms.append(token_buffer)
             token_buffer = ""            
+    
+    q_params = []
+    
+    for term in and_terms:
+        for field in fields_to_search:
+            field_name_mongoengine = field + "__icontains"
+            q_param = {field_name_mongoengine: term}
+            q_params.append(q_param)
             
-    print not_terms
-    print and_terms
+    for term in not_terms:
+        for field in fields_to_search:
+            field_name_mongoengine = field + "__not__icontains"
+            q_param = {field_name_mongoengine: term}
+            q_params.append(q_param)
+    
+    if len(q_params) == 0:
+        return Q()
+    
+    q_to_return = Q(**q_params[0])
+    
+    for q_parameter in q_params[1:]:
+        q_to_return = q_to_return | Q(**q_parameter)
+        
+    return q_to_return
 
 def scrub_json(list_of_json, fields_to_scrub=[]):
     for o in list_of_json:
