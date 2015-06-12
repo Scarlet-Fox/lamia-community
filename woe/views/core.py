@@ -1,6 +1,6 @@
 from woe import login_manager
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage
 from woe.models.forum import Category, Post, Topic
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
@@ -22,12 +22,12 @@ def search_lookup():
     except:
         start_date = False
         
-    try:
+    try: # created
         end_date = arrow.get(request_json.get("start_date",""), ["M/D/YY",]).datetime
     except:
         end_date = False
         
-    try:
+    try: # category
         categories = Category.objects(pk__in=request_json.get("categories",[]))
     except:
         categories = []
@@ -41,6 +41,52 @@ def search_lookup():
         authors = User.objects(pk__in=request_json.get("authors",[]))
     except:
         authors = []
+        
+    query = request.args.get("q", "")[0:300]
+    pagination = 20
+    try:
+        page = int(request_json.get("page", 0))
+    except:
+        page = 1
+        
+    content_type = request_json.get("content_type", "topics")
+    _q_objects = Q()
+
+    if start_date:
+        _q_objects = _q_objects & Q(created__gte=start_date)
+
+    if end_date:
+        _q_objects = _q_objects & Q(created__lte=start_date)
+
+    if categories and content_type == "topics":
+        _q_objects = _q_objects & Q(category__in=categories)
+
+    if categories and content_type == "posts":
+        _q_objects = _q_objects & Q(topic__category__in=categories)
+        
+    if topics and content_type == "posts":
+        _q_objects = _q_objects & Q(topic__in=topics)
+        
+    if authors and content_type == "posts":
+        _q_objects = _q_objects & Q(author__in=authors)
+    if authors and content_type == "topics":
+        _q_objects = _q_objects & Q(creator__in=authors)
+    if authors and content_type == "messages":
+        _q_objects = _q_objects & Q(author__in=authors)
+    if authors and content_type == "status":
+        _q_objects = _q_objects & Q(author__in=authors)
+        
+    if content_type == "posts":
+        _q_objects = _q_objects & parse_search_string_return_q(query, ["html",])
+        results = Post.objects(_q_objects)
+    else if content_type == "topics":
+        _q_objects = _q_objects &  parse_search_string_return_q(query, ["title",])
+        
+    else if content_type == "status":
+        _q_objects = _q_objects &  parse_search_string_return_q(query, ["message",])
+        
+    else if content_type == "messages":
+        _q_objects = _q_objects &  parse_search_string_return_q(query, ["topic_name","message",])
     
     
     
