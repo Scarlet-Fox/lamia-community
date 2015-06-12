@@ -11,7 +11,6 @@ from mongoengine.queryset import Q
 import arrow
 import json
 
-    
 @app.route('/pm-topic-list-api', methods=['GET'])
 @login_required
 def pm_topic_list_api():
@@ -36,7 +35,7 @@ def search_lookup():
         start_date = False
         
     try: # created
-        end_date = arrow.get(request_json.get("start_date",""), ["M/D/YY",]).datetime
+        end_date = arrow.get(request_json.get("end_date",""), ["M/D/YY",]).datetime
     except:
         end_date = False
         

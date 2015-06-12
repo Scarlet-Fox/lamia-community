@@ -111,6 +111,30 @@
         cache: true
       },
       minimumInputLength: 2
+    }), $("#search").click(function(e) {
+      var content_type, data;
+      e.preventDefault();
+      content_type = $("#content-search").val();
+      data = {
+        q: $("#search-for").val()
+      };
+      if ($("#start-date").val() !== "") {
+        data["start_date"] = $("#start-date").val();
+      }
+      if ($("#end-date").val() !== "") {
+        data["end_date"] = $("#end-date").val();
+      }
+      if (content_type === "messages") {
+        data["topics"] = $("#pm-topic-select").val();
+      }
+      if (content_type === "posts") {
+        data["topics"] = $("#topic-select").val();
+        data["categories"] = $("#category-select").val();
+      }
+      if (content_type === "topics") {
+        data["categories"] = $("#category-select").val();
+      }
+      return console.log(data);
     }));
   });
 
