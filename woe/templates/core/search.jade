@@ -1,0 +1,43 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-sm-12
+    .panel.panel-default
+      .panel-heading#filtering-header
+        span Search Options
+      .panel-body
+        form.form-inline.float-left
+          .form-group.form-group-sm
+            label.control-label Content
+            select.form-control#content-data
+              option(value="topics") Topics
+              option(value="status") Status Updates
+              option(value="messages") My Private Messages
+            &nbsp;
+            &nbsp;
+            &nbsp;
+        form.form-inline.float-left.topic-only-option
+          .form-group.form-group-sm
+            label.control-label Categories
+            select.form-control#category-data
+            &nbsp;
+            &nbsp;
+            &nbsp;
+        form.form-inline.float-left
+          .form-group.form-group-sm
+            label.control-label Query
+            input.form-control.search-for 
+            button.btn.btn-default.update-statuses(type="submit") Update
+{% endblock %}
+
+{% block header %}
+link(href='/static/assets/select2/select2.min.css', rel='stylesheet')
+link(href='/static/assets/select2/select2-bootstrap.css', rel='stylesheet')
+{% endblock %}
+
+{% block script %}
+script(src="/static/assets/select2/select2.full.min.js")
+script(src="/static/assets/handlebars.min.js")
+script(src="/static/local/js/search.js")
+{% endblock %}

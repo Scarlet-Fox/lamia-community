@@ -11,6 +11,11 @@ from mongoengine.queryset import Q
 import arrow
 import json
 
+@app.route('/search', methods=['GET',])
+@login_required
+def search_display():
+    return render_template("core/search.jade")
+
 @app.route('/status-updates', methods=['GET', 'POST'])
 @login_required
 def status_update_index():
