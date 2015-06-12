@@ -2,42 +2,58 @@
 
 {% block content %}
 .row
-  .col-sm-12
+  .col-md-6.col-lg-4
     .panel.panel-default
       .panel-heading#filtering-header
         span Search Options
       .panel-body
-        form.form-inline.float-left
-          .form-group.form-group-sm
-            label.control-label Content
-            select.form-control#content-data
-              option(value="topics") Topics
-              option(value="status") Status Updates
-              option(value="messages") My Private Messages
-            &nbsp;
-            &nbsp;
-            &nbsp;
-        form.form-inline.float-left.topic-only-option
-          .form-group.form-group-sm
-            label.control-label Categories
-            select.form-control#category-data
-            &nbsp;
-            &nbsp;
-            &nbsp;
-        form.form-inline.float-left
-          .form-group.form-group-sm
-            label.control-label Query
-            input.form-control.search-for 
-            button.btn.btn-default.update-statuses(type="submit") Update
+        form.form-horizontal
+          .form-group
+            label.control-label.col-sm-4 Content
+            .col-sm-8
+              select.form-control#content-search
+                option(value="posts") Posts
+                option(value="topics") Topics
+                option(value="status") Status Updates
+                option(value="messages") My Private Messages
+          .form-group.variable-option.topics-option.posts-option
+            label.control-label.col-sm-4 Categories
+            .col-sm-8
+              select.form-control#category-select
+          .form-group.variable-option.posts-option
+            label.control-label.col-sm-4 Topic
+            .col-sm-8
+              select.form-control#topic-select
+          .form-group
+            label.control-label.col-sm-4 Author
+            .col-sm-8
+              select.form-control#author-select(multiple="multiple")
+          .form-group
+            label.control-label.col-sm-4 Date Range
+            .col-sm-8
+              input.form-control#start-date(maxlength=10, style="width: 90px; display: inline;")
+              span(style="vertical-align: middle;")
+                &nbsp;to&nbsp;
+              input.form-control#end-date(maxlength=10, style="width: 90px; display: inline;")
+          .form-group
+            label.control-label.col-sm-4 Query
+            .col-sm-8
+              input.form-control.search-for 
+          .form-group
+            .col-sm-4
+            .col-sm-8
+              button.btn.btn-default(type="submit") Search
 {% endblock %}
 
 {% block header %}
 link(href='/static/assets/select2/select2.min.css', rel='stylesheet')
 link(href='/static/assets/select2/select2-bootstrap.css', rel='stylesheet')
+link(href='/static/assets/bootstrap-datepicker/bootstrap-datepicker.css', rel='stylesheet')
 {% endblock %}
 
 {% block script %}
 script(src="/static/assets/select2/select2.full.min.js")
 script(src="/static/assets/handlebars.min.js")
+script(src="/static/assets/bootstrap-datepicker/bootstrap-datepicker.js")
 script(src="/static/local/js/search.js")
 {% endblock %}
