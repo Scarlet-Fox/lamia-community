@@ -5,6 +5,9 @@ from woe import app
 from mongoengine.queryset import Q
 
 def parse_search_string_return_q(search_text, fields_to_search):
+    if search_text.strip() == "":
+        return Q()
+        
     and_terms = []
     not_terms = []
     

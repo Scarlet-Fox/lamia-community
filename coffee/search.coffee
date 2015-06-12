@@ -106,6 +106,7 @@ $ ->
       
       data = 
         q: $("#search-for").val()
+        content_type: content_type
         
       if $("#start-date").val() != ""
         data["start_date"] = $("#start-date").val()
@@ -123,7 +124,8 @@ $ ->
       if content_type == "topics"
         data["categories"] = $("#category-select").val()
       
-      console.log data
+      $.post "/search", JSON.stringify(data), (data) ->
+        console.log data
       
       # if content_type == "posts"
       # else if content_type == "topics"

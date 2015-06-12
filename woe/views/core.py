@@ -40,27 +40,27 @@ def search_lookup():
         end_date = False
         
     try: # category
-        categories = Category.objects(pk__in=request_json.get("categories",[]))
+        categories = list(Category.objects(pk__in=request_json.get("categories",[])))
     except:
         categories = []
         
     try:
         if content_type == "posts":
-            topics = Topic.objects(pk__in=request_json.get("topics",[]))
+            topics = list(Topic.objects(pk__in=request_json.get("topics",[])))
         elif content_type == "messages":
-            topics = PrivateMessageTopic.objects(pk__in=request_json.get("topics",[]))
+            topics = list(PrivateMessageTopic.objects(pk__in=request_json.get("topics",[])))
     except:
         topics = []
         
     try:
-        authors = User.objects(pk__in=request_json.get("authors",[]))
+        authors = list(User.objects(pk__in=request_json.get("authors",[])))
     except:
         authors = []
         
     query = request.args.get("q", "")[0:300]
     pagination = 20
     try:
-        page = int(request_json.get("page", 0))
+        page = int(request_json.get("page", 1))
     except:
         page = 1
         
@@ -96,6 +96,7 @@ def search_lookup():
         _q_objects = _q_objects & parse_search_string_return_q(query, ["html",])
         results = Post.objects(_q_objects)[(page-1)*pagination:pagination*page]
         for result in results:
+            parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.topic.title
             parsed_result["url"] = "/topic/"+result.topic.slug # TODO : Direct links to posts.
@@ -107,9 +108,10 @@ def search_lookup():
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["title",])
         results = Topic.objects(_q_objects)[(page-1)*pagination:pagination*page]
         for result in results:
+            parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.title
-            parsed_result["url"] = "/topic/"+result.topic.slug
+            parsed_result["url"] = "/topic/"+result.slug
             parsed_result["description"] = ""
             parsed_result["author_profile_link"] = result.creator.login_name
             parsed_result["author_name"] = result.creator.display_name
@@ -118,6 +120,7 @@ def search_lookup():
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["message",])
         results = StatusUpdate.objects(_q_objects)[(page-1)*pagination:pagination*page]
         for result in results:
+            parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.message
             parsed_result["description"] = ""
@@ -129,6 +132,7 @@ def search_lookup():
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["topic_name","message",])
         results = PrivateMessage.objects(_q_objects)[(page-1)*pagination:pagination*page]
         for result in results:
+            parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.topic.title
             parsed_result["description"] = result.message
@@ -138,6 +142,7 @@ def search_lookup():
             parsed_results.append(parsed_result)
     
     print parsed_results
+    return app.jsonify(results=parsed_results)
 
 @app.route('/search', methods=['GET',])
 @login_required

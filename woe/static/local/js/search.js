@@ -116,7 +116,8 @@
       e.preventDefault();
       content_type = $("#content-search").val();
       data = {
-        q: $("#search-for").val()
+        q: $("#search-for").val(),
+        content_type: content_type
       };
       if ($("#start-date").val() !== "") {
         data["start_date"] = $("#start-date").val();
@@ -134,7 +135,9 @@
       if (content_type === "topics") {
         data["categories"] = $("#category-select").val();
       }
-      return console.log(data);
+      return $.post("/search", JSON.stringify(data), function(data) {
+        return console.log(data);
+      });
     }));
   });
 
