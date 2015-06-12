@@ -1,7 +1,7 @@
 from woe import login_manager
 from woe import app
 from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer
-from woe.models.forum import Category, Post
+from woe.models.forum import Category, Post, Topic
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
@@ -10,6 +10,46 @@ from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPo
 from mongoengine.queryset import Q
 import arrow
 import json
+
+@app.route('/search', methods=['POST',])
+@login_required
+def search_lookup():
+    request_json = request.get_json(force=True)
+    
+    
+    try:
+        start_date = arrow.get(request_json.get("start_date",""), ["M/D/YY",]).datetime
+    except:
+        start_date = False
+        
+    try:
+        end_date = arrow.get(request_json.get("start_date",""), ["M/D/YY",]).datetime
+    except:
+        end_date = False
+        
+    try:
+        categories = Category.objects(pk__in=request_json.get("categories",[]))
+    except:
+        categories = []
+        
+    try:
+        topics = Topic.objects(pk__in=request_json.get("topics",[]))
+    except:
+        topics = []
+        
+    try:
+        authors = User.objects(pk__in=request_json.get("authors",[]))
+    except:
+        authors = []
+    
+    
+    
+    # try:
+    #     query
+    # except:
+    #     query = Q()
+
+
 
 @app.route('/search', methods=['GET',])
 @login_required
