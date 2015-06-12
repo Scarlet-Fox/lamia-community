@@ -269,6 +269,8 @@ class PrivateMessageTopic(db.DynamicDocument):
     
     message_count = db.IntField(default=0)
     participating_users = db.ListField(db.ReferenceField(User))
+    blocked_users = db.ListField(db.ReferenceField(User))
+    users_left_pm = db.ListField(db.ReferenceField(User))
     participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant))
     participant_count = db.IntField(default=0)
     
@@ -284,7 +286,9 @@ class PrivateMessageTopic(db.DynamicDocument):
                 'fields': ['$title',],
                 'default_language': 'english'
             },
-            'participating_users'
+            'participating_users',
+            'blocked_users',
+            'users_left_pm'
         ]
     }
     

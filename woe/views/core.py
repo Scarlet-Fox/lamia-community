@@ -1,6 +1,6 @@
 from woe import login_manager
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic
 from woe.models.forum import Category, Post, Topic
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
@@ -11,11 +11,24 @@ from mongoengine.queryset import Q
 import arrow
 import json
 
+    
+@app.route('/pm-topic-list-api', methods=['GET'])
+@login_required
+def pm_topic_list_api():
+    query = request.args.get("q", "")[0:300]
+    if len(query) < 2:
+        return app.jsonify(results=[])
+    
+    q_ = parse_search_string_return_q(query, ["title",])
+    me = current_user._get_current_object()
+    topics = PrivateMessageTopic.objects(q_, participating_users=me)
+    results = [{"text": unicode(t.title), "id": str(t.pk)} for t in topics]
+    return app.jsonify(results=results)
+    
 @app.route('/search', methods=['POST',])
 @login_required
 def search_lookup():
     request_json = request.get_json(force=True)
-    
     
     try:
         start_date = arrow.get(request_json.get("start_date",""), ["M/D/YY",]).datetime
@@ -33,7 +46,10 @@ def search_lookup():
         categories = []
         
     try:
-        topics = Topic.objects(pk__in=request_json.get("topics",[]))
+        if content_type == "posts":
+            topics = Topic.objects(pk__in=request_json.get("topics",[]))
+        elif content_type == "messages":
+            topics = PrivateMessageTopic.objects(pk__in=request_json.get("topics",[]))
     except:
         topics = []
         
@@ -64,7 +80,7 @@ def search_lookup():
     if categories and content_type == "posts":
         _q_objects = _q_objects & Q(topic__category__in=categories)
         
-    if topics and content_type == "posts":
+    if topics:
         _q_objects = _q_objects & Q(topic__in=topics)
         
     if authors and content_type == "posts":
@@ -75,27 +91,54 @@ def search_lookup():
         _q_objects = _q_objects & Q(author__in=authors)
     if authors and content_type == "status":
         _q_objects = _q_objects & Q(author__in=authors)
-        
+
+    parsed_results = []
     if content_type == "posts":
         _q_objects = _q_objects & parse_search_string_return_q(query, ["html",])
-        results = Post.objects(_q_objects)
-    else if content_type == "topics":
+        results = Post.objects(_q_objects)[(page-1)*pagination:pagination*page]
+        for result in results:
+            parsed_result["time"] = humanize_time(result.created)
+            parsed_result["title"] = result.topic.title
+            parsed_result["url"] = "/topic/"+result.topic.slug # TODO : Direct links to posts.
+            parsed_result["description"] = result.html
+            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_name"] = result.author.display_name
+            parsed_results.append(parsed_result)
+    elif content_type == "topics":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["title",])
-        
-    else if content_type == "status":
+        results = Topic.objects(_q_objects)[(page-1)*pagination:pagination*page]
+        for result in results:
+            parsed_result["time"] = humanize_time(result.created)
+            parsed_result["title"] = result.title
+            parsed_result["url"] = "/topic/"+result.topic.slug
+            parsed_result["description"] = ""
+            parsed_result["author_profile_link"] = result.creator.login_name
+            parsed_result["author_name"] = result.creator.display_name
+            parsed_results.append(parsed_result)
+    elif content_type == "status":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["message",])
-        
-    else if content_type == "messages":
+        results = StatusUpdate.objects(_q_objects)[(page-1)*pagination:pagination*page]
+        for result in results:
+            parsed_result["time"] = humanize_time(result.created)
+            parsed_result["title"] = result.message
+            parsed_result["description"] = ""
+            parsed_result["url"] = "/status/"+result.pk
+            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_name"] = result.author.display_name
+            parsed_results.append(parsed_result)
+    elif content_type == "messages":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["topic_name","message",])
+        results = PrivateMessage.objects(_q_objects)[(page-1)*pagination:pagination*page]
+        for result in results:
+            parsed_result["time"] = humanize_time(result.created)
+            parsed_result["title"] = result.topic.title
+            parsed_result["description"] = result.message
+            parsed_result["url"] = "/messages/"+result.topic.pk
+            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_name"] = result.author.display_name
+            parsed_results.append(parsed_result)
     
-    
-    
-    # try:
-    #     query
-    # except:
-    #     query = Q()
-
-
+    print parsed_results
 
 @app.route('/search', methods=['GET',])
 @login_required
