@@ -6,8 +6,32 @@ from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time, math
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner, parse_search_string_return_q
 
+@app.route('/category-list-api', methods=['GET'])
+@login_required
+def category_list_api():
+    query = request.args.get("q", "")[0:300]
+    if len(query) < 2:
+        return app.jsonify(results=[])
+    
+    q_ = parse_search_string_return_q(query, ["name",])
+    categories = Category.objects(q_)
+    results = [{"text": unicode(c.name), "id": str(c.pk)} for c in categories]
+    return app.jsonify(results=results)
+    
+@app.route('/topic-list-api', methods=['GET'])
+@login_required
+def topic_list_api():
+    query = request.args.get("q", "")[0:300]
+    if len(query) < 2:
+        return app.jsonify(results=[])
+    
+    q_ = parse_search_string_return_q(query, ["title",])
+    topics = Topic.objects(q_)
+    results = [{"text": unicode(t.title), "id": str(t.pk)} for t in topics]
+    return app.jsonify(results=results)
+    
 @app.route('/topic/<slug>/new-post', methods=['POST'])
 @login_required
 def new_post_in_topic(slug):
