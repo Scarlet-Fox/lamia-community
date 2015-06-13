@@ -57,7 +57,7 @@ def search_lookup():
     except:
         authors = []
         
-    query = request.args.get("q", "")[0:300]
+    query = request_json.get("q", "")[0:300]
     pagination = 20
     try:
         page = int(request_json.get("page", 1))
@@ -75,9 +75,6 @@ def search_lookup():
 
     if categories and content_type == "topics":
         _q_objects = _q_objects & Q(category__in=categories)
-
-    if categories and content_type == "posts":
-        _q_objects = _q_objects & Q(topic__category__in=categories)
         
     if topics:
         _q_objects = _q_objects & Q(topic__in=topics)
@@ -94,19 +91,19 @@ def search_lookup():
     parsed_results = []
     if content_type == "posts":
         _q_objects = _q_objects & parse_search_string_return_q(query, ["html",])
-        results = Post.objects(_q_objects)[(page-1)*pagination:pagination*page]
+        results = Post.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.topic.title
-            parsed_result["url"] = "/topic/"+result.topic.slug # TODO : Direct links to posts.
+            parsed_result["url"] = "/topic/"+str(result.topic.slug)+"/page/1/"+str(result.pk)
             parsed_result["description"] = result.html
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
             parsed_results.append(parsed_result)
     elif content_type == "topics":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["title",])
-        results = Topic.objects(_q_objects)[(page-1)*pagination:pagination*page]
+        results = Topic.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
@@ -118,7 +115,7 @@ def search_lookup():
             parsed_results.append(parsed_result)
     elif content_type == "status":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["message",])
-        results = StatusUpdate.objects(_q_objects)[(page-1)*pagination:pagination*page]
+        results = StatusUpdate.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
@@ -136,12 +133,11 @@ def search_lookup():
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.topic.title
             parsed_result["description"] = result.message
-            parsed_result["url"] = "/messages/"+result.topic.pk
+            parsed_result["url"] = "/messages/"+str(result.topic.pk)+"/page/1/"+str(result.pk)
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
             parsed_results.append(parsed_result)
     
-    print parsed_results
     return app.jsonify(results=parsed_results)
 
 @app.route('/search', methods=['GET',])

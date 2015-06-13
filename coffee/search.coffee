@@ -119,13 +119,13 @@ $ ->
         
       if content_type == "posts"
         data["topics"] = $("#topic-select").val()
-        data["categories"] = $("#category-select").val()
+        # data["categories"] = $("#category-select").val()
         
       if content_type == "topics"
         data["categories"] = $("#category-select").val()
       
       $.post "/search", JSON.stringify(data), (data) ->
-        console.log data
+        
       
       # if content_type == "posts"
       # else if content_type == "topics"

@@ -130,14 +130,11 @@
       }
       if (content_type === "posts") {
         data["topics"] = $("#topic-select").val();
-        data["categories"] = $("#category-select").val();
       }
       if (content_type === "topics") {
         data["categories"] = $("#category-select").val();
       }
-      return $.post("/search", JSON.stringify(data), function(data) {
-        return console.log(data);
-      });
+      return $.post("/search", JSON.stringify(data), function(data) {});
     }));
   });
 
