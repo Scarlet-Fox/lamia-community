@@ -99,6 +99,32 @@ $ ->
         cache: true
       minimumInputLength: 2
     
+    resultTemplateHTML = () ->
+      return """
+      <ul class="list-group">
+        <li class="list-group-item">
+          <p>
+            <b>
+              <a href="{{url}}">{{{title}}}</a>
+            </b>
+          </p>
+          <div class="search-result-content">
+            <p>
+              {{{description}}}
+              {{#if readmore}}
+              <a href="{{url}}" class="readmore">
+                <br><b>Read more »</b>
+              </a>
+              {{/if}}
+            </p>
+          </div>
+          <p class="text-muted">by <a href="{{author_profile_link}}">{{author_name}}</a> - {{time}}
+          </p>
+        </li>
+      </ul>
+      """
+    resultTemplate = Handlebars.compile(resultTemplateHTML())
+    
     $("#search").click (e) ->
       e.preventDefault()
       
@@ -125,7 +151,12 @@ $ ->
         data["categories"] = $("#category-select").val()
       
       $.post "/search", JSON.stringify(data), (data) ->
-        
+        _html = ""
+        for result in data.results
+          _html = _html + resultTemplate(result)
+        $("#search-results").html(_html)
+        $(".search-result-content img").hide()
+        $(".search-result-content").dotdotdot({height: 200, after: ".readmore"})
       
       # if content_type == "posts"
       # else if content_type == "topics"

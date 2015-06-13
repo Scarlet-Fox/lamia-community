@@ -96,10 +96,11 @@ def search_lookup():
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.topic.title
-            parsed_result["url"] = "/topic/"+str(result.topic.slug)+"/page/1/"+str(result.pk)
+            parsed_result["url"] = "/topic/"+str(result.topic.slug)+"/page/1/post/"+str(result.pk)
             parsed_result["description"] = result.html
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
+            parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
     elif content_type == "topics":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["title",])
@@ -112,6 +113,7 @@ def search_lookup():
             parsed_result["description"] = ""
             parsed_result["author_profile_link"] = result.creator.login_name
             parsed_result["author_name"] = result.creator.display_name
+            parsed_result["readmore"] = False
             parsed_results.append(parsed_result)
     elif content_type == "status":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["message",])
@@ -121,9 +123,10 @@ def search_lookup():
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.message
             parsed_result["description"] = ""
-            parsed_result["url"] = "/status/"+result.pk
+            parsed_result["url"] = "/status/"+str(result.pk)
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
+            parsed_result["readmore"] = False
             parsed_results.append(parsed_result)
     elif content_type == "messages":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["topic_name","message",])
@@ -133,9 +136,10 @@ def search_lookup():
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.topic.title
             parsed_result["description"] = result.message
-            parsed_result["url"] = "/messages/"+str(result.topic.pk)+"/page/1/"+str(result.pk)
+            parsed_result["url"] = "/messages/"+str(result.topic.pk)+"/page/1/post/"+str(result.pk)
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
+            parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
     
     return app.jsonify(results=parsed_results)
