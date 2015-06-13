@@ -69,5 +69,15 @@ script(src="/static/assets/select2/select2.full.min.js")
 script(src="/static/assets/handlebars.min.js")
 script(src="/static/assets/bootstrap-datepicker/bootstrap-datepicker.js")
 script(src="/static/assets/dotdotdot/jquery.dotdotdot.js")
+script(type="text/javascript")
+  $(document).ready(function(){
+    window.search_for = '{{query}}';
+    window.start_date = '{{start_date}}';
+    window.end_date = '{{end_date}}';
+    window.topics = JSON.parse('{{topics}}');
+    window.content_type = '{{content_type}}';
+    window.categories = JSON.parse('{{categories}}');
+    window.authors = JSON.parse('{{authors}}');
+  });
 script(src="/static/local/js/search.js")
 {% endblock %}

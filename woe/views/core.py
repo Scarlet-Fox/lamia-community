@@ -29,50 +29,62 @@ def pm_topic_list_api():
 @login_required
 def search_lookup():
     request_json = request.get_json(force=True)
+    content_type = request_json.get("content_type", "topics")
+    session["content_type"] = content_type
     
     try:
         start_date = arrow.get(request_json.get("start_date",""), ["M/D/YY",]).datetime
+        session["start_date"] = request_json.get("start_date","")
     except:
         start_date = False
+        session["start_date"] = ""
         
     try: # created
         end_date = arrow.get(request_json.get("end_date",""), ["M/D/YY",]).datetime
+        session["end_date"] = request_json.get("end_date","")
     except:
         end_date = False
+        session["end_date"] = ""
         
     try: # category
-        categories = list(Category.objects(pk__in=request_json.get("categories",[])))
+        categories = list(Category.objects(pk__in=request_json.get("categories")))
+        session["categories"] = categories
     except:
         categories = []
+        session["categories"] = []
         
     try:
         if content_type == "posts":
-            topics = list(Topic.objects(pk__in=request_json.get("topics",[])))
+            topics = list(Topic.objects(pk__in=request_json.get("topics")))
         elif content_type == "messages":
-            topics = list(PrivateMessageTopic.objects(pk__in=request_json.get("topics",[])))
+            topics = list(PrivateMessageTopic.objects(pk__in=request_json.get("topics")))
+        session["topics"] = topics
     except:
         topics = []
+        session["topics"] = []
         
     try:
         authors = list(User.objects(pk__in=request_json.get("authors",[])))
+        session["authors"] = authors
     except:
         authors = []
+        session["authors"] = []
         
     query = request_json.get("q", "")[0:300]
+    session["query"] = query
     pagination = 20
     try:
         page = int(request_json.get("page", 1))
     except:
         page = 1
         
-    content_type = request_json.get("content_type", "topics")
     _q_objects = Q()
 
     if start_date:
         _q_objects = _q_objects & Q(created__gte=start_date)
 
     if end_date:
-        _q_objects = _q_objects & Q(created__lte=start_date)
+        _q_objects = _q_objects & Q(created__lte=end_date)
 
     if categories and content_type == "topics":
         _q_objects = _q_objects & Q(category__in=categories)
@@ -134,7 +146,7 @@ def search_lookup():
             parsed_results.append(parsed_result)
     elif content_type == "messages":
         my_message_topics = PrivateMessageTopic.objects(participating_users=current_user._get_current_object())
-        _q_objects = _q_objects &  parse_search_string_return_q(query, ["topic_name","message",])
+        _q_objects = _q_objects & (parse_search_string_return_q(query, ["topic_name",]) | parse_search_string_return_q(query, ["message",]))
         _q_objects = _q_objects & Q(topic__in=my_message_topics)
         count = PrivateMessage.objects(_q_objects).count()
         results = PrivateMessage.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
@@ -163,7 +175,25 @@ def search_lookup():
 @app.route('/search', methods=['GET',])
 @login_required
 def search_display():
-    return render_template("core/search.jade")
+    start_date = session.get("start_date","")
+    end_date = session.get("end_date", "")
+    categories = [{"id": unicode(c.pk), "text": c.name} for c in session.get("categories", [])]
+    topics = [{"id": unicode(t.pk), "text": t.title} for t in session.get("topics", [])]
+    if session.get("authors"):
+        authors = [{"id": unicode(a.pk), "text": a.display_name} for a in session.get("authors", [])]
+    else:
+        authors = []
+    query = session.get("query","")
+    content_type = session.get("content_type","")
+    return render_template("core/search.jade", 
+        query=query, 
+        content_type=content_type,
+        start_date=start_date,
+        end_date=end_date,
+        categories=json.dumps(categories),
+        topics=json.dumps(topics),
+        authors=json.dumps(authors)
+        )
 
 @app.route('/status-updates', methods=['GET', 'POST'])
 @login_required
@@ -459,8 +489,6 @@ def status_update_replies(status):
 @app.route('/status/<status>', methods=['GET'])
 @login_required
 def display_status_update(status):
-    print status
-    
     try:
         status = StatusUpdate.objects(id=status)[0]
     except:

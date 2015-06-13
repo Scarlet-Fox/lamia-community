@@ -24,6 +24,11 @@ $ ->
     else if content_type == "messages"
       $(".variable-option").hide()
       $(".messages-option").show()
+  
+  if window.authors.length > 0
+    for author in window.authors
+      _option = """<option value="#{author.id}" selected="selected">#{author.text}</option>"""
+      $("#author-select").append _option 
       
   $("#author-select").select2
     ajax:
@@ -43,6 +48,19 @@ $ ->
         }
       cache: true
     minimumInputLength: 2
+  
+  if window.categories.length > 0
+    for category in window.categories
+      _option = """<option value="#{category.id}" selected="selected">#{category.text}</option>"""
+      $("#category-select").append _option 
+  
+  if window.topics.length > 0
+    for topic in window.topics
+      _option = """<option value="#{topic.id}" selected="selected">#{topic.text}</option>"""
+      if window.content_type == "posts"
+        $("#topic-select").append _option 
+      else
+        $("#pm-topic-select").append _option 
       
   $("#topic-select").select2
     ajax:
@@ -100,6 +118,11 @@ $ ->
         }
       cache: true
     minimumInputLength: 2
+    
+  $("#search-for").val(window.search_for)
+  $("#content-search").val(window.content_type)
+  $("#start-date").val(window.start_date)
+  $("#end-date").val(window.end_date)
   
   resultTemplateHTML = () ->
     return """
@@ -162,6 +185,7 @@ $ ->
       q: $("#search-for").val()
       content_type: content_type
       page: page
+      authors: $("#author-select").val()
       
     if $("#start-date").val() != ""
       data["start_date"] = $("#start-date").val()
@@ -180,46 +204,51 @@ $ ->
       data["categories"] = $("#category-select").val()
     
     $.post "/search", JSON.stringify(data), (data) ->
-      _html = ""
-      for result in data.results
-        _html = _html + resultTemplate(result).replace("img", "i")
-      
-      $("#search-results-buffer").html(_html)
-      $("#search-results-buffer").find("br").remove()
-      $("#search-results").html($("#search-results-buffer").html())
-      $("#search-results-buffer").html("")
-      $(".search-result-content").dotdotdot({height: 200, after: ".readmore"})
-      
-      terms = $("#search-for").val().split(" ")
-      for term in terms
-        term = term.trim()
-        if term == ""
-          continue
-        term_re = new RegExp("(.*?>?.*)("+term+"?)(.*<?.*?)", "gi")
-        $(".search-result-title").each () ->
-          $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
-        $(".search-result-content p").each () ->
-          $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
-        $(".search-result-content blockquote").each () ->
-          $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
-
-      pages = []
-      max_pages = Math.ceil data.count/data.pagination
-      if max_pages > 5
-        if page > 3 and page < max_pages-5
-          pages = [page-2..page+5]
-        else if page > 3
-          pages = [page-2..max_pages]
-        else if page <= 3
-          pages = [1..page+5]
+      console.log data
+      if data.count == 0
+        $("#search-results").html("""<p>No results...</p>""")
       else
-        pages = [1..Math.ceil data.count/data.pagination]
-      pagination_html = paginationTemplate {pages: pages}
+        _html = ""
+        for result in data.results
+          _html = _html + resultTemplate(result).replace("img", "i")
       
-      $("#results-header")[0].scrollIntoView()
-      $(".search-pagination").html pagination_html
-      $("#results-header").text("#{data.count} Search Results")
-      $(".page-link-#{page}").parent().addClass("active")
+        $("#search-results-buffer").html(_html)
+        $("#search-results-buffer").find("br").remove()
+        $("#search-results").html($("#search-results-buffer").html())
+        $("#search-results-buffer").html("")
+      
+        # terms = $("#search-for").val().split(" ")
+        # for term in terms
+        #   term = term.trim()
+        #   if term == ""
+        #     continue
+        #   term_re = new RegExp("(.*?>?.*)("+term+"?)(.*<?.*?)", "gi")
+        #   $(".search-result-title").each () ->
+        #     $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
+        #   $(".search-result-content p").each () ->
+        #     $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
+        #   $(".search-result-content blockquote").each () ->
+        #     $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
+          
+        $(".search-result-content").dotdotdot({height: 200, after: ".readmore"})
+
+        pages = []
+        max_pages = Math.ceil data.count/data.pagination
+        if max_pages > 5
+          if page > 3 and page < max_pages-5
+            pages = [page-2..page+5]
+          else if page > 3
+            pages = [page-2..max_pages]
+          else if page <= 3
+            pages = [1..page+5]
+        else
+          pages = [1..Math.ceil data.count/data.pagination]
+        pagination_html = paginationTemplate {pages: pages}
+      
+        $("#results-header")[0].scrollIntoView()
+        $(".search-pagination").html pagination_html
+        $("#results-header").text("#{data.count} Search Results")
+        $(".page-link-#{page}").parent().addClass("active")
   
   $("#search").click (e) ->
     e.preventDefault()
