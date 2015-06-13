@@ -10,6 +10,7 @@ from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPo
 from mongoengine.queryset import Q
 import arrow
 import json
+import re
 
 @app.route('/pm-topic-list-api', methods=['GET'])
 @login_required
@@ -129,8 +130,10 @@ def search_lookup():
             parsed_result["readmore"] = False
             parsed_results.append(parsed_result)
     elif content_type == "messages":
+        my_message_topics = PrivateMessageTopic.objects(participating_users=current_user._get_current_object())
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["topic_name","message",])
-        results = PrivateMessage.objects(_q_objects)[(page-1)*pagination:pagination*page]
+        _q_objects = _q_objects & Q(topic__in=my_message_topics)
+        results = PrivateMessage.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
@@ -141,6 +144,15 @@ def search_lookup():
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
+    
+    # for term in query.split(" "):
+    #     term = term.strip()
+    #     if term[0] == "-":
+    #         continue
+    #     term_re = re.compile(re.escape(term), re.IGNORECASE)
+    #
+    #     for result in parsed_results:
+    #         result["description"] = term_re.sub("""<span style="background-color: yellow">"""+term+"</span>", result["description"])
     
     return app.jsonify(results=parsed_results)
 

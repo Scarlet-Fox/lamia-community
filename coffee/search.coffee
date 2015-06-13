@@ -109,14 +109,12 @@ $ ->
             </b>
           </p>
           <div class="search-result-content">
-            <p>
               {{{description}}}
               {{#if readmore}}
               <a href="{{url}}" class="readmore">
-                <br><b>Read more »</b>
+                <br><b>Read more »</b><br>
               </a>
               {{/if}}
-            </p>
           </div>
           <p class="text-muted">by <a href="{{author_profile_link}}">{{author_name}}</a> - {{time}}
           </p>
@@ -154,9 +152,22 @@ $ ->
         _html = ""
         for result in data.results
           _html = _html + resultTemplate(result)
+          
         $("#search-results").html(_html)
         $(".search-result-content img").hide()
+        $(".search-result-content br").hide()
         $(".search-result-content").dotdotdot({height: 200, after: ".readmore"})
+        
+        terms = $("#search-for").val().split(" ")
+        for term in terms
+          term = term.trim()
+          if term == ""
+            continue
+          term_re = new RegExp("(.*?>?.*)("+term+"?)(.*<?.*?)", "gi")
+          $(".search-result-content p").each () ->
+            $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
+          $(".search-result-content blockquote").each () ->
+            $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
       
       # if content_type == "posts"
       # else if content_type == "topics"

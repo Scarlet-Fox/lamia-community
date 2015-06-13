@@ -113,7 +113,7 @@
       },
       minimumInputLength: 2
     }), resultTemplateHTML = function() {
-      return "<ul class=\"list-group\">\n  <li class=\"list-group-item\">\n    <p>\n      <b>\n        <a href=\"{{url}}\">{{{title}}}</a>\n      </b>\n    </p>\n    <div class=\"search-result-content\">\n      <p>\n        {{{description}}}\n        {{#if readmore}}\n        <a href=\"{{url}}\" class=\"readmore\">\n          <br><b>Read more »</b>\n        </a>\n        {{/if}}\n      </p>\n    </div>\n    <p class=\"text-muted\">by <a href=\"{{author_profile_link}}\">{{author_name}}</a> - {{time}}\n    </p>\n  </li>\n</ul>";
+      return "<ul class=\"list-group\">\n  <li class=\"list-group-item\">\n    <p>\n      <b>\n        <a href=\"{{url}}\">{{{title}}}</a>\n      </b>\n    </p>\n    <div class=\"search-result-content\">\n        {{{description}}}\n        {{#if readmore}}\n        <a href=\"{{url}}\" class=\"readmore\">\n          <br><b>Read more »</b><br>\n        </a>\n        {{/if}}\n    </div>\n    <p class=\"text-muted\">by <a href=\"{{author_profile_link}}\">{{author_name}}</a> - {{time}}\n    </p>\n  </li>\n</ul>";
     }, resultTemplate = Handlebars.compile(resultTemplateHTML()), $("#search").click(function(e) {
       var content_type, data;
       e.preventDefault();
@@ -138,7 +138,7 @@
         data["categories"] = $("#category-select").val();
       }
       return $.post("/search", JSON.stringify(data), function(data) {
-        var _html, i, len, ref, result;
+        var _html, i, j, len, len1, ref, result, results, term, term_re, terms;
         _html = "";
         ref = data.results;
         for (i = 0, len = ref.length; i < len; i++) {
@@ -147,10 +147,28 @@
         }
         $("#search-results").html(_html);
         $(".search-result-content img").hide();
-        return $(".search-result-content").dotdotdot({
+        $(".search-result-content br").hide();
+        $(".search-result-content").dotdotdot({
           height: 200,
           after: ".readmore"
         });
+        terms = $("#search-for").val().split(" ");
+        results = [];
+        for (j = 0, len1 = terms.length; j < len1; j++) {
+          term = terms[j];
+          term = term.trim();
+          if (term === "") {
+            continue;
+          }
+          term_re = new RegExp("(.*?>?.*)(" + term + "?)(.*<?.*?)", "gi");
+          $(".search-result-content p").each(function() {
+            return $(this).html($(this).html().replace(term_re, "$1<span style=\"background-color: yellow\">" + "$2" + "</span>$3"));
+          });
+          results.push($(".search-result-content blockquote").each(function() {
+            return $(this).html($(this).html().replace(term_re, "$1<span style=\"background-color: yellow\">" + "$2" + "</span>$3"));
+          }));
+        }
+        return results;
       });
     }));
   });
