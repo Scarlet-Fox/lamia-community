@@ -225,6 +225,10 @@
       page = 1;
       return updateSearch();
     });
+    $("form").submit(function(e) {
+      e.preventDefault();
+      return $("#search").click();
+    });
     $(".search-pagination").delegate("#next-page", "click", function(e) {
       var element;
       e.preventDefault();

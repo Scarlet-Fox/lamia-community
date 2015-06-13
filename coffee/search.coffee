@@ -224,6 +224,10 @@ $ ->
     e.preventDefault()
     page = 1
     updateSearch()
+    
+  $("form").submit (e) ->
+    e.preventDefault()
+    $("#search").click()
   
   $(".search-pagination").delegate "#next-page", "click", (e) ->
     e.preventDefault()
