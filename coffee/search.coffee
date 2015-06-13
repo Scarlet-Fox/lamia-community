@@ -222,6 +222,7 @@ $ ->
   
   $("#search").click (e) ->
     e.preventDefault()
+    page = 1
     updateSearch()
   
   $(".search-pagination").delegate "#next-page", "click", (e) ->

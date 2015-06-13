@@ -222,6 +222,7 @@
     };
     $("#search").click(function(e) {
       e.preventDefault();
+      page = 1;
       return updateSearch();
     });
     $(".search-pagination").delegate("#next-page", "click", function(e) {
