@@ -178,6 +178,7 @@ def topic_index(slug, page, post):
     except IndexError:
         return abort(404)
     # TODO : Check if someone is topic banned.
+    pagination = 20
     
     if current_user._get_current_object() in topic.banned_from_topic:
         return abort(404)
@@ -189,13 +190,19 @@ def topic_index(slug, page, post):
         
     if post != "":
         try:
-            post = Post.objects(topic=topic, pk=post)
+            post = Post.objects(topic=topic, pk=post, hidden=False)[0]
         except:
             return abort(404)
     else:
         post = ""
-
-    return render_template("forum/topic.jade", topic=topic, initial_page=page, initial_post="")
+    
+    if post != "":
+        target_date = post.created
+        posts_before_target = Post.objects(hidden=False, topic=topic, created__lt=target_date).count()
+        page = int(math.floor(float(posts_before_target)/float(pagination)))+1
+        return render_template("forum/topic.jade", topic=topic, initial_page=page, initial_post=str(post.pk))
+    
+    return render_template("forum/topic.jade", topic=topic, initial_page=page)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
