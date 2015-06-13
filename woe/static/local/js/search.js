@@ -215,6 +215,7 @@
         pagination_html = paginationTemplate({
           pages: pages
         });
+        $("#results-header")[0].scrollIntoView();
         $(".search-pagination").html(pagination_html);
         $("#results-header").text(data.count + " Search Results");
         return $(".page-link-" + page).parent().addClass("active");

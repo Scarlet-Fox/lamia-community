@@ -216,6 +216,7 @@ $ ->
         pages = [1..Math.ceil data.count/data.pagination]
       pagination_html = paginationTemplate {pages: pages}
       
+      $("#results-header")[0].scrollIntoView()
       $(".search-pagination").html pagination_html
       $("#results-header").text("#{data.count} Search Results")
       $(".page-link-#{page}").parent().addClass("active")
