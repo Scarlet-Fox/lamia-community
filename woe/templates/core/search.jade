@@ -50,9 +50,10 @@
   .col-md-6.col-lg-8
     .panel.panel-default
       .panel-heading
-        span Search Results 
+        span#results-header Search Results 
       .panel-body
-        .search-pagination    
+        .search-pagination
+        #search-results-buffer(style="display: none;")
         #search-results        
         .search-pagination   
 {% endblock %}

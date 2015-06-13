@@ -2,6 +2,7 @@ $ ->
   $(".variable-option").hide()
   $(".posts-option").show()
   page = 1
+  max_pages = 1
   
   $("#start-date").datepicker
     format: "m/d/yy"
@@ -106,7 +107,7 @@ $ ->
       <li class="list-group-item">
         <p>
           <b>
-            <a href="{{url}}">{{{title}}}</a>
+            <a href="{{url}}" class="search-result-title">{{{title}}}</a>
           </b>
         </p>
         <div class="search-result-content">
@@ -181,11 +182,12 @@ $ ->
     $.post "/search", JSON.stringify(data), (data) ->
       _html = ""
       for result in data.results
-        _html = _html + resultTemplate(result)
-        
-      $("#search-results").html(_html)
-      $(".search-result-content img").hide()
-      $(".search-result-content br").hide()
+        _html = _html + resultTemplate(result).replace("img", "i")
+      
+      $("#search-results-buffer").html(_html)
+      $("#search-results-buffer").find("br").remove()
+      $("#search-results").html($("#search-results-buffer").html())
+      $("#search-results-buffer").html("")
       $(".search-result-content").dotdotdot({height: 200, after: ".readmore"})
       
       terms = $("#search-for").val().split(" ")
@@ -194,6 +196,8 @@ $ ->
         if term == ""
           continue
         term_re = new RegExp("(.*?>?.*)("+term+"?)(.*<?.*?)", "gi")
+        $(".search-result-title").each () ->
+          $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
         $(".search-result-content p").each () ->
           $(this).html($(this).html().replace(term_re, """$1<span style="background-color: yellow">"""+"$2"+"</span>$3"))
         $(".search-result-content blockquote").each () ->
@@ -213,13 +217,43 @@ $ ->
       pagination_html = paginationTemplate {pages: pages}
       
       $(".search-pagination").html pagination_html
+      $("#results-header").text("#{data.count} Search Results")
+      $(".page-link-#{page}").parent().addClass("active")
   
   $("#search").click (e) ->
     e.preventDefault()
     updateSearch()
-    
-    # if content_type == "posts"
-    # else if content_type == "topics"
-    # else if content_type == "status"
-    # else if content_type == "messages"
+  
+  $(".search-pagination").delegate "#next-page", "click", (e) ->
+    e.preventDefault()
+    element = $(this)
+    if page != max_pages
+      $(".change-page").parent().removeClass("active")
+      page++
+      updateSearch()
+                   
+  $(".search-pagination").delegate "#previous-page", "click", (e) ->
+    e.preventDefault()
+    element = $(this)
+    if page != 1
+      $(".change-page").parent().removeClass("active")
+      page--
+      updateSearch()
+        
+  $(".search-pagination").delegate "#go-to-end", "click", (e) ->
+    e.preventDefault()
+    element = $(this)
+    page = parseInt(max_pages)
+    updateSearch()
       
+  $(".search-pagination").delegate ".change-page", "click", (e) ->
+    e.preventDefault()
+    element = $(this)
+    page = parseInt(element.text())
+    updateSearch()
+        
+  $(".search-pagination").delegate "#go-to-start", "click", (e) ->
+    e.preventDefault()
+    element = $(this)
+    page = 1
+    updateSearch()
