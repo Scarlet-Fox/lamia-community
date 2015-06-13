@@ -253,7 +253,7 @@ $ ->
           setTimeout () ->
             $("#post-#{window._initial_post}")[0].scrollIntoView()
             window._initial_post = ""
-          , 10
+          , 100
         else
           $("#topic-breadcrumb")[0].scrollIntoView()
                 

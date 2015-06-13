@@ -187,7 +187,7 @@
               return setTimeout(function() {
                 $("#post-" + window._initial_post)[0].scrollIntoView();
                 return window._initial_post = "";
-              }, 10);
+              }, 100);
             } else {
               return $("#topic-breadcrumb")[0].scrollIntoView();
             }
