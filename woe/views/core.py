@@ -92,6 +92,7 @@ def search_lookup():
     parsed_results = []
     if content_type == "posts":
         _q_objects = _q_objects & parse_search_string_return_q(query, ["html",])
+        count = Post.objects(_q_objects).count()
         results = Post.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
@@ -105,6 +106,7 @@ def search_lookup():
             parsed_results.append(parsed_result)
     elif content_type == "topics":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["title",])
+        count = Topic.objects(_q_objects).count()
         results = Topic.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
@@ -118,6 +120,7 @@ def search_lookup():
             parsed_results.append(parsed_result)
     elif content_type == "status":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["message",])
+        count = StatusUpdate.objects(_q_objects).count()
         results = StatusUpdate.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
@@ -133,6 +136,7 @@ def search_lookup():
         my_message_topics = PrivateMessageTopic.objects(participating_users=current_user._get_current_object())
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["topic_name","message",])
         _q_objects = _q_objects & Q(topic__in=my_message_topics)
+        count = PrivateMessage.objects(_q_objects).count()
         results = PrivateMessage.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
@@ -154,7 +158,7 @@ def search_lookup():
     #     for result in parsed_results:
     #         result["description"] = term_re.sub("""<span style="background-color: yellow">"""+term+"</span>", result["description"])
     
-    return app.jsonify(results=parsed_results)
+    return app.jsonify(results=parsed_results, count=count, pagination=pagination)
 
 @app.route('/search', methods=['GET',])
 @login_required

@@ -7,7 +7,7 @@ $ ->
       @max_pages = 1
       @pagination = $(".topic-listing").data("pagination")
       @topicHTML = Handlebars.compile(@topicHTMLTemplate())
-      @paginationHTML = Handlebars.compile(@paginationHTMLTeplate())
+      @paginationHTML = Handlebars.compile(@paginationHTMLTemplate())
       
       do @getPreferences
       
@@ -50,7 +50,7 @@ $ ->
           category.page++
           do category.refreshTopics
     
-    paginationHTMLTeplate: () ->
+    paginationHTMLTemplate: () ->
       return """
           <ul class="pagination">
             <li>

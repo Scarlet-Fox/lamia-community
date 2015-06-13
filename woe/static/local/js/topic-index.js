@@ -11,7 +11,7 @@
         this.max_pages = 1;
         this.pagination = window._pagination;
         this.postHTML = Handlebars.compile(this.postHTMLTemplate());
-        this.paginationHTML = Handlebars.compile(this.paginationHTMLTeplate());
+        this.paginationHTML = Handlebars.compile(this.paginationHTMLTemplate());
         this.is_mod = window._is_topic_mod;
         this.is_logged_in = window._is_logged_in;
         socket = io.connect('http://' + document.domain + ':3000' + '');
@@ -118,7 +118,7 @@
         });
       }
 
-      Topic.prototype.paginationHTMLTeplate = function() {
+      Topic.prototype.paginationHTMLTemplate = function() {
         return "<ul class=\"pagination\">\n  <li>\n    <a href=\"#\" aria-label=\"Start\" id=\"go-to-start\">\n      <span aria-hidden=\"true\">Go to Start</span>\n    </a>\n  </li>\n  <li>\n    <a href=\"#\" aria-label=\"Previous\" id=\"previous-page\">\n      <span aria-hidden=\"true\">&laquo;</span>\n    </a>\n  </li>\n  {{#each pages}}\n  <li><a href=\"#\" class=\"change-page page-link-{{this}}\">{{this}}</a></li>\n  {{/each}}\n  <li>\n    <a href=\"#\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">&raquo;</span>\n    </a>\n  </li>\n  <li>\n    <a href=\"#\" aria-label=\"End\" id=\"go-to-end\">\n      <span aria-hidden=\"true\">Go to End</span>\n    </a>\n  </li>\n</ul>";
       };
 

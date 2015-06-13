@@ -11,7 +11,7 @@
         this.max_pages = 1;
         this.pagination = $(".topic-listing").data("pagination");
         this.topicHTML = Handlebars.compile(this.topicHTMLTemplate());
-        this.paginationHTML = Handlebars.compile(this.paginationHTMLTeplate());
+        this.paginationHTML = Handlebars.compile(this.paginationHTMLTemplate());
         this.getPreferences();
         $("#prefix-filter-show-all").click((function(_this) {
           return function(e) {
@@ -63,7 +63,7 @@
         });
       }
 
-      Category.prototype.paginationHTMLTeplate = function() {
+      Category.prototype.paginationHTMLTemplate = function() {
         return "<ul class=\"pagination\">\n  <li>\n    <a href=\"#\" aria-label=\"Previous\" id=\"previous-page\">\n      <span aria-hidden=\"true\">&laquo;</span>\n    </a>\n  </li>\n  {{#each pages}}\n  <li><a href=\"#\" class=\"change-page page-link-{{this}}\">{{this}}</a></li>\n  {{/each}}\n  <li>\n    <a href=\"#\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">&raquo;</span>\n    </a>\n  </li>\n</ul>";
       };
 

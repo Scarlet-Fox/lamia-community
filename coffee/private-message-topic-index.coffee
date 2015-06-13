@@ -7,7 +7,7 @@ $ ->
       @max_pages = 1
       @pagination = window._pagination
       @postHTML = Handlebars.compile(@postHTMLTemplate())
-      @paginationHTML = Handlebars.compile(@paginationHTMLTeplate())
+      @paginationHTML = Handlebars.compile(@paginationHTMLTemplate())
       @is_mod = window._is_topic_mod
       @is_logged_in = window._is_logged_in
       
@@ -116,7 +116,7 @@ $ ->
           window.location = window.location
         , 0)
               
-    paginationHTMLTeplate: () ->
+    paginationHTMLTemplate: () ->
       return """
           <ul class="pagination">
             <li>
