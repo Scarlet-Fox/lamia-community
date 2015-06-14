@@ -67,8 +67,8 @@ class PostView(ModelView):
 
 class AttachView(ModelView):
     can_delete = False
-    column_list = ("owner_name", "path", "mimetype", "size_in_bytes", "created_date", "used_in")
-    column_filters = ("owner_name", 'linked','mimetype','origin_domain','origin_url','alt')
+    column_list = ("owner_name", "path", "mimetype", "size_in_bytes", "x_size", "created_date", "used_in")
+    column_filters = ("owner_name", 'linked','mimetype','origin_domain','origin_url','alt','extension')
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)

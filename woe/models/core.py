@@ -477,11 +477,15 @@ class ForumPostParser(object):
                 filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
                 sizepath = os.path.join(os.getcwd(), "woe/static/uploads", 
                     ".".join(filepath.split(".")[:-1])+".custom_size."+size+"."+filepath.split(".")[-1])
-            
+                
                 if not os.path.exists(sizepath):
                     image = Image(filename=filepath)
                     xsize = image.width
                     ysize = image.height
+                    if attachment.x_size == 0:
+                        attachment.x_size = xsize
+                        attachment.y_size = ysize
+                        attachment.save()
                     resize_measure = min(float(size)/float(xsize),float(size)/float(ysize))
                     image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
                     if attachment.extension == "gif" and attachment.size_in_bytes > 1024*1024: # Larger than one megabyte.
