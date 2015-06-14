@@ -4,7 +4,7 @@ from woe import bcrypt
 from woe.utilities import ipb_password_check
 from wand.image import Image
 from urllib import quote
-import arrow, re, os
+import arrow, re, os, math
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 
 class Fingerprint(db.DynamicDocument):
@@ -464,15 +464,13 @@ class ForumPostParser(object):
             size = attachment_bbcode[1]
             if int(size) > 500:
                 size = "500"
-            print attachment_bbcode
-            print size
-            print attachment.x_size
             if int(size) == attachment.x_size:
                 url = os.path.join("/static/uploads", attachment.path)
+                show_box = "no"
                 
                 image_html = """
-                <img class="attachment-image" src="%s" width="%spx" height="%spx" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                """ % (quote(url), attachment.x_size, attachment.y_size, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                <img class="attachment-image" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                """ % (quote(url), attachment.x_size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
             else:
                 attachment_path = attachment.path
@@ -486,9 +484,16 @@ class ForumPostParser(object):
                     ysize = image.height
                     resize_measure = min(float(size)/float(xsize),float(size)/float(ysize))
                     image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
-                    image.save(filename=sizepath)
-                    new_x = image.width
-                    new_y = image.height
+                    if attachment.extension == "gif" and attachment.size_in_bytes > 1024*1024: # Larger than one megabyte.
+                        image.save(filename=sizepath.replace(".gif",".animated.gif"))
+                        first_frame = image.sequence[0].clone()
+                        first_frame.save(filename=sizepath)
+                        new_x = image.width
+                        new_y = image.height
+                    else:
+                        image.save(filename=sizepath)
+                        new_x = image.width
+                        new_y = image.height
                 else:
                     resize_measure = min(float(size)/float(attachment.x_size),float(size)/float(attachment.y_size))
                     new_x = int(round(attachment.x_size*resize_measure))
@@ -497,9 +502,14 @@ class ForumPostParser(object):
                 url = os.path.join("/static/uploads", 
                     ".".join(attachment_path.split(".")[:-1])+".custom_size."+size+"."+attachment_path.split(".")[-1])
                 
+                if abs(new_x - attachment.x_size) > 100 and new_x < attachment.x_size:
+                    show_box = "yes"
+                else:
+                    show_box = "no"
+                
                 image_html = """
-                <img class="attachment-image" src="%s" width="%spx" height="%spx" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                """ % (quote(url), new_x, new_y, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                <img class="attachment-image" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                """ % (quote(url), new_x, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
         
         return html
