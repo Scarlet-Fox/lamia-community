@@ -3,8 +3,8 @@ import MySQLdb.cursors
 from woe.models.core import User, Attachment
 from woe.models.forum import Post
 import mimetypes, arrow, re
+import hashlib
 import json
-import Wand 
 
 settings_file = json.loads(open("config.json").read())
 
@@ -28,6 +28,8 @@ for a in c.fetchall():
         attach.owner_name = attach.owner.login_name
     except IndexError:
         continue
+
+    attach.alt = a["attach_file"]
     attach.old_ipb_id = a["attach_id"]
     attach.x_size = int(a["attach_img_width"])
     attach.y_size = int(a["attach_img_height"])
@@ -46,5 +48,4 @@ for a in Attachment.objects():
         html = html.replace(result[0],"[attachment=%s:%s]" % (str(a.pk), a.x_size))
         
     post.update(html=html)
-    a.update(add_to_set__present_in=post)
     a.update(inc__used_in=1)

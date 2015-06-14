@@ -6,23 +6,11 @@ from flask.ext.admin import Admin
 from flask.ext.cache import Cache
 from os import path
 import json
-from celery import Celery
-
-def make_celery(app):
-    celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
-    celery.conf.update(app.config)
-    TaskBase = celery.Task
-    class ContextTask(TaskBase):
-        abstract = True
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-    celery.Task = ContextTask
-    return celery
 
 settings_file = json.loads(open("config.json").read())
 
 app = Flask(__name__)
+
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -66,13 +54,16 @@ def jsonify(*args, **kwargs):
 
 app.jsonify = jsonify
 
-import utilities
+# import tasks
+import models.core
+import models.forum
 import views.core
 import views.forum
 import views.dashboard
 import views.profiles
 import views.admin
 import views.private_messages
+import utilities
 
 if __name__ == '__main__':
     app.run()

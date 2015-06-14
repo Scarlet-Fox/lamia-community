@@ -1,7 +1,11 @@
 from woe import db
+from woe import app
 from woe import bcrypt
 from woe.utilities import ipb_password_check
-import arrow
+from wand.image import Image
+from urllib import quote
+import arrow, re, os
+attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 
 class Fingerprint(db.DynamicDocument):
     user = db.ReferenceField("User", required=True)
@@ -420,6 +424,82 @@ class Attachment(db.DynamicDocument):
     size_in_bytes = db.IntField(required=True)
     created_date = db.DateTimeField(required=True)
     owner = db.ReferenceField(User, required=True)
-    present_in = db.ListField(db.GenericReferenceField())
-    used_in = db.IntField(default=0)
+    used_in = db.IntField(default=1)
     old_ipb_id = db.IntField()
+    alt = db.StringField(default="")
+    
+    x_size = db.IntField()
+    y_size = db.IntField()
+    
+    file_hash = db.StringField()
+    linked = db.BooleanField(default=False)
+    origin_url = db.StringField()
+    origin_domain = db.StringField()
+    
+    meta = {
+        'indexes': [
+            'file_hash',
+            'origin_url',
+            'origin_domain',
+        ]
+    }
+    
+class ForumPostParser(object):
+    def __init__(self):
+        pass
+        
+    def parse(self, html):
+        # parse html
+        html = html.replace("[hr]", "<hr>")
+        
+        # parse attachment tags
+        attachment_bbcode_in_post = attachment_re.findall(html)
+        
+        for attachment_bbcode in attachment_bbcode_in_post:
+            try:
+                attachment = Attachment.objects(pk=attachment_bbcode[0])[0]
+            except:
+                pass
+                
+            size = attachment_bbcode[1]
+            if int(size) > 500:
+                size = "500"
+            print attachment_bbcode
+            print size
+            print attachment.x_size
+            if int(size) == attachment.x_size:
+                url = os.path.join("/static/uploads", attachment.path)
+                
+                image_html = """
+                <img src="%s" width="%spx" height="%spx" alt="%s"/>
+                """ % (quote(url), attachment.x_size, attachment.y_size, attachment.alt)
+                html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
+            else:
+                attachment_path = attachment.path
+                filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
+                sizepath = os.path.join(os.getcwd(), "woe/static/uploads", 
+                    ".".join(filepath.split(".")[:-1])+".custom_size."+size+"."+filepath.split(".")[-1])
+            
+                if not os.path.exists(sizepath):
+                    image = Image(filename=filepath)
+                    xsize = image.width
+                    ysize = image.height
+                    resize_measure = min(float(size)/float(xsize),float(size)/float(ysize))
+                    image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
+                    image.save(filename=sizepath)
+                    new_x = image.width
+                    new_y = image.height
+                else:
+                    resize_measure = min(float(size)/float(attachment.x_size),float(size)/float(attachment.y_size))
+                    new_x = int(round(attachment.x_size*resize_measure))
+                    new_y = int(round(attachment.y_size*resize_measure))
+            
+                url = os.path.join("/static/uploads", 
+                    ".".join(attachment_path.split(".")[:-1])+".custom_size."+size+"."+attachment_path.split(".")[-1])
+                
+                image_html = """
+                <img src="%s" width="%spx" height="%spx" alt="%s"/>
+                """ % (quote(url), new_x, new_y, attachment.alt)
+                html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
+        
+        return html

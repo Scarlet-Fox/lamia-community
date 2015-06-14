@@ -1,4 +1,4 @@
-from woe.models.core import User, DisplayNameHistory
+from woe.models.core import User, DisplayNameHistory, ForumPostParser
 from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
@@ -6,7 +6,7 @@ from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow
-from woe.utilities import ForumHTMLCleaner, ForumPostParser
+from woe.utilities import ForumHTMLCleaner
 
 @app.route('/member/<login_name>')
 def view_profile(login_name):

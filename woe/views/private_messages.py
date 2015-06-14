@@ -1,9 +1,9 @@
 from woe import app
-from woe.models.core import PrivateMessageTopic, PrivateMessageParticipant, User, PrivateMessage
+from woe.models.core import PrivateMessageTopic, PrivateMessageParticipant, User, PrivateMessage, ForumPostParser
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner
 
 @app.route('/messages/<pk>/edit-post', methods=['POST'])
 @login_required

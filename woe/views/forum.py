@@ -1,12 +1,12 @@
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, ForumPostParser
 from woe.models.forum import Category, Post, Topic, Prefix, get_topic_slug
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time, math
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumPostParser, ForumHTMLCleaner, parse_search_string_return_q
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
 
 @app.route('/category-list-api', methods=['GET'])
 @login_required
