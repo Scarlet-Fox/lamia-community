@@ -18,6 +18,7 @@
         this.toolbarHTML = bind(this.toolbarHTML, this);
         this.editordivHTML = bind(this.editordivHTML, this);
         this.submitButtonHTML = bind(this.submitButtonHTML, this);
+        this.dropzoneHTML = bind(this.dropzoneHTML, this);
         this.editReasonHTML = bind(this.editReasonHTML, this);
         this.setupEditor = bind(this.setupEditor, this);
         this.quillID = this.getQuillID();
@@ -47,6 +48,7 @@
         }
         this.element.html(this.editordivHTML());
         this.element.before(this.toolbarHTML);
+        this.element.after(this.dropzoneHTML);
         if (this.edit_reason) {
           this.element.after(this.editReasonHTML);
         }
@@ -64,6 +66,29 @@
         quill.setHTML(this.element.data("editor_initial_html"));
         this.element.data("_editor", this);
         this.element.data("editor", quill);
+        $("#dropzone-" + this.quillID).dropzone({
+          url: "/attach",
+          dictDefaultMessage: "Click here or drop a file in to upload (image files only).",
+          acceptedFiles: "image/jpeg,image/jpg,image/png,image/gif",
+          maxFilesize: 30,
+          init: function() {
+            return this.on("success", function(file, response) {
+              var last_character;
+              last_character = quill.getLength();
+              return quill.insertText(last_character, "\n[attachment=" + response.attachment + ":" + response.xsize + "]");
+            });
+          }
+        });
+        $("#upload-files-" + this.quillID).click((function(_this) {
+          return function(e) {
+            e.preventDefault();
+            if ($("#dropzone-" + _this.quillID).is(":visible")) {
+              return $("#dropzone-" + _this.quillID).hide();
+            } else {
+              return $("#dropzone-" + _this.quillID).show();
+            }
+          };
+        })(this));
         $("#save-text-" + this.quillID).click((function(_this) {
           return function(e) {
             e.preventDefault();
@@ -123,14 +148,18 @@
         return "<form class=\"form-inline\">\n  <div class=\"form-group\">\n    <label>Edit Reason: </label>\n    <input class=\"form-control\" id=\"edit-reason-" + this.quillID + "\" type=\"text\" initial=\"\"></input>\n  </div>\n</form>";
       };
 
+      InlineEditor.prototype.dropzoneHTML = function() {
+        return "<div id=\"dropzone-" + this.quillID + "\" class=\"dropzone\" style=\"display: none;\"></div>";
+      };
+
       InlineEditor.prototype.submitButtonHTML = function(cancel_button) {
         if (cancel_button == null) {
           cancel_button = false;
         }
         if (cancel_button === true) {
-          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"cancel-edit-" + this.quillID + "\">Cancel</button>\n</div>";
+          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"cancel-edit-" + this.quillID + "\">Cancel</button>\n</div>";
         } else {
-          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default save-button\" id=\"save-text-" + this.quillID + "\">Save</button>\n</div>";
+          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n</div>";
         }
       };
 

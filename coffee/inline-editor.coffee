@@ -21,6 +21,7 @@ $ ->
       @element.html(@editordivHTML())
       
       @element.before @toolbarHTML
+      @element.after @dropzoneHTML
       if @edit_reason
         @element.after @editReasonHTML
       @element.after @submitButtonHTML cancel_button
@@ -36,6 +37,23 @@ $ ->
       
       @element.data("_editor", this)
       @element.data("editor", quill)
+      
+      $("#dropzone-#{@quillID}").dropzone
+        url: "/attach"
+        dictDefaultMessage: "Click here or drop a file in to upload (image files only)."
+        acceptedFiles: "image/jpeg,image/jpg,image/png,image/gif"
+        maxFilesize: 30
+        init: () ->
+          this.on "success", (file, response) ->
+            last_character = quill.getLength()
+            quill.insertText last_character, "\n[attachment=#{response.attachment}:#{response.xsize}]"
+      
+      $("#upload-files-#{@quillID}").click (e) =>
+        e.preventDefault()
+        if $("#dropzone-#{@quillID}").is(":visible")
+          $("#dropzone-#{@quillID}").hide()
+        else
+          $("#dropzone-#{@quillID}").show()
       
       $("#save-text-#{@quillID}").click (e) =>
         e.preventDefault()
@@ -89,18 +107,25 @@ $ ->
         </form>
       """
     
+    dropzoneHTML: () =>
+      return """
+          <div id="dropzone-#{@quillID}" class="dropzone" style="display: none;"></div>
+      """
+    
     submitButtonHTML: (cancel_button=false) =>
       if cancel_button == true
         return """
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
             <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default post-post" id="upload-files-#{@quillID}">Upload Files</button>
             <button type="button" class="btn btn-default" id="cancel-edit-#{@quillID}">Cancel</button>
           </div>
         """
       else
         return """
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
-            <button type="button" class="btn btn-default save-button" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default post-post" id="upload-files-#{@quillID}">Upload Files</button>
           </div>
         """
     

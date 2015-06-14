@@ -1,6 +1,6 @@
 from woe import login_manager
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, ForumPostParser
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, ForumPostParser, Attachment
 from woe.models.forum import Category, Post, Topic
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
@@ -8,9 +8,9 @@ from flask import abort, redirect, url_for, request, render_template, make_respo
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
 from mongoengine.queryset import Q
-import arrow
-import json
-import re
+from wand.image import Image
+from werkzeug import secure_filename
+import arrow, mimetypes, json, os, hashlib, time
 
 @app.route('/pm-topic-list-api', methods=['GET'])
 @login_required
@@ -24,7 +24,44 @@ def pm_topic_list_api():
     topics = PrivateMessageTopic.objects(q_, participating_users=me)
     results = [{"text": unicode(t.title), "id": str(t.pk)} for t in topics]
     return app.jsonify(results=results)
-    
+  
+@app.route('/attach', methods=['POST',])
+@login_required
+def create_attachment():
+    file = request.files['file']
+    if file:
+        filename = secure_filename(file.filename)
+        image = Image(file=file)
+        img_bin = image.make_blob()
+        img_hash = hashlib.sha256(img_bin).hexdigest()
+        
+        try:
+            attach = Attachment.objects(file_hash=img_hash)[0]
+            return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
+        except:
+            pass                
+        
+        attach = Attachment()
+        attach.extension = filename.split(".")[-1]
+        attach.x_size = image.width
+        attach.y_size = image.height
+        attach.mimetype = mimetypes.guess_type(filename)[0]
+        attach.size_in_bytes = len(img_bin)
+        attach.owner_name = current_user._get_current_object().login_name
+        attach.owner = current_user._get_current_object()
+        attach.alt = filename
+        attach.used_in = 0
+        attach.created_date = arrow.utcnow().datetime
+        attach.file_hash = img_hash
+        attach.linked = False
+        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time.time())+"_"+str(current_user.pk)+filename)
+        attach.path = str(time.time())+"_"+str(current_user.pk)+filename
+        attach.save()
+        image.save(filename=upload_path)
+        return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
+    else:
+        return abort(404)
+          
 @app.route('/search', methods=['POST',])
 @login_required
 def search_lookup():

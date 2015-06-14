@@ -19,7 +19,7 @@ for a in c.fetchall():
     if attach.mimetype == None:
         continue
     attach.extension = a["attach_ext"].encode("latin1")
-    if attach.extension not in ["zip", "png", "gif", "jpg", "jpeg", "mp3"]:
+    if attach.extension not in ["png", "gif", "jpg", "jpeg"]:
         continue
     attach.size_in_bytes = a["attach_filesize"]
     attach.created_date = arrow.get(a["attach_date"]).replace(hours=-12).datetime
