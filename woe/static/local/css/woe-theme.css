@@ -187,6 +187,10 @@ background-color: rgb(248, 248, 248);}
   padding: 1px;
 }
 
+.click-to-play p {
+  font-style: italic;
+}
+
 #profile-name {
   font-size: 30px;
   font-weight: 500;

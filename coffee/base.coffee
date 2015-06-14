@@ -41,6 +41,10 @@ $ ->
     $(selector).delegate ".attachment-image", "click", (e) ->
       e.preventDefault()
       element = $(this)
+      if element.data("first_click") == "yes"
+        element.attr("original_src", element.attr("src"))
+        element.data("first_click", "no")
+      element.attr("src", element.attr("original_src"))
       if element.data("show_box") == "no"
         return false
       url = element.data("url")

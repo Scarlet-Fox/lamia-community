@@ -506,10 +506,19 @@ class ForumPostParser(object):
                     show_box = "yes"
                 else:
                     show_box = "no"
-                
-                image_html = """
-                <img class="attachment-image" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                """ % (quote(url), new_x, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                                    
+                if attachment.extension == "gif" and attachment.size_in_bytes > 1024*1024:
+                    new_size = os.path.getsize(sizepath.replace(".gif",".animated.gif"))
+                    image_html = """
+                    <div class="click-to-play">
+                        <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                        <p class="text-warning">This file is %sKB large, click to play.</p>
+                    </div>
+                    """ % (quote(url), new_x, show_box, attachment.alt, quote(attachment.path), int(float(new_size)/1024), int(float(new_size)/1024))
+                else:                
+                    image_html = """
+                    <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                    """ % (quote(url), new_x, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
         
         return html
