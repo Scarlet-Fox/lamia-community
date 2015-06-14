@@ -96,7 +96,7 @@ $ ->
       $(window).on "popstate", (e) ->
         setTimeout(() ->
           window.location = window.location
-        , 0)
+        , 500)
               
     paginationHTMLTemplate: () ->
       return """
@@ -223,7 +223,9 @@ $ ->
     refreshPosts: () ->
       new_post_html = ""
       $.post "/topic/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
-        history.pushState({id: "topic-page-#{@page}"}, '', "/topic/#{@slug}/page/#{@page}");
+        if window._initial_load
+          history.pushState({id: "topic-page-#{@page}"}, '', "/topic/#{@slug}/page/#{@page}");
+          window._initial_load = false
         first_post = ((@page-1)*@pagination)+1
         for post, i in data.posts
           post.count = first_post+i
@@ -255,6 +257,8 @@ $ ->
             window._initial_post = ""
           , 100
         else
-          $("#topic-breadcrumb")[0].scrollIntoView()
+          setTimeout () ->
+            $("#topic-breadcrumb")[0].scrollIntoView()
+          , 100
                 
   window.topic = new Topic($("#post-container").data("slug"))

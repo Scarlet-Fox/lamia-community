@@ -114,7 +114,7 @@
         $(window).on("popstate", function(e) {
           return setTimeout(function() {
             return window.location = window.location;
-          }, 0);
+          }, 500);
         });
       }
 
@@ -135,9 +135,12 @@
         }), (function(_this) {
           return function(data) {
             var first_post, i, j, k, l, len, m, n, pages, pagination_html, post, ref, ref1, ref2, ref3, ref4, ref5, ref6, results, results1, results2, results3;
-            history.pushState({
-              id: "topic-page-" + _this.page
-            }, '', "/topic/" + _this.slug + "/page/" + _this.page);
+            if (window._initial_load) {
+              history.pushState({
+                id: "topic-page-" + _this.page
+              }, '', "/topic/" + _this.slug + "/page/" + _this.page);
+              window._initial_load = false;
+            }
             first_post = ((_this.page - 1) * _this.pagination) + 1;
             ref = data.posts;
             for (i = j = 0, len = ref.length; j < len; i = ++j) {
@@ -189,7 +192,9 @@
                 return window._initial_post = "";
               }, 100);
             } else {
-              return $("#topic-breadcrumb")[0].scrollIntoView();
+              return setTimeout(function() {
+                return $("#topic-breadcrumb")[0].scrollIntoView();
+              }, 100);
             }
           };
         })(this));

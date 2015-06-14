@@ -35,6 +35,7 @@ script(src="/static/assets/quill/quill.js")
 script(src="/static/local/js/inline-editor.js")
 script(type="text/javascript")
   $(document).ready(function(){  
+    window._initial_load = true;
     {% if current_user.is_authenticated() == True %}
     window._pagination={{current_user.post_pagination}};
     window._is_topic_mod={{topic.is_topic_mod(current_user)}};
