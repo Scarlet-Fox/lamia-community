@@ -6,6 +6,19 @@ from flask.ext.admin import Admin
 from flask.ext.cache import Cache
 from os import path
 import json
+from celery import Celery
+
+def make_celery(app):
+    celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+    class ContextTask(TaskBase):
+        abstract = True
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+    celery.Task = ContextTask
+    return celery
 
 settings_file = json.loads(open("config.json").read())
 
@@ -45,7 +58,7 @@ class MongoJsonEncoder(json.JSONEncoder):
         elif isinstance(obj, ObjectId):
             return unicode(obj)
         return json.JSONEncoder.default(self, obj)
-
+app.MongoJsonEncoder = MongoJsonEncoder
 def jsonify(*args, **kwargs):
     """ jsonify with support for MongoDB ObjectId
     """

@@ -44,14 +44,11 @@ def change_avatar_or_title(login_name):
                     pass
             
             extension = "." + form.avatar.data.filename.split(".")[-1].lower()
-            if form.gif == True:
-                form.avatar.data.seek(0)
-                form.avatar.data.save(os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + extension))
-            else:
-                form.avatar_image.save(os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + extension))
+
+            form.avatar_image.save(filename=os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + extension))
             
-            form.fourty_image.save(os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + "_40" + extension))
-            form.sixty_image.save(os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + "_60" + extension))
+            form.fourty_image.save(filename=os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + "_40" + extension))
+            form.sixty_image.save(filename=os.path.join(app.config["AVATAR_UPLOAD_DIR"],timestamp + str(user.pk) + "_60" + extension))
             
             user.avatar_extension = extension
             user.avatar_timestamp = timestamp

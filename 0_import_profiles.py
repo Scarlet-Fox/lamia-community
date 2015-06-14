@@ -2,7 +2,7 @@ import MySQLdb
 import MySQLdb.cursors
 from woe.models.core import User
 import arrow, os, shutil
-from PIL import Image
+from wand.image import Image
 import phpserialize
 import HTMLParser
 import json
@@ -60,20 +60,19 @@ for u in c.fetchall():
     if os.path.isfile(old_avatar_location):
         extension = "." + u["pp_main_photo"].split(".")[-1]
         shutil.copyfile(old_avatar_location, os.path.join(new_avatar_dir,timestamp+str(m.pk)+extension))
-        image = Image.open(old_avatar_location)
-        xsize, ysize = image.size
+        image = Image(filename=old_avatar_location)
+        xsize = image.width
+        ysize = image.height
         
         resize_measure = min(40.0/float(xsize),40.0/float(ysize))
-        fourty_image = image.copy()
-        fourty_image.thumbnail([xsize*resize_measure,ysize*resize_measure]) 
-        fourty_image.save(os.path.join(new_avatar_dir,timestamp+str(m.pk)+"_40"+extension))
-        fourty_image.close()
+        fourty_image = image.clone()
+        fourty_image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure))) 
+        fourty_image.save(filename=os.path.join(new_avatar_dir,timestamp+str(m.pk)+"_40"+extension))
         
         resize_measure = min(60.0/float(xsize),60.0/float(ysize))
-        sixty_image = image.copy()
-        sixty_image.thumbnail([xsize*resize_measure,ysize*resize_measure]) 
-        sixty_image.save(os.path.join(new_avatar_dir,timestamp+str(m.pk)+"_60"+extension))
-        sixty_image.close()
+        sixty_image = image.clone()
+        sixty_image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure))) 
+        sixty_image.save(filename=os.path.join(new_avatar_dir,timestamp+str(m.pk)+"_60"+extension))
         
         m.avatar_extension = extension
         m.avatar_timestamp = timestamp
@@ -81,7 +80,6 @@ for u in c.fetchall():
         m.avatar_40_x, m.avatar_40_y = fourty_image.size
         m.avatar_60_x, m.avatar_60_y = sixty_image.size
 
-        image.close()
         m.save()
         
 for u in User.objects():

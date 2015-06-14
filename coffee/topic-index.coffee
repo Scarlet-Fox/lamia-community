@@ -223,9 +223,7 @@ $ ->
     refreshPosts: () ->
       new_post_html = ""
       $.post "/topic/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
-        if window._initial_load
-          history.pushState({id: "topic-page-#{@page}"}, '', "/topic/#{@slug}/page/#{@page}");
-          window._initial_load = false
+        history.pushState({id: "topic-page-#{@page}"}, '', "/topic/#{@slug}/page/#{@page}");
         first_post = ((@page-1)*@pagination)+1
         for post, i in data.posts
           post.count = first_post+i

@@ -3,6 +3,7 @@ import hashlib
 import arrow
 from woe import app
 from mongoengine.queryset import Q
+import re
 
 def parse_search_string_return_q(search_text, fields_to_search):
     if search_text.strip() == "":
@@ -132,7 +133,11 @@ class ForumPostParser(object):
         pass
         
     def parse(self, html):
+        # parse html
         html = html.replace("[hr]", "<hr>")
+        
+        # parse attachment tags
+        
         return html
 
 @app.template_filter('humanize_time')
