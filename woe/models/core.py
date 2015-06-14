@@ -471,8 +471,8 @@ class ForumPostParser(object):
                 url = os.path.join("/static/uploads", attachment.path)
                 
                 image_html = """
-                <img src="%s" width="%spx" height="%spx" alt="%s"/>
-                """ % (quote(url), attachment.x_size, attachment.y_size, attachment.alt)
+                <img class="attachment-image" src="%s" width="%spx" height="%spx" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                """ % (quote(url), attachment.x_size, attachment.y_size, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
             else:
                 attachment_path = attachment.path
@@ -498,8 +498,8 @@ class ForumPostParser(object):
                     ".".join(attachment_path.split(".")[:-1])+".custom_size."+size+"."+attachment_path.split(".")[-1])
                 
                 image_html = """
-                <img src="%s" width="%spx" height="%spx" alt="%s"/>
-                """ % (quote(url), new_x, new_y, attachment.alt)
+                <img class="attachment-image" src="%s" width="%spx" height="%spx" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                """ % (quote(url), new_x, new_y, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
         
         return html

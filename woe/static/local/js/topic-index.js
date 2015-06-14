@@ -116,6 +116,7 @@
             return window.location = window.location;
           }, 500);
         });
+        window.RegisterAttachmentContainer("#post-container");
       }
 
       Topic.prototype.paginationHTMLTemplate = function() {
