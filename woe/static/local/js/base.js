@@ -71,10 +71,12 @@
         var element, time;
         element = $(this);
         time = moment.unix(element.data("time")).format("MMMM Do YYYY @ h:mm:ss a");
-        if (element.data("link") != null) {
-          return element.prepend("<p>On " + time + ", <a href=\"\">" + (element.data("author")) + " said:</a></p>");
-        } else {
-          return element.prepend("<p>On " + time + ", " + (element.data("author")) + " said:</p>");
+        if (time !== "Invalid date") {
+          if (element.data("link") != null) {
+            return element.prepend("<p>On " + time + ", <a href=\"\">" + (element.data("author")) + " said:</a></p>");
+          } else {
+            return element.prepend("<p>On " + time + ", " + (element.data("author")) + " said:</p>");
+          }
         }
       });
     };

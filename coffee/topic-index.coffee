@@ -208,15 +208,15 @@ $ ->
                         <div class="btn-group" role="group" aria-label="...">
                           <button type="button" class="btn btn-default">Report</button>
                           <div class="btn-group">
-                            <button type="button" class="btn btn-default">Reply</button>
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <button type="button" class="btn btn-default">Quote</button>
+                            <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
                               <li><a href="">Quote</a></li>
                               <li><a href="">Multiquote</a></li>
-                            </ul>
+                            </ul> -->
                           </div>
                         {{/if}}
                           <div class="btn-group" style="">
