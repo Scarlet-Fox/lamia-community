@@ -100,7 +100,7 @@ $ ->
           <img src="{{user_avatar}}" width="{{user_avatar_x}}px" height="{{user_avatar_y}}px">
         </div>
         <div class="media-body">
-          <p><a href="#">{{user_name}}</a><span class="status-mod-controls"><a href="{{idx}}" class="inherit_colors hide-reply">(hide)</a></span>
+          <p><a href="">{{user_name}}</a><span class="status-mod-controls"><a href="{{idx}}" class="inherit_colors hide-reply">(hide)</a></span>
           <br>{{{text}}}
           <span class="status-reply-time">{{time}}</span></p>
         </div>

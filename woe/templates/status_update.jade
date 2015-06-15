@@ -40,7 +40,7 @@
           img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
         .media-body
           p
-            a(href="#") {{ status.author.display_name }}
+            a(href="") {{ status.author.display_name }}
             span &nbsp;says:
             span.status-time {{ status.created|humanize_time }} 
           p {{ status.message }}

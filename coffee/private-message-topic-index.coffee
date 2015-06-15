@@ -120,25 +120,25 @@ $ ->
       return """
           <ul class="pagination">
             <li>
-              <a href="#" aria-label="Start" id="go-to-start">
+              <a href="" aria-label="Start" id="go-to-start">
                 <span aria-hidden="true">Go to Start</span>
               </a>
             </li>
             <li>
-              <a href="#" aria-label="Previous" id="previous-page">
+              <a href="" aria-label="Previous" id="previous-page">
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
             {{#each pages}}
-            <li><a href="#" class="change-page page-link-{{this}}">{{this}}</a></li>
+            <li><a href="" class="change-page page-link-{{this}}">{{this}}</a></li>
             {{/each}}
             <li>
-              <a href="#" aria-label="Next" id="next-page">
+              <a href="" aria-label="Next" id="next-page">
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>
             <li>
-              <a href="#" aria-label="End" id="go-to-end">
+              <a href="" aria-label="End" id="go-to-end">
                 <span aria-hidden="true">Go to End</span>
               </a>
             </li>
@@ -198,7 +198,7 @@ $ ->
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                              <li><a href="#">Quote</a></li>
+                              <li><a href="">Quote</a></li>
                             </ul>
                           </div>
                         {{/if}}
@@ -210,7 +210,7 @@ $ ->
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                                  <li><a href="#" class="post-edit" data-pk="{{_id}}">Edit</a></li>
+                                  <li><a href="" class="post-edit" data-pk="{{_id}}">Edit</a></li>
                             </ul>
                             {{else}}
                               {{#if is_author}}
@@ -220,7 +220,7 @@ $ ->
                                   <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                  <li><a href="#" class="post-edit" data-pk="{{_id}}">Edit</a></li>
+                                  <li><a href="" class="post-edit" data-pk="{{_id}}">Edit</a></li>
                                 </ul>
                               {{/if}}
                             {{/if}}

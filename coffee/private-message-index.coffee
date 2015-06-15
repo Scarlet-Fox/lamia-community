@@ -38,15 +38,15 @@ $ ->
       return """
           <ul class="pagination">
             <li>
-              <a href="#" aria-label="Previous" id="previous-page">
+              <a href="" aria-label="Previous" id="previous-page">
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
             {{#each pages}}
-            <li><a href="#" class="change-page page-link-{{this}}">{{this}}</a></li>
+            <li><a href="" class="change-page page-link-{{this}}">{{this}}</a></li>
             {{/each}}
             <li>
-              <a href="#" aria-label="Next" id="next-page">
+              <a href="" aria-label="Next" id="next-page">
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>
@@ -72,7 +72,7 @@ $ ->
           </div>
           <div class="col-xs-3 hidden-xs hidden-sm">
             <span class="topic-listing-recent">
-              <a href="#" class="topic-listing-text">{{message_count}} replies</a>
+              <a href="" class="topic-listing-text">{{message_count}} replies</a>
             </span>
           </div>
           <div class="col-xs-6 col-sm-3 hidden-xs">
@@ -82,7 +82,7 @@ $ ->
             <span class="topic-listing-recent">
               <a href="/member/{{last_post_by_login_name}}" class="topic-listing-username">{{last_post_by}}</a>
               <br>
-              <a href="#" class="topic-listing-time">{{last_post_date}}</a>
+              <a href="" class="topic-listing-time">{{last_post_date}}</a>
             </span>
           </div>
         </div>

@@ -152,25 +152,25 @@ $ ->
     return """
         <ul class="pagination">
           <li>
-            <a href="#" aria-label="Start" id="go-to-start">
+            <a href="" aria-label="Start" id="go-to-start">
               <span aria-hidden="true">Go to Start</span>
             </a>
           </li>
           <li>
-            <a href="#" aria-label="Previous" id="previous-page">
+            <a href="" aria-label="Previous" id="previous-page">
               <span aria-hidden="true">&laquo;</span>
             </a>
           </li>
           {{#each pages}}
-          <li><a href="#" class="change-page page-link-{{this}}">{{this}}</a></li>
+          <li><a href="" class="change-page page-link-{{this}}">{{this}}</a></li>
           {{/each}}
           <li>
-            <a href="#" aria-label="Next" id="next-page">
+            <a href="" aria-label="Next" id="next-page">
               <span aria-hidden="true">&raquo;</span>
             </a>
           </li>
           <li>
-            <a href="#" aria-label="End" id="go-to-end">
+            <a href="" aria-label="End" id="go-to-end">
               <span aria-hidden="true">Go to End</span>
             </a>
           </li>
