@@ -501,6 +501,8 @@ class ForumPostParser(object):
                 pass
                 
             size = attachment_bbcode[1]
+            if int(size) < 5:
+                size = "5"
             if int(size) > 700:
                 size = "700"
             if int(size) == attachment.x_size:
