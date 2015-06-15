@@ -76,6 +76,9 @@ $ ->
         $("#img-click-modal").modal('hide')
         
   window.setupContent = () ->
+    $(".content-spoiler").before """
+      <a class="btn btn-info btn-xs toggle-spoiler">Toggle Spoiler</a>
+      """
     $(".toggle-spoiler").click (e) ->
       spoiler = $(this).next(".content-spoiler")
       if spoiler.is(":visible")

@@ -77,15 +77,15 @@ $ ->
             {{#if prefix}}
             {{{pre_html}}}{{{prefix}}}{{{post_html}}}
             {{/if}}
-            <a href="/topic/{{slug}}">{{title}}</a><br>
+            <a href="/t/{{slug}}">{{title}}</a><br>
             <span class="topic-author">
               Started by {{creator}}, {{created}}
             </span>
             <span class="topic-listing-jumps">
-              <span class="badge" style=""><a class="inherit_colors" href="/topic/{{slug}}/page/1">1</a></span>
+              <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/1">1</a></span>
               {{#if last_pages}}
               <span class="badge" style="">...</span>
-              <span class="badge" style=""><a class="inherit_colors" href="/topic/{{slug}}/page/{{last_page}}">{{last_page}}</a></span>
+              <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/{{last_page}}">{{last_page}}</a></span>
               {{/if}}
             </span>
           </div>

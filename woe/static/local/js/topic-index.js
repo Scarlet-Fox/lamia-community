@@ -40,7 +40,7 @@
         if (window._can_edit != null) {
           this.inline_editor = new InlineEditor("#new-post-box", "", false);
           this.inline_editor.onSave(function(html, text) {
-            return $.post("/topic/" + topic.slug + "/new-post", JSON.stringify({
+            return $.post("/t/" + topic.slug + "/new-post", JSON.stringify({
               post: html,
               text: text
             }), (function(_this) {
@@ -130,7 +130,7 @@
       Topic.prototype.refreshPosts = function() {
         var new_post_html;
         new_post_html = "";
-        return $.post("/topic/" + this.slug + "/posts", JSON.stringify({
+        return $.post("/t/" + this.slug + "/posts", JSON.stringify({
           page: this.page,
           pagination: this.pagination
         }), (function(_this) {
@@ -138,7 +138,7 @@
             var first_post, i, j, k, l, len, m, n, pages, pagination_html, post, ref, ref1, ref2, ref3, ref4, ref5, ref6, results, results1, results2, results3;
             history.pushState({
               id: "topic-page-" + _this.page
-            }, '', "/topic/" + _this.slug + "/page/" + _this.page);
+            }, '', "/t/" + _this.slug + "/page/" + _this.page);
             first_post = ((_this.page - 1) * _this.pagination) + 1;
             ref = data.posts;
             for (i = j = 0, len = ref.length; j < len; i = ++j) {
@@ -146,7 +146,7 @@
               post.count = first_post + i;
               post._is_topic_mod = _this.is_mod;
               post._is_logged_in = _this.is_logged_in;
-              post.direct_url = "/topic/" + _this.slug + "/page/" + _this.page + "/post/" + post._id;
+              post.direct_url = "/t/" + _this.slug + "/page/" + _this.page + "/post/" + post._id;
               new_post_html = new_post_html + _this.postHTML(post);
             }
             pages = [];

@@ -32,7 +32,7 @@ def topic_list_api():
     results = [{"text": unicode(t.title), "id": str(t.pk)} for t in topics]
     return app.jsonify(results=results)
     
-@app.route('/topic/<slug>/new-post', methods=['POST'])
+@app.route('/t/<slug>/new-post', methods=['POST'])
 @login_required
 def new_post_in_topic(slug):
     try:
@@ -103,7 +103,7 @@ def new_post_in_topic(slug):
     
     return app.jsonify(newest_post=parsed_post, count=post_count, success=True)    
 
-@app.route('/topic/<slug>/posts', methods=['POST'])
+@app.route('/t/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
     try:
         topic = Topic.objects(slug=slug)[0]
@@ -169,9 +169,21 @@ def topic_posts(slug):
         
     return app.jsonify(posts=parsed_posts, count=post_count)    
 
-@app.route('/topic/<slug>', methods=['GET'], defaults={'page': 1, 'post': ""})
-@app.route('/topic/<slug>/page/<page>', methods=['GET'], defaults={'post': ""})
-@app.route('/topic/<slug>/page/<page>/post/<post>', methods=['GET'])
+@app.route('/topic/<slug>/', methods=['GET'],)
+def legacy_topic_index(slug):
+    ipb_id = slug.split("-")[0]
+    try:
+        topic = Topic.objects(old_ipb_id=ipb_id)[0]
+    except IndexError:
+        print "not here"
+        return abort(404)
+    
+    print "/t/"+topic.slug
+    return redirect("/t/"+topic.slug)
+    
+@app.route('/t/<slug>', methods=['GET'], defaults={'page': 1, 'post': ""})
+@app.route('/t/<slug>/page/<page>', methods=['GET'], defaults={'post': ""})
+@app.route('/t/<slug>/page/<page>/post/<post>', methods=['GET'])
 def topic_index(slug, page, post):
     try:
         topic = Topic.objects(slug=slug)[0]
@@ -300,7 +312,7 @@ def new_topic(slug):
         new_post.save()
         new_topic.update(first_post=new_post)
         
-        return app.jsonify(url="/topic/"+new_topic.slug)
+        return app.jsonify(url="/t/"+new_topic.slug)
     else:
         try:
             category = Category.objects(slug=slug)[0]

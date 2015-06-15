@@ -147,7 +147,7 @@ def search_lookup():
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.topic.title
-            parsed_result["url"] = "/topic/"+str(result.topic.slug)+"/page/1/post/"+str(result.pk)
+            parsed_result["url"] = "/t/"+str(result.topic.slug)+"/page/1/post/"+str(result.pk)
             parsed_result["description"] = result.html
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
@@ -161,7 +161,7 @@ def search_lookup():
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.title
-            parsed_result["url"] = "/topic/"+result.slug
+            parsed_result["url"] = "/t/"+result.slug
             parsed_result["description"] = ""
             parsed_result["author_profile_link"] = result.creator.login_name
             parsed_result["author_name"] = result.creator.display_name

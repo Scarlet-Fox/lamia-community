@@ -54,6 +54,7 @@
       });
     };
     window.setupContent = function() {
+      $(".content-spoiler").before("<a class=\"btn btn-info btn-xs toggle-spoiler\">Toggle Spoiler</a>");
       $(".toggle-spoiler").click(function(e) {
         var spoiler;
         spoiler = $(this).next(".content-spoiler");

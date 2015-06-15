@@ -37,7 +37,7 @@ $ ->
         @inline_editor = new InlineEditor "#new-post-box", "", false
       
         @inline_editor.onSave (html, text) ->
-          $.post "/topic/#{topic.slug}/new-post", JSON.stringify({post: html, text: text}), (data) =>
+          $.post "/t/#{topic.slug}/new-post", JSON.stringify({post: html, text: text}), (data) =>
             if data.closed_topic?
               topic.inline_editor.flashError "Topic Closed: #{data.closed_message}"
                 
@@ -224,14 +224,14 @@ $ ->
       
     refreshPosts: () ->
       new_post_html = ""
-      $.post "/topic/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
-        history.pushState({id: "topic-page-#{@page}"}, '', "/topic/#{@slug}/page/#{@page}");
+      $.post "/t/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
+        history.pushState({id: "topic-page-#{@page}"}, '', "/t/#{@slug}/page/#{@page}");
         first_post = ((@page-1)*@pagination)+1
         for post, i in data.posts
           post.count = first_post+i
           post._is_topic_mod = @is_mod
           post._is_logged_in = @is_logged_in
-          post.direct_url = "/topic/#{@slug}/page/#{@page}/post/#{post._id}"
+          post.direct_url = "/t/#{@slug}/page/#{@page}/post/#{post._id}"
           new_post_html = new_post_html + @postHTML post
         
         pages = []
