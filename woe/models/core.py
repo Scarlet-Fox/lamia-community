@@ -460,8 +460,6 @@ class ForumPostParser(object):
             if end_spoiler_re.search(html):
                 html = html.replace("[spoiler]", """<div class="content-spoiler"><div> <!-- spoiler div -->""", 1)
                 html = html.replace("[/spoiler]", """</div></div> <!-- /spoiler div -->""", 1)
-                print html
-                print
         
         # parse attachment tags
         attachment_bbcode_in_post = attachment_re.findall(html)
