@@ -185,15 +185,16 @@
             $("#post-container").html(new_post_html);
             $(".page-link-" + _this.page).parent().addClass("active");
             if (window._initial_post !== "") {
-              return setTimeout(function() {
+              setTimeout(function() {
                 $("#post-" + window._initial_post)[0].scrollIntoView();
                 return window._initial_post = "";
               }, 100);
             } else {
-              return setTimeout(function() {
+              setTimeout(function() {
                 return $("#topic-breadcrumb")[0].scrollIntoView();
               }, 100);
             }
+            return window.setupContent();
           };
         })(this));
       };

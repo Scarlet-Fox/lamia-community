@@ -260,5 +260,6 @@ $ ->
           setTimeout () ->
             $("#topic-breadcrumb")[0].scrollIntoView()
           , 100
+        window.setupContent()
                 
   window.topic = new Topic($("#post-container").data("slug"))

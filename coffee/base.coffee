@@ -75,11 +75,24 @@ $ ->
         element.attr("src", element.attr("src").replace(".gif", ".animated.gif"))
         $("#img-click-modal").modal('hide')
         
-  $(".toggle-spoiler").click (e) ->
-    spoiler = $(this).next(".content-spoiler")
-    if spoiler.is(":visible")
-      spoiler.hide()
-    else
-      spoiler.show()
-    
-    
+  window.setupContent = () ->
+    $(".toggle-spoiler").click (e) ->
+      spoiler = $(this).next(".content-spoiler")
+      if spoiler.is(":visible")
+        spoiler.hide()
+      else
+        spoiler.show()
+      
+    $("blockquote").each () ->
+      element = $(this)
+      time = moment.unix(element.data("time")).format("MMMM Do YYYY @ h:mm:ss a")
+      if element.data("link")?
+        element.prepend """
+          <p>On #{time}, <a href="">#{element.data("author")} said:</a></p>
+          """    
+      else
+        element.prepend """
+          <p>On #{time}, #{element.data("author")} said:</p>
+          """    
+  
+  return
