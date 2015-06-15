@@ -166,7 +166,7 @@ $ ->
                   <span class="hidden-md hidden-lg">Posted {{created}}</span>
                 </div>
                 <div class="col-md-9 hidden-xs hidden-sm">
-                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}">\#{{count}}</a></span>
+                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="post-{{_id}}">\#{{count}}</a></span>
                   Posted {{created}}
                 </div>
               </div>
@@ -245,7 +245,7 @@ $ ->
           post.count = first_post+i
           post._is_topic_mod = @is_mod
           post._is_logged_in = @is_logged_in
-          post.direct_url = "/messages/#{@pk}/"
+          post.direct_url = "/messages/#{@pk}/page/#{@page}/post/#{post._id}"
           new_post_html = new_post_html + @postHTML post
         
         pages = []
@@ -261,9 +261,18 @@ $ ->
           pages = [1..Math.ceil data.count/@pagination]
         pagination_html = @paginationHTML {pages: pages}
         
-        $("#topic-breadcrumb")[0].scrollIntoView()
         $(".pagination-listing").html pagination_html
         $("#post-container").html new_post_html
         $(".page-link-#{@page}").parent().addClass("active")
+        
+        if window._initial_post != ""
+          setTimeout () ->
+            $("#post-#{window._initial_post}")[0].scrollIntoView()
+            window._initial_post = ""
+          , 100
+        else
+          setTimeout () ->
+            $("#topic-breadcrumb")[0].scrollIntoView()
+          , 100
                 
   window.topic = new Topic($("#post-container").data("pk"))

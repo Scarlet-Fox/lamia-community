@@ -2,7 +2,7 @@ from woe import app
 from woe.models.core import PrivateMessageTopic, PrivateMessageParticipant, User, PrivateMessage, ForumPostParser
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
-import arrow, time
+import arrow, time, math
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner
 
 @app.route('/messages/<pk>/edit-post', methods=['POST'])
@@ -162,9 +162,10 @@ def private_message_posts(pk):
         
     return app.jsonify(posts=parsed_posts, count=post_count)   
 
-@app.route('/messages/<pk>', methods=['GET'], defaults={'page': 1})
-@app.route('/messages/<pk>/page/<page>', methods=['GET'])
-def message_index(pk, page):
+@app.route('/messages/<pk>', methods=['GET'], defaults={'page': 1, 'post': ""})
+@app.route('/messages/<pk>/page/<page>', methods=['GET'], defaults={'post': ""})
+@app.route('/messages/<pk>/page/<page>/post/<post>', methods=['GET'])
+def message_index(pk, page, post):
     try:
         topic = PrivateMessageTopic.objects(pk=pk)[0]
     except IndexError:
@@ -177,7 +178,23 @@ def message_index(pk, page):
         page = int(page)
     except:
         page = 1
-
+        
+    if post != "":
+        try:
+            post = PrivateMessage.objects(topic=topic, pk=post)[0]
+        except:
+            return abort(404)
+    else:
+        post = ""
+    
+    pagination = 20
+    
+    if post != "":
+        target_date = post.created
+        posts_before_target = PrivateMessage.objects(topic=topic, created__lt=target_date).count()
+        page = int(math.floor(float(posts_before_target)/float(pagination)))+1
+        return render_template("core/messages_topic.jade", topic=topic, initial_page=page, initial_post=str(post.pk))
+        
     return render_template("core/messages_topic.jade", topic=topic, initial_page=page,)
 
 @app.route('/new-message', methods=['POST'])

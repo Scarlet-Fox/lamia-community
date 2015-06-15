@@ -66,6 +66,12 @@ script(type="text/javascript")
     
     window._initial_page={{initial_page}};
     
+    {% if initial_post == "" %}
+    window._initial_post="";
+    {% else %}
+    window._initial_post="{{initial_post}}";
+    {% endif %}
+    
     {% if current_user.is_authenticated() == True %}
     window._can_edit = true;
     window._current_user = "{{current_user.display_name}}";
