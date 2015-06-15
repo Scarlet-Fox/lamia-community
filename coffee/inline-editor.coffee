@@ -15,7 +15,6 @@ $ ->
       else
         @element.data("editor_initial_html", @element.html())
         @setupEditor cancel_button
-        
     
     setupEditor: (cancel_button=false) =>
       @element.html(@editordivHTML())
@@ -71,8 +70,14 @@ $ ->
     getQuillID: () ->
       return Quill.editors.length+1
     
+    setElementHtml: (set_html) ->
+      @element.data("given_editor_initial_html", set_html)
+    
     resetElementHtml: () ->
-      @element.html(@element.data("editor_initial_html"))
+      if @element.data("given_editor_initial_html")?
+        @element.html(@element.data("given_editor_initial_html"))
+      else
+        @element.html(@element.data("editor_initial_html"))
     
     onSave: (saveFunction) ->
       @saveFunction = saveFunction
@@ -95,6 +100,8 @@ $ ->
       do $("#inline-editor-buttons-#{@quillID}").remove
       do $("#toolbar-#{@quillID}").remove
       do $("#post-editor-#{@quillID}").remove
+      Dropone.forElement("#dropzone-#{@quillID}").destroy()
+      do $("#dropzone-#{@quillID}").remove
       do $("#edit-reason-#{@quillID}").parent().parent().remove
     
     editReasonHTML: () =>

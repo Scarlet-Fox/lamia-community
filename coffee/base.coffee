@@ -75,4 +75,11 @@ $ ->
         element.attr("src", element.attr("src").replace(".gif", ".animated.gif"))
         $("#img-click-modal").modal('hide')
         
-      
+  $(".toggle-spoiler").click (e) ->
+    spoiler = $(this).next(".content-spoiler")
+    if spoiler.is(":visible")
+      spoiler.hide()
+    else
+      spoiler.show()
+    
+    

@@ -5,7 +5,6 @@ from woe.utilities import ipb_password_check
 from wand.image import Image
 from urllib import quote
 import arrow, re, os, math
-attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 
 class Fingerprint(db.DynamicDocument):
     user = db.ReferenceField("User", required=True)
@@ -443,7 +442,10 @@ class Attachment(db.DynamicDocument):
             'origin_domain',
         ]
     }
-    
+
+attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
+spoiler_re = re.compile(r'\[spoiler\]')
+end_spoiler_re = re.compile(r'\[\/spoiler\]')
 class ForumPostParser(object):
     def __init__(self):
         pass
@@ -451,6 +453,15 @@ class ForumPostParser(object):
     def parse(self, html):
         # parse html
         html = html.replace("[hr]", "<hr>")
+
+        # parse spoilers
+        spoiler_bbcode_in_post = spoiler_re.findall(html)
+        for spoiler_bbcode in spoiler_bbcode_in_post:
+            if end_spoiler_re.search(html):
+                html = html.replace("[spoiler]", """<a class="btn btn-info btn-xs toggle-spoiler">Toggle Spoiler</a><div class="content-spoiler"><div> <!-- spoiler div -->""", 1)
+                html = html.replace("[/spoiler]", """</div></div> <!-- /spoiler div -->""", 1)
+                print html
+                print
         
         # parse attachment tags
         attachment_bbcode_in_post = attachment_re.findall(html)

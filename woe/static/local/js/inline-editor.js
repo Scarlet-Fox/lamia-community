@@ -115,8 +115,16 @@
         return Quill.editors.length + 1;
       };
 
+      InlineEditor.prototype.setElementHtml = function(set_html) {
+        return this.element.data("given_editor_initial_html", set_html);
+      };
+
       InlineEditor.prototype.resetElementHtml = function() {
-        return this.element.html(this.element.data("editor_initial_html"));
+        if (this.element.data("given_editor_initial_html") != null) {
+          return this.element.html(this.element.data("given_editor_initial_html"));
+        } else {
+          return this.element.html(this.element.data("editor_initial_html"));
+        }
       };
 
       InlineEditor.prototype.onSave = function(saveFunction) {
@@ -141,6 +149,8 @@
         $("#inline-editor-buttons-" + this.quillID).remove();
         $("#toolbar-" + this.quillID).remove();
         $("#post-editor-" + this.quillID).remove();
+        Dropone.forElement("#dropzone-" + this.quillID).destroy();
+        $("#dropzone-" + this.quillID).remove();
         return $("#edit-reason-" + this.quillID).parent().parent().remove();
       };
 
