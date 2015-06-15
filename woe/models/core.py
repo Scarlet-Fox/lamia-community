@@ -501,8 +501,8 @@ class ForumPostParser(object):
                 pass
                 
             size = attachment_bbcode[1]
-            if int(size) > 500:
-                size = "500"
+            if int(size) > 700:
+                size = "700"
             if int(size) == attachment.x_size:
                 url = os.path.join("/static/uploads", attachment.path)
                 show_box = "no"
