@@ -169,6 +169,7 @@
               history.pushState({
                 id: "pm-" + _this.pk + "-page-" + _this.page
               }, '', "/messages/" + _this.pk + "/page/" + _this.page);
+            } else {
               _this.first_load = false;
             }
             first_post = ((_this.page - 1) * _this.pagination) + 1;

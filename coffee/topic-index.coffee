@@ -259,6 +259,7 @@ $ ->
       $.post "/t/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
         if not @first_load
           history.pushState({id: "topic-page-#{@page}"}, '', "/t/#{@slug}/page/#{@page}")
+        else
           @first_load = false
         first_post = ((@page-1)*@pagination)+1
         for post, i in data.posts

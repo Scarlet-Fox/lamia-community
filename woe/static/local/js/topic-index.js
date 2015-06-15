@@ -180,6 +180,7 @@
               history.pushState({
                 id: "topic-page-" + _this.page
               }, '', "/t/" + _this.slug + "/page/" + _this.page);
+            } else {
               _this.first_load = false;
             }
             first_post = ((_this.page - 1) * _this.pagination) + 1;
