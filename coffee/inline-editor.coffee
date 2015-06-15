@@ -95,6 +95,10 @@ $ ->
           #{message}
         </div>"""
     
+    clearEditor: () ->
+      @element.data("editor").setText("")
+      Dropzone.forElement("#dropzone-#{@quillID}").removeAllFiles()
+    
     destroyEditor: () ->
       @element.data("editor_is_active", false)
       @element.parent().children(".alert").remove()

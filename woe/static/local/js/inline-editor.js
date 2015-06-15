@@ -144,6 +144,11 @@
         return this.element.parent().prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  " + message + "\n</div>");
       };
 
+      InlineEditor.prototype.clearEditor = function() {
+        this.element.data("editor").setText("");
+        return Dropzone.forElement("#dropzone-" + this.quillID).removeAllFiles();
+      };
+
       InlineEditor.prototype.destroyEditor = function() {
         this.element.data("editor_is_active", false);
         this.element.parent().children(".alert").remove();

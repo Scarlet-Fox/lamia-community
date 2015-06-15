@@ -55,6 +55,7 @@
                 }
                 data.newest_post.author_online = true;
                 if (data.success != null) {
+                  topic.inline_editor.clearEditor();
                   socket.emit("event", {
                     room: "topic--" + topic.slug,
                     post: data.newest_post,

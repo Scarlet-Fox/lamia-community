@@ -49,6 +49,7 @@
                   topic.inline_editor.flashError(data.error);
                 }
                 if (data.success != null) {
+                  topic.inline_editor.clearEditor();
                   socket.emit("event", {
                     room: "pm--" + topic.pk,
                     post: data.newest_post,
