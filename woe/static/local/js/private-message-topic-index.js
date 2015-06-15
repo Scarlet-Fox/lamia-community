@@ -76,24 +76,21 @@
           post_buttons.hide();
           inline_editor = new InlineEditor("#post-" + element.data("pk"), "/messages/" + topic.pk + "/edit-post/" + (element.data("pk")), true);
           inline_editor.onSave(function(html, text, edit_reason) {
-            console.log(edit_reason);
             return $.post("/messages/" + topic.pk + "/edit-post", JSON.stringify({
               pk: element.data("pk"),
               post: html,
               text: text
-            }), (function(_this) {
-              return function(data) {
-                if (data.error != null) {
-                  topic.inline_editor.flashError(data.error);
-                }
-                if (data.success != null) {
-                  inline_editor.destroyEditor();
-                  post_content.html(data.html);
-                  window.addExtraHTML(post_content);
-                  return post_buttons.show();
-                }
-              };
-            })(this));
+            }), function(data) {
+              if (data.error != null) {
+                inline_editor.flashError(data.error);
+              }
+              if (data.success != null) {
+                inline_editor.destroyEditor();
+                post_content.html(data.html);
+                window.addExtraHTML(post_content);
+                return post_buttons.show();
+              }
+            });
           });
           return inline_editor.onCancel(function(html, text) {
             inline_editor.destroyEditor();

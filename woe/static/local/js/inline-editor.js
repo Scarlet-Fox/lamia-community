@@ -47,11 +47,11 @@
           cancel_button = false;
         }
         this.element.html(this.editordivHTML());
+        if (this.edit_reason) {
+          this.element.before(this.editReasonHTML);
+        }
         this.element.before(this.toolbarHTML);
         this.element.after(this.dropzoneHTML);
-        if (this.edit_reason) {
-          this.element.after(this.editReasonHTML);
-        }
         this.element.after(this.submitButtonHTML(cancel_button));
         quill = new Quill("#post-editor-" + this.quillID, {
           modules: {
@@ -141,11 +141,12 @@
 
       InlineEditor.prototype.flashError = function(message) {
         this.element.parent().children(".alert").remove();
-        return $("#new-post-box").parent().prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  " + message + "\n</div>");
+        return this.element.parent().prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  " + message + "\n</div>");
       };
 
       InlineEditor.prototype.destroyEditor = function() {
         this.element.data("editor_is_active", false);
+        this.element.parent().children(".alert").remove();
         $("#inline-editor-buttons-" + this.quillID).remove();
         $("#toolbar-" + this.quillID).remove();
         $("#post-editor-" + this.quillID).remove();
@@ -155,7 +156,7 @@
       };
 
       InlineEditor.prototype.editReasonHTML = function() {
-        return "<div class=\"form-inline float-right\">\n  <div class=\"form-group\">\n    <label>Edit Reason: </label>\n    <input class=\"form-control\" id=\"edit-reason-" + this.quillID + "\" type=\"text\" initial=\"\"></input>\n  </div>\n</form>";
+        return "<div class=\"form-inline\">\n  <div class=\"form-group\">\n    <label>Edit Reason: </label>\n    <input class=\"form-control\" id=\"edit-reason-" + this.quillID + "\" type=\"text\" initial=\"\"></input>\n  </div>\n</form>\n<br><br>";
       };
 
       InlineEditor.prototype.dropzoneHTML = function() {

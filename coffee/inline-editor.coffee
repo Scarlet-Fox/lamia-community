@@ -18,11 +18,11 @@ $ ->
     
     setupEditor: (cancel_button=false) =>
       @element.html(@editordivHTML())
-      
+
+      if @edit_reason
+        @element.before @editReasonHTML
       @element.before @toolbarHTML
       @element.after @dropzoneHTML
-      if @edit_reason
-        @element.after @editReasonHTML
       @element.after @submitButtonHTML cancel_button
       
       quill = new Quill "#post-editor-#{@quillID}", 
@@ -90,13 +90,14 @@ $ ->
       
     flashError: (message) ->
       @element.parent().children(".alert").remove()
-      $("#new-post-box").parent().prepend """<div class="alert alert-danger alert-dismissible fade in" role="alert">
+      @element.parent().prepend """<div class="alert alert-danger alert-dismissible fade in" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
           #{message}
         </div>"""
     
     destroyEditor: () ->
       @element.data("editor_is_active", false)
+      @element.parent().children(".alert").remove()
       do $("#inline-editor-buttons-#{@quillID}").remove
       do $("#toolbar-#{@quillID}").remove
       do $("#post-editor-#{@quillID}").remove
@@ -106,12 +107,13 @@ $ ->
     
     editReasonHTML: () =>
       return """
-        <div class="form-inline float-right">
+        <div class="form-inline">
           <div class="form-group">
             <label>Edit Reason: </label>
             <input class="form-control" id="edit-reason-#{@quillID}" type="text" initial=""></input>
           </div>
         </form>
+        <br><br>
       """
     
     dropzoneHTML: () =>

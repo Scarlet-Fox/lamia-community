@@ -80,17 +80,18 @@
           post_content = $("#post-" + element.data("pk"));
           post_buttons = $("#post-buttons-" + element.data("pk"));
           post_buttons.hide();
-          inline_editor = new InlineEditor("#post-" + element.data("pk"), "/t/" + topic.slug + "/edit-post/" + (element.data("pk")), true);
+          inline_editor = new InlineEditor("#post-" + element.data("pk"), "/t/" + topic.slug + "/edit-post/" + (element.data("pk")), true, true);
           inline_editor.onSave(function(html, text, edit_reason) {
             console.log(edit_reason);
-            return $.post("/messages/" + topic.pk + "/edit-post", JSON.stringify({
+            return $.post("/t/" + topic.slug + "/edit-post", JSON.stringify({
               pk: element.data("pk"),
               post: html,
-              text: text
+              text: text,
+              edit_reason: edit_reason
             }), (function(_this) {
               return function(data) {
                 if (data.error != null) {
-                  topic.inline_editor.flashError(data.error);
+                  inline_editor.flashError(data.error);
                 }
                 if (data.success != null) {
                   inline_editor.destroyEditor();

@@ -65,10 +65,9 @@ $ ->
         inline_editor = new InlineEditor "#post-"+element.data("pk"), "/messages/#{topic.pk}/edit-post/#{element.data("pk")}", true
         
         inline_editor.onSave (html, text, edit_reason) ->
-          console.log edit_reason
-          $.post "/messages/#{topic.pk}/edit-post", JSON.stringify({pk: element.data("pk"), post: html, text: text}), (data) =>
+          $.post "/messages/#{topic.pk}/edit-post", JSON.stringify({pk: element.data("pk"), post: html, text: text}), (data) ->
             if data.error?
-              topic.inline_editor.flashError data.error
+              inline_editor.flashError data.error
             
             if data.success?
               inline_editor.destroyEditor()

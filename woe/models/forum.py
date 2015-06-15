@@ -11,6 +11,7 @@ class PostHistory(db.DynamicEmbeddedDocument):
     creator = db.ReferenceField(core.User, required=True)
     created = db.DateTimeField(required=True)
     html = db.StringField(required=True)
+    reason = db.StringField()
     data = db.DictField()
 
 class Post(db.DynamicDocument):

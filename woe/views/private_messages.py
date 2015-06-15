@@ -37,7 +37,10 @@ def edit_post_in_pm_topic(pk):
         message = PrivateMessage.objects(topic=topic, pk=request_json.get("pk"))[0]
     except IndexError:
         return abort(404)
-    
+        
+    if current_user._get_current_object() != message.author:
+        return abort(404)
+
     if request_json.get("text", "").strip() == "":
         return app.jsonify(error="Your post is empty.")
         
@@ -51,9 +54,7 @@ def edit_post_in_pm_topic(pk):
     message.modified = arrow.utcnow().datetime
     message.save()
     
-    clean_html_parser = ForumPostParser()
-    
-    
+    clean_html_parser = ForumPostParser()    
     return app.jsonify(html=clean_html_parser.parse(message.message), success=True)
 
 @app.route('/messages/<pk>/new-post', methods=['POST'])

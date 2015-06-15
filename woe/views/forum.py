@@ -1,6 +1,6 @@
 from woe import app
 from woe.models.core import User, DisplayNameHistory, StatusUpdate, ForumPostParser
-from woe.models.forum import Category, Post, Topic, Prefix, get_topic_slug
+from woe.models.forum import Category, Post, Topic, Prefix, get_topic_slug, PostHistory
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
@@ -180,7 +180,53 @@ def legacy_topic_index(slug):
     
     print "/t/"+topic.slug
     return redirect("/t/"+topic.slug)
+
+@app.route('/t/<slug>/edit-post', methods=['POST'])
+@login_required
+def edit_topic_post_html(slug):
+    try:
+        topic = Topic.objects(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+
+    request_json = request.get_json(force=True)
+
+    try:
+        post = Post.objects(topic=topic, pk=request_json.get("pk"), hidden=False)[0]
+    except:
+        return abort(404)
+        
+    if current_user._get_current_object() != post.author and (current_user._get_current_object().is_admin != True and current_user._get_current_object().is_mod != True):
+        return abort(404)
+        
+    if request_json.get("text", "").strip() == "":
+        return app.jsonify(error="Your post is empty.")
     
+    cleaner = ForumHTMLCleaner()
+    try:
+        post_html = cleaner.clean(request_json.get("post", ""))
+    except:
+        return abort(500)
+    
+    history = PostHistory()
+    history.creator = current_user._get_current_object()
+    history.created = arrow.utcnow().datetime
+    history.html = post.html
+    history.data = post.data
+    history.reason = request_json.get("edit_reason", "")
+    
+    if request_json.get("edit_reason", "").strip() == "":
+        return app.jsonify(error="Please include an edit reason.")
+    
+    post.history.append(history)
+    post.html = post_html
+    post.modified = arrow.utcnow().datetime
+    post.save()
+        
+    clean_html_parser = ForumPostParser()    
+    return app.jsonify(html=clean_html_parser.parse(post.html), success=True)
+
+
 @app.route('/t/<slug>/edit-post/<post>', methods=['GET'])
 @login_required
 def get_post_html_in_topic(slug, post):
