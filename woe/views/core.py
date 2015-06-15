@@ -345,7 +345,7 @@ def status_hide_reply(status, idx):
     except:
         return abort(404)
         
-    if current_user._get_current_object() != status.author:
+    if current_user._get_current_object() != status.author and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
         return abort(404)
     
     try:

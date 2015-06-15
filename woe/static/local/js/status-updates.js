@@ -106,7 +106,7 @@
       };
 
       Status.prototype.replyHTMLTemplate = function() {
-        return "{{#unless hidden}}\n<div class=\"status-reply\" id=\"reply-{{idx}}\" data-idx=\"{{idx}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"\">{{user_name}}</a><span class=\"status-mod-controls\"><a href=\"{{idx}}\" class=\"inherit_colors hide-reply\">(hide)</a></span>\n    <br>{{{text}}}\n    <span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>\n{{/unless}}";
+        return "{{#unless hidden}}\n<div class=\"status-reply\" id=\"reply-{{idx}}\" data-idx=\"{{idx}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"\">{{user_name}}</a><span class=\"status-mod-controls\">{{#if hide_enabled}}<a href=\"{{idx}}\" class=\"inherit_colors hide-reply\">(hide)</a>{{/if}}</span>\n    <br>{{{text}}}\n    <span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>\n{{/unless}}";
       };
 
       Status.prototype.confirmModelHTMLTemplate = function() {
@@ -125,6 +125,7 @@
             ref = response.replies;
             for (i = 0, len = ref.length; i < len; i++) {
               comment = ref[i];
+              comment.hide_enabled = true;
               $("#status-replies").append(_this.replyHTML(comment));
             }
             if (scrolldown) {
