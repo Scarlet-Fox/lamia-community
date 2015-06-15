@@ -518,7 +518,10 @@ class ForumPostParser(object):
                     ".".join(filepath.split(".")[:-1])+".custom_size."+size+"."+filepath.split(".")[-1])
                 
                 if not os.path.exists(sizepath):
-                    image = Image(filename=filepath)
+                    try:
+                        image = Image(filename=filepath)
+                    except:
+                        continue
                     xsize = image.width
                     ysize = image.height
                     if attachment.x_size == 0:
