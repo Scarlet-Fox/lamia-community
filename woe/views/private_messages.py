@@ -5,6 +5,21 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import arrow, time, math
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner
 
+@app.route('/messages/<pk>/edit-post/<post>', methods=['GET'])
+@login_required
+def get_post_html_in_pm_topic(pk, post):
+    try:
+        topic = PrivateMessageTopic.objects(pk=pk)[0]
+    except IndexError:
+        return abort(404)
+
+    try:
+        post = PrivateMessage.objects(topic=topic, pk=post)[0]
+    except:
+        return abort(404)
+        
+    return json.jsonify(content=post.message)
+
 @app.route('/messages/<pk>/edit-post', methods=['POST'])
 @login_required
 def edit_post_in_pm_topic(pk):

@@ -1,6 +1,7 @@
 $ ->
   class Topic
     constructor: (slug) ->
+      @first_load = true
       @slug = slug
       topic = @
       @page = window._initial_page
@@ -25,6 +26,7 @@ $ ->
             data.post._is_topic_mod = topic.is_mod
             data.post._is_logged_in = topic.is_logged_in
             $("#post-container").append topic.postHTML data.post
+            window.addExtraHTML $("#post-"+data.post._id)
           else
             topic.max_pages = Math.ceil data.count/topic.pagination
             topic.page = topic.max_pages
@@ -54,11 +56,40 @@ $ ->
                 
               if topic.page == topic.max_pages
                 $("#post-container").append topic.postHTML data.newest_post
+                window.addExtraHTML $("#post-"+data.newest_post._id)
               else
                 topic.max_pages = Math.ceil data.count/topic.pagination
                 topic.page = topic.max_pages
                 do topic.refreshPosts
-                   
+
+
+      $("#post-container").delegate ".post-edit", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        post_content = $("#post-"+element.data("pk"))
+        post_buttons = $("#post-buttons-"+element.data("pk"))
+        post_buttons.hide()
+        
+        inline_editor = new InlineEditor "#post-"+element.data("pk"), "/t/#{topic.slug}/edit-post/#{element.data("pk")}", true
+        
+        inline_editor.onSave (html, text, edit_reason) ->
+          console.log edit_reason
+          $.post "/messages/#{topic.pk}/edit-post", JSON.stringify({pk: element.data("pk"), post: html, text: text}), (data) =>
+            if data.error?
+              topic.inline_editor.flashError data.error
+            
+            if data.success?
+              inline_editor.destroyEditor()
+              post_content.html data.html
+              window.addExtraHTML post_content
+              post_buttons.show()
+        
+        inline_editor.onCancel (html, text) ->
+          inline_editor.destroyEditor()
+          inline_editor.resetElementHtml()
+          window.addExtraHTML $("#post-"+element.data("pk"))
+          post_buttons.show()
+
       $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -96,7 +127,7 @@ $ ->
       $(window).on "popstate", (e) ->
         setTimeout(() ->
           window.location = window.location
-        , 500)
+        , 0)
         
       window.RegisterAttachmentContainer "#post-container"
               
@@ -150,7 +181,7 @@ $ ->
                   <span class="hidden-md hidden-lg">Posted {{created}}</span>
                 </div>
                 <div class="col-md-9 hidden-xs hidden-sm">
-                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="post-{{_id}}">\#{{count}}</a></span>
+                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-{{_id}}">\#{{count}}</a></span>
                   Posted {{created}}
                 </div>
               </div>
@@ -170,7 +201,7 @@ $ ->
                     {{{html}}}
                   </div>
                   <br>
-                  <div class="row post-edit-likes-info">
+                  <div class="row post-edit-likes-info" id="post-buttons-{{_id}}">
                       <div class="col-md-8">
                         {{#if _is_logged_in}}
                         <div class="btn-group" role="group" aria-label="...">
@@ -195,7 +226,7 @@ $ ->
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                              <li><a href="">Edit</a></li>
+                              <li><a href="" class="post-edit" data-pk="{{_id}}">Edit</a></li>
                               <li><a href="">Hide</a></li>
                             </ul>
                             {{else}}
@@ -206,7 +237,7 @@ $ ->
                                   <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                  <li><a href="">Edit</a></li>
+                                  <li><a href="" class="post-edit" data-pk="{{_id}}">Edit</a></li>
                                 </ul>
                               {{/if}}
                             {{/if}}
@@ -225,7 +256,9 @@ $ ->
     refreshPosts: () ->
       new_post_html = ""
       $.post "/t/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
-        history.pushState({id: "topic-page-#{@page}"}, '', "/t/#{@slug}/page/#{@page}");
+        if not @first_load
+          history.pushState({id: "topic-page-#{@page}"}, '', "/t/#{@slug}/page/#{@page}")
+          @first_load = false
         first_post = ((@page-1)*@pagination)+1
         for post, i in data.posts
           post.count = first_post+i
@@ -253,11 +286,13 @@ $ ->
         
         if window._initial_post != ""
           setTimeout () ->
-            $("#post-#{window._initial_post}")[0].scrollIntoView()
+            $("#postlink-#{window._initial_post}")[0].scrollIntoView()
             window._initial_post = ""
           , 100
         else
-          $("#topic-breadcrumb")[0].scrollIntoView()
+          setTimeout () ->
+            $("#topic-breadcrumb")[0].scrollIntoView()
+          , 100
         window.setupContent()
                 
   window.topic = new Topic($("#post-container").data("slug"))

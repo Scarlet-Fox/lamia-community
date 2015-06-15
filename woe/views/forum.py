@@ -181,6 +181,21 @@ def legacy_topic_index(slug):
     print "/t/"+topic.slug
     return redirect("/t/"+topic.slug)
     
+@app.route('/t/<slug>/edit-post/<post>', methods=['GET'])
+@login_required
+def get_post_html_in_topic(slug, post):
+    try:
+        topic = Topic.objects(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+
+    try:
+        post = Post.objects(topic=topic, pk=post, hidden=False)[0]
+    except:
+        return abort(404)
+        
+    return json.jsonify(content=post.html)
+
 @app.route('/t/<slug>', methods=['GET'], defaults={'page': 1, 'post': ""})
 @app.route('/t/<slug>/page/<page>', methods=['GET'], defaults={'post': ""})
 @app.route('/t/<slug>/page/<page>/post/<post>', methods=['GET'])

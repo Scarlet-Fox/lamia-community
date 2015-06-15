@@ -1,6 +1,7 @@
 $ ->
   class Topic
     constructor: (pk) ->
+      @first_load = true
       @pk = pk
       topic = @
       @page = window._initial_page
@@ -23,6 +24,7 @@ $ ->
         if data.post?
           if topic.page == topic.max_pages
             $("#post-container").append topic.postHTML data.post
+            window.addExtraHTML $("#post-"+data.post._id)
           else
             topic.max_pages = Math.ceil data.count/topic.pagination
             topic.page = topic.max_pages
@@ -47,6 +49,7 @@ $ ->
                 
               if topic.page == topic.max_pages
                 $("#post-container").append topic.postHTML data.newest_post
+                window.addExtraHTML $("#post-"+data.newest_post._id)
               else
                 topic.max_pages = Math.ceil data.count/topic.pagination
                 topic.page = topic.max_pages
@@ -59,7 +62,7 @@ $ ->
         post_buttons = $("#post-buttons-"+element.data("pk"))
         post_buttons.hide()
         
-        inline_editor = new InlineEditor "#post-"+element.data("pk"), "", true
+        inline_editor = new InlineEditor "#post-"+element.data("pk"), "/messages/#{topic.pk}/edit-post/#{element.data("pk")}", true
         
         inline_editor.onSave (html, text, edit_reason) ->
           console.log edit_reason
@@ -70,11 +73,13 @@ $ ->
             if data.success?
               inline_editor.destroyEditor()
               post_content.html data.html
+              window.addExtraHTML post_content
               post_buttons.show()
         
         inline_editor.onCancel (html, text) ->
           inline_editor.destroyEditor()
           inline_editor.resetElementHtml()
+          window.addExtraHTML $("#post-"+element.data("pk"))
           post_buttons.show()
                    
       $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
@@ -166,7 +171,7 @@ $ ->
                   <span class="hidden-md hidden-lg">Posted {{created}}</span>
                 </div>
                 <div class="col-md-9 hidden-xs hidden-sm">
-                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="post-{{_id}}">\#{{count}}</a></span>
+                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-{{_id}}">\#{{count}}</a></span>
                   Posted {{created}}
                 </div>
               </div>
@@ -239,7 +244,9 @@ $ ->
     refreshPosts: () ->
       new_post_html = ""
       $.post "/messages/#{@pk}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
-        history.pushState({id: "pm-#{@pk}-page-#{@page}"}, '', "/messages/#{@pk}/page/#{@page}");
+        if not @first_load
+          history.pushState({id: "pm-#{@pk}-page-#{@page}"}, '', "/messages/#{@pk}/page/#{@page}")
+          @first_load = false
         first_post = ((@page-1)*@pagination)+1
         for post, i in data.posts
           post.count = first_post+i
@@ -267,12 +274,13 @@ $ ->
         
         if window._initial_post != ""
           setTimeout () ->
-            $("#post-#{window._initial_post}")[0].scrollIntoView()
+            $("#postlink-#{window._initial_post}")[0].scrollIntoView()
             window._initial_post = ""
           , 100
         else
           setTimeout () ->
             $("#topic-breadcrumb")[0].scrollIntoView()
           , 100
+        window.setupContent()
                 
   window.topic = new Topic($("#post-container").data("pk"))

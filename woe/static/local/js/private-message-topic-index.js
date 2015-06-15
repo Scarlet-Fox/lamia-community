@@ -5,6 +5,7 @@
     Topic = (function() {
       function Topic(pk) {
         var socket, topic;
+        this.first_load = true;
         this.pk = pk;
         topic = this;
         this.page = window._initial_page;
@@ -26,7 +27,8 @@
         socket.on("event", function(data) {
           if (data.post != null) {
             if (topic.page === topic.max_pages) {
-              return $("#post-container").append(topic.postHTML(data.post));
+              $("#post-container").append(topic.postHTML(data.post));
+              return window.addExtraHTML($("#post-" + data.post._id));
             } else {
               topic.max_pages = Math.ceil(data.count / topic.pagination);
               return topic.page = topic.max_pages;
@@ -53,7 +55,8 @@
                     count: data.count
                   });
                   if (topic.page === topic.max_pages) {
-                    return $("#post-container").append(topic.postHTML(data.newest_post));
+                    $("#post-container").append(topic.postHTML(data.newest_post));
+                    return window.addExtraHTML($("#post-" + data.newest_post._id));
                   } else {
                     topic.max_pages = Math.ceil(data.count / topic.pagination);
                     topic.page = topic.max_pages;
@@ -71,7 +74,7 @@
           post_content = $("#post-" + element.data("pk"));
           post_buttons = $("#post-buttons-" + element.data("pk"));
           post_buttons.hide();
-          inline_editor = new InlineEditor("#post-" + element.data("pk"), "", true);
+          inline_editor = new InlineEditor("#post-" + element.data("pk"), "/messages/" + topic.pk + "/edit-post/" + (element.data("pk")), true);
           inline_editor.onSave(function(html, text, edit_reason) {
             console.log(edit_reason);
             return $.post("/messages/" + topic.pk + "/edit-post", JSON.stringify({
@@ -86,6 +89,7 @@
                 if (data.success != null) {
                   inline_editor.destroyEditor();
                   post_content.html(data.html);
+                  window.addExtraHTML(post_content);
                   return post_buttons.show();
                 }
               };
@@ -94,6 +98,7 @@
           return inline_editor.onCancel(function(html, text) {
             inline_editor.destroyEditor();
             inline_editor.resetElementHtml();
+            window.addExtraHTML($("#post-" + element.data("pk")));
             return post_buttons.show();
           });
         });
@@ -150,7 +155,7 @@
       };
 
       Topic.prototype.postHTMLTemplate = function() {
-        return "<li class=\"list-group-item post-listing-info\">\n  <div class=\"row\">\n    <div class=\"col-xs-4 hidden-md hidden-lg\">\n      <img src=\"{{user_avatar_60}}\" width=\"{{user_avatar_x_60}}\" height=\"{{user_avatar_y_60}}\" class=\"avatar-mini\">\n    </div>\n    <div class=\"col-md-3 col-xs-8\">\n      {{#if author_online}}\n      <b><span class=\"glyphicon glyphicon-ok-sign\" aria-hidden=\"true\"></span> <a href=\"/member/{{author_login_name}}\">{{author_name}}</a></b>\n      {{else}}\n      <b><span class=\"glyphicon glyphicon-minus-sign\" aria-hidden=\"true\"></span> <a href=\"/member/{{author_login_name}}\" class=\"inherit_colors\">{{author_name}}</a></b>\n      {{/if}}\n      {{#unless author_group_name}}\n      <span style=\"color:#F88379;\"><strong>Members</strong></span><br>\n      {{else}}\n      {{group_pre_html}}{{author_group_name}}{{group_post_html}}\n      {{/unless}}\n      <span class=\"hidden-md hidden-lg\">Posted {{created}}</span>\n    </div>\n    <div class=\"col-md-9 hidden-xs hidden-sm\">\n      <span id=\"post-number-1\" class=\"post-number\" style=\"vertical-align: top;\"><a href=\"{{direct_url}}\" id=\"post-{{_id}}\">\#{{count}}</a></span>\n      Posted {{created}}\n    </div>\n  </div>\n</li>\n<li class=\"list-group-item post-listing-post\">\n  <div class=\"row\">\n    <div class=\"col-lg-3 col-md-4\" style=\"text-align: center;\">\n      <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}\" height=\"{{user_avatar_y}}\" class=\"post-member-avatar hidden-xs hidden-sm\">\n      <span class=\"hidden-xs hidden-sm\"><br><br>\n      <div class=\"post-member-self-title\">{{user_title}}</div>\n        <hr></span>\n      <div class=\"post-meta\">\n      </div>\n    </div>\n    <div class=\"col-lg-9 col-md-8 post-right\">\n      <div class=\".post-content\" id=\"post-{{_id}}\">\n        {{{html}}}\n      </div>\n      <br>\n      <div class=\"row post-edit-likes-info\" id=\"post-buttons-{{_id}}\">\n          <div class=\"col-md-8\">\n            {{#if _is_logged_in}}\n            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n              <button type=\"button\" class=\"btn btn-default\">Report</button>\n              <div class=\"btn-group\">\n                <button type=\"button\" class=\"btn btn-default\">Reply</button>\n                <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n                  <span class=\"caret\"></span>\n                  <span class=\"sr-only\">Toggle Dropdown</span>\n                </button>\n                <ul class=\"dropdown-menu\" role=\"menu\">\n                  <li><a href=\"\">Quote</a></li>\n                </ul>\n              </div>\n            {{/if}}\n              <div class=\"btn-group\" style=\"\">\n                {{#if _is_topic_mod}}\n                <button type=\"button\" class=\"btn btn-default\">Options</button>\n                <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n                  <span class=\"caret\"></span>\n                  <span class=\"sr-only\">Toggle Dropdown</span>\n                </button>\n                <ul class=\"dropdown-menu\" role=\"menu\">\n                      <li><a href=\"\" class=\"post-edit\" data-pk=\"{{_id}}\">Edit</a></li>\n                </ul>\n                {{else}}\n                  {{#if is_author}}\n                    <button type=\"button\" class=\"btn btn-default\">Options</button>\n                    <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n                      <span class=\"caret\"></span>\n                      <span class=\"sr-only\">Toggle Dropdown</span>\n                    </button>\n                    <ul class=\"dropdown-menu\" role=\"menu\">\n                      <li><a href=\"\" class=\"post-edit\" data-pk=\"{{_id}}\">Edit</a></li>\n                    </ul>\n                  {{/if}}\n                {{/if}}\n              </div>\n            </div>\n        </div>\n        <div class=\"col-md-4 post-likes\">\n        </div>\n      </div>\n      <hr>\n      <div class=\"post-signature\">\n      </div>\n    </div>";
+        return "<li class=\"list-group-item post-listing-info\">\n  <div class=\"row\">\n    <div class=\"col-xs-4 hidden-md hidden-lg\">\n      <img src=\"{{user_avatar_60}}\" width=\"{{user_avatar_x_60}}\" height=\"{{user_avatar_y_60}}\" class=\"avatar-mini\">\n    </div>\n    <div class=\"col-md-3 col-xs-8\">\n      {{#if author_online}}\n      <b><span class=\"glyphicon glyphicon-ok-sign\" aria-hidden=\"true\"></span> <a href=\"/member/{{author_login_name}}\">{{author_name}}</a></b>\n      {{else}}\n      <b><span class=\"glyphicon glyphicon-minus-sign\" aria-hidden=\"true\"></span> <a href=\"/member/{{author_login_name}}\" class=\"inherit_colors\">{{author_name}}</a></b>\n      {{/if}}\n      {{#unless author_group_name}}\n      <span style=\"color:#F88379;\"><strong>Members</strong></span><br>\n      {{else}}\n      {{group_pre_html}}{{author_group_name}}{{group_post_html}}\n      {{/unless}}\n      <span class=\"hidden-md hidden-lg\">Posted {{created}}</span>\n    </div>\n    <div class=\"col-md-9 hidden-xs hidden-sm\">\n      <span id=\"post-number-1\" class=\"post-number\" style=\"vertical-align: top;\"><a href=\"{{direct_url}}\" id=\"postlink-{{_id}}\">\#{{count}}</a></span>\n      Posted {{created}}\n    </div>\n  </div>\n</li>\n<li class=\"list-group-item post-listing-post\">\n  <div class=\"row\">\n    <div class=\"col-lg-3 col-md-4\" style=\"text-align: center;\">\n      <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}\" height=\"{{user_avatar_y}}\" class=\"post-member-avatar hidden-xs hidden-sm\">\n      <span class=\"hidden-xs hidden-sm\"><br><br>\n      <div class=\"post-member-self-title\">{{user_title}}</div>\n        <hr></span>\n      <div class=\"post-meta\">\n      </div>\n    </div>\n    <div class=\"col-lg-9 col-md-8 post-right\">\n      <div class=\".post-content\" id=\"post-{{_id}}\">\n        {{{html}}}\n      </div>\n      <br>\n      <div class=\"row post-edit-likes-info\" id=\"post-buttons-{{_id}}\">\n          <div class=\"col-md-8\">\n            {{#if _is_logged_in}}\n            <div class=\"btn-group\" role=\"group\" aria-label=\"...\">\n              <button type=\"button\" class=\"btn btn-default\">Report</button>\n              <div class=\"btn-group\">\n                <button type=\"button\" class=\"btn btn-default\">Reply</button>\n                <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n                  <span class=\"caret\"></span>\n                  <span class=\"sr-only\">Toggle Dropdown</span>\n                </button>\n                <ul class=\"dropdown-menu\" role=\"menu\">\n                  <li><a href=\"\">Quote</a></li>\n                </ul>\n              </div>\n            {{/if}}\n              <div class=\"btn-group\" style=\"\">\n                {{#if _is_topic_mod}}\n                <button type=\"button\" class=\"btn btn-default\">Options</button>\n                <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n                  <span class=\"caret\"></span>\n                  <span class=\"sr-only\">Toggle Dropdown</span>\n                </button>\n                <ul class=\"dropdown-menu\" role=\"menu\">\n                      <li><a href=\"\" class=\"post-edit\" data-pk=\"{{_id}}\">Edit</a></li>\n                </ul>\n                {{else}}\n                  {{#if is_author}}\n                    <button type=\"button\" class=\"btn btn-default\">Options</button>\n                    <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n                      <span class=\"caret\"></span>\n                      <span class=\"sr-only\">Toggle Dropdown</span>\n                    </button>\n                    <ul class=\"dropdown-menu\" role=\"menu\">\n                      <li><a href=\"\" class=\"post-edit\" data-pk=\"{{_id}}\">Edit</a></li>\n                    </ul>\n                  {{/if}}\n                {{/if}}\n              </div>\n            </div>\n        </div>\n        <div class=\"col-md-4 post-likes\">\n        </div>\n      </div>\n      <hr>\n      <div class=\"post-signature\">\n      </div>\n    </div>";
       };
 
       Topic.prototype.refreshPosts = function() {
@@ -162,9 +167,12 @@
         }), (function(_this) {
           return function(data) {
             var first_post, i, j, k, l, len, m, n, pages, pagination_html, post, ref, ref1, ref2, ref3, ref4, ref5, ref6, results, results1, results2, results3;
-            history.pushState({
-              id: "pm-" + _this.pk + "-page-" + _this.page
-            }, '', "/messages/" + _this.pk + "/page/" + _this.page);
+            if (!_this.first_load) {
+              history.pushState({
+                id: "pm-" + _this.pk + "-page-" + _this.page
+              }, '', "/messages/" + _this.pk + "/page/" + _this.page);
+              _this.first_load = false;
+            }
             first_post = ((_this.page - 1) * _this.pagination) + 1;
             ref = data.posts;
             for (i = j = 0, len = ref.length; j < len; i = ++j) {
@@ -211,15 +219,16 @@
             $("#post-container").html(new_post_html);
             $(".page-link-" + _this.page).parent().addClass("active");
             if (window._initial_post !== "") {
-              return setTimeout(function() {
-                $("#post-" + window._initial_post)[0].scrollIntoView();
+              setTimeout(function() {
+                $("#postlink-" + window._initial_post)[0].scrollIntoView();
                 return window._initial_post = "";
               }, 100);
             } else {
-              return setTimeout(function() {
+              setTimeout(function() {
                 return $("#topic-breadcrumb")[0].scrollIntoView();
               }, 100);
             }
+            return window.setupContent();
           };
         })(this));
       };

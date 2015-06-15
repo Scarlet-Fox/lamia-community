@@ -76,17 +76,21 @@ $ ->
         $("#img-click-modal").modal('hide')
         
   window.setupContent = () ->
-    $(".content-spoiler").before """
+    window.addExtraHTML("body")
+  
+  window.addExtraHTML = (selector) ->
+    $(selector).find(".content-spoiler").before """
       <a class="btn btn-info btn-xs toggle-spoiler">Toggle Spoiler</a>
       """
-    $(".toggle-spoiler").click (e) ->
+      
+    $(selector).find(".toggle-spoiler").click (e) ->
       spoiler = $(this).next(".content-spoiler")
       if spoiler.is(":visible")
         spoiler.hide()
       else
         spoiler.show()
       
-    $("blockquote").each () ->
+    $(selector).find("blockquote").each () ->
       element = $(this)
       time = moment.unix(element.data("time")).format("MMMM Do YYYY @ h:mm:ss a")
       if element.data("link")?

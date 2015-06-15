@@ -100,13 +100,13 @@ $ ->
       do $("#inline-editor-buttons-#{@quillID}").remove
       do $("#toolbar-#{@quillID}").remove
       do $("#post-editor-#{@quillID}").remove
-      Dropone.forElement("#dropzone-#{@quillID}").destroy()
+      Dropzone.forElement("#dropzone-#{@quillID}").destroy()
       do $("#dropzone-#{@quillID}").remove
       do $("#edit-reason-#{@quillID}").parent().parent().remove
     
     editReasonHTML: () =>
       return """
-        <form class="form-inline">
+        <div class="form-inline float-right">
           <div class="form-group">
             <label>Edit Reason: </label>
             <input class="form-control" id="edit-reason-#{@quillID}" type="text" initial=""></input>

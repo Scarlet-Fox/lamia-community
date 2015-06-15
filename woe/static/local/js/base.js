@@ -54,8 +54,11 @@
       });
     };
     window.setupContent = function() {
-      $(".content-spoiler").before("<a class=\"btn btn-info btn-xs toggle-spoiler\">Toggle Spoiler</a>");
-      $(".toggle-spoiler").click(function(e) {
+      return window.addExtraHTML("body");
+    };
+    window.addExtraHTML = function(selector) {
+      $(selector).find(".content-spoiler").before("<a class=\"btn btn-info btn-xs toggle-spoiler\">Toggle Spoiler</a>");
+      $(selector).find(".toggle-spoiler").click(function(e) {
         var spoiler;
         spoiler = $(this).next(".content-spoiler");
         if (spoiler.is(":visible")) {
@@ -64,7 +67,7 @@
           return spoiler.show();
         }
       });
-      return $("blockquote").each(function() {
+      return $(selector).find("blockquote").each(function() {
         var element, time;
         element = $(this);
         time = moment.unix(element.data("time")).format("MMMM Do YYYY @ h:mm:ss a");

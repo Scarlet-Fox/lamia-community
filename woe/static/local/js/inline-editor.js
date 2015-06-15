@@ -149,13 +149,13 @@
         $("#inline-editor-buttons-" + this.quillID).remove();
         $("#toolbar-" + this.quillID).remove();
         $("#post-editor-" + this.quillID).remove();
-        Dropone.forElement("#dropzone-" + this.quillID).destroy();
+        Dropzone.forElement("#dropzone-" + this.quillID).destroy();
         $("#dropzone-" + this.quillID).remove();
         return $("#edit-reason-" + this.quillID).parent().parent().remove();
       };
 
       InlineEditor.prototype.editReasonHTML = function() {
-        return "<form class=\"form-inline\">\n  <div class=\"form-group\">\n    <label>Edit Reason: </label>\n    <input class=\"form-control\" id=\"edit-reason-" + this.quillID + "\" type=\"text\" initial=\"\"></input>\n  </div>\n</form>";
+        return "<div class=\"form-inline float-right\">\n  <div class=\"form-group\">\n    <label>Edit Reason: </label>\n    <input class=\"form-control\" id=\"edit-reason-" + this.quillID + "\" type=\"text\" initial=\"\"></input>\n  </div>\n</form>";
       };
 
       InlineEditor.prototype.dropzoneHTML = function() {
