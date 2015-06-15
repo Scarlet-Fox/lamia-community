@@ -219,7 +219,7 @@ class User(db.DynamicDocument):
             else:
                 return False
         else:
-            return bcrypt.check_password_hash(self.password_hash, password)
+            return bcrypt.check_password_hash(self.password_hash.encode('utf-8'), password.encode('utf-8'))
         
     def get_avatar_url(self, size=""):
         if size != "":
