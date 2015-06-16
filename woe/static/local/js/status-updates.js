@@ -52,7 +52,8 @@
           };
         })(this));
         $("#status-reply").on("keyup", function(e) {
-          return status.updateCount($("#status-reply").val().length);
+          e.preventDefault();
+          return setTimeout(status.updateCount($("#status-reply").val().length), 0);
         });
       }
 
@@ -66,6 +67,7 @@
             } else {
               $(".status-reply-form").children(".alert").remove();
               $("#status-reply").val("");
+              $("#status-comment-count").html("");
               _this.socket.emit("event", {
                 room: "status--" + _this.id,
                 reply: data.newest_reply,

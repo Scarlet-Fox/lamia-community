@@ -42,7 +42,10 @@ $ ->
             $("#reply-"+reply_idx).remove()
       
       $("#status-reply").on "keyup", (e) ->
-        status.updateCount $("#status-reply").val().length
+        e.preventDefault()
+        setTimeout(
+          status.updateCount $("#status-reply").val().length
+        , 0)
       
     addReply: () ->
       $.post "/status/#{@id}/reply", JSON.stringify({reply: $("#status-reply").val()}), (data) =>
@@ -51,6 +54,7 @@ $ ->
         else
           $(".status-reply-form").children(".alert").remove()
           $("#status-reply").val("")
+          $("#status-comment-count").html ""
           @socket.emit "event", 
             room: "status--#{@id}"
             reply: data.newest_reply
