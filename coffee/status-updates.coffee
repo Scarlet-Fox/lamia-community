@@ -8,6 +8,16 @@ $ ->
       @confirmModelHTML = Handlebars.compile(@confirmModelHTMLTemplate())
       do @refreshView
       
+      $("#status-comment-count").html """
+        <br><br>
+        <div class="progress" style="width: 79%;">
+          <div class="progress-bar progress-bar-info" id="status-character-count-bar" role="progressbar" style="width: 0%">
+            <span id="status-character-count-text"></span>
+          </div>
+        </div>"""
+      @progress_bar = $("#status-character-count-bar")
+      @progress_text = $("#status-character-count-text")
+      
       @socket = io.connect('http://' + document.domain + ':3000' + '');
       
       @socket.on "connect", () =>
@@ -42,10 +52,7 @@ $ ->
             $("#reply-"+reply_idx).remove()
       
       $("#status-reply").on "keyup", (e) ->
-        e.preventDefault()
-        setTimeout(
-          status.updateCount $("#status-reply").val().length
-        , 0)
+        status.updateCount $("#status-reply").val().length
       
     addReply: () ->
       $.post "/status/#{@id}/reply", JSON.stringify({reply: $("#status-reply").val()}), (data) =>
@@ -54,13 +61,13 @@ $ ->
         else
           $(".status-reply-form").children(".alert").remove()
           $("#status-reply").val("")
-          $("#status-comment-count").html ""
           @socket.emit "event", 
             room: "status--#{@id}"
             reply: data.newest_reply
             count: data.count
           
           @updateReplyCount data.count
+          @updateCount 0
           $("#status-replies").append @replyHTML(data.newest_reply)
           $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
         
@@ -81,21 +88,15 @@ $ ->
       n = parseInt(c)
       c =  parseInt( n / @max_length * 100)
       
-      style = "progress-bar-info"
-      if c > 80
-        style = "progress-bar-danger"
-      else if c > 40
-        style = "progress-bar-warning"
+      # style = "progress-bar-info"
+      # if c > 80
+      #   style = "progress-bar-danger"
+      # else if c > 40
+      #   style = "progress-bar-warning"
+      
+      @progress_bar.css("width", c+"%")
+      @progress_text.text "#{n} / 250"
 
-      $("#status-comment-count").html """
-        <br><br>
-        <div class="progress" style="width: 79%;">
-          <div class="progress-bar #{style }" role="progressbar" aria-valuenow="#{c}" aria-valuemin="0" aria-valuemax="100" style="width: #{c}%;">
-            <span class="sr-only">#{c}%</span>
-            #{n} / #{@max_length}
-          </div>
-        </div>"""
-    
     replyHTMLTemplate: () ->
       return """
       {{#unless hidden}}

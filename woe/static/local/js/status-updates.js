@@ -11,6 +11,9 @@
         this.replyHTML = Handlebars.compile(this.replyHTMLTemplate());
         this.confirmModelHTML = Handlebars.compile(this.confirmModelHTMLTemplate());
         this.refreshView();
+        $("#status-comment-count").html("<br><br>\n<div class=\"progress\" style=\"width: 79%;\">\n  <div class=\"progress-bar progress-bar-info\" id=\"status-character-count-bar\" role=\"progressbar\" style=\"width: 0%\">\n    <span id=\"status-character-count-text\"></span>\n  </div>\n</div>");
+        this.progress_bar = $("#status-character-count-bar");
+        this.progress_text = $("#status-character-count-text");
         this.socket = io.connect('http://' + document.domain + ':3000' + '');
         this.socket.on("connect", (function(_this) {
           return function() {
@@ -52,8 +55,7 @@
           };
         })(this));
         $("#status-reply").on("keyup", function(e) {
-          e.preventDefault();
-          return setTimeout(status.updateCount($("#status-reply").val().length), 0);
+          return status.updateCount($("#status-reply").val().length);
         });
       }
 
@@ -67,13 +69,13 @@
             } else {
               $(".status-reply-form").children(".alert").remove();
               $("#status-reply").val("");
-              $("#status-comment-count").html("");
               _this.socket.emit("event", {
                 room: "status--" + _this.id,
                 reply: data.newest_reply,
                 count: data.count
               });
               _this.updateReplyCount(data.count);
+              _this.updateCount(0);
               $("#status-replies").append(_this.replyHTML(data.newest_reply));
               return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
             }
@@ -95,16 +97,11 @@
       };
 
       Status.prototype.updateCount = function(c) {
-        var n, style;
+        var n;
         n = parseInt(c);
         c = parseInt(n / this.max_length * 100);
-        style = "progress-bar-info";
-        if (c > 80) {
-          style = "progress-bar-danger";
-        } else if (c > 40) {
-          style = "progress-bar-warning";
-        }
-        return $("#status-comment-count").html("<br><br>\n<div class=\"progress\" style=\"width: 79%;\">\n  <div class=\"progress-bar " + style + "\" role=\"progressbar\" aria-valuenow=\"" + c + "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: " + c + "%;\">\n    <span class=\"sr-only\">" + c + "%</span>\n    " + n + " / " + this.max_length + "\n  </div>\n</div>");
+        this.progress_bar.css("width", c + "%");
+        return this.progress_text.text(n + " / 250");
       };
 
       Status.prototype.replyHTMLTemplate = function() {

@@ -48,7 +48,7 @@
       li.list-group-item.status-reply-form
         form.form-inline
           .form-group.status-reply-box
-            input.form-control#status-reply(type="text", maxlength="250")
+            input.form-control#status-reply(type="text", maxlength="250", autocomplete="off")
           button#submit-reply.btn.btn-default(type="submit") Reply
           &nbsp;
           span#status-comment-count
@@ -58,7 +58,7 @@
       li.list-group-item.section-header(style="font-size: 14px;") New Status Update
       li.list-group-item
         form.form-group.status-reply-box
-          input.form-control#status-new(type="text", maxlength="250")
+          input.form-control#status-new(type="text", maxlength="250", autocomplete="off")
           br
           button#new-status.btn.btn-default(type="submit") Create
     ul.list-group.category
