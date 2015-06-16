@@ -2,6 +2,7 @@ from lxml.html.clean import Cleaner
 import hashlib
 import arrow
 from woe import app
+import cgi
 from mongoengine.queryset import Q
 
 def parse_search_string_return_q(search_text, fields_to_search):
@@ -120,7 +121,8 @@ class ForumHTMLCleaner(object):
         )
         
     def clean(self, dirty_html):
-        html = self.cleaner.clean_html(dirty_html)
+        html = cgi.escape(dirty_html)
+        html = self.cleaner.clean_html(html)
         if html[0:5] == "<div>":
             html = html[5:]
         if html[-6:] == "</div>":
