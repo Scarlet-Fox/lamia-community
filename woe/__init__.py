@@ -1,3 +1,4 @@
+from werkzeug.contrib.fixers import ProxyFix
 from flask import Flask
 from flask.ext.mongoengine import MongoEngine, MongoEngineSessionInterface
 from flask.ext.bcrypt import Bcrypt
@@ -10,6 +11,7 @@ import json
 settings_file = json.loads(open("config.json").read())
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 login_manager = LoginManager()
