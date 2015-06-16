@@ -21,6 +21,7 @@
         this.dropzoneHTML = bind(this.dropzoneHTML, this);
         this.editReasonHTML = bind(this.editReasonHTML, this);
         this.setupEditor = bind(this.setupEditor, this);
+        Dropzone.autoDiscover = false;
         this.quillID = this.getQuillID();
         this.element = $(element);
         if (this.element.data("editor_is_active")) {

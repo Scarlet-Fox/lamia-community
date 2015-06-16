@@ -50,7 +50,7 @@ for u in c.fetchall():
         except:
             m.title = ""
     timestamp = str(arrow.utcnow().timestamp) + "_"
-    m.set_password(str(timestamp)+str(arrow.utcnow().timestamp),3)
+    m.set_password(str(timestamp)+str(arrow.utcnow().timestamp),12)
     m.validated = True
     m.save()
     

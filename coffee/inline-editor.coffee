@@ -1,6 +1,7 @@
 $ ->
   class InlineEditor
     constructor: (element, url = "", cancel_button=false, edit_reason=false) ->
+      Dropzone.autoDiscover = false
       @quillID = do @getQuillID  
       @element = $(element)
       if @element.data("editor_is_active")
