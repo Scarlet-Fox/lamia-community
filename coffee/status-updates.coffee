@@ -106,7 +106,7 @@ $ ->
         </div>
         <div class="media-body">
           <p><a href="">{{user_name}}</a><span class="status-mod-controls">{{#if hide_enabled}}<a href="{{idx}}" class="inherit_colors hide-reply">(hide)</a>{{/if}}</span>
-          <br>{{{text}}}
+          <p>{{{text}}}</p>
           <span class="status-reply-time">{{time}}</span></p>
         </div>
         <hr>

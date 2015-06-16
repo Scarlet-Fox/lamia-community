@@ -326,7 +326,7 @@ def create_new_status():
     
     cleaner = ForumHTMLCleaner()
     try:
-        _html = cleaner.clean(request_json.get("message", "").strip())
+        _html = cleaner.escape(request_json.get("message", "").strip())
     except:
         return abort(500)
         
@@ -471,7 +471,7 @@ def make_status_update_reply(status):
 
     cleaner = ForumHTMLCleaner()
     try:
-        _html = cleaner.clean(request_json.get("reply", ""))
+        _html = cleaner.escape(request_json.get("reply", ""))
     except:
         return abort(500)
         

@@ -120,8 +120,11 @@ class ForumHTMLCleaner(object):
             safe_attrs_only=False
         )
         
+    def escape(self, dirty_text):
+        text = cgi.escape(dirty_text)
+        return text    
+    
     def clean(self, dirty_html):
-        html = cgi.escape(dirty_html)
         html = self.cleaner.clean_html(html)
         if html[0:5] == "<div>":
             html = html[5:]
