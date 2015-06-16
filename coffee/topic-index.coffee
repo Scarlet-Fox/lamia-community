@@ -124,11 +124,18 @@ $ ->
         element = $(this)
         topic.page = 1
         do topic.refreshPosts
-        
+      
+      popped = ('state' in window.history)
+      initialURL = location.href
       $(window).on "popstate", (e) ->
+        initialPop = !popped && location.href == initialURL
+        popped = true
+        if initialPop
+          return
+        
         setTimeout(() ->
           window.location = window.location
-        , 0)
+        , 200)
         
       window.RegisterAttachmentContainer "#post-container"
               
