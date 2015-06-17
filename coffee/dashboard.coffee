@@ -25,6 +25,25 @@ $ ->
       
       do @buildDashboard
       
+      $("#dashboard-container").delegate ".ack_all", "click", (e) ->
+        e.preventDefault()
+        panel = $("#"+$(this).data("panel"))
+        $.post "/dashboard/ack_category", JSON.stringify({category: panel.attr("id")}), (data) ->
+          if data.success?
+            panel.remove()
+      
+      $("#dashboard-container").delegate ".ack_single", "click", (e) ->
+        e.preventDefault()
+        notification = $("#"+$(this).data("notification"))
+        panel_notifs = $("#notifs-"+$(this).data("panel"))
+        panel = $("#"+$(this).data("panel"))
+        $.post "/dashboard/ack_notification", JSON.stringify({notification: notification.attr("id")}), (data) ->
+          if data.success?
+            if panel_notifs.children().length < 2
+              panel.remove()
+            else
+              notification.remove()
+      
     addToPanel: (notification) ->
       category_element = $("#notifs-"+notification.category)
       if category_element.length == 0
@@ -43,8 +62,8 @@ $ ->
           
     notificationHTML: () ->
       return """
-      <li class="list-group-item" id="{{_pk}}" data-stamp="{{stamp}}">
-        <a href="{{url}}">{{text}}</a>
+      <li class="list-group-item" id="{{_id}}" data-stamp="{{stamp}}">
+        <a href="{{url}}">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
         <p class="text-muted"> by <a href="/members/{{member_name}}/">{{member_disp_name}}</a> - {{time}}</p>
       </li>
       """
@@ -58,7 +77,6 @@ $ ->
             <button class="close ack_all" data-panel="{{panel_id}}">&times;</button>
           </div>
           <ul class="list-group panel-body" id="notifs-{{panel_id}}">
-            
           </ul>
         </div>
       </div>

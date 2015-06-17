@@ -117,21 +117,15 @@ body(role='document')
             if current_user.is_authenticated()
               li.dropdown#dashboard-li
                 a.dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
-                  span.badge 4
-                ul.dropdown-menu(role='menu')
+                  span.badge {{current_user.get_notification_count()}}
+                ul.dropdown-menu#notification-dropdown(role='menu')
                   li
                     a(href='/dashboard') Dashboard
                   li.divider
-                  li
-                    a(href='#') Blah has quoted you.
-                  li
-                    a(href='#') Blah has quoted you.
-                  li
-                    a(href='#') Blah has quoted you.
-                  li
-                    a(href='#') Blah has quoted you.
-                  li
-                    a(href='#') Blah has quoted you.
+                  for notification in current_user.get_recent_notifications()
+                    li
+                      a.notification-link(href='{{notification.url}}', data-notification="{{notification.pk}}") {{notification.text}}
+                      
         // /.nav-collapse
       // /.container-fluid
     
@@ -149,6 +143,7 @@ body(role='document')
   if current_user.is_authenticated()
     script(type="text/javascript")
       $(document).ready(function(){
+        window.woeHash = "{{current_user.get_hash()}}";
         $(".href_span").click(function (e) {
           window.location = $(this).attr("href");
         });
@@ -156,12 +151,6 @@ body(role='document')
           e.preventDefault();
           $.post("/sign-out", function(data) {
             window.location = "/";
-          });
-        });
-        $(".post-link").click(function (e) {
-          e.preventDefault();
-          $.post($(this).attr("href"), function(data) {
-            window.location = data.url;
           });
         });
       });

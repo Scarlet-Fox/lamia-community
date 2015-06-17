@@ -58,6 +58,235 @@ class DisplayNameHistory(db.DynamicEmbeddedDocument):
 class ProfileField(db.DynamicEmbeddedDocument):
     field = db.StringField(required=True)
     value = db.StringField(required=True)
+        
+class PrivateMessage(db.DynamicDocument):
+    message = db.StringField(required=True)
+    author = db.ReferenceField("User", required=True)
+    author_name = db.StringField(required=True)
+    topic = db.ReferenceField("PrivateMessageTopic")
+    topic_name = db.StringField(required=True)
+    topic_creator_name = db.StringField(required=True)
+    created = db.DateTimeField(required=True)
+    modified = db.DateTimeField()
+    
+    meta = {
+        'ordering': ['created'],
+        'indexes': [
+            'topic',
+            'created',
+            {
+                'fields': ['$message',],
+                'default_language': 'english'
+            }
+        ]
+    }
+    
+
+class PrivateMessageParticipant(db.DynamicEmbeddedDocument):
+    user = db.ReferenceField("User", required=True)
+    left_pm = db.BooleanField(default=False)
+    blocked = db.BooleanField(default=False)
+    do_not_notify = db.BooleanField(default=False)
+    last_read = db.DateTimeField()
+
+class PrivateMessageTopic(db.DynamicDocument):
+    title = db.StringField(required=True)
+    creator = db.ReferenceField("User", required=True)
+    creator_name = db.StringField(required=True)
+    created = db.DateTimeField(required=True)
+    
+    last_reply_by = db.ReferenceField("User")
+    last_reply_name = db.StringField()
+    last_reply_time = db.DateTimeField()
+    
+    message_count = db.IntField(default=0)
+    participating_users = db.ListField(db.ReferenceField("User"))
+    blocked_users = db.ListField(db.ReferenceField("User"))
+    users_left_pm = db.ListField(db.ReferenceField("User"))
+    participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant))
+    participant_count = db.IntField(default=0)
+    
+    labels = db.ListField(db.StringField())
+    old_ipb_id = db.IntField()
+    
+    meta = {
+        'ordering': ['-last_reply_time'],
+        'indexes': [
+            'old_ipb_id',
+            '-last_reply_time',
+            {
+                'fields': ['$title',],
+                'default_language': 'english'
+            },
+            'participating_users',
+            'blocked_users',
+            'users_left_pm'
+        ]
+    }
+    
+class Notification(db.DynamicDocument):
+    user = db.ReferenceField("User", required=True)
+    user_name = db.StringField(required=True)
+    text = db.StringField(required=True)
+    description = db.StringField()
+    NOTIFICATION_CATEGORIES = (
+        ("topic", "Topics"),
+        ("pm", "Private Messages"),
+        ("mention", "Mentioned"),
+        ("topic_reply", "Topic Replies"),
+        ("boop", "Boops"),
+        ("mod", "Moderation"),
+        ("status", "Status Updates"),
+        ("new_member", "New Members"),
+        ("announcement", "Announcements"),
+        ("profile_comment","Profile Comments"),
+        ("rules_updated", "Rule Update"),
+        ("faqs", "FAQs Updated"),
+        ("user_activity", "Followed User Activity"),
+        ("streaming", "Streaming"),
+        ("other", "Other")
+    )
+    category = db.StringField(choices=NOTIFICATION_CATEGORIES, required=True)
+    created = db.DateTimeField(required=True)
+    url = db.StringField(required=True)
+    content = db.GenericReferenceField()
+    author = db.ReferenceField("User", required=True)
+    author_name = db.StringField(required=True)
+    acknowledged = db.BooleanField(default=False)
+    emailed = db.BooleanField(default=False)
+    priority = db.IntField(default=0)
+    
+    meta = {
+        'ordering': ['-created'],
+        'indexes': [
+            '-created',
+            'user',
+            'author',
+            'acknowledged',
+            'priority',
+            'category'
+        ]
+    }
+
+class ReportComment(db.DynamicDocument):
+    author = db.ReferenceField("User", required=True)
+    created = db.DateTimeField(required=True)
+    text = db.StringField(required=True)
+
+class Report(db.DynamicDocument):
+    content = db.GenericReferenceField(required=True)
+    text = db.StringField(required=True)
+    initiated_by = db.ReferenceField("User", required=True)
+    STATUS_CHOICES = ( 
+        ('closed', 'Closed'), 
+        ('open', 'Open'), 
+        ('feedback', 'Feedback Requested'), 
+        ('waiting', 'Waiting') 
+    )
+    status = db.StringField(choices=STATUS_CHOICES, default='open')
+    created = db.DateTimeField(required=True)
+    
+class Log(db.DynamicDocument):
+    content = db.GenericReferenceField()
+    user = db.ReferenceField("User", required=True)
+    ip_address = db.ReferenceField(IPAddress, required=True)
+    fingerprint = db.ReferenceField(Fingerprint, required=True)
+    action = db.StringField(required=True)
+    url = db.StringField(required=True)
+    data = db.DictField()
+    logged_at_time = db.DateTimeField(required=True)
+
+class StatusViewer(db.DynamicEmbeddedDocument):
+    last_seen = db.DateTimeField(required=True)
+    user = db.ReferenceField("User", required=True)
+    
+class StatusComment(db.DynamicEmbeddedDocument):
+    text = db.StringField(required=True)
+    author = db.ReferenceField("User", required=True)
+    created = db.DateTimeField(required=True)
+    hidden = db.BooleanField(default=False)
+
+class StatusUpdate(db.DynamicDocument):
+    attached_to_user = db.ReferenceField("User")
+    attached_to_user_name = db.StringField(default="")
+    author = db.ReferenceField("User", required=True)
+    author_name = db.StringField(default="")
+    message = db.StringField(required=True)
+    comments = db.ListField(db.EmbeddedDocumentField(StatusComment))
+    
+    # Fake-Realtime stuff
+    viewing = db.ListField(db.EmbeddedDocumentField(StatusViewer))
+    
+    # Notification stuff
+    participants = db.ListField(db.ReferenceField("User"))
+    ignoring = db.ListField(db.ReferenceField("User"))
+    blocked = db.ListField(db.ReferenceField("User"))
+    
+    # Mod stuff
+    hidden = db.BooleanField(default=False)
+    locked = db.BooleanField(default=False)
+    muted = db.BooleanField(default=False)
+    
+    # Tracking
+    view_count = db.IntField(default=0)
+    viewers = db.IntField(default=0)
+    participant_count = db.IntField(default=0)
+    created = db.DateTimeField()
+    last_replied = db.DateTimeField()
+    last_viewed = db.DateTimeField()
+    replies = db.IntField(default=0)
+    hot_score = db.IntField(default=0) # Replies - Age (basically)
+    
+    old_ipb_id = db.IntField()
+    
+    meta = {
+        'ordering': ['-created'],
+        'indexes': [
+            'old_ipb_id',
+            '-created',
+            'author',
+            'attached_to_user',
+            {
+                'fields': ['$**',],
+                'default_language': 'english'
+            }
+        ]
+    }
+    
+    def get_comment_count(self):
+        count = 0
+        for c in self.comments:
+            if not c.hidden:
+                count += 1
+        return count
+
+class Attachment(db.DynamicDocument):
+    owner_name = db.StringField(required=True)
+    path = db.StringField(required=True)
+    mimetype = db.StringField(required=True)
+    extension = db.StringField(required=True)
+    size_in_bytes = db.IntField(required=True)
+    created_date = db.DateTimeField(required=True)
+    owner = db.ReferenceField("User", required=True)
+    used_in = db.IntField(default=1)
+    old_ipb_id = db.IntField()
+    alt = db.StringField(default="")
+    
+    x_size = db.IntField()
+    y_size = db.IntField()
+    
+    file_hash = db.StringField()
+    linked = db.BooleanField(default=False)
+    origin_url = db.StringField()
+    origin_domain = db.StringField()
+    
+    meta = {
+        'indexes': [
+            'file_hash',
+            'origin_url',
+            'origin_domain',
+        ]
+    }
 
 class User(db.DynamicDocument):
     data = db.DictField(default={})
@@ -188,6 +417,9 @@ class User(db.DynamicDocument):
     
     def __unicode__(self):
         return self.login_name
+        
+    def get_hash(self):
+        return self.password_hash[-40:]
     
     def is_active(self):
         if self.banned:
@@ -198,6 +430,12 @@ class User(db.DynamicDocument):
         
     def get_id(self):
         return self.login_name
+        
+    def get_notification_count(self):
+        return Notification.objects(user=self, acknowledged=False).count()
+        
+    def get_recent_notifications(self, count=5):
+        return Notification.objects(user=self, acknowledged=False)[:count]
         
     def is_authenticated(self):
         return True # Will only ever return True.
@@ -230,235 +468,6 @@ class User(db.DynamicDocument):
             return ""
         else:
             return "/static/avatars/"+str(self.avatar_timestamp)+str(self.pk)+size+self.avatar_extension
-        
-class PrivateMessage(db.DynamicDocument):
-    message = db.StringField(required=True)
-    author = db.ReferenceField(User, required=True)
-    author_name = db.StringField(required=True)
-    topic = db.ReferenceField("PrivateMessageTopic")
-    topic_name = db.StringField(required=True)
-    topic_creator_name = db.StringField(required=True)
-    created = db.DateTimeField(required=True)
-    modified = db.DateTimeField()
-    
-    meta = {
-        'ordering': ['created'],
-        'indexes': [
-            'topic',
-            'created',
-            {
-                'fields': ['$message',],
-                'default_language': 'english'
-            }
-        ]
-    }
-    
-
-class PrivateMessageParticipant(db.DynamicEmbeddedDocument):
-    user = db.ReferenceField(User, required=True)
-    left_pm = db.BooleanField(default=False)
-    blocked = db.BooleanField(default=False)
-    do_not_notify = db.BooleanField(default=False)
-    last_read = db.DateTimeField()
-
-class PrivateMessageTopic(db.DynamicDocument):
-    title = db.StringField(required=True)
-    creator = db.ReferenceField(User, required=True)
-    creator_name = db.StringField(required=True)
-    created = db.DateTimeField(required=True)
-    
-    last_reply_by = db.ReferenceField(User)
-    last_reply_name = db.StringField()
-    last_reply_time = db.DateTimeField()
-    
-    message_count = db.IntField(default=0)
-    participating_users = db.ListField(db.ReferenceField(User))
-    blocked_users = db.ListField(db.ReferenceField(User))
-    users_left_pm = db.ListField(db.ReferenceField(User))
-    participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant))
-    participant_count = db.IntField(default=0)
-    
-    labels = db.ListField(db.StringField())
-    old_ipb_id = db.IntField()
-    
-    meta = {
-        'ordering': ['-last_reply_time'],
-        'indexes': [
-            'old_ipb_id',
-            '-last_reply_time',
-            {
-                'fields': ['$title',],
-                'default_language': 'english'
-            },
-            'participating_users',
-            'blocked_users',
-            'users_left_pm'
-        ]
-    }
-    
-class Notification(db.DynamicDocument):
-    user = db.ReferenceField(User, required=True)
-    user_name = db.StringField(required=True)
-    text = db.StringField(required=True)
-    description = db.StringField()
-    NOTIFICATION_CATEGORIES = (
-        ("topic", "Topics"),
-        ("pm", "Private Messages"),
-        ("mention", "Mentioned"),
-        ("topic_reply", "Topic Replies"),
-        ("boop", "Boops"),
-        ("mod", "Moderation"),
-        ("status", "Status Updates"),
-        ("new_member", "New Members"),
-        ("announcement", "Announcements"),
-        ("profile_comment","Profile Comments"),
-        ("rules_updated", "Rule Update"),
-        ("faqs", "FAQs Updated"),
-        ("user_activity", "Followed User Activity"),
-        ("streaming", "Streaming"),
-        ("other", "Other")
-    )
-    category = db.StringField(choices=NOTIFICATION_CATEGORIES, required=True)
-    created = db.DateTimeField(required=True)
-    url = db.StringField(required=True)
-    content = db.GenericReferenceField()
-    author = db.ReferenceField(User, required=True)
-    author_name = db.StringField(required=True)
-    acknowledged = db.BooleanField(default=False)
-    emailed = db.BooleanField(default=False)
-    priority = db.IntField(default=0)
-    
-    meta = {
-        'ordering': ['-created'],
-        'indexes': [
-            '-created',
-            'user',
-            'author',
-            'acknowledged',
-            'priority',
-            'category'
-        ]
-    }
-
-class ReportComment(db.DynamicDocument):
-    author = db.ReferenceField(User, required=True)
-    created = db.DateTimeField(required=True)
-    text = db.StringField(required=True)
-
-class Report(db.DynamicDocument):
-    content = db.GenericReferenceField(required=True)
-    text = db.StringField(required=True)
-    initiated_by = db.ReferenceField(User, required=True)
-    STATUS_CHOICES = ( 
-        ('closed', 'Closed'), 
-        ('open', 'Open'), 
-        ('feedback', 'Feedback Requested'), 
-        ('waiting', 'Waiting') 
-    )
-    status = db.StringField(choices=STATUS_CHOICES, default='open')
-    created = db.DateTimeField(required=True)
-    
-class Log(db.DynamicDocument):
-    content = db.GenericReferenceField()
-    user = db.ReferenceField(User, required=True)
-    ip_address = db.ReferenceField(IPAddress, required=True)
-    fingerprint = db.ReferenceField(Fingerprint, required=True)
-    action = db.StringField(required=True)
-    url = db.StringField(required=True)
-    data = db.DictField()
-    logged_at_time = db.DateTimeField(required=True)
-
-class StatusViewer(db.DynamicEmbeddedDocument):
-    last_seen = db.DateTimeField(required=True)
-    user = db.ReferenceField(User, required=True)
-    
-class StatusComment(db.DynamicEmbeddedDocument):
-    text = db.StringField(required=True)
-    author = db.ReferenceField(User, required=True)
-    created = db.DateTimeField(required=True)
-    hidden = db.BooleanField(default=False)
-
-class StatusUpdate(db.DynamicDocument):
-    attached_to_user = db.ReferenceField(User)
-    attached_to_user_name = db.StringField(default="")
-    author = db.ReferenceField(User, required=True)
-    author_name = db.StringField(default="")
-    message = db.StringField(required=True)
-    comments = db.ListField(db.EmbeddedDocumentField(StatusComment))
-    
-    # Fake-Realtime stuff
-    viewing = db.ListField(db.EmbeddedDocumentField(StatusViewer))
-    
-    # Notification stuff
-    participants = db.ListField(db.ReferenceField(User))
-    ignoring = db.ListField(db.ReferenceField(User))
-    blocked = db.ListField(db.ReferenceField(User))
-    
-    # Mod stuff
-    hidden = db.BooleanField(default=False)
-    locked = db.BooleanField(default=False)
-    muted = db.BooleanField(default=False)
-    
-    # Tracking
-    view_count = db.IntField(default=0)
-    viewers = db.IntField(default=0)
-    participant_count = db.IntField(default=0)
-    created = db.DateTimeField()
-    last_replied = db.DateTimeField()
-    last_viewed = db.DateTimeField()
-    replies = db.IntField(default=0)
-    hot_score = db.IntField(default=0) # Replies - Age (basically)
-    
-    old_ipb_id = db.IntField()
-    
-    meta = {
-        'ordering': ['-created'],
-        'indexes': [
-            'old_ipb_id',
-            '-created',
-            'author',
-            'attached_to_user',
-            {
-                'fields': ['$**',],
-                'default_language': 'english'
-            }
-        ]
-    }
-    
-    def get_comment_count(self):
-        count = 0
-        for c in self.comments:
-            if not c.hidden:
-                count += 1
-        return count
-
-class Attachment(db.DynamicDocument):
-    owner_name = db.StringField(required=True)
-    path = db.StringField(required=True)
-    mimetype = db.StringField(required=True)
-    extension = db.StringField(required=True)
-    size_in_bytes = db.IntField(required=True)
-    created_date = db.DateTimeField(required=True)
-    owner = db.ReferenceField(User, required=True)
-    used_in = db.IntField(default=1)
-    old_ipb_id = db.IntField()
-    alt = db.StringField(default="")
-    
-    x_size = db.IntField()
-    y_size = db.IntField()
-    
-    file_hash = db.StringField()
-    linked = db.BooleanField(default=False)
-    origin_url = db.StringField()
-    origin_domain = db.StringField()
-    
-    meta = {
-        'indexes': [
-            'file_hash',
-            'origin_url',
-            'origin_domain',
-        ]
-    }
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\]')

@@ -302,7 +302,7 @@ def create_message():
         to=topic.participating_users,
         category="pm", 
         url="/messages/"+str(topic.pk),
-        title=topic.title,
+        title="New Message: "+topic.title,
         description=message.message, 
         content=topic, 
         author=message.author

@@ -26,6 +26,36 @@
           other: "Other"
         };
         this.buildDashboard();
+        $("#dashboard-container").delegate(".ack_all", "click", function(e) {
+          var panel;
+          e.preventDefault();
+          panel = $("#" + $(this).data("panel"));
+          return $.post("/dashboard/ack_category", JSON.stringify({
+            category: panel.attr("id")
+          }), function(data) {
+            if (data.success != null) {
+              return panel.remove();
+            }
+          });
+        });
+        $("#dashboard-container").delegate(".ack_single", "click", function(e) {
+          var notification, panel, panel_notifs;
+          e.preventDefault();
+          notification = $("#" + $(this).data("notification"));
+          panel_notifs = $("#notifs-" + $(this).data("panel"));
+          panel = $("#" + $(this).data("panel"));
+          return $.post("/dashboard/ack_notification", JSON.stringify({
+            notification: notification.attr("id")
+          }), function(data) {
+            if (data.success != null) {
+              if (panel_notifs.children().length < 2) {
+                return panel.remove();
+              } else {
+                return notification.remove();
+              }
+            }
+          });
+        });
       }
 
       Dashboard.prototype.addToPanel = function(notification) {
@@ -58,11 +88,11 @@
       };
 
       Dashboard.prototype.notificationHTML = function() {
-        return "<li class=\"list-group-item\" id=\"{{_pk}}\" data-stamp=\"{{stamp}}\">\n  <a href=\"{{url}}\">{{text}}</a>\n  <p class=\"text-muted\"> by <a href=\"/members/{{member_name}}/\">{{member_disp_name}}</a> - {{time}}</p>\n</li>";
+        return "<li class=\"list-group-item\" id=\"{{_id}}\" data-stamp=\"{{stamp}}\">\n  <a href=\"{{url}}\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n  <p class=\"text-muted\"> by <a href=\"/members/{{member_name}}/\">{{member_disp_name}}</a> - {{time}}</p>\n</li>";
       };
 
       Dashboard.prototype.panelHTML = function() {
-        return "<div class=\"col-sm-6 col-md-4 dashboard-panel\" id=\"{{panel_id}}\">\n  <div class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n      <span>{{panel_title}}</span>\n      <button class=\"close ack_all\" data-panel=\"{{panel_id}}\">&times;</button>\n    </div>\n    <ul class=\"list-group panel-body\" id=\"notifs-{{panel_id}}\">\n      \n    </ul>\n  </div>\n</div>";
+        return "<div class=\"col-sm-6 col-md-4 dashboard-panel\" id=\"{{panel_id}}\">\n  <div class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n      <span>{{panel_title}}</span>\n      <button class=\"close ack_all\" data-panel=\"{{panel_id}}\">&times;</button>\n    </div>\n    <ul class=\"list-group panel-body\" id=\"notifs-{{panel_id}}\">\n    </ul>\n  </div>\n</div>";
       };
 
       return Dashboard;

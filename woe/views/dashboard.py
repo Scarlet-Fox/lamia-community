@@ -46,6 +46,25 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             new_notification.content = content
         new_notification.save()
 
+@app.route('/dashboard/ack_category', methods=["POST",])
+@login_required
+def acknowledge_category():
+    request_json = request.get_json(force=True)
+    notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False, category=request_json.get("category",""))
+    notifications.update(acknowledged=True)
+    return app.jsonify(success=True)
+
+@app.route('/dashboard/ack_notification', methods=["POST",])
+@login_required
+def acknowledge_notification():
+    request_json = request.get_json(force=True)
+    try:
+        notification = Notification.objects(pk=request_json.get("notification",""))[0]
+    except:
+        return app.jsonify(success=False)
+    notification.update(acknowledged=True)
+    return app.jsonify(success=True)
+
 @app.route('/dashboard/notifications', methods=["POST",])
 @login_required
 def dashboard_notifications():

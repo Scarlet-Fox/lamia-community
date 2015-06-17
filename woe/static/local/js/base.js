@@ -53,6 +53,22 @@
         }
       });
     };
+    $(".post-link").click(function(e) {
+      e.preventDefault();
+      return $.post($(this).attr("href"), function(data) {
+        return window.location = data.url;
+      });
+    });
+    $("#notification-dropdown").delegate(".notification-link", "click", function(e) {
+      e.preventDefault();
+      return $.post("/dashboard/ack_notification", JSON.stringify({
+        notification: $(this).data("notification")
+      }), (function(_this) {
+        return function(data) {
+          return window.location = $(_this).attr("href");
+        };
+      })(this));
+    });
     window.setupContent = function() {
       return window.addExtraHTML("body");
     };

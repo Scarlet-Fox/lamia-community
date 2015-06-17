@@ -74,7 +74,18 @@ $ ->
         element = $("#img-click-modal").data("original_element")
         element.attr("src", element.attr("src").replace(".gif", ".animated.gif"))
         $("#img-click-modal").modal('hide')
-        
+  
+
+  $(".post-link").click (e) ->
+    e.preventDefault()
+    $.post $(this).attr("href"), (data) ->
+      window.location = data.url
+
+  $("#notification-dropdown").delegate ".notification-link", "click", (e) ->
+    e.preventDefault()
+    $.post "/dashboard/ack_notification", JSON.stringify({notification: $(this).data("notification")}), (data) =>
+      window.location = $(this).attr("href")
+
   window.setupContent = () ->
     window.addExtraHTML("body")
   

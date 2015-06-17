@@ -15,7 +15,10 @@ def view_profile(login_name):
     except IndexError:
         abort(404)
     parser = ForumPostParser()
-    user.about_me = parser.parse(user.about_me)
+    try:
+        user.about_me = parser.parse(user.about_me)
+    except:
+        user.about_me = ""
     return render_template("profile.jade", profile=user)
     
 @app.route('/member/<login_name>/change-avatar-title', methods=['GET', 'POST'])
