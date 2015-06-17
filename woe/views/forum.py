@@ -7,6 +7,7 @@ from flask import abort, redirect, url_for, request, render_template, make_respo
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time, math
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
+from woe.views.dashboard import broadcast
 
 @app.route('/category-list-api', methods=['GET'])
 @login_required
@@ -100,6 +101,23 @@ def new_post_in_topic(slug):
     parsed_post["group_post_html"] = new_post.author.group_post_html
     
     post_count = Post.objects(hidden=False, topic=topic).count()
+    
+    notify_users = []
+    for u in topic.watchers:
+        if u == new_post.author:
+            continue
+            
+        notify_users.append(u)
+    
+    broadcast(
+        to=notify_users,
+        category="topic", 
+        url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
+        title="%s has replied to %s." % (new_post.author.display_name, topic.title),
+        description=new_post.html, 
+        content=topic, 
+        author=new_post.author
+        )
     
     return app.jsonify(newest_post=parsed_post, count=post_count, success=True)    
 
@@ -372,6 +390,21 @@ def new_topic(slug):
         new_post.created = arrow.utcnow().datetime
         new_post.save()
         new_topic.update(first_post=new_post)
+    
+        send_notify_to_users = []
+        for user in new_post.author.followed_by:
+            if user not in new_post.author.ignored_users:
+                send_notify_to_users.append(user)
+
+        broadcast(
+          to=send_notify_to_users,
+          category="user_activity", 
+          url="/t/"+unicode(new_topic.slug),
+          title="%s created a new topic. %s." % (new_post.author.display_name, new_topic.title),
+          description=new_post.html, 
+          content=new_topic, 
+          author=new_post.author
+          )
         
         return app.jsonify(url="/t/"+new_topic.slug)
     else:

@@ -127,7 +127,7 @@ def new_message_in_pm_topic(pk):
         url="/messages/%s/page/1/post/%s" % (str(topic.pk), str(message.pk)),
         title="%s has replied to %s." % (message.author.display_name, topic.title),
         description=message.message, 
-        content=message, 
+        content=topic, 
         author=message.author
         )
     
