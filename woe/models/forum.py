@@ -126,6 +126,7 @@ class Topic(db.DynamicDocument):
         'indexes': [
             'old_ipb_id',
             '-created',
+            '-sticky',
             'created',
             'category',
             'slug',
