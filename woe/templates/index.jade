@@ -52,10 +52,7 @@
           span.discuss 
             a(href="/status/{{status.pk}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
           br
-          if status.old_ipb_id
-            p.status-message {{ status.message }}
-          else
-            span.status-message {{ status.message }}
+          p.status-message {{ status.message }}
           span.status-reply-time 
             a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
       {% endfor %}

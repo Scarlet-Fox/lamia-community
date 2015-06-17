@@ -654,8 +654,36 @@ def register():
         new_user.joined = arrow.utcnow().datetime
         new_user.save()
         
-        # Todo : Notify Admin Users
-        
+        broadcast(
+            to=User.objects(banned=False, login_name__ne=new_user.login_name, last_seen__gte=arrow.utcnow().replace(hours=-24).datetime),
+            category="new_member", 
+            url="/member/"+unicode(new_user.login_name),
+            title="%s has joined the forum! Greet them!" % (new_user.display_name,),
+            description="", 
+            content=new_user, 
+            author=new_user
+            )
+
+        broadcast(
+            to=[new_user,],
+            category="new_member", 
+            url="/category/welcome-mat",
+            title="Welcome to World of Equestria! Click here to introduce yourself!",
+            description="", 
+            content=new_user, 
+            author=new_user
+            )
+
+        broadcast(
+            to=[new_user,],
+            category="new_member", 
+            url="/t/community-rules-and-terms",
+            title="Make sure to read the rules.",
+            description="", 
+            content=new_user, 
+            author=new_user
+            )
+
         return redirect('/hello/'+str(new_user.pk))
     
     return render_template("register.jade", form=form)

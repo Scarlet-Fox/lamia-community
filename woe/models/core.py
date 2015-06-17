@@ -326,6 +326,7 @@ class Notification(db.DynamicDocument):
     author_name = db.StringField(required=True)
     acknowledged = db.BooleanField(default=False)
     emailed = db.BooleanField(default=False)
+    priority = db.IntField(default=0)
 
 class ReportComment(db.DynamicDocument):
     author = db.ReferenceField(User, required=True)

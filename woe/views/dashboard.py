@@ -4,7 +4,7 @@ from flask import abort, redirect, url_for, request, render_template, make_respo
 from flask.ext.login import login_required
 import arrow
 
-def broadcast(to, category, url, title, description, content, author):
+def broadcast(to, category, url, title, description, content, author, priority=0):
     if category not in [x[0] for x in Notification.NOTIFICATION_CATEGORIES]:
         raise TypeError("Category is not defined in NOTIFICATION_CATEGORIES.")
     
@@ -39,6 +39,7 @@ def broadcast(to, category, url, title, description, content, author):
             url = url,
             text = title,
             description = description,
+            priority = priority
         )
         if content != None:
             new_notification.content = content
