@@ -1,7 +1,8 @@
 from woe import login_manager, app
 from woe.models.core import User, Notification
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
-from flask.ext.login import login_required
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
+from flask.ext.login import login_required, current_user
 import arrow
 
 def broadcast(to, category, url, title, description, content, author, priority=0):
@@ -44,6 +45,19 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         if content != None:
             new_notification.content = content
         new_notification.save()
+
+@app.route('/dashboard/notifications', methods=["POST",])
+@login_required
+def dashboard_notifications():
+    notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False)
+    print notifications
+    parsed_notifications = []
+    
+    for notification in notifications:
+        parsed_ = notification.to_mongo().to_dict()
+        parsed_notifications.append(parsed_)
+        
+    return app.jsonify(notifications=parsed_notifications)
 
 @app.route('/dashboard')
 @login_required

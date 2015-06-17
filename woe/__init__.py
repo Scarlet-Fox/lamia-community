@@ -47,7 +47,10 @@ class MongoJsonEncoder(json.JSONEncoder):
             return obj.isoformat()
         elif isinstance(obj, ObjectId):
             return unicode(obj)
-        return json.JSONEncoder.default(self, obj)
+        try:
+            return json.JSONEncoder.default(self, obj)
+        except:
+            return ""
 app.MongoJsonEncoder = MongoJsonEncoder
 def jsonify(*args, **kwargs):
     """ jsonify with support for MongoDB ObjectId
