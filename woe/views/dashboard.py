@@ -32,13 +32,16 @@ def broadcast(to, category, url, title, description, content, author):
         new_notification = Notification(
             category = category,
             user = user,
+            user_name = user.login_name,
             author = author,
+            author_name = author.login_name,
             created = now.datetime,
             url = url,
             text = title,
             description = description,
-            content = content
         )
+        if content != None:
+            new_notification.content = content
         new_notification.save()
 
 @app.route('/dashboard')

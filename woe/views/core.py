@@ -11,6 +11,7 @@ from mongoengine.queryset import Q
 from wand.image import Image
 from werkzeug import secure_filename
 import arrow, mimetypes, json, os, hashlib, time
+from woe.views.dashboard import broadcast
 
 @app.route('/pm-topic-list-api', methods=['GET'])
 @login_required
@@ -413,6 +414,28 @@ def toggle_status_hide(status):
     if current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True:
         return abort(404)
         
+    if not status.hidden:
+        if current_user._get_current_object() != status.author:
+            broadcast(
+                to=[status.author,], 
+                category="status", 
+                url="/status/"+str(status.pk),
+                title="Status update hidden.",
+                description=status.message, 
+                content=status, 
+                author=current_user._get_current_object()
+                )
+            
+        broadcast(
+            to=list(User.objects(is_admin=True)), 
+            category="mod", 
+            url="/status/"+str(status.pk),
+            title="%s's status update hidden." % (status.author,),
+            description=status.message, 
+            content=status, 
+            author=current_user._get_current_object()
+            )
+        
     status.update(hidden=not status.hidden)
     return app.jsonify(url="/status/"+unicode(status.pk))
     
@@ -495,6 +518,40 @@ def make_status_update_reply(status):
     parsed_reply["user_avatar_y"] = sc.author.avatar_40_y
     parsed_reply["time"] = humanize_time(sc.created)
     
+    send_notify_to_users = []
+    for user in status.participants:
+        if user == current_user._get_current_object():
+            continue
+            
+        if user in status.ignoring:
+            continue
+            
+        if user == status.author:
+            continue
+            
+        send_notify_to_users.append(user)
+        
+    broadcast(
+        to=send_notify_to_users, 
+        category="status", 
+        url="/status/"+str(status.pk),
+        title="%s's Status Update" % (status.author,),
+        description=status.message, 
+        content=status, 
+        author=current_user._get_current_object()
+        )
+        
+    if current_user._get_current_object() != status.author and current_user._get_current_object() not in status.ignoring:
+        broadcast(
+            to=[status.author], 
+            category="status", 
+            url="/status/"+str(status.pk),
+            title="Reply to Your Status Update",
+            description=status.message, 
+            content=status, 
+            author=current_user._get_current_object()
+            )    
+            
     return app.jsonify(newest_reply=parsed_reply, count=status.get_comment_count(), success=True)
 
 @app.route('/status/<status>/replies', methods=['GET'])

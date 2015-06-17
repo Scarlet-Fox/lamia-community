@@ -142,6 +142,7 @@ class User(db.DynamicDocument):
     notification_preferences = db.DictField()
     
     # Friends and social stuff
+    followed_by = db.ListField(db.ReferenceField("User"))
     friends = db.ListField(db.ReferenceField("User"))
     profile_feed = db.ListField(db.EmbeddedDocumentField(UserActivity))
     
@@ -297,6 +298,7 @@ class PrivateMessageTopic(db.DynamicDocument):
     
 class Notification(db.DynamicDocument):
     user = db.ReferenceField(User, required=True)
+    user_name = db.StringField(required=True)
     text = db.StringField(required=True)
     description = db.StringField()
     NOTIFICATION_CATEGORIES = (
@@ -313,13 +315,15 @@ class Notification(db.DynamicDocument):
         ("rules_updated", "Rule Update"),
         ("faqs", "FAQs Updated"),
         ("user_activity", "Followed User Activity"),
-        ("streaming", "Streaming")
+        ("streaming", "Streaming"),
+        ("other", "Other")
     )
     category = db.StringField(choices=NOTIFICATION_CATEGORIES, required=True)
     created = db.DateTimeField(required=True)
     url = db.StringField(required=True)
     content = db.GenericReferenceField()
     author = db.ReferenceField(User, required=True)
+    author_name = db.StringField(required=True)
     acknowledged = db.BooleanField(default=False)
     emailed = db.BooleanField(default=False)
 

@@ -4,7 +4,7 @@ from flask.ext.login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose
 from flask_admin.contrib.mongoengine import ModelView
-from woe.models.core import User, StatusUpdate, Attachment, PrivateMessageTopic, PrivateMessage
+from woe.models.core import User, StatusUpdate, Attachment, PrivateMessageTopic, PrivateMessage, Notification
 from woe.models.forum import Category, Topic, Prefix, Post
 
 class AuthAdminIndexView(admin.AdminIndexView):
@@ -22,6 +22,13 @@ class UserView(ModelView):
     column_list = ("login_name", "display_name", "email_address", "banned", "validated", "status_count", "status_comment_count","last_seen")
     column_filters = ["banned","validated","disable_posts","disable_status","disable_status_participation","disable_pm","disable_topics","old_member_id"]
     column_searchable_list = ('login_name', 'display_name','about')
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+class NotificationView(ModelView):
+    can_delete = False
+    column_list = ("author_name", "user_name", "text", "url", "created")
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
@@ -91,6 +98,7 @@ class PrivateMessageView(ModelView):
 
 admin.add_view(UserView(User))
 admin.add_view(StatusView(StatusUpdate))
+admin.add_view(NotificationView(Notification))
 admin.add_view(PrivateMessageTopicView(PrivateMessageTopic, category='Private Messages'))
 admin.add_view(PrivateMessageView(PrivateMessage, category='Private Messages'))
 admin.add_view(CategoryView(Category, category='Forum'))
