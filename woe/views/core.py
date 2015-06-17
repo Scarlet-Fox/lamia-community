@@ -336,6 +336,21 @@ def create_new_status():
     status.created = arrow.utcnow().datetime
     status.save()
     
+    send_notify_to_users = []
+    for user in status.author.followed_by:
+        if user not in status.author.ignored_users:
+            send_notify_to_users.append(user)
+
+    broadcast(
+      to=send_notify_to_users,
+      category="user_activity", 
+      url="/status/"+unicode(status.pk),
+      title="%s created a status update." % (status.author.display_name,),
+      description=status.message, 
+      content=status, 
+      author=status.author
+      )
+    
     return app.jsonify(url="/status/"+unicode(status.pk))
 
 @app.route('/status/<status>/hide-reply/<idx>', methods=['POST'])
@@ -430,7 +445,7 @@ def toggle_status_hide(status):
             to=list(User.objects(is_admin=True)), 
             category="mod", 
             url="/status/"+str(status.pk),
-            title="%s's status update hidden." % (status.author,),
+            title="%s's status update hidden." % (status.author.display_name,),
             description=status.message, 
             content=status, 
             author=current_user._get_current_object()
@@ -535,7 +550,7 @@ def make_status_update_reply(status):
         to=send_notify_to_users, 
         category="status", 
         url="/status/"+str(status.pk),
-        title="%s's Status Update" % (status.author,),
+        title="%s's Status Update" % (status.author.display_name,),
         description=status.message, 
         content=status, 
         author=current_user._get_current_object()
