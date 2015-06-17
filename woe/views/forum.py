@@ -293,6 +293,7 @@ def topic_index(slug, page, post):
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
         return render_template("forum/topic.jade", topic=topic, initial_page=page, initial_post=str(post.pk))
     
+    topic.update(inc__view_count=1)
     return render_template("forum/topic.jade", topic=topic, initial_page=page)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
