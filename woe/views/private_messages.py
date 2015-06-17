@@ -4,6 +4,7 @@ from flask import abort, redirect, url_for, request, render_template, make_respo
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time, math
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner
+from woe.views.dashboard import broadcast
 
 @app.route('/messages/<pk>/edit-post/<post>', methods=['GET'])
 @login_required
@@ -113,6 +114,22 @@ def new_message_in_pm_topic(pk):
     parsed_post["author_group_name"] = message.author.group_name
     parsed_post["group_post_html"] = message.author.group_post_html    
     post_count = PrivateMessage.objects(topic=topic).count()
+    
+    notify_users = []
+    for u in topic.participating_users:
+        if u == message.author:
+            continue
+        notify_users.append(u)
+    
+    broadcast(
+        to=notify_users,
+        category="pm", 
+        url="/messages/%s/page/1/post/%s" % (str(topic.pk), str(message.pk)),
+        title="%s has replied to %s." % (message.author.display_name, topic.title),
+        description=message.message, 
+        content=message, 
+        author=message.author
+        )
     
     return app.jsonify(newest_post=parsed_post, count=post_count, success=True)    
 
@@ -227,7 +244,7 @@ def create_message():
     
     if request_json.get("to") == None or not len(request_json.get("to", [""])) > 0:
         return app.jsonify(error="Choose who should receive your message.")
-        
+    
     participant_users = []
     for user_pk in request_json.get("to"):
         if user_pk == current_user._get_current_object().pk:
@@ -235,6 +252,10 @@ def create_message():
             
         try:
             u = User.objects(pk=user_pk)[0]
+            
+            if current_user._get_current_object() in u.ignored_users:
+                return app.jsonify(error="You can not send a message to %s." % (u.display_name,))
+            
             participant_users.append(u)
         except IndexError:
             continue
@@ -276,6 +297,17 @@ def create_message():
     message.topic_name = topic.title
     message.topic_creator_name = topic.creator_name
     message.save()
+    
+    broadcast(
+        to=topic.participating_users,
+        category="pm", 
+        url="/messages/"+str(topic.pk),
+        title=topic.title,
+        description=message.message, 
+        content=topic, 
+        author=message.author
+        )
+    
     return app.jsonify(url="/messages/"+str(topic.pk))
         
 @app.route('/new-message', methods=['GET'])

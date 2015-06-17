@@ -327,6 +327,18 @@ class Notification(db.DynamicDocument):
     acknowledged = db.BooleanField(default=False)
     emailed = db.BooleanField(default=False)
     priority = db.IntField(default=0)
+    
+    meta = {
+        'ordering': ['-created'],
+        'indexes': [
+            '-created',
+            'user',
+            'author',
+            'acknowledged',
+            'priority',
+            'category'
+        ]
+    }
 
 class ReportComment(db.DynamicDocument):
     author = db.ReferenceField(User, required=True)

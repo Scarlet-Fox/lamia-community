@@ -125,7 +125,7 @@ class ForumHTMLCleaner(object):
         return text    
     
     def clean(self, dirty_html):
-        html = self.cleaner.clean_html(html)
+        html = self.cleaner.clean_html(dirty_html)
         if html[0:5] == "<div>":
             html = html[5:]
         if html[-6:] == "</div>":

@@ -28,7 +28,7 @@ class UserView(ModelView):
 
 class NotificationView(ModelView):
     can_delete = False
-    column_list = ("author_name", "user_name", "text", "url", "created")
+    column_list = ("category", "author_name", "user_name", "text", "url", "created")
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
