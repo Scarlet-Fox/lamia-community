@@ -55,6 +55,10 @@ def dashboard_notifications():
     
     for notification in notifications:
         parsed_ = notification.to_mongo().to_dict()
+        parsed_["time"] = humanize_time(notification.created)
+        parsed_["stamp"] = arrow.get(notification.created).timestamp
+        parsed_["member_disp_name"] = notification.author.display_name
+        parsed_["member_name"] = notification.author.login_name
         parsed_notifications.append(parsed_)
         
     return app.jsonify(notifications=parsed_notifications)

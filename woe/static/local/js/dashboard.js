@@ -4,15 +4,61 @@
     var Dashboard;
     Dashboard = (function() {
       function Dashboard() {
+        this.categories = {};
+        this.notificationTemplate = Handlebars.compile(this.notificationHTML());
+        this.panelTemplate = Handlebars.compile(this.panelHTML());
+        this.dashboard_container = $("#dashboard-container");
+        this.category_names = {
+          topic: "Topics",
+          pm: "Private Messages",
+          mention: "Mentioned",
+          topic_reply: "Topic Replies",
+          boop: "Boops",
+          mod: "Moderation",
+          status: "Status Updates",
+          new_member: "New Members",
+          announcement: "Announcements",
+          profile_comment: "Profile Comments",
+          rules_updated: "Rule Update",
+          faqs: "FAQs Updated",
+          user_activity: "Followed:User Activity",
+          streaming: "Streaming",
+          other: "Other"
+        };
         this.buildDashboard();
       }
+
+      Dashboard.prototype.addToPanel = function(notification) {
+        var category_element, panel;
+        category_element = $("#notifs-" + notification.category);
+        if (category_element.length === 0) {
+          panel = {
+            panel_id: notification.category,
+            panel_title: this.category_names[notification.category]
+          };
+          this.dashboard_container.append(this.panelTemplate(panel));
+          category_element = $("#notifs-" + notification.category);
+        }
+        return category_element.append(this.notificationTemplate(notification));
+      };
 
       Dashboard.prototype.buildDashboard = function() {
         return $.post("/dashboard/notifications", {}, (function(_this) {
           return function(response) {
-            return console.log(response);
+            var i, len, notification, ref, results;
+            ref = response.notifications;
+            results = [];
+            for (i = 0, len = ref.length; i < len; i++) {
+              notification = ref[i];
+              results.push(_this.addToPanel(notification));
+            }
+            return results;
           };
         })(this));
+      };
+
+      Dashboard.prototype.notificationHTML = function() {
+        return "<li class=\"list-group-item\" id=\"{{_pk}}\" data-stamp=\"{{stamp}}\">\n  <a href=\"{{url}}\">{{text}}</a>\n  <p class=\"text-muted\"> by <a href=\"/members/{{member_name}}/\">{{member_disp_name}}</a> - {{time}}</p>\n</li>";
       };
 
       Dashboard.prototype.panelHTML = function() {
