@@ -25,6 +25,7 @@ $ ->
           if topic.page == topic.max_pages
             data.post._is_topic_mod = topic.is_mod
             data.post._is_logged_in = topic.is_logged_in
+            data.show_boop = false
             $("#post-container").append topic.postHTML data.post
             window.addExtraHTML $("#post-"+data.post._id)
             if topic.inline_editor?
@@ -51,8 +52,6 @@ $ ->
                 
             if data.error?
               topic.inline_editor.flashError data.error
-
-            data.newest_post.author_online = true
               
             if data.success?
               topic.inline_editor.clearEditor()
@@ -62,6 +61,8 @@ $ ->
                 count: data.count
                 
               if topic.page == topic.max_pages
+                data.newest_post.author_online = true
+                data.newest_post.show_boop = false
                 $("#post-container").append topic.postHTML data.newest_post
                 window.addExtraHTML $("#post-"+data.newest_post._id)
               else
@@ -103,7 +104,6 @@ $ ->
         inline_editor = new InlineEditor "#post-"+element.data("pk"), "/t/#{topic.slug}/edit-post/#{element.data("pk")}", true, true
         
         inline_editor.onSave (html, text, edit_reason) ->
-          console.log edit_reason
           $.post "/t/#{topic.slug}/edit-post", JSON.stringify({pk: element.data("pk"), post: html, text: text, edit_reason: edit_reason}), (data) =>
             if data.error?
               inline_editor.flashError data.error
@@ -282,6 +282,7 @@ $ ->
                         </div>
                     </div>
                     <div class="col-md-4 post-likes">
+                      {{#if show_boop}}
                       {{#if can_boop}}
                       {{#if has_booped}}
                       <button type="button" class="btn btn-default boop-button" data-pk="{{_id}}" data-status="booped" data-count="{{boop_count}}"><span class="badge" style="background-color: green;">{{boop_count}}</span><span class="boop-text"> Unboop.</span></button>
@@ -290,6 +291,7 @@ $ ->
                       {{/if}}
                       {{else}}
                       <span><span class="badge">{{boop_count}}</span> boops!</span>
+                      {{/if}}
                       {{/if}}
                     </div>
                   </div>
