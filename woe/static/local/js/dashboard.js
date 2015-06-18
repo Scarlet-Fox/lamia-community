@@ -76,7 +76,7 @@
       };
 
       Dashboard.prototype.addToPanel = function(notification) {
-        var category_element, count, existing_notification, panel;
+        var category_element, count, existing_notification, panel, ref;
         category_element = $("#notifs-" + notification.category);
         if (category_element.length === 0) {
           panel = {
@@ -86,7 +86,7 @@
           this.dashboard_container.append(this.panelTemplate(panel));
           category_element = $("#notifs-" + notification.category);
         }
-        if (notification.content._ref != null) {
+        if (((ref = notification.content) != null ? ref._ref : void 0) != null) {
           notification.reference = notification.content._ref;
         } else {
           notification.reference = "";

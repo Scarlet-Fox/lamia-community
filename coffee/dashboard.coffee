@@ -66,7 +66,7 @@ $ ->
         @dashboard_container.append(@panelTemplate(panel))
         category_element = $("#notifs-"+notification.category)
       
-      if notification.content._ref?
+      if notification.content?._ref?
         notification.reference = notification.content._ref
       else
         notification.reference = ""
