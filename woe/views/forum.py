@@ -121,7 +121,7 @@ def new_post_in_topic(slug):
         to=notify_users,
         category="topic", 
         url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
-        title="%s has replied to %s." % (new_post.author.display_name, topic.title),
+        title="%s has replied to %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
         description=new_post.html, 
         content=topic, 
         author=new_post.author
@@ -151,7 +151,7 @@ def toggle_post_boop():
             to=[post.author,],
             category="boop", 
             url="/t/%s/page/1/post/%s" % (str(post.topic.slug), str(post.pk)),
-            title="%s has booped your post in %s!" % (current_user._get_current_object().display_name, str(post.topic.title)),
+            title="%s has booped your post in %s!" % (unicode(current_user._get_current_object().display_name), unicode(post.topic.title)),
             description="", 
             content=post, 
             author=current_user._get_current_object()
@@ -450,7 +450,7 @@ def new_topic(slug):
           to=send_notify_to_users,
           category="user_activity", 
           url="/t/"+unicode(new_topic.slug),
-          title="%s created a new topic. %s." % (new_post.author.display_name, new_topic.title),
+          title="%s created a new topic. %s." % (unicode(new_post.author.display_name), unicode(new_topic.title)),
           description=new_post.html, 
           content=new_topic, 
           author=new_post.author

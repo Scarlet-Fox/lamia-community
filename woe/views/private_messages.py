@@ -125,7 +125,7 @@ def new_message_in_pm_topic(pk):
         to=notify_users,
         category="pm", 
         url="/messages/%s/page/1/post/%s" % (str(topic.pk), str(message.pk)),
-        title="%s has replied to %s." % (message.author.display_name, topic.title),
+        title="%s has replied to %s." % (unicode(message.author.display_name), unicode(topic.title)),
         description=message.message, 
         content=topic, 
         author=message.author
@@ -302,7 +302,7 @@ def create_message():
         to=topic.participating_users,
         category="pm", 
         url="/messages/"+str(topic.pk),
-        title="New Message: "+topic.title,
+        title="New Message: "+unicode(topic.title),
         description=message.message, 
         content=topic, 
         author=message.author

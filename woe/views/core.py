@@ -353,7 +353,7 @@ def create_new_status():
       to=send_notify_to_users,
       category="user_activity", 
       url="/status/"+unicode(status.pk),
-      title="%s created a status update." % (status.author.display_name,),
+      title="%s created a status update." % (unicode(status.author.display_name),),
       description=status.message, 
       content=status, 
       author=status.author
@@ -453,7 +453,7 @@ def toggle_status_hide(status):
             to=list(User.objects(is_admin=True)), 
             category="mod", 
             url="/status/"+str(status.pk),
-            title="%s's status update hidden." % (status.author.display_name,),
+            title="%s's status update hidden." % (unicode(status.author.display_name),),
             description=status.message, 
             content=status, 
             author=current_user._get_current_object()
@@ -567,7 +567,7 @@ def make_status_update_reply(status):
         to=send_notify_to_users, 
         category="status", 
         url="/status/"+str(status.pk),
-        title="%s's Status Update" % (status.author.display_name,),
+        title="%s's Status Update" % (unicode(status.author.display_name),),
         description=status.message, 
         content=status, 
         author=current_user._get_current_object()
@@ -675,7 +675,7 @@ def register():
             to=User.objects(banned=False, login_name__ne=new_user.login_name, last_seen__gte=arrow.utcnow().replace(hours=-24).datetime),
             category="new_member", 
             url="/member/"+unicode(new_user.login_name),
-            title="%s has joined the forum! Greet them!" % (new_user.display_name,),
+            title="%s has joined the forum! Greet them!" % (unicode(new_user.display_name),),
             description="", 
             content=new_user, 
             author=new_user

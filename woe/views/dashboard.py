@@ -3,7 +3,8 @@ from woe.models.core import User, Notification
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
 from flask.ext.login import login_required, current_user
-import arrow
+import arrow, urllib2
+import json as py_json
 
 def broadcast(to, category, url, title, description, content, author, priority=0):
     if category not in [x[0] for x in Notification.NOTIFICATION_CATEGORIES]:
@@ -14,7 +15,9 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         
     now = arrow.utcnow()
     author = author
-        
+    
+    send_dashboard_poke_to = []
+    
     for u in to:
         try:
             if not type(u) == User:
@@ -42,9 +45,29 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             description = description,
             priority = priority
         )
+        
+        send_dashboard_poke_to.append(u)
+                
         if content != None:
             new_notification.content = content
         new_notification.save()
+        
+        try:
+            data = {
+                "users": [u.login_name for u in send_dashboard_poke_to],
+                "category": category,
+                "author": author.display_name,
+                "author_url": "/member/"+author.login_name,
+                "created": humanize_time(now.datetime),
+                "url": url,
+                "title": title,
+                "priority": priority
+            }
+            req = urllib2.Request(app.settings_file["listener"]+"/notify")
+            req.add_header('Content-Type', 'application/json')
+            response = urllib2.urlopen(req, py_json.dumps(data))
+        except:
+            pass
 
 @app.route('/dashboard/ack_category', methods=["POST",])
 @login_required

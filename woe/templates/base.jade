@@ -142,7 +142,7 @@ body(role='document')
   if current_user.is_authenticated()
     script(type="text/javascript")
       $(document).ready(function(){
-        window.woeHash = "{{current_user.get_hash()}}";
+        window.woe_is_me = "{{current_user.login_name}}";
         $(".href_span").click(function (e) {
           window.location = $(this).attr("href");
         });

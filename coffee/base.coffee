@@ -75,7 +75,6 @@ $ ->
         element.attr("src", element.attr("src").replace(".gif", ".animated.gif"))
         $("#img-click-modal").modal('hide')
   
-
   $(".post-link").click (e) ->
     e.preventDefault()
     $.post $(this).attr("href"), (data) ->

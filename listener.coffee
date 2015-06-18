@@ -2,11 +2,17 @@ express = require 'express'
 app = express()
 server = require('http').createServer(app)
 io = require('socket.io')(server)
+bodyParser = require('body-parser')
+app.use(bodyParser.json())
 
 key = "32932mklfdsy972@212278"
 
 app.get "/", (req, res) ->
   res.send ''
+  
+app.post "/notify", (req, res) ->
+  console.log req.body
+  res.send 'ok'
 
 io.on 'connection', (client) ->
   console.log "We have a live one!"
