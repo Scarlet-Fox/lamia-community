@@ -38,13 +38,13 @@ def change_avatar_or_title(login_name):
         if form.avatar.data:
             timestamp = str(arrow.utcnow().timestamp) + "_"
             
-            if user.avatar_extension:
-                try:
-                    os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + user.avatar_extension))
-                    os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_40" + user.avatar_extension))
-                    os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_60" + user.avatar_extension))
-                except OSError:
-                    pass
+            # if user.avatar_extension:
+            #     try:
+            #         os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + user.avatar_extension))
+            #         os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_40" + user.avatar_extension))
+            #         os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.pk) + "_60" + user.avatar_extension))
+            #     except OSError:
+            #         pass
             
             extension = "." + form.avatar.data.filename.split(".")[-1].lower()
 
