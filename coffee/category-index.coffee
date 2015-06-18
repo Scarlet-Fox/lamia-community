@@ -98,7 +98,7 @@ $ ->
           </div>
           <div class="col-xs-6 col-sm-3 hidden-xs">
             <span class="topic-listing-recent-image">
-              <img src="{{last_post_author_avatar}}" width="{{last_post_x}}px" height="{{last_post_y}}px" class="avatar-mini">
+              <a href="/member/{{author_login_name}}"><img src="{{last_post_author_avatar}}" width="{{last_post_x}}px" height="{{last_post_y}}px" class="avatar-mini"></a>
             </span>
             <span class="topic-listing-recent">
               <a href="/member/{{last_post_by_login_name}}" class="topic-listing-username">{{last_post_by}}</a>

@@ -105,7 +105,7 @@
       };
 
       Status.prototype.replyHTMLTemplate = function() {
-        return "{{#unless hidden}}\n<div class=\"status-reply\" id=\"reply-{{idx}}\" data-idx=\"{{idx}}\">\n  <div class=\"media-left\">\n    <img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\">\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"\">{{user_name}}</a><span class=\"status-mod-controls\">{{#if hide_enabled}}<a href=\"{{idx}}\" class=\"inherit_colors hide-reply\">(hide)</a>{{/if}}</span>\n    <p>{{{text}}}</p>\n    <span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>\n{{/unless}}";
+        return "{{#unless hidden}}\n<div class=\"status-reply\" id=\"reply-{{idx}}\" data-idx=\"{{idx}}\">\n  <div class=\"media-left\">\n    <a href=\"/member/{{author_login_name}}\"><img src=\"{{user_avatar}}\" width=\"{{user_avatar_x}}px\" height=\"{{user_avatar_y}}px\"></a>\n  </div>\n  <div class=\"media-body\">\n    <p><a href=\"\">{{user_name}}</a><span class=\"status-mod-controls\">{{#if hide_enabled}}<a href=\"{{idx}}\" class=\"inherit_colors hide-reply\">(hide)</a>{{/if}}</span>\n    <p>{{{text}}}</p>\n    <span class=\"status-reply-time\">{{time}}</span></p>\n  </div>\n  <hr>\n</div>\n{{/unless}}";
       };
 
       Status.prototype.confirmModelHTMLTemplate = function() {

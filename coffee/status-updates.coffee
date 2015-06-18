@@ -102,7 +102,7 @@ $ ->
       {{#unless hidden}}
       <div class="status-reply" id="reply-{{idx}}" data-idx="{{idx}}">
         <div class="media-left">
-          <img src="{{user_avatar}}" width="{{user_avatar_x}}px" height="{{user_avatar_y}}px">
+          <a href="/member/{{author_login_name}}"><img src="{{user_avatar}}" width="{{user_avatar_x}}px" height="{{user_avatar_y}}px"></a>
         </div>
         <div class="media-body">
           <p><a href="">{{user_name}}</a><span class="status-mod-controls">{{#if hide_enabled}}<a href="{{idx}}" class="inherit_colors hide-reply">(hide)</a>{{/if}}</span>

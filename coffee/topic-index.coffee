@@ -173,7 +173,7 @@ $ ->
             <li class="list-group-item post-listing-info">
               <div class="row">
                 <div class="col-xs-4 hidden-md hidden-lg">
-                  <img src="{{user_avatar_60}}" width="{{user_avatar_x_60}}" height="{{user_avatar_y_60}}" class="avatar-mini">
+                  <a href="/member/{{author_login_name}}"><img src="{{user_avatar_60}}" width="{{user_avatar_x_60}}" height="{{user_avatar_y_60}}" class="avatar-mini"></a>
                 </div>
                 <div class="col-md-3 col-xs-8">
                   {{#if author_online}}
@@ -197,7 +197,7 @@ $ ->
             <li class="list-group-item post-listing-post">
               <div class="row">
                 <div class="col-md-3" style="text-align: center;">
-                  <img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm">
+                  <a href="/member/{{author_login_name}}"><img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm"></a>
                   <span class="hidden-xs hidden-sm"><br><br>
                   <div class="post-member-self-title">{{user_title}}</div>
                     <hr></span>
