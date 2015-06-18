@@ -76,7 +76,7 @@
       };
 
       Dashboard.prototype.addToPanel = function(notification) {
-        var category_element, panel;
+        var category_element, count, existing_notification, panel;
         category_element = $("#notifs-" + notification.category);
         if (category_element.length === 0) {
           panel = {
@@ -86,7 +86,28 @@
           this.dashboard_container.append(this.panelTemplate(panel));
           category_element = $("#notifs-" + notification.category);
         }
-        return category_element.append(this.notificationTemplate(notification));
+        if (notification.content._ref != null) {
+          notification.reference = notification.content._ref;
+        } else {
+          notification.reference = "";
+        }
+        existing_notification = $(".ref-" + notification.reference);
+        if (existing_notification.length > 0 && notification.reference !== "") {
+          count = parseInt(existing_notification.data("count"));
+          count = count + 1;
+          if (!existing_notification.children("media-left").is(":visible")) {
+            existing_notification.children(".media-left").show();
+          }
+          existing_notification.data("count", count);
+          existing_notification.children(".media-left").children(".badge").text(count);
+          existing_notification.find(".m-name").attr("href", "/members/" + notification.member_name);
+          existing_notification.find(".m-name").text(notification.member_disp_name);
+          existing_notification.find(".m-time").text(notification.time);
+          existing_notification.find(".m-title").text(notification.text);
+          return existing_notification.find(".m-title").attr("href", notification.url);
+        } else {
+          return category_element.append(this.notificationTemplate(notification));
+        }
       };
 
       Dashboard.prototype.buildDashboard = function() {
@@ -104,7 +125,7 @@
       };
 
       Dashboard.prototype.notificationHTML = function() {
-        return "<li class=\"list-group-item\" id=\"{{_id}}\" data-stamp=\"{{stamp}}\">\n  <a href=\"{{url}}\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n  <p class=\"text-muted\"> by <a href=\"/members/{{member_name}}/\">{{member_disp_name}}</a> - {{time}}</p>\n</li>";
+        return "<li class=\"list-group-item ref-{{reference}}\" id=\"{{_id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\" data-ref=\"{{reference}}\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <a href=\"{{url}}\" class=\"m-title\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <p class=\"text-muted\"> by <a href=\"/members/{{member_name}}\" class=\"m-name\">{{member_disp_name}}</a> - <span class=\"m-time\">{{time}}</span></p>\n  </div>\n</li>";
       };
 
       Dashboard.prototype.panelHTML = function() {

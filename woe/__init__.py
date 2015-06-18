@@ -5,6 +5,7 @@ from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
 from flask.ext.admin import Admin
 from flask.ext.cache import Cache
+from bson.dbref import DBRef
 from os import path
 import json
 
@@ -47,6 +48,9 @@ class MongoJsonEncoder(json.JSONEncoder):
             return obj.isoformat()
         elif isinstance(obj, ObjectId):
             return unicode(obj)
+        elif isinstance(obj, DBRef):
+            return unicode(obj.id)
+                
         try:
             return json.JSONEncoder.default(self, obj)
         except:

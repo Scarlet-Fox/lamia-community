@@ -66,7 +66,26 @@ $ ->
         @dashboard_container.append(@panelTemplate(panel))
         category_element = $("#notifs-"+notification.category)
       
-      category_element.append(@notificationTemplate(notification))
+      if notification.content._ref?
+        notification.reference = notification.content._ref
+      else
+        notification.reference = ""
+      
+      existing_notification = $(".ref-#{notification.reference}")
+      if existing_notification.length > 0 and notification.reference != ""
+        count = parseInt(existing_notification.data("count"))
+        count = count + 1
+        if not existing_notification.children("media-left").is(":visible")
+          existing_notification.children(".media-left").show()
+        existing_notification.data("count", count)
+        existing_notification.children(".media-left").children(".badge").text(count)
+        existing_notification.find(".m-name").attr("href", "/members/#{notification.member_name}")
+        existing_notification.find(".m-name").text(notification.member_disp_name)
+        existing_notification.find(".m-time").text(notification.time)
+        existing_notification.find(".m-title").text(notification.text)
+        existing_notification.find(".m-title").attr("href", notification.url)
+      else
+        category_element.append(@notificationTemplate(notification))
       
     buildDashboard: () ->
       $.post "/dashboard/notifications", {}, (response) =>
@@ -76,9 +95,12 @@ $ ->
           
     notificationHTML: () ->
       return """
-      <li class="list-group-item" id="{{_id}}" data-stamp="{{stamp}}">
-        <a href="{{url}}">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
-        <p class="text-muted"> by <a href="/members/{{member_name}}/">{{member_disp_name}}</a> - {{time}}</p>
+      <li class="list-group-item ref-{{reference}}" id="{{_id}}" data-stamp="{{stamp}}" data-count="1" data-ref="{{reference}}">
+        <div class="media-left" style="display: none;"><span class="badge"></span></div>
+        <div class="media-body">
+          <a href="{{url}}" class="m-title">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
+          <p class="text-muted"> by <a href="/members/{{member_name}}" class="m-name">{{member_disp_name}}</a> - <span class="m-time">{{time}}</span></p>
+        </div>
       </li>
       """
       

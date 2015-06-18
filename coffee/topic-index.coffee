@@ -313,6 +313,7 @@ $ ->
           post.count = first_post+i
           post._is_topic_mod = @is_mod
           post._is_logged_in = @is_logged_in
+          post.show_boop = true
           post.direct_url = "/t/#{@slug}/page/#{@page}/post/#{post._id}"
           new_post_html = new_post_html + @postHTML post
         

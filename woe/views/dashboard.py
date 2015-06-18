@@ -87,6 +87,13 @@ def acknowledge_notification():
     except:
         return app.jsonify(success=False)
     notification.update(acknowledged=True)
+    
+    try:
+        notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False, content=notification.content)
+        notifications.update(acknowledged=True)
+    except:
+        return app.jsonify(success=False)
+    
     return app.jsonify(success=True)
 
 @app.route('/dashboard/notifications', methods=["POST",])
