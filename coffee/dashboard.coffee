@@ -71,7 +71,7 @@ $ ->
       else
         notification.reference = ""
       
-      existing_notification = $(".ref-#{notification.reference}")
+      existing_notification = $(".ref-#{notification.reference}-#{notification.category}")
       if existing_notification.length > 0 and notification.reference != ""
         count = parseInt(existing_notification.data("count"))
         count = count + 1
@@ -95,7 +95,7 @@ $ ->
           
     notificationHTML: () ->
       return """
-      <li class="list-group-item ref-{{reference}}" id="{{_id}}" data-stamp="{{stamp}}" data-count="1" data-ref="{{reference}}">
+      <li class="list-group-item ref-{{reference}}-{{category}}" id="{{_id}}" data-stamp="{{stamp}}" data-count="1">
         <div class="media-left" style="display: none;"><span class="badge"></span></div>
         <div class="media-body">
           <a href="{{url}}" class="m-title">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>

@@ -91,7 +91,7 @@
         } else {
           notification.reference = "";
         }
-        existing_notification = $(".ref-" + notification.reference);
+        existing_notification = $(".ref-" + notification.reference + "-" + notification.category);
         if (existing_notification.length > 0 && notification.reference !== "") {
           count = parseInt(existing_notification.data("count"));
           count = count + 1;
@@ -125,7 +125,7 @@
       };
 
       Dashboard.prototype.notificationHTML = function() {
-        return "<li class=\"list-group-item ref-{{reference}}\" id=\"{{_id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\" data-ref=\"{{reference}}\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <a href=\"{{url}}\" class=\"m-title\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <p class=\"text-muted\"> by <a href=\"/members/{{member_name}}\" class=\"m-name\">{{member_disp_name}}</a> - <span class=\"m-time\">{{time}}</span></p>\n  </div>\n</li>";
+        return "<li class=\"list-group-item ref-{{reference}}-{{category}}\" id=\"{{_id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <a href=\"{{url}}\" class=\"m-title\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <p class=\"text-muted\"> by <a href=\"/members/{{member_name}}\" class=\"m-name\">{{member_disp_name}}</a> - <span class=\"m-time\">{{time}}</span></p>\n  </div>\n</li>";
       };
 
       Dashboard.prototype.panelHTML = function() {
