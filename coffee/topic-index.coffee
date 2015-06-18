@@ -27,6 +27,9 @@ $ ->
             data.post._is_logged_in = topic.is_logged_in
             $("#post-container").append topic.postHTML data.post
             window.addExtraHTML $("#post-"+data.post._id)
+            if topic.inline_editor?
+              if topic.inline_editor.quill.getText().trim() != "" and $("#new-post-box").find(".ql-editor").is(":focus")
+                $("#new-post-box")[0].scrollIntoView()
           else
             topic.max_pages = Math.ceil data.count/topic.pagination
             topic.page = topic.max_pages

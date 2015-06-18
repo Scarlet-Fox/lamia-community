@@ -65,6 +65,7 @@
           theme: 'snow'
         });
         quill.setHTML(this.element.data("editor_initial_html"));
+        this.quill = quill;
         this.element.data("_editor", this);
         this.element.data("editor", quill);
         $("#dropzone-" + this.quillID).dropzone({

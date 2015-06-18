@@ -32,7 +32,12 @@
               data.post._is_topic_mod = topic.is_mod;
               data.post._is_logged_in = topic.is_logged_in;
               $("#post-container").append(topic.postHTML(data.post));
-              return window.addExtraHTML($("#post-" + data.post._id));
+              window.addExtraHTML($("#post-" + data.post._id));
+              if (topic.inline_editor != null) {
+                if (topic.inline_editor.quill.getText().trim() !== "" && $("#new-post-box").find(".ql-editor").is(":focus")) {
+                  return $("#new-post-box")[0].scrollIntoView();
+                }
+              }
             } else {
               topic.max_pages = Math.ceil(data.count / topic.pagination);
               return topic.page = topic.max_pages;

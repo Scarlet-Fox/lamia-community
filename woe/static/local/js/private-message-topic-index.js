@@ -59,7 +59,12 @@
                   });
                   if (topic.page === topic.max_pages) {
                     $("#post-container").append(topic.postHTML(data.newest_post));
-                    return window.addExtraHTML($("#post-" + data.newest_post._id));
+                    window.addExtraHTML($("#post-" + data.newest_post._id));
+                    if (topic.inline_editor != null) {
+                      if (topic.inline_editor.quill.getText().trim() !== "" && $("#new-post-box").find(".ql-editor").is(":focus")) {
+                        return $("#new-post-box")[0].scrollIntoView();
+                      }
+                    }
                   } else {
                     topic.max_pages = Math.ceil(data.count / topic.pagination);
                     topic.page = topic.max_pages;

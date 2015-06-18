@@ -34,6 +34,7 @@ $ ->
         theme: 'snow'
         
       quill.setHTML @element.data("editor_initial_html")
+      @quill = quill
       
       @element.data("_editor", this)
       @element.data("editor", quill)
