@@ -472,6 +472,7 @@ class User(db.DynamicDocument):
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\]')
 end_spoiler_re = re.compile(r'\[\/spoiler\]')
+prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -504,6 +505,10 @@ class ForumPostParser(object):
     def parse(self, html):
         # parse html
         html = html.replace("[hr]", "<hr>")
+        
+        prefix_bbcode_in_post = prefix_re.findall(html)
+        for prefix_bbcode in prefix_bbcode_in_post:
+            html = html.replace(prefix_bbcode[0], """<span class="badge prefix" style="background:%s; font-size: 10px; font-weight: normal; vertical-align: top; margin-top: 2px;">%s</span>""" % (prefix_bbcode[1], prefix_bbcode[2],))
         
         # parse smileys
         for smiley in emoticon_codes.keys():

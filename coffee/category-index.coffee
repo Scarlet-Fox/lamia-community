@@ -75,7 +75,7 @@ $ ->
           <div class="col-xs-12 col-sm-6">
             <span class="topic-listing-name">
             {{#if prefix}}
-            {{{pre_html}}}{{#if sticky}}<span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>{{/if}}&nbsp;{{{prefix}}}{{{post_html}}}
+            {{{pre_html}}}{{#if sticky}}<span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>&nbsp;{{/if}}{{{prefix}}}{{{post_html}}}
             {{/if}}
             <a href="/t/{{slug}}">{{title}}</a><br>
             <span class="topic-author">

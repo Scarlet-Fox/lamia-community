@@ -222,7 +222,7 @@ def search_display():
     else:
         authors = []
     query = session.get("query","")
-    content_type = session.get("content_type","")
+    content_type = session.get("content_type","posts")
     return render_template("core/search.jade", 
         query=query, 
         content_type=content_type,
