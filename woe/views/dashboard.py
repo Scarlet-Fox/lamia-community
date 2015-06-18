@@ -61,7 +61,8 @@ def broadcast(to, category, url, title, description, content, author, priority=0
                 "created": humanize_time(now.datetime),
                 "url": url,
                 "title": title,
-                "priority": priority
+                "priority": priority,
+                "id": str(new_notification.pk)
             }
             req = urllib2.Request(app.settings_file["listener"]+"/notify")
             req.add_header('Content-Type', 'application/json')

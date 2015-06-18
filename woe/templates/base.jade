@@ -116,7 +116,7 @@ body(role='document')
             if current_user.is_authenticated()
               li.dropdown#dashboard-li
                 a.dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
-                  span.badge {{current_user.get_notification_count()}}
+                  span.badge#notification-counter {{current_user.get_notification_count()}}
                 ul.dropdown-menu#notification-dropdown(role='menu')
                   li
                     a(href='/dashboard') Dashboard

@@ -75,6 +75,27 @@ $ ->
         element.attr("src", element.attr("src").replace(".gif", ".animated.gif"))
         $("#img-click-modal").modal('hide')
   
+  socket = io.connect('http://' + document.domain + ':3000' + '')
+  
+  socket.on "notify", (data) ->
+    if window.woe_is_me in data.users
+      counter_element = $("#notification-counter")
+      count = parseInt(counter_element.text())+1
+      counter_element.text(count)
+      notification_listing = $("#notification-listing")
+      notifications_listed = $("a.notification-link")
+      if notifications_listed.length > 4
+        notifications_listed[notifications_listed.length-1].remove()
+        
+      _html = """
+      <a href="#{data.url}" data-notification="#{data.id}" class="notification-link">#{data.title}</a>
+      """
+      
+      if notifications_listed.length == 0
+        $("#notification-dropdown").append(_html)
+      else
+        $(notifications_listed[0]).before(_html)
+  
   $(".post-link").click (e) ->
     e.preventDefault()
     $.post $(this).attr("href"), (data) ->

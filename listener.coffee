@@ -12,6 +12,7 @@ app.get "/", (req, res) ->
   
 app.post "/notify", (req, res) ->
   console.log req.body
+  io.sockets.emit "notify", req.body
   res.send 'ok'
 
 io.on 'connection', (client) ->
