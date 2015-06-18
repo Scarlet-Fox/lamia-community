@@ -84,7 +84,7 @@ $ ->
       counter_element.text(count)
       notification_listing = $("#notification-listing")
       notifications_listed = $("a.notification-link")
-      if notifications_listed.length > 4
+      if notifications_listed.length > 14
         notifications_listed[notifications_listed.length-1].remove()
         
       _html = """

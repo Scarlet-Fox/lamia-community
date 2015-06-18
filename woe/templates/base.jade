@@ -121,7 +121,7 @@ body(role='document')
                   li
                     a(href='/dashboard') Dashboard
                   li.divider
-                  for notification in current_user.get_recent_notifications()
+                  for notification in current_user.get_recent_notifications(15)
                     li
                       a.notification-link(href='{{notification.url}}', data-notification="{{notification.pk}}") {{notification.text}}
                       
