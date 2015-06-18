@@ -128,6 +128,27 @@ def new_post_in_topic(slug):
         )
     
     return app.jsonify(newest_post=parsed_post, count=post_count, success=True)    
+    
+@app.route('/boop-post', methods=['POST'])
+@login_required
+def toggle_post_boop():
+    request_json = request.get_json(force=True)
+    
+    try:
+        post = Post.objects(pk=request_json.get("pk"))[0]
+    except:
+        return abort(404)
+    
+    if current_user._get_current_object() == post.author:
+        return abort(404)
+    
+    if current_user._get_current_object() in post.boops:
+        post.boops.remove(current_user._get_current_object())
+        post.save()
+    else:
+        post.update(add_to_set__boops=current_user._get_current_object())
+    
+    return app.jsonify(success=True)
 
 @app.route('/t/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
@@ -174,6 +195,9 @@ def topic_posts(slug):
         parsed_post["group_pre_html"] = post.author.group_pre_html
         parsed_post["author_group_name"] = post.author.group_name
         parsed_post["group_post_html"] = post.author.group_post_html
+        parsed_post["has_booped"] = current_user._get_current_object() in post.boops
+        parsed_post["boop_count"] = len(post.boops)
+        parsed_post["can_boop"] =  current_user._get_current_object() != post.author
         
         if current_user.is_authenticated():
             if post.author.pk == current_user.pk:

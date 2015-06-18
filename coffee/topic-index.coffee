@@ -66,7 +66,30 @@ $ ->
                 topic.page = topic.max_pages
                 do topic.refreshPosts
 
-
+      $("#post-container").delegate ".boop-button", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        current_status = element.data("status")
+        count = parseInt(element.data("count"))
+        pk = element.data("pk")
+        
+        $.post "/boop-post", JSON.stringify({pk: pk}), (data) ->
+          if current_status == "notbooped"
+            element.children(".boop-text").html("""<img src="/static/emoticons/brohoof_by_angelishi-d6wk2et.gif">""")
+            element.children(".badge").text("")
+            element.data("status", "booped")
+            element.data("count", count+1)
+            # element.children(".boop-text").text(" Unboop.")
+            # element.children(".badge").text(count+1)
+            # element.children(".badge").css("background-color", "green")
+          else
+            element.children(".boop-text").html("")
+            element.data("status", "notbooped")
+            element.children(".boop-text").text(" Boop!")
+            element.data("count", count-1)
+            element.children(".badge").text(element.data("count"))
+            element.children(".badge").css("background-color", "#555")
+          
       $("#post-container").delegate ".post-edit", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -256,6 +279,13 @@ $ ->
                         </div>
                     </div>
                     <div class="col-md-4 post-likes">
+                      {{#if can_boop}}
+                      {{#if has_booped}}
+                      <button type="button" class="btn btn-default boop-button" data-pk="{{_id}}" data-status="booped" data-count="{{boop_count}}"><span class="badge" style="background-color: green;">{{boop_count}}</span><span class="boop-text"> Unboop.</span></button>
+                      {{else}}
+                      <button type="button" class="btn btn-default boop-button" data-pk="{{_id}}" data-status="notbooped" data-count="{{boop_count}}"><span class="badge" style="background-color: #555;">{{boop_count}}</span><span class="boop-text">  Boop!</span></button>
+                      {{/if}}
+                      {{/if}}
                     </div>
                   </div>
                   <hr>
