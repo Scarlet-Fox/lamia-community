@@ -45,6 +45,9 @@ $ ->
                 
             if data.no_content?
               topic.inline_editor.flashError "Your post has no text."
+                
+            if data.error?
+              topic.inline_editor.flashError data.error
 
             data.newest_post.author_online = true
               

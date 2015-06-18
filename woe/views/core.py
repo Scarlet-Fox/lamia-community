@@ -330,6 +330,14 @@ def create_new_status():
         _html = cleaner.escape(request_json.get("message", "").strip())
     except:
         return abort(500)
+    
+    try:
+        users_last_status = StatusUpdate.objects(author=current_user._get_current_object()).order_by("-created")[0]
+        difference = (arrow.utcnow().datetime - arrow.get(users_last_status.created).datetime).seconds
+        if difference < 360:
+            return app.jsonify(error="Please wait %s seconds before you create another status update." % (360 - difference))
+    except:
+        pass
         
     status.message = _html
     status.participants.append(status.author)
@@ -512,7 +520,16 @@ def make_status_update_reply(status):
         _html = cleaner.escape(request_json.get("reply", ""))
     except:
         return abort(500)
-        
+    
+    user_last_comment = False
+    for comment in status.comments:
+        if comment.author == current_user._get_current_object():
+            user_last_comment = comment
+    if user_last_comment:
+        difference = (arrow.utcnow().datetime - arrow.get(user_last_comment.created).datetime).seconds
+        if difference < 5:
+            return app.jsonify(error="Please wait %s seconds before you can reply again." % (5 - difference))
+    
     sc = StatusComment()
     sc.text = _html
     sc.author = current_user._get_current_object()

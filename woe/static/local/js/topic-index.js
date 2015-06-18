@@ -55,6 +55,9 @@
                 if (data.no_content != null) {
                   topic.inline_editor.flashError("Your post has no text.");
                 }
+                if (data.error != null) {
+                  topic.inline_editor.flashError(data.error);
+                }
                 data.newest_post.author_online = true;
                 if (data.success != null) {
                   topic.inline_editor.clearEditor();

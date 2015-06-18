@@ -57,6 +57,14 @@ def new_post_in_topic(slug):
         post_html = cleaner.clean(request_json.get("post", ""))
     except:
         return abort(500)
+    
+    try: # TODO : Cannot do this for roleplay topics.
+        users_last_post = Post.objects(author=current_user._get_current_object()).order_by("-created")[0]
+        difference = (arrow.utcnow().datetime - arrow.get(users_last_post.created).datetime).seconds
+        if difference < 30:
+            return app.jsonify(error="Please wait %s seconds before posting again." % (30 - difference))
+    except:
+        pass
         
     new_post = Post()
     new_post.html = post_html
@@ -356,7 +364,15 @@ def new_topic(slug):
             prefix = Prefix.objects(prefix=request_json.get("prefix", "").strip())[0]
         except IndexError:
             prefix = ""
-        
+
+        try:
+            users_last_topic = Topic.objects(creator=current_user._get_current_object()).order_by("-created")[0]
+            difference = (arrow.utcnow().datetime - arrow.get(users_last_topic.created).datetime).seconds
+            if difference < 360:
+                return app.jsonify(error="Please wait %s seconds before you create another topic." % (360 - difference))
+        except:
+            pass
+
         new_topic = Topic()
         new_topic.category = category
         new_topic.title = request_json.get("title")
