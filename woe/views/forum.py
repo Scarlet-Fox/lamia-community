@@ -147,6 +147,15 @@ def toggle_post_boop():
         post.save()
     else:
         post.update(add_to_set__boops=current_user._get_current_object())
+        broadcast(
+            to=[post.author,],
+            category="boop", 
+            url="/t/%s/page/1/post/%s" % (str(post.topic.slug), str(post.pk)),
+            title="%s has booped your post in %s!" % (current_user._get_current_object().display_name, str(post.topic.title)),
+            description="", 
+            content=post, 
+            author=current_user._get_current_object()
+            )
     
     return app.jsonify(success=True)
 
