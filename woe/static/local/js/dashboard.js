@@ -4,6 +4,7 @@
     var Dashboard;
     Dashboard = (function() {
       function Dashboard() {
+        var _panel;
         this.categories = {};
         this.notificationTemplate = Handlebars.compile(this.notificationHTML());
         this.panelTemplate = Handlebars.compile(this.panelHTML());
@@ -26,17 +27,21 @@
           other: "Other"
         };
         this.buildDashboard();
+        _panel = this;
         $("#dashboard-container").delegate(".ack_all", "click", function(e) {
           var panel;
           e.preventDefault();
           panel = $("#" + $(this).data("panel"));
           return $.post("/dashboard/ack_category", JSON.stringify({
             category: panel.attr("id")
-          }), function(data) {
-            if (data.success != null) {
-              return panel.remove();
-            }
-          });
+          }), (function(_this) {
+            return function(data) {
+              if (data.success != null) {
+                panel.remove();
+                return _panel.isPanelEmpty();
+              }
+            };
+          })(this));
         });
         $("#dashboard-container").delegate(".ack_single", "click", function(e) {
           var notification, panel, panel_notifs;
@@ -46,17 +51,29 @@
           panel = $("#" + $(this).data("panel"));
           return $.post("/dashboard/ack_notification", JSON.stringify({
             notification: notification.attr("id")
-          }), function(data) {
-            if (data.success != null) {
-              if (panel_notifs.children().length < 2) {
-                return panel.remove();
-              } else {
-                return notification.remove();
+          }), (function(_this) {
+            return function(data) {
+              if (data.success != null) {
+                if (panel_notifs.children().length < 2) {
+                  panel.remove();
+                  return _panel.isPanelEmpty();
+                } else {
+                  notification.remove();
+                  return _panel.isPanelEmpty();
+                }
               }
-            }
-          });
+            };
+          })(this));
         });
       }
+
+      Dashboard.prototype.isPanelEmpty = function() {
+        if ($(".dashboard-panel").length === 0) {
+          return $("#dashboard-container").html("<p class=\"nothing-new\">No new notifications, yet.</p>");
+        } else {
+          return $(".nothing-new").remove();
+        }
+      };
 
       Dashboard.prototype.addToPanel = function(notification) {
         var category_element, panel;
@@ -75,14 +92,13 @@
       Dashboard.prototype.buildDashboard = function() {
         return $.post("/dashboard/notifications", {}, (function(_this) {
           return function(response) {
-            var i, len, notification, ref, results;
+            var i, len, notification, ref;
             ref = response.notifications;
-            results = [];
             for (i = 0, len = ref.length; i < len; i++) {
               notification = ref[i];
-              results.push(_this.addToPanel(notification));
+              _this.addToPanel(notification);
             }
-            return results;
+            return _this.isPanelEmpty();
           };
         })(this));
       };

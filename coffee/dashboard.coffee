@@ -25,24 +25,37 @@ $ ->
       
       do @buildDashboard
       
+      _panel=this
+      
       $("#dashboard-container").delegate ".ack_all", "click", (e) ->
         e.preventDefault()
         panel = $("#"+$(this).data("panel"))
-        $.post "/dashboard/ack_category", JSON.stringify({category: panel.attr("id")}), (data) ->
+        $.post "/dashboard/ack_category", JSON.stringify({category: panel.attr("id")}), (data) =>
           if data.success?
             panel.remove()
+            do _panel.isPanelEmpty
       
       $("#dashboard-container").delegate ".ack_single", "click", (e) ->
         e.preventDefault()
         notification = $("#"+$(this).data("notification"))
         panel_notifs = $("#notifs-"+$(this).data("panel"))
         panel = $("#"+$(this).data("panel"))
-        $.post "/dashboard/ack_notification", JSON.stringify({notification: notification.attr("id")}), (data) ->
+        $.post "/dashboard/ack_notification", JSON.stringify({notification: notification.attr("id")}), (data) =>
           if data.success?
             if panel_notifs.children().length < 2
               panel.remove()
+              do _panel.isPanelEmpty
             else
               notification.remove()
+              do _panel.isPanelEmpty
+              
+    isPanelEmpty: () ->
+      if $(".dashboard-panel").length == 0
+        $("#dashboard-container").html """
+        <p class="nothing-new">No new notifications, yet.</p>
+        """
+      else
+        $(".nothing-new").remove()
       
     addToPanel: (notification) ->
       category_element = $("#notifs-"+notification.category)
@@ -59,6 +72,7 @@ $ ->
       $.post "/dashboard/notifications", {}, (response) =>
         for notification in response.notifications
           @addToPanel notification
+        do @isPanelEmpty
           
     notificationHTML: () ->
       return """
