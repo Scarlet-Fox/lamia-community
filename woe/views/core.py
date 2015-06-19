@@ -143,7 +143,7 @@ def search_lookup():
     if content_type == "posts":
         _q_objects = _q_objects & parse_search_string_return_q(query, ["html",])
         count = Post.objects(_q_objects).count()
-        results = Post.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
+        results = Post.objects(_q_objects, hidden=False).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
@@ -157,7 +157,7 @@ def search_lookup():
     elif content_type == "topics":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["title",])
         count = Topic.objects(_q_objects).count()
-        results = Topic.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
+        results = Topic.objects(_q_objects, hidden=False).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
@@ -171,7 +171,7 @@ def search_lookup():
     elif content_type == "status":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["message",])
         count = StatusUpdate.objects(_q_objects).count()
-        results = StatusUpdate.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
+        results = StatusUpdate.objects(_q_objects, hidden=False).order_by("-created")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)

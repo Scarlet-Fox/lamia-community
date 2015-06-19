@@ -6,7 +6,12 @@
     var Dashboard;
     Dashboard = (function() {
       function Dashboard() {
-        var _panel, socket;
+        var $grid, _panel, socket;
+        $grid = $('#dashboard-container');
+        window.grid = $grid;
+        $grid.shuffle({
+          speed: 0
+        });
         this.categories = {};
         this.notificationTemplate = Handlebars.compile(this.notificationHTML());
         this.panelTemplate = Handlebars.compile(this.panelHTML());
@@ -79,19 +84,34 @@
 
       Dashboard.prototype.isPanelEmpty = function() {
         if ($(".dashboard-panel").length === 0) {
-          return $("#dashboard-container").html("<p class=\"nothing-new\">No new notifications, yet.</p>");
+          $("#dashboard-container").html("<p class=\"nothing-new\">No new notifications, yet.</p>");
         } else {
-          return $(".nothing-new").remove();
+          $(".nothing-new").remove();
         }
+        return setTimeout(function() {
+          return $("#dashboard-container").shuffle("update");
+        }, 0);
       };
 
       Dashboard.prototype.setPanelDates = function() {
-        return $(".dashboard-panel").children(".panel").children("ul").each(function() {
+        $(".dashboard-panel").children(".panel").children("ul").each(function() {
           var element, first_timestamp;
           element = $(this);
           first_timestamp = element.children("li").first().data("stamp");
           return element.parent().parent().data("stamp", first_timestamp);
         });
+        return setTimeout(function() {
+          var sort_opts;
+          $("#dashboard-container").shuffle('appended', $(".dashboard-panel"));
+          $("#dashboard-container").shuffle("update");
+          sort_opts = {
+            reverse: true,
+            by: function(el) {
+              return el.data("stamp");
+            }
+          };
+          return $("#dashboard-container").shuffle("sort", sort_opts);
+        }, 100);
       };
 
       Dashboard.prototype.addToPanel = function(notification, live) {
@@ -129,7 +149,12 @@
           existing_notification.find(".m-name").text(notification.member_disp_name);
           existing_notification.find(".m-time").text(notification.time);
           existing_notification.find(".m-title").text(notification.text);
-          return existing_notification.find(".m-title").attr("href", notification.url);
+          existing_notification.find(".m-title").attr("href", notification.url);
+          if (live) {
+            if (existing_notification[0] !== category_element.children().first()[0]) {
+              return category_element.prepend(existing_notification);
+            }
+          }
         } else {
           if (live) {
             return category_element.prepend(this.notificationTemplate(notification));

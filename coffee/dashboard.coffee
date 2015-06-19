@@ -1,6 +1,11 @@
 $ ->
   class Dashboard
     constructor: () ->
+      $grid = $('#dashboard-container');
+      window.grid = $grid
+      $grid.shuffle
+        speed: 0
+        
       @categories = {}
       @notificationTemplate = Handlebars.compile(@notificationHTML())
       @panelTemplate = Handlebars.compile(@panelHTML())
@@ -63,13 +68,25 @@ $ ->
         """
       else
         $(".nothing-new").remove()
+      setTimeout () ->
+        $("#dashboard-container").shuffle("update")
+      , 0
         
     setPanelDates: () ->
       $(".dashboard-panel").children(".panel").children("ul").each () ->
         element = $(this)
         first_timestamp = element.children("li").first().data("stamp")
         element.parent().parent().data("stamp", first_timestamp )
-      
+      setTimeout () ->
+        $("#dashboard-container").shuffle('appended', $(".dashboard-panel"))
+        $("#dashboard-container").shuffle("update")
+        sort_opts = 
+          reverse: true
+          by: (el) ->
+            return el.data("stamp")
+        $("#dashboard-container").shuffle("sort", sort_opts)
+      , 100
+    
     addToPanel: (notification, live=false) ->
       category_element = $("#notifs-"+notification.category)
       if category_element.length == 0
@@ -99,6 +116,9 @@ $ ->
         existing_notification.find(".m-time").text(notification.time)
         existing_notification.find(".m-title").text(notification.text)
         existing_notification.find(".m-title").attr("href", notification.url)
+        if live
+          if existing_notification[0] != category_element.children().first()[0]
+            category_element.prepend(existing_notification)
       else
         if live
           category_element.prepend(@notificationTemplate(notification))
