@@ -27,6 +27,12 @@ $ ->
       
       _panel=this
       
+      socket = io.connect('http://' + document.domain + ':3000' + '')
+      
+      socket.on "notify", (data) ->
+        if window.woe_is_me in data.users
+          _panel.addToPanel(data, true)
+      
       $("#dashboard-container").delegate ".ack_all", "click", (e) ->
         e.preventDefault()
         panel = $("#"+$(this).data("panel"))
@@ -57,7 +63,7 @@ $ ->
       else
         $(".nothing-new").remove()
       
-    addToPanel: (notification) ->
+    addToPanel: (notification, live=false) ->
       category_element = $("#notifs-"+notification.category)
       if category_element.length == 0
         panel = 
@@ -66,10 +72,11 @@ $ ->
         @dashboard_container.append(@panelTemplate(panel))
         category_element = $("#notifs-"+notification.category)
       
-      if notification.content?._ref?
-        notification.reference = notification.content._ref
-      else
-        notification.reference = ""
+      if not live
+        if notification.content?._ref?
+          notification.reference = notification.content._ref
+        else
+          notification.reference = ""
       
       existing_notification = $(".ref-#{notification.reference}-#{notification.category}")
       if existing_notification.length > 0 and notification.reference != ""
@@ -85,7 +92,10 @@ $ ->
         existing_notification.find(".m-title").text(notification.text)
         existing_notification.find(".m-title").attr("href", notification.url)
       else
-        category_element.append(@notificationTemplate(notification))
+        if live
+          category_element.prepend(@notificationTemplate(notification))
+        else
+          category_element.append(@notificationTemplate(notification))
       
     buildDashboard: () ->
       $.post "/dashboard/notifications", {}, (response) =>

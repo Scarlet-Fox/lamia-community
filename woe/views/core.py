@@ -661,6 +661,9 @@ def confirm_register(pk):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated():
+        return abort(404)
+    
     form = RegistrationForm(csrf_enabled=False)
     if form.validate_on_submit():
         new_user = User(
@@ -708,6 +711,9 @@ def register():
 
 @app.route('/sign-in', methods=['GET', 'POST'])
 def sign_in():
+    if current_user.is_authenticated():
+        return abort(404)
+        
     form = LoginForm(csrf_enabled=False)
     if form.validate_on_submit():
         login_user(form.user)
