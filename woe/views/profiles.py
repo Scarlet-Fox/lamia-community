@@ -21,6 +21,22 @@ def view_profile(login_name):
         user.about_me = ""
     return render_template("profile.jade", profile=user, page_title="%s - World of Equestria" % (unicode(user.display_name),))
 
+
+@app.route('/member/<login_name>/validate-user', methods=['POST'])
+@login_required
+def validate_user(login_name):
+    try:
+        user = User.objects(login_name=login_name.strip().lower())[0]
+    except IndexError:
+        return abort(404)
+        
+    if current_user._get_current_object().is_admin != True:
+        return abort(404)
+        
+    user.update(validated=True)
+        
+    return app.jsonify(url="/member/"+unicode(login_name))
+
 @app.route('/member/<login_name>/toggle-follow', methods=['POST'])
 @login_required
 def toggle_follow_user(login_name):

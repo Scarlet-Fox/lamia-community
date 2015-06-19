@@ -644,13 +644,15 @@ def display_status_update(status):
             
     return render_template("status_update.jade", page_title="%s - World of Equestria" % unicode(status.message), status=status, mod=mod)
 
-
 @login_manager.user_loader
 def load_user(login_name):
     try:
         user = User.objects(login_name=login_name)[0]
         user.update(last_seen=arrow.utcnow().datetime)
-        return user
+        if user.validated and not user.banned:
+            return user
+        else:
+            return None
     except IndexError:
         return None
 
