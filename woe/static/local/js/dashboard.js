@@ -39,6 +39,7 @@
         socket.on("notify", function(data) {
           var ref;
           if (ref = window.woe_is_me, indexOf.call(data.users, ref) >= 0) {
+            $(".nothing-new").remove();
             _panel.addToPanel(data, true);
             return _panel.setPanelDates();
           }
@@ -84,13 +85,10 @@
 
       Dashboard.prototype.isPanelEmpty = function() {
         if ($(".dashboard-panel").length === 0) {
-          $("#dashboard-container").html("<p class=\"nothing-new\">No new notifications, yet.</p>");
+          return $("#dashboard-container").before("<p class=\"nothing-new\">No new notifications, yet.</p>");
         } else {
-          $(".nothing-new").remove();
+          return $(".nothing-new").remove();
         }
-        return setTimeout(function() {
-          return $("#dashboard-container").shuffle("update");
-        }, 0);
       };
 
       Dashboard.prototype.setPanelDates = function() {
@@ -135,7 +133,8 @@
             notification.reference = "";
           }
         }
-        existing_notification = $(".ref-" + notification.reference + "-" + notification.category);
+        notification._member_name = notification.member_name.replace(/\s/g, "");
+        existing_notification = $(".ref-" + notification.reference + "-" + notification.category + "-" + notification._member_name);
         if (existing_notification.length > 0 && notification.reference !== "") {
           count = parseInt(existing_notification.data("count"));
           count = count + 1;
@@ -180,7 +179,7 @@
       };
 
       Dashboard.prototype.notificationHTML = function() {
-        return "<li class=\"list-group-item ref-{{reference}}-{{category}}\" id=\"{{_id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <a href=\"{{url}}\" class=\"m-title\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <p class=\"text-muted\"> by <a href=\"/members/{{member_name}}\" class=\"m-name\">{{member_disp_name}}</a> - <span class=\"m-time\">{{time}}</span></p>\n  </div>\n</li>";
+        return "<li class=\"list-group-item ref-{{reference}}-{{category}}-{{_member_name}}\" id=\"{{_id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <a href=\"{{url}}\" class=\"m-title\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <p class=\"text-muted\"> by <a href=\"/members/{{member_name}}\" class=\"m-name\">{{member_disp_name}}</a> - <span class=\"m-time\">{{time}}</span></p>\n  </div>\n</li>";
       };
 
       Dashboard.prototype.panelHTML = function() {

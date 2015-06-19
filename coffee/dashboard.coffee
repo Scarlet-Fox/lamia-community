@@ -36,6 +36,7 @@ $ ->
       
       socket.on "notify", (data) ->
         if window.woe_is_me in data.users
+          $(".nothing-new").remove()
           _panel.addToPanel(data, true)
           do _panel.setPanelDates
       
@@ -63,14 +64,11 @@ $ ->
               
     isPanelEmpty: () ->
       if $(".dashboard-panel").length == 0
-        $("#dashboard-container").html """
+        $("#dashboard-container").before """
         <p class="nothing-new">No new notifications, yet.</p>
         """
       else
         $(".nothing-new").remove()
-      setTimeout () ->
-        $("#dashboard-container").shuffle("update")
-      , 0
         
     setPanelDates: () ->
       $(".dashboard-panel").children(".panel").children("ul").each () ->
@@ -101,8 +99,10 @@ $ ->
           notification.reference = notification.content._ref
         else
           notification.reference = ""
+          
+      notification._member_name = notification.member_name.replace(/\s/g, "")
       
-      existing_notification = $(".ref-#{notification.reference}-#{notification.category}")
+      existing_notification = $(".ref-#{notification.reference}-#{notification.category}-#{notification._member_name}")
       if existing_notification.length > 0 and notification.reference != ""
         count = parseInt(existing_notification.data("count"))
         count = count + 1
@@ -134,7 +134,7 @@ $ ->
       
     notificationHTML: () ->
       return """
-      <li class="list-group-item ref-{{reference}}-{{category}}" id="{{_id}}" data-stamp="{{stamp}}" data-count="1">
+      <li class="list-group-item ref-{{reference}}-{{category}}-{{_member_name}}" id="{{_id}}" data-stamp="{{stamp}}" data-count="1">
         <div class="media-left" style="display: none;"><span class="badge"></span></div>
         <div class="media-body">
           <a href="{{url}}" class="m-title">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
