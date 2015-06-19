@@ -68,11 +68,13 @@
         if (notifications_listed.length > 14) {
           notifications_listed[notifications_listed.length - 1].remove();
         }
-        _html = "<a href=\"" + data.url + "\" data-notification=\"" + data.id + "\" class=\"notification-link\">" + data.title + "</a>";
+        _html = "<a href=\"" + data.url + "\" data-notification=\"" + data.id + "\" class=\"notification-link dropdown-notif-" + data.id + "-" + data.category + "\">" + data.title + "</a>";
         if (notifications_listed.length === 0) {
           return $("#notification-dropdown").append(_html);
         } else {
-          return $(notifications_listed[0]).before(_html);
+          if (notification_listing.find("dropdown-notif-" + data.id + "-" + data.category).length === 0) {
+            return $(notifications_listed[0]).before(_html);
+          }
         }
       }
     });

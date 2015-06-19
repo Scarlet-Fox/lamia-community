@@ -435,7 +435,23 @@ class User(db.DynamicDocument):
         return Notification.objects(user=self, acknowledged=False).count()
         
     def get_recent_notifications(self, count=5):
-        return Notification.objects(user=self, acknowledged=False)[:count]
+        notifications = Notification.objects(user=self, acknowledged=False)
+        content_already_in = {}
+        
+        notifications_to_send = []
+        for notification in notifications:
+            if notification.content != None:
+                if not content_already_in.has_key(notification.content.pk):
+                    content_already_in[notification.content.pk] = 1
+                    notifications_to_send.append(notification)
+            else:
+                notifications_to_send.append(notification)
+            
+            if len(notifications_to_send) == count:
+                break
+        
+        print notifications_to_send
+        return notifications_to_send
         
     def is_authenticated(self):
         return True # Will only ever return True.
