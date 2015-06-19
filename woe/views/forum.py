@@ -206,7 +206,10 @@ def topic_posts(slug):
         parsed_post["group_post_html"] = post.author.group_post_html
         parsed_post["has_booped"] = current_user._get_current_object() in post.boops
         parsed_post["boop_count"] = len(post.boops)
-        parsed_post["can_boop"] =  current_user._get_current_object() != post.author
+        if current_user.is_authenticated():
+            parsed_post["can_boop"] = current_user._get_current_object() != post.author
+        else:
+            parsed_post["can_boop"] = False
         
         if current_user.is_authenticated():
             if post.author.pk == current_user.pk:
