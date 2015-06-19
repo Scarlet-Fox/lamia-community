@@ -37,6 +37,26 @@ def validate_user(login_name):
         
     return app.jsonify(url="/member/"+unicode(login_name))
 
+@app.route('/member/<login_name>/toggle-ignore', methods=['POST'])
+@login_required
+def toggle_ignore_user(login_name):
+    try:
+        user = User.objects(login_name=login_name.strip().lower())[0]
+    except IndexError:
+        return abort(404)
+        
+    if current_user._get_current_object() == user:
+        return abort(404)
+    
+    if user in current_user._get_current_object().ignored_users:
+        c = current_user._get_current_object()
+        c.ignored_users.remove(user)
+        c.save()
+    else:
+        current_user._get_current_object().update(add_to_set__ignored_users=user)
+    
+    return app.jsonify(url="/member/"+unicode(login_name))
+
 @app.route('/member/<login_name>/toggle-follow', methods=['POST'])
 @login_required
 def toggle_follow_user(login_name):
@@ -49,7 +69,7 @@ def toggle_follow_user(login_name):
         user.update(add_to_set__ignored_users=current_user._get_current_object())
         return abort(404)
         
-    if current_user == user:
+    if current_user._get_current_object() == user:
         return abort(404)
     
     if current_user._get_current_object() in user.followed_by:
