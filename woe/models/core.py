@@ -372,6 +372,8 @@ class User(db.DynamicDocument):
     
     # Friends and social stuff
     followed_by = db.ListField(db.ReferenceField("User"))
+    pending_friends = db.ListField(db.ReferenceField("User"))
+    rejected_friends = db.ListField(db.ReferenceField("User"))
     friends = db.ListField(db.ReferenceField("User"))
     profile_feed = db.ListField(db.EmbeddedDocumentField(UserActivity))
     

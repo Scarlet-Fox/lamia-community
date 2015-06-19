@@ -16,6 +16,23 @@
         img.center-block.profile-page-avatar#profile-avatar(src="", width="200px", height="200px")
         {% endif %}
         span.text-muted {{profile.title}}
+      if current_user.is_authenticated() and current_user != profile and current_user not in profile.ignored_users
+        center
+          .btn-group
+            if current_user not in profile.followed_by
+              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Follow
+            else
+              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Unfollow
+            if not current_user in profile.rejected_friends
+              if current_user not in pending_friends and current_user not in friends
+                a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/request-friend") Friend Request
+              else
+                a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/un-friend") Unfriend
+            if profile not in current_user.ignored_users
+              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Ignore
+            else
+              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Unignore
+      br
     .panel.panel-default
       .panel-body.text-center
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")

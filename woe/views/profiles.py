@@ -20,7 +20,30 @@ def view_profile(login_name):
     except:
         user.about_me = ""
     return render_template("profile.jade", profile=user, page_title="%s - World of Equestria" % (unicode(user.display_name),))
+
+@app.route('/member/<login_name>/toggle-follow', methods=['POST'])
+@login_required
+def toggle_follow_user(login_name):
+    try:
+        user = User.objects(login_name=login_name.strip().lower())[0]
+    except IndexError:
+        return abort(404)
+        
+    if current_user in user.ignored_users:
+        user.update(add_to_set__ignored_users=current_user._get_current_object())
+        return abort(404)
+        
+    if current_user == user:
+        return abort(404)
     
+    if current_user._get_current_object() in user.followed_by:
+        user.followed_by.remove(current_user._get_current_object())
+        user.save()
+    else:
+        user.update(add_to_set__followed_by=current_user._get_current_object())
+    
+    return app.jsonify(url="/member/"+unicode(login_name))
+
 @app.route('/member/<login_name>/change-avatar-title', methods=['GET', 'POST'])
 @login_required
 def change_avatar_or_title(login_name):
