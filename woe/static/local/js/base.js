@@ -68,7 +68,7 @@
         if (notifications_listed.length > 14) {
           notifications_listed[notifications_listed.length - 1].remove();
         }
-        _html = "<a href=\"" + data.url + "\" data-notification=\"" + data.id + "\" class=\"notification-link dropdown-notif-" + data.id + "-" + data.category + "\">" + data.title + "</a>";
+        _html = "<a href=\"" + data.url + "\" data-notification=\"" + data._id + "\" class=\"notification-link dropdown-notif-" + data._id + "-" + data.category + "\">" + data.text + "</a>";
         if (notifications_listed.length === 0) {
           return $("#notification-dropdown").append(_html);
         } else {

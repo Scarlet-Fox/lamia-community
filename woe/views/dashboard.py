@@ -47,9 +47,11 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         )
         
         send_dashboard_poke_to.append(u)
-                
+        
+        has_content = False    
         if content != None:
             new_notification.content = content
+            has_content = True
         new_notification.save()
         
         try:
@@ -57,13 +59,20 @@ def broadcast(to, category, url, title, description, content, author, priority=0
                 "users": [u.login_name for u in send_dashboard_poke_to],
                 "category": category,
                 "author": author.display_name,
+                "member_name": author.login_name,
+                "member_disp_name": author.display_name,
                 "author_url": "/member/"+author.login_name,
                 "created": humanize_time(now.datetime),
                 "url": url,
-                "title": title,
+                "stamp": arrow.get(new_notification.created).timestamp,
+                "text": title,
                 "priority": priority,
-                "id": str(new_notification.pk)
+                "_id": str(new_notification.pk)
             }
+            if has_content:
+                data["reference"] = new_notification.content.pk
+            else:
+                data["reference"] = ""
             req = urllib2.Request(app.settings_file["listener"]+"/notify")
             req.add_header('Content-Type', 'application/json')
             response = urllib2.urlopen(req, py_json.dumps(data))

@@ -92,7 +92,7 @@ $ ->
         for notification in response.notifications
           @addToPanel notification
         do @isPanelEmpty
-          
+      
     notificationHTML: () ->
       return """
       <li class="list-group-item ref-{{reference}}-{{category}}" id="{{_id}}" data-stamp="{{stamp}}" data-count="1">
