@@ -300,7 +300,7 @@ class User(db.DynamicDocument):
     
     title = db.StringField(default="")
     location = db.StringField(default="")
-    about = db.StringField(default="")
+    about_me = db.StringField(default="")
     avatar_extension = db.StringField()
     
     # User group names!
