@@ -32,6 +32,7 @@ $ ->
       socket.on "notify", (data) ->
         if window.woe_is_me in data.users
           _panel.addToPanel(data, true)
+          do _panel.setPanelDates
       
       $("#dashboard-container").delegate ".ack_all", "click", (e) ->
         e.preventDefault()
@@ -62,6 +63,12 @@ $ ->
         """
       else
         $(".nothing-new").remove()
+        
+    setPanelDates: () ->
+      $(".dashboard-panel").children(".panel").children("ul").each () ->
+        element = $(this)
+        first_timestamp = element.children("li").first().data("stamp")
+        element.parent().parent().data("stamp", first_timestamp )
       
     addToPanel: (notification, live=false) ->
       category_element = $("#notifs-"+notification.category)
@@ -85,6 +92,7 @@ $ ->
         if not existing_notification.children("media-left").is(":visible")
           existing_notification.children(".media-left").show()
         existing_notification.data("count", count)
+        existing_notification.data("stamp", notification.stamp)
         existing_notification.children(".media-left").children(".badge").text(count)
         existing_notification.find(".m-name").attr("href", "/members/#{notification.member_name}")
         existing_notification.find(".m-name").text(notification.member_disp_name)
@@ -102,6 +110,7 @@ $ ->
         for notification in response.notifications
           @addToPanel notification
         do @isPanelEmpty
+        do @setPanelDates
       
     notificationHTML: () ->
       return """

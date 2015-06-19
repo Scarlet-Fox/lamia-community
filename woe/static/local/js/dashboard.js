@@ -34,7 +34,8 @@
         socket.on("notify", function(data) {
           var ref;
           if (ref = window.woe_is_me, indexOf.call(data.users, ref) >= 0) {
-            return _panel.addToPanel(data, true);
+            _panel.addToPanel(data, true);
+            return _panel.setPanelDates();
           }
         });
         $("#dashboard-container").delegate(".ack_all", "click", function(e) {
@@ -84,6 +85,15 @@
         }
       };
 
+      Dashboard.prototype.setPanelDates = function() {
+        return $(".dashboard-panel").children(".panel").children("ul").each(function() {
+          var element, first_timestamp;
+          element = $(this);
+          first_timestamp = element.children("li").first().data("stamp");
+          return element.parent().parent().data("stamp", first_timestamp);
+        });
+      };
+
       Dashboard.prototype.addToPanel = function(notification, live) {
         var category_element, count, existing_notification, panel, ref;
         if (live == null) {
@@ -113,6 +123,7 @@
             existing_notification.children(".media-left").show();
           }
           existing_notification.data("count", count);
+          existing_notification.data("stamp", notification.stamp);
           existing_notification.children(".media-left").children(".badge").text(count);
           existing_notification.find(".m-name").attr("href", "/members/" + notification.member_name);
           existing_notification.find(".m-name").text(notification.member_disp_name);
@@ -137,7 +148,8 @@
               notification = ref[i];
               _this.addToPanel(notification);
             }
-            return _this.isPanelEmpty();
+            _this.isPanelEmpty();
+            return _this.setPanelDates();
           };
         })(this));
       };
