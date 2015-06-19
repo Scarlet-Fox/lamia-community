@@ -678,6 +678,16 @@ def register():
         new_user.save()
         
         broadcast(
+            to=User.objects(is_admin=True),
+            category="mod", 
+            url="/member/"+unicode(new_user.login_name),
+            title="%s has joined the forum. Please review and approve/ban (go to /admin/)." % (unicode(new_user.display_name),),
+            description="", 
+            content=new_user, 
+            author=new_user
+            )
+            
+        broadcast(
             to=User.objects(banned=False, login_name__ne=new_user.login_name, last_seen__gte=arrow.utcnow().replace(hours=-24).datetime),
             category="new_member", 
             url="/member/"+unicode(new_user.login_name),
