@@ -568,7 +568,7 @@ def make_status_update_reply(status):
         to=send_notify_to_users, 
         category="status", 
         url="/status/"+str(status.pk),
-        title="%s's Status Update" % (unicode(status.author.display_name),),
+        title="Reply to %s's Status Update" % (unicode(status.author.display_name),),
         description=status.message, 
         content=status, 
         author=current_user._get_current_object()
