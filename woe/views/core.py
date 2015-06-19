@@ -230,7 +230,8 @@ def search_display():
         end_date=end_date,
         categories=json.dumps(categories),
         topics=json.dumps(topics),
-        authors=json.dumps(authors)
+        authors=json.dumps(authors),
+        page_title="Search - World of Equestria"
         )
 
 @app.route('/status-updates', methods=['GET', 'POST'])
@@ -307,7 +308,7 @@ def status_update_index():
             parsed_statuses.append(parsed_status)
         return app.jsonify(status_updates=parsed_statuses)
     else:
-        return render_template("core/status_index.jade", status_updates=status_updates, count=count, search=search, authors=json.dumps(authors))
+        return render_template("core/status_index.jade", page_title="Status Updates - World of Equestria", status_updates=status_updates, count=count, search=search, authors=json.dumps(authors))
 
 @app.route('/robots.txt')
 def static_from_root():
@@ -641,7 +642,7 @@ def display_status_update(status):
         
     status.save()
             
-    return render_template("status_update.jade", status=status, mod=mod)
+    return render_template("status_update.jade", page_title="%s - World of Equestria" % unicode(status.message), status=status, mod=mod)
 
 
 @login_manager.user_loader
@@ -656,7 +657,7 @@ def load_user(login_name):
 @app.route('/hello/<pk>')
 def confirm_register(pk):
     user = User.objects(pk=pk)[0]
-    return render_template("welcome_new_user.jade", profile=user)
+    return render_template("welcome_new_user.jade", page_title="Welcome! - World of Equestria", profile=user)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -703,7 +704,7 @@ def register():
 
         return redirect('/hello/'+str(new_user.pk))
     
-    return render_template("register.jade", form=form)
+    return render_template("register.jade", page_title="Become One of Us - World of Equestria", form=form)
 
 @app.route('/sign-in', methods=['GET', 'POST'])
 def sign_in():
@@ -713,7 +714,7 @@ def sign_in():
         # TODO - get fingerprint
         return redirect('/')
         
-    return render_template("sign_in.jade", form=form)
+    return render_template("sign_in.jade", page_title="Sign In - World of Equestria", form=form)
     
 @app.route('/sign-out', methods=['POST'])
 def sign_out():

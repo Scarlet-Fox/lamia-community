@@ -94,7 +94,7 @@ class PrivateMessageView(ModelView):
     column_filters = ("topic_name", "topic_creator_name", "author_name", "message")    
     
     def is_accessible(self):
-        return current_user.login_name in ["luminescence", "zoop"]
+        return (current_user.is_authenticated() and current_user.login_name in ["luminescence", "zoop"])
 
 admin.add_view(UserView(User))
 admin.add_view(StatusView(StatusUpdate))

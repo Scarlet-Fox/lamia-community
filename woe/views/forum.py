@@ -332,10 +332,10 @@ def topic_index(slug, page, post):
         target_date = post.created
         posts_before_target = Post.objects(hidden=False, topic=topic, created__lt=target_date).count()
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
-        return render_template("forum/topic.jade", topic=topic, initial_page=page, initial_post=str(post.pk))
+        return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, initial_post=str(post.pk))
     
     topic.update(inc__view_count=1)
-    return render_template("forum/topic.jade", topic=topic, initial_page=page)
+    return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
@@ -463,7 +463,7 @@ def new_topic(slug):
         except IndexError:
             return abort(404)
         
-        return render_template("forum/new_topic.jade", category=category)
+        return render_template("forum/new_topic.jade", page_title="Create New Topic", category=category)
 
 @app.route('/category/<slug>/topics', methods=['POST'])
 def category_topics(slug):
@@ -531,7 +531,7 @@ def category_index(slug):
     subcategories = Category.objects(parent=category)
     prefixes = get_top_frequences(Topic.objects(category=category, prefix__ne=None).item_frequencies("prefix"),10) 
     
-    return render_template("forum/category.jade", category=category, subcategories=subcategories, prefixes=prefixes)
+    return render_template("forum/category.jade", page_title="%s - World of Equestria" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
 
 @app.route('/')
 def index():
@@ -558,7 +558,7 @@ def index():
     member_count = User.objects(banned=False).count()
     newest_member = User.objects().order_by("-joined")[0]
     
-    return render_template("index.jade", 
+    return render_template("index.jade", page_title="World of Equestria!",
         categories=categories, status_updates=cleaned_statuses[:5], online_users=online_users,
         post_count=post_count, member_count=member_count, newest_member=newest_member, 
         online_user_count=online_users.count())

@@ -19,7 +19,7 @@ def view_profile(login_name):
         user.about_me = parser.parse(user.about_me)
     except:
         user.about_me = ""
-    return render_template("profile.jade", profile=user)
+    return render_template("profile.jade", profile=user, page_title="%s - World of Equestria" % (unicode(user.display_name),))
     
 @app.route('/member/<login_name>/change-avatar-title', methods=['GET', 'POST'])
 @login_required
@@ -65,7 +65,7 @@ def change_avatar_or_title(login_name):
         filename = None
         form.title.data = user.title
     
-    return render_template("profile/change_avatar.jade", profile=user, form=form)
+    return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - World of Equestria")
 
 @app.route('/member/<login_name>/change-account', methods=['GET', 'POST'])
 @login_required
@@ -101,7 +101,7 @@ def change_display_name_password(login_name):
         form.display_name.data = user.display_name
         form.email.data = user.email_address
         
-    return render_template("profile/change_account.jade", profile=user, form=form)
+    return render_template("profile/change_account.jade", profile=user, form=form, page_title="Change Account Settings - World of Equestria")
 
 @app.route('/member/<login_name>/edit-profile', methods=['GET', 'POST'])
 @login_required
