@@ -154,8 +154,8 @@ $ ->
         <div id="toolbar-#{@quillID}" class="toolbar">
           <span class="ql-format-group">
             <select title="Font" class="ql-font">
-              <option value="pt_sansregular" selected>PT Sans Regular</option>
-              
+              <option value="pt_sansregular" selected>PT Regular</option>
+              <option value="pt_sanscaption">PT Caption</option>
             </select>
             <select title="Size" class="ql-size">
               <option value="8px">Micro</option>
