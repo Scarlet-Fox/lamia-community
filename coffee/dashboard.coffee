@@ -138,7 +138,7 @@ $ ->
         <div class="media-left" style="display: none;"><span class="badge"></span></div>
         <div class="media-body">
           <a href="{{url}}" class="m-title">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
-          <p class="text-muted"> by <a href="/members/{{member_name}}" class="m-name">{{member_disp_name}}</a> - <span class="m-time">{{time}}</span></p>
+          <p class="text-muted"> by <a href="/members/{{member_name}}" class="m-name hover_user">{{member_disp_name}}</a> - <span class="m-time">{{time}}</span></p>
         </div>
       </li>
       """

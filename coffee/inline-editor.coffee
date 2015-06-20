@@ -27,7 +27,7 @@ $ ->
                 <h4 class="modal-title">Mention Lookup</h4>
               </div>
               <div class="modal-body">
-                Use this to insert mentions into your post. Keep in mind, they will only send notifications in a topic.
+                Use this to insert mentions into your post.
                 <br><br>
                 <select id="member-select" class="form-control" style="max-width: 100%; width: 400px;" multiple="multiple">
                 </select>

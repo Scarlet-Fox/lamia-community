@@ -8,6 +8,9 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import arrow, time, math
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
 from woe.views.dashboard import broadcast
+import re
+
+mention_re = re.compile("\[@(.*?)\]")
 
 @app.route('/category-list-api', methods=['GET'])
 @login_required
@@ -126,7 +129,25 @@ def new_post_in_topic(slug):
         content=topic, 
         author=new_post.author
         )
-    
+
+    mentions = mention_re.findall(post_html)
+    to_notify = {}
+    for mention in mentions:
+        try:
+            to_notify[mention] = User.objects(login_name=mention)[0]
+        except:
+            continue
+        
+    broadcast(
+      to=to_notify.values(),
+      category="mention", 
+      url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
+      title="%s mentioned you in %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
+      description=new_post.html, 
+      content=topic, 
+      author=new_post.author
+      )
+
     return app.jsonify(newest_post=parsed_post, count=post_count, success=True)    
     
 @app.route('/boop-post', methods=['POST'])
@@ -401,7 +422,7 @@ def new_topic(slug):
         try:
             users_last_topic = Topic.objects(creator=current_user._get_current_object()).order_by("-created")[0]
             difference = (arrow.utcnow().datetime - arrow.get(users_last_topic.created).datetime).seconds
-            if difference < 360:
+            if difference < 360 and not current_user._get_current_object().is_admin:
                 return app.jsonify(error="Please wait %s seconds before you create another topic." % (360 - difference))
         except:
             pass
@@ -451,6 +472,24 @@ def new_topic(slug):
           category="user_activity", 
           url="/t/"+unicode(new_topic.slug),
           title="%s created a new topic. %s." % (unicode(new_post.author.display_name), unicode(new_topic.title)),
+          description=new_post.html, 
+          content=new_topic, 
+          author=new_post.author
+          )
+          
+        mentions = mention_re.findall(post_html)
+        to_notify = {}
+        for mention in mentions:
+            try:
+                to_notify[mention] = User.objects(login_name=mention)[0]
+            except:
+                continue
+            
+        broadcast(
+          to=to_notify.values(),
+          category="mention", 
+          url="/t/"+unicode(new_topic.slug),
+          title="%s mentioned you in new topic %s." % (unicode(new_post.author.display_name), unicode(new_topic.title)),
           description=new_post.html, 
           content=new_topic, 
           author=new_post.author

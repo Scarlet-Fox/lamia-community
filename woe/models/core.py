@@ -521,6 +521,7 @@ attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\]')
 end_spoiler_re = re.compile(r'\[\/spoiler\]')
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
+mention_re = re.compile("\[@(.*?)\]")
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -551,6 +552,14 @@ class ForumPostParser(object):
         pass
         
     def parse(self, html):
+        mentions = mention_re.findall(html)
+        for mention in mentions:
+            try:
+                user = User.objects(login_name=mention)[0]
+                html = html.replace("[@%s]" % unicode(mention), """<a href="/members/%s" class="hover_user">@%s</a>""" % (user.login_name, user.display_name), 1)
+            except:
+                html = html.replace("[@%s]" % unicode(mention), "", 1)
+            
         # parse html
         html = html.replace("[hr]", "<hr>")
         
