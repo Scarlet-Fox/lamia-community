@@ -234,7 +234,9 @@
               post.count = first_post + i;
               post._is_topic_mod = _this.is_mod;
               post._is_logged_in = _this.is_logged_in;
-              post.show_boop = true;
+              if (_this.is_logged_in) {
+                post.show_boop = true;
+              }
               post.direct_url = "/t/" + _this.slug + "/page/" + _this.page + "/post/" + post._id;
               new_post_html = new_post_html + _this.postHTML(post);
             }

@@ -154,9 +154,8 @@ $ ->
         <div id="toolbar-#{@quillID}" class="toolbar">
           <span class="ql-format-group">
             <select title="Font" class="ql-font">
-              <option value="sans-serif" selected>Sans Serif</option>
-              <option value="serif">Serif</option>
-              <option value="monospace">Monospace</option>
+              <option value="pt_sansregular" selected>PT Sans Regular</option>
+              
             </select>
             <select title="Size" class="ql-size">
               <option value="8px">Micro</option>
