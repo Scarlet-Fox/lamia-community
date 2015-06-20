@@ -48,6 +48,11 @@ $ ->
             panel.remove()
             do _panel.isPanelEmpty
       
+      $("#dashboard-container").delegate ".ack_single_href", "click", (e) ->
+        e.preventDefault()
+        $.post "/dashboard/ack_notification", JSON.stringify({notification: $(this).data("notification")}), (data) =>
+          window.location = $(this).attr("href")
+      
       $("#dashboard-container").delegate ".ack_single", "click", (e) ->
         e.preventDefault()
         notification = $("#"+$(this).data("notification"))
@@ -137,7 +142,7 @@ $ ->
       <li class="list-group-item ref-{{reference}}-{{category}}-{{_member_name}}" id="{{_id}}" data-stamp="{{stamp}}" data-count="1">
         <div class="media-left" style="display: none;"><span class="badge"></span></div>
         <div class="media-body">
-          <a href="{{url}}" class="m-title">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
+          <a href="{{url}}" data-notification="{{_id}}" class="m-title ack_single_href">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
           <p class="text-muted"> by <a href="/members/{{member_name}}" class="m-name hover_user">{{member_disp_name}}</a> - <span class="m-time">{{time}}</span></p>
         </div>
       </li>
