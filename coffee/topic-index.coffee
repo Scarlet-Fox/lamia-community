@@ -93,7 +93,13 @@ $ ->
             element.data("count", count-1)
             element.children(".badge").text(element.data("count"))
             element.children(".badge").css("background-color", "#555")
-          
+      
+      $("#post-container").delegate ".mention-button", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        topic.inline_editor.quill.insertText topic.inline_editor.quill.getLength(), "[@#{element.data("author")}]"
+        topic.inline_editor.element[0].scrollIntoView()
+      
       $("#post-container").delegate ".post-edit", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -242,9 +248,10 @@ $ ->
                       <div class="col-md-8">
                         {{#if _is_logged_in}}
                         <div class="btn-group" role="group" aria-label="...">
-                          <button type="button" class="btn btn-default">Report</button>
                           <div class="btn-group">
-                            <button type="button" class="btn btn-default">Quote</button>
+                            <button type="button" class="btn btn-default mention-button" data-author="{{author_login_name}}">@</button>
+                            <button type="button" class="btn btn-default">Reply</button>
+                            <button type="button" class="btn btn-default">Report</button>
                             <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>
