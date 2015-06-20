@@ -3,3 +3,7 @@ For PyPy:
 * pip install git+git://github.com/surfly/gevent.git#egg=gevent
 
 * gunicorn --worker-class sync --workers 8 --error-logfile=- --access-logfile=- woe:app  -b 0.0.0.0:5000
+
+For fonts:
+
+* http://www.fontsquirrel.com/
