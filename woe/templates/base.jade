@@ -19,8 +19,23 @@ head
     meta(name='description', content='')
     meta(name='author', content='')
     title {{ page_title }}
-    link(href='/static/assets/bootstrap.css', rel='stylesheet')
-    link(href='/static/local/css/woe-theme.css', rel='stylesheet')
+    if current_user.is_authenticated() and current_user.custom_theme
+      {% assets filters="cssmin", output="generated/woe-core.css",
+      "assets/bootstrap.css", "assets/quill/quill.base.css", "assets/quill/quill.snow.css", 
+      "assets/dropzone/dropzone.css", "bootstrap-datepicker/bootstrap-datepicker.css",
+      "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
+      "{{current_user.custom_theme}}" %}
+      link(href='{{ASSET_URL}}', rel='stylesheet')
+      {% endassets %}
+    else
+      {% assets filters="cssmin", output="generated/woe-core.css",
+      "assets/bootstrap.css", "assets/quill/quill.base.css", "assets/quill/quill.snow.css", 
+      "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
+      "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
+      "local/css/woe-theme.css" %}
+      link(href='{{ASSET_URL}}', rel='stylesheet')
+      {% endassets %}
+      
     {% block header %}
     {% endblock %}
     // HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries

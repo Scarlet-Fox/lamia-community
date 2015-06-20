@@ -24,12 +24,6 @@
 nav.pagination-listing
 {% endblock %}
 
-{% block header %}
-link(href='/static/assets/quill/quill.base.css', rel='stylesheet')
-link(href='/static/assets/quill/quill.snow.css', rel='stylesheet')
-link(href='/static/assets/dropzone/dropzone.css', rel='stylesheet')
-{% endblock %}
-
 {% block script %}
 script(src="/static/assets/handlebars.min.js")
 {% assets filters="rjsmin", output="generated/editor.js",
