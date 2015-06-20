@@ -93,7 +93,7 @@ def acknowledge_notification():
     notification.update(acknowledged=True)
     
     try:
-        notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False, content=notification.content)
+        notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False, content=notification.content, author=notification.author)
         notifications.update(acknowledged=True)
     except:
         return app.jsonify(success=False)

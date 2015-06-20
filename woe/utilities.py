@@ -2,8 +2,10 @@ from lxml.html.clean import Cleaner
 import hashlib
 import arrow
 from woe import app
-import cgi
+import cgi, re
 from mongoengine.queryset import Q
+
+url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 
 def parse_search_string_return_q(search_text, fields_to_search):
     if search_text.strip() == "":
@@ -121,6 +123,11 @@ class ForumHTMLCleaner(object):
         
     def escape(self, dirty_text):
         text = cgi.escape(dirty_text)
+            
+        urls = url_rgx.findall(text)
+        for url in urls:
+            text = text.replace(url, """<a href="%s" target="_blank">%s</a>""" % (unicode(url), unicode(url),), 1)
+            
         return text    
     
     def clean(self, dirty_html):
@@ -129,6 +136,7 @@ class ForumHTMLCleaner(object):
             html = html[5:]
         if html[-6:] == "</div>":
             html = html[:-6]
+        
         return html
         
 @app.template_filter('humanize_time')
