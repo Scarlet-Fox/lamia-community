@@ -26,7 +26,7 @@ app.config['DEBUG'] = settings_file["debug"]
 app.settings_file = settings_file
 
 assets = Environment(app)
-app.config['ASSETS_DEBUG'] = True
+app.config['ASSETS_DEBUG'] = settings_file["asset_debug"]
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 cache.init_app(app)
