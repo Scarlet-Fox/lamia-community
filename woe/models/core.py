@@ -11,6 +11,7 @@ class Fingerprint(db.DynamicDocument):
     user_name = db.StringField(required=True)
     last_seen = db.DateTimeField(required=True)
     fingerprint = db.DictField(required=True)
+    fingerprint_factors = db.IntField(required=True, default=0)
     fingerprint_hash = db.StringField(required=True)
     
     def compute_similarity_score(self, stranger):
@@ -25,7 +26,7 @@ class Fingerprint(db.DynamicDocument):
         
         max_score = float(len(attributes.keys()))
         for attribute in attributes.keys():
-            if self.fingerprint[attribute] == stranger.fingerprint[attribute]:
+            if self.fingerprint.get(attribute, None) == stranger.fingerprint.get(attribute, None):
                 score += 1
                 
         return score/max_score

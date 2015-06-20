@@ -41,6 +41,10 @@
     .panel.panel-default
       .panel-body.text-center
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+          {% if current_user.is_mod or current_user.is_admin  %}
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}/mod-panel") Moderation
+          {% endif %}
           li(role="presentation")
             a(href="/member/{{profile.login_name}}") About Me
           {% if current_user == profile or current_user.is_admin  %}

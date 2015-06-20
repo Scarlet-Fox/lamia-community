@@ -50,7 +50,7 @@ def pm_topic_list_api():
     topics = PrivateMessageTopic.objects(q_, participating_users=me)
     results = [{"text": unicode(t.title), "id": str(t.pk)} for t in topics]
     return app.jsonify(results=results)
-  
+
 @app.route('/attach', methods=['POST',])
 @login_required
 def create_attachment():
@@ -762,7 +762,7 @@ def sign_in():
     if form.validate_on_submit():
         login_user(form.user)    
         fingerprint__info_from_browser = json.loads(request.form.get("log_in_token"))
-        print fingerprint__info_from_browser
+        
         fingerprint_data = {}
         fingerprint_data["current_user"] = form.user.login_name
         fingerprint_data["screen_width"] = fingerprint__info_from_browser.get("sw", 0)
@@ -771,7 +771,17 @@ def sign_in():
         fingerprint_data["timezone"] = fingerprint__info_from_browser.get("tz", 0)
         
         for browser_plugin in fingerprint__info_from_browser.get("pl", []):
-            fingerprint_data[browser_plugin["name"]] = browser_plugin["description"]
+            try:
+                fingerprint_data[browser_plugin["name"]] = browser_plugin["description"]
+            except:
+                pass
+                
+        for browser_plugin in fingerprint__info_from_browser.get("pl", []):
+            try:
+                for browser_plugin_object in browser_plugin.keys():
+                    fingerprint_data[browser_plugin_object.replace(".", "dt").replace("$", "dl")] = browser_plugin[browser_plugin_object]
+            except:
+                pass
             
         fingerprint_data["agent_platform"] = request.user_agent.platform
         fingerprint_data["agent_browser"] = request.user_agent.browser
@@ -802,6 +812,7 @@ def sign_in():
             f.last_seen = arrow.utcnow().datetime
             f.fingerprint = fingerprint_data
             f.fingerprint_hash = _fingerprint_hash
+            f.fingerprint_factors = len(fingerprint_data)
             f.save()
         
         return redirect('/')

@@ -1,4 +1,4 @@
-from woe.models.core import User, DisplayNameHistory, ForumPostParser
+from woe.models.core import User, DisplayNameHistory, ForumPostParser, IPAddress, Fingerprint
 from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
@@ -7,6 +7,50 @@ from werkzeug import secure_filename
 import os
 import arrow
 from woe.utilities import ForumHTMLCleaner
+
+@app.route('/member/<login_name>/mod-panel')
+@login_required
+def user_moderation_panel(login_name):
+    if current_user._get_current_object().is_admin != True:
+        abort(404)
+
+    try:
+        user = User.objects(login_name=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+    
+    last_five_ip_addresses = IPAddress.objects(user=user)[0:5]
+    
+    fingerprints_with_top_matches = {}
+    most_recent_fingerprints = Fingerprint.objects(user=user)[0:5]
+    
+    for recent_fingerprint in most_recent_fingerprints:
+        matches = []
+        other_fingerprints = Fingerprint.objects(
+            user__ne=user, 
+            fingerprint_factors__gte = recent_fingerprint.fingerprint_factors-6,
+            fingerprint_factors__lte = recent_fingerprint.fingerprint_factors+6
+        )
+        for fingerprint in other_fingerprints:
+            user_ = fingerprint.user
+            hash_ = fingerprint.fingerprint_hash
+            score = recent_fingerprint.compute_similarity_score(fingerprint)
+        
+            if len(matches) == 0:
+                matches.append((user_, hash_, round(score*100,0)))
+            else:
+                if round(score*100,0) > matches[0][2]:
+                    matches.insert(0,(user_, hash_, round(score*100,0)))
+                else:
+                    matches.append((user_, hash_, round(score*100,0)))
+        fingerprints_with_top_matches[recent_fingerprint.fingerprint_hash] = matches[0:3]
+        
+    return render_template("profile/mod_panel.jade", 
+        profile=user, 
+        recent_ips=last_five_ip_addresses,
+        title="Mod Details for %s - World of Equestria" % (unicode(user.display_name),),
+        recent_fingerprints=most_recent_fingerprints,
+        top_fingerprint_matches=fingerprints_with_top_matches)
 
 @app.route('/member/<login_name>')
 def view_profile(login_name):
@@ -20,7 +64,6 @@ def view_profile(login_name):
     except:
         user.about_me = ""
     return render_template("profile.jade", profile=user, page_title="%s - World of Equestria" % (unicode(user.display_name),))
-
 
 @app.route('/member/<login_name>/validate-user', methods=['POST'])
 @login_required
