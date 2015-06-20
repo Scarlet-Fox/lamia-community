@@ -4,12 +4,15 @@ from woe.models.core import User
 from woe.models.forum import Post, Category, Topic, PostHistory
 import arrow, os, shutil
 from PIL import Image
-import json
+import json, re
 settings_file = json.loads(open("config.json").read())
 
 db = MySQLdb.connect(user=settings_file["woe_old_user"], db=settings_file["woe_old_db"], passwd=settings_file["woe_old_pass"], cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
 c=db.cursor()
 c.execute("select * from ipsposts;")
+
+url_bbcode_re = re.compile("(\[url\](.*?)\[\/url\])")
+url_bbcode_re_variant = re.compile("(\[url=(.*?)\](.*?)\[\/url\])")
 
 for p in c.fetchall():
     post = Post()
@@ -20,6 +23,15 @@ for p in c.fetchall():
 
     post.topic_name = post.topic.title
     post.html = p["post"].encode("latin1")
+    
+    urls = url_bbcode_re.findall(post.html)
+    for url in urls:
+        post.html = post.html.replace(url[0], """<a href="%s">%s</a>""" % (url[1], url[1]))
+    
+    urls = url_bbcode_re_variant.findall(post.html)
+    for url in urls:
+        post.html = post.html.replace(url[0], """<a href="%s">%s</a>""" % (url[1], url[2]))
+        
     post.author = User.objects(old_member_id=p["author_id"])[0]
     post.author_name = post.author.login_name
     post.created = arrow.get(p["post_date"]).replace(hours=-12).datetime
