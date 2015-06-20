@@ -65,10 +65,7 @@ link(href='/static/assets/bootstrap-datepicker/bootstrap-datepicker.css', rel='s
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/select2/select2.full.js")
-script(src="/static/assets/handlebars-v3.0.3.js")
-script(src="/static/assets/bootstrap-datepicker/bootstrap-datepicker.js")
-script(src="/static/assets/dotdotdot/jquery.dotdotdot.js")
+script(src="/static/assets/handlebars.min.js")
 script(type="text/javascript")
   $(document).ready(function(){
     window.search_for = '{{query}}';
@@ -79,5 +76,10 @@ script(type="text/javascript")
     window.categories = JSON.parse('{{categories}}');
     window.authors = JSON.parse('{{authors}}');
   });
-script(src="/static/local/js/search.js")
+
+{% assets filters="rjsmin", output="generated/search.js",
+"local/js/search.js", "assets/dotdotdot/jquery.dotdotdot.js", 
+"assets/bootstrap-datepicker/bootstrap-datepicker.js", "assets/select2/select2.full.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}")
+{% endassets %}
 {% endblock %}

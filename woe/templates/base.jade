@@ -23,7 +23,6 @@ head
     link(href='/static/local/css/woe-theme.css', rel='stylesheet')
     {% block header %}
     {% endblock %}
-    script(src='/static/assets/ie-emulation-modes-warning.js')
     // HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries
     //if lt IE 9
       script(src='https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js')
@@ -132,13 +131,12 @@ body(role='document')
       {% block content %}
       {% endblock %}
   #img-click-modal.modal.fade
-  
-  script(src="/static/assets/jquery-1.11.3.js")
-  script(src="/static/assets/socket.io.js")
-  script(src="/static/assets/bootstrap.js")
-  script(src="/static/assets/moment.js")
-  script(src="/static/assets/ie10-viewport-bug-workaround.js")
-  script(src="/static/local/js/base.js")
+  {% assets filters="rjsmin", output="generated/base.js",
+  "assets/jquery-1.11.3.js", "assets/socket.io.js", "assets/bootstrap.js",
+  "assets/moment.js", "assets/socket.io.js", "assets/ie10-viewport-bug-workaround.js",
+  "local/js/base.js", "assets/ie-emulation-modes-warning.js" %}
+  script(type="text/javascript", src="{{ASSET_URL}}")
+  {% endassets %}
   if current_user.is_authenticated()
     script(type="text/javascript")
       $(document).ready(function(){

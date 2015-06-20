@@ -5,16 +5,9 @@
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/handlebars-v3.0.3.js")
-script(src="/static/assets/jquery.shuffle.modernizr.js")
-script(src="/static/local/js/dashboard.js")
-// script(type="text/javascript")
-//   $(document).ready(function(){
-//     $('#dashboard-li').addClass('active');
-//     $('[data-toggle="popover"]').popover();
-//     var $grid = $('#dashboard-container');
-//     $grid.shuffle({
-//       itemSelector: '.dashboard-panel'
-//     });
-//   });
+script(src="/static/assets/handlebars.min.js")
+{% assets filters="rjsmin", output="generated/dashboard.js",
+"assets/jquery.shuffle.modernizr.js", "local/js/dashboard.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}")
+{% endassets %}
 {% endblock %}

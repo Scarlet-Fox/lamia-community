@@ -82,7 +82,9 @@
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/handlebars-v3.0.3.js")
-script(src="/static/local/js/status-updates.js")
-script(src="/static/local/js/create-status.js")
+script(src="/static/assets/handlebars.min.js")
+{% assets filters="rjsmin", output="generated/single-status-update.js",
+"local/js/status-updates.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}")
+{% endassets %}
 {% endblock %}

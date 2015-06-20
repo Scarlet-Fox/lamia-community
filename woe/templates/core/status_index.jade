@@ -112,8 +112,11 @@ script(type="text/javascript")
     window.authors = JSON.parse('{{authors}}');
     window.search = '{{search}}';
   });
-script(src="/static/assets/jquery.shuffle.modernizr.js")
-script(src="/static/assets/select2/select2.full.js")
-script(src="/static/assets/handlebars-v3.0.3.js")
-script(src="/static/local/js/status-index.js")
+script(src="/static/assets/handlebars.min.js")
+
+{% assets filters="rjsmin", output="generated/status-index.js",
+"assets/jquery.shuffle.modernizr.js", "assets/dotdotdot/jquery.dotdotdot.js", 
+"local/js/status-index.js", "assets/select2/select2.full.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}")
+{% endassets %}
 {% endblock %}

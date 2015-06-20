@@ -121,6 +121,19 @@
         }
       });
     };
+    $("#new-status").click(function(e) {
+      e.preventDefault();
+      return $.post("/create-status", JSON.stringify({
+        message: $("#status-new").val()
+      }), function(data) {
+        if (data.error != null) {
+          $("#create-status-error").remove();
+          return $("#status-new").parent().prepend("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" id=\"create-status-error\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  " + data.error + "\n</div>");
+        } else {
+          return window.location = data.url;
+        }
+      });
+    });
   });
 
 }).call(this);

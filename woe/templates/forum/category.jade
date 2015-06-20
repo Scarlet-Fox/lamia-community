@@ -78,8 +78,11 @@ nav.pagination-listing
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/handlebars-v3.0.3.js")
-script(src="/static/local/js/category-index.js")
+script(src="/static/assets/handlebars.min.js")
+{% assets filters="rjsmin", output="generated/category-index.js",
+"local/js/category-index.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}")
+{% endassets %}
 script(type="text/javascript")
   $(document).ready(function(){
     $('#forum-li').addClass('active');

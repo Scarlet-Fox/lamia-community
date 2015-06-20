@@ -43,13 +43,17 @@ link(href='/static/assets/dropzone/dropzone.css', rel='stylesheet')
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/handlebars-v3.0.3.js")
-script(src="/static/assets/quill/quill.js")
-script(src="/static/assets/dropzone/dropzone.js")
-script(src="/static/local/js/inline-editor.js")
+script(src="/static/assets/handlebars.min.js")
+{% assets filters="rjsmin", output="generated/editor.js",
+"assets/quill/quill.js", "assets/dropzone/dropzone.js", "local/js/inline-editor.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}")
+{% endassets %}
 script(type="text/javascript")
   $(document).ready(function(){  
   
   });
-script(src="/static/local/js/new-topic.js")
+{% assets filters="rjsmin", output="generated/new-topic.js",
+"local/js/new-topic.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}")
+{% endassets %}
 {% endblock %}
