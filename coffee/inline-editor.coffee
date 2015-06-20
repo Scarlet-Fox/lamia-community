@@ -2,7 +2,7 @@ $ ->
   class InlineEditor
     constructor: (element, url = "", cancel_button=false, edit_reason=false) ->
       Dropzone.autoDiscover = false
-      @quillID = do @getQuillID  
+      @quillID = do @getQuillID
       @element = $(element)
       if @element.data("editor_is_active")
         return false
@@ -17,12 +17,70 @@ $ ->
         @element.data("editor_initial_html", @element.html())
         @setupEditor cancel_button
     
+    createAndShowMentionModal: () =>
+      $("#mention-modal-#{@quillID}").html(
+        """
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Mention Lookup</h4>
+              </div>
+              <div class="modal-body">
+                Use this to insert mentions into your post. Keep in mind, they will only send notifications in a topic.
+                <br><br>
+                <select id="member-select" class="form-control" style="max-width: 100%; width: 400px;" multiple="multiple">
+                </select>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="mention-modal-insert">Insert</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        """)
+      $("#member-select").select2
+        ajax:
+          url: "/user-list-api-variant",
+          dataType: 'json',
+          delay: 250,
+          data: (params) ->
+            return {
+              q: params.term
+            }
+          processResults: (data, page) ->
+            console.log {
+              results: data.results
+            }
+            return {
+              results: data.results
+            }
+          cache: true
+        minimumInputLength: 2
+        
+      $("#mention-modal-insert").click (e) =>
+        __text = ""
+        for val, i in $("#member-select").val()
+          __text = __text + "[@#{val}]"
+          unless i == $("#member-select").val().length-1
+            __text = __text + ", "
+            
+        @quill.insertText @quill.getLength(), __text
+            
+        $("#mention-modal-#{@quillID}").modal("hide")
+        
+      $("#mention-modal-#{@quillID}").modal("show")
+    
     setupEditor: (cancel_button=false) =>
       @element.html(@editordivHTML())
 
       if @edit_reason
         @element.before @editReasonHTML
+      @element.before """<div id="mention-modal-#{@quillID}" class="modal fade"></div>"""
       @element.before @toolbarHTML
+      $("#toolbar-#{@quillID}").find(".ql-mention").click (e) =>
+        do @createAndShowMentionModal
+      
       @element.after @dropzoneHTML
       @element.after @submitButtonHTML cancel_button
       
@@ -273,6 +331,9 @@ $ ->
             <span title="Link" class="ql-format-button ql-link"></span>
             <span class="ql-format-separator"></span>
             <span title="Image" class="ql-format-button ql-image"></span>
+          </span>
+          <span class="ql-format-group">
+            <span class="ql-mention ql-format-button ql-custom-button">@</span>
           </span>
         </div>
       """

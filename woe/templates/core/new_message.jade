@@ -31,14 +31,15 @@ nav.pagination-listing
 
 {% block script %}
 {% assets filters="rjsmin", output="generated/editor.js",
-"assets/quill/quill.js", "assets/dropzone/dropzone.js", "local/js/inline-editor.js" %}
+"assets/quill/quill.js", "assets/dropzone/dropzone.js", 
+"assets/select2/select2.full.js", "local/js/inline-editor.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}")
 {% endassets %}
 
 
 
 {% assets filters="rjsmin", output="generated/new-private-message.js",
-"local/js/new-private-message.js", "assets/select2/select2.full.js" %}
+"local/js/new-private-message.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}")
 {% endassets %}
 

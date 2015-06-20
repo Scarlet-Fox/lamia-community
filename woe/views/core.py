@@ -855,3 +855,12 @@ def user_list_api():
         return app.jsonify(results=[])
     results = [{"text": unicode(u.display_name), "id": str(u.pk)} for u in User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query))]
     return app.jsonify(results=results)
+    
+@app.route('/user-list-api-variant', methods=['GET'])
+@login_required
+def user_list_api_variant():
+    query = request.args.get("q", "")[0:100]
+    if len(query) < 2:
+        return app.jsonify(results=[])
+    results = [{"text": unicode(u.display_name), "id": unicode(u.login_name)} for u in User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query))]
+    return app.jsonify(results=results)

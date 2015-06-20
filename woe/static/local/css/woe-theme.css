@@ -721,3 +721,7 @@ a.inherit_colors {
   text-shadow: #000 0px 1px 2px !important;
   background-attachment: fixed;
 }
+
+.ql-custom-button:hover {
+  color: #06c;
+}
