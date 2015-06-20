@@ -43,7 +43,7 @@ class CategoryView(ModelView):
 
 class TopicView(ModelView):
     can_delete = False
-    column_list = ("title","created","creator", 'view_count', 'post_count')
+    column_list = ("title","created","last_post_date", "creator", 'view_count', 'post_count')
     column_filters = ["sticky","hidden","closed","prefix"]
     column_searchable_list = ('title',)
     

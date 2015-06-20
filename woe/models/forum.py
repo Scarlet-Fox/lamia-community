@@ -121,7 +121,7 @@ class Topic(db.DynamicDocument):
             return 0
 
     meta = {
-        'ordering': ['sticky', '-created'],
+        'ordering': ['sticky', '-last_post_date'],
         'indexes': [
             'old_ipb_id',
             '-created',
