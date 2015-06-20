@@ -134,6 +134,7 @@ $ ->
           element.prepend """
             <p>On #{time}, #{element.data("author")} said:</p>
             """   
+            
   $("#new-status").click (e) ->
     e.preventDefault()
     $.post "/create-status", JSON.stringify({message: $("#status-new").val()}), (data) ->
@@ -147,4 +148,5 @@ $ ->
           """
       else
         window.location = data.url
+        
   return

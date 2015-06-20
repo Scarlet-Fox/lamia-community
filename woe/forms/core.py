@@ -37,7 +37,7 @@ class RegistrationForm(Form):
 class LoginForm(Form):
     username = StringField('Username', [validators.InputRequired()])
     password = PasswordField('Password', [validators.InputRequired()])
-            
+    
     def __get_user__(self, login_name):
         return User.objects(login_name=login_name)
     
@@ -50,7 +50,6 @@ class LoginForm(Form):
         if not user:
             raise validators.ValidationError("Invalid username or password.")
         
-        print field.data.strip()
         if not user[0].check_password(field.data.strip()):
             raise validators.ValidationError("Invalid username or password.")
         
@@ -60,7 +59,6 @@ class LoginForm(Form):
             
         if self.user.banned == True:
             raise validators.ValidationError("I'm sorry, I'm so sorry, but it looks like you're banned.")
-        
 
 class DisplayNamePasswordForm(Form):
     display_name = StringField('Display Name')
@@ -109,7 +107,6 @@ class AvatarTitleForm(Form):
         resized_avatar = self.avatar_image.clone()
         resized_avatar_bin = self.avatar_image.make_blob()
         avvie_size = len(resized_avatar_bin)
-        print avvie_size
         if avvie_size > 512*1024:
             raise validators.ValidationError("Your avatar filesize (even after being resized) is too large. Resize to less than 512kb.")
         

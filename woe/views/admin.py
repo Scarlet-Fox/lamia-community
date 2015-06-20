@@ -111,6 +111,14 @@ class LogView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class FingerprintView(ModelView):
+    column_list = ("user_name", "fingerprint_hash", "last_seen")
+    column_filters = ("user_name", "fingerprint_hash", "last_seen")    
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+admin.add_view(FingerprintView(Fingerprint, category='Logging'))
 admin.add_view(IPAddressView(IPAddress, category='Logging'))
 admin.add_view(LogView(Log, category='Logging'))
 admin.add_view(UserView(User, category='Core'))

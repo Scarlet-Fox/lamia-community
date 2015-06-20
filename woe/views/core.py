@@ -1,6 +1,6 @@
 from woe import login_manager
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, ForumPostParser, Attachment, IPAddress, Log
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, ForumPostParser, Attachment, IPAddress, Log, Fingerprint
 from woe.models.forum import Category, Post, Topic
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
@@ -12,6 +12,8 @@ from wand.image import Image
 from werkzeug import secure_filename
 import arrow, mimetypes, json, os, hashlib, time
 from woe.views.dashboard import broadcast
+from ipwhois import IPWhois
+import hashlib
 
 if app.settings_file.get("lockout_on", False):
     @app.before_request
@@ -755,11 +757,53 @@ def register():
 def sign_in():
     if current_user.is_authenticated():
         return abort(404)
-        
+    
     form = LoginForm(csrf_enabled=False)
     if form.validate_on_submit():
-        login_user(form.user)
-        # TODO - get fingerprint
+        login_user(form.user)    
+        fingerprint__info_from_browser = json.loads(request.form.get("log_in_token"))
+        print fingerprint__info_from_browser
+        fingerprint_data = {}
+        fingerprint_data["current_user"] = form.user.login_name
+        fingerprint_data["screen_width"] = fingerprint__info_from_browser.get("sw", 0)
+        fingerprint_data["screen_height"] = fingerprint__info_from_browser.get("sh", 0)
+        fingerprint_data["screen_colors"] = fingerprint__info_from_browser.get("cd", 0)
+        fingerprint_data["timezone"] = fingerprint__info_from_browser.get("tz", 0)
+        
+        for browser_plugin in fingerprint__info_from_browser.get("pl", []):
+            fingerprint_data[browser_plugin["name"]] = browser_plugin["description"]
+            
+        fingerprint_data["agent_platform"] = request.user_agent.platform
+        fingerprint_data["agent_browser"] = request.user_agent.browser
+        fingerprint_data["agent_browser_version"] = request.user_agent.version
+        fingerprint_data["agent"] = request.user_agent.string
+        
+        try:
+            obj = IPWhois(request.remote_addr)
+            results=obj.lookup(get_referral=True)
+            fingerprint_data["ip_owner"] = results["nets"][0]["name"]
+        except:
+            pass
+        
+        fingerprint_hash = ""
+        for key, value in sorted(fingerprint_data.items()):
+            fingerprint_hash += unicode(key) + " "
+            fingerprint_hash += unicode(value) + " "
+            
+        _fingerprint_hash = hashlib.sha256(fingerprint_hash).hexdigest()
+        
+        try:
+            f = Fingerprint.objects(fingerprint_hash=_fingerprint_hash)[0]
+            f.update(last_seen=arrow.utcnow().datetime)
+        except:
+            f = Fingerprint()
+            f.user = form.user
+            f.user_name = form.user.login_name
+            f.last_seen = arrow.utcnow().datetime
+            f.fingerprint = fingerprint_data
+            f.fingerprint_hash = _fingerprint_hash
+            f.save()
+        
         return redirect('/')
         
     return render_template("sign_in.jade", page_title="Sign In - World of Equestria", form=form)

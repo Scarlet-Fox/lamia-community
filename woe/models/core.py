@@ -8,22 +8,38 @@ import arrow, re, os, math
 
 class Fingerprint(db.DynamicDocument):
     user = db.ReferenceField("User", required=True)
+    user_name = db.StringField(required=True)
+    last_seen = db.DateTimeField(required=True)
     fingerprint = db.DictField(required=True)
-    last_seen = db.DateTimeField()
+    fingerprint_hash = db.StringField(required=True)
     
     def compute_similarity_score(self, stranger):
-        max_score = float(len(self.fingerprint))
         score = 0.0
+        attributes = {}
         
-        for key, value in self.fingerprint.iteritems():
-            if stranger.get(key, False) == value:
+        for key in self.fingerprint.keys():
+            attributes[key] = 1
+            
+        for key in stranger.fingerprint.keys():
+            attributes[key] = 1
+        
+        max_score = float(len(attributes.keys()))
+        for attribute in attributes.keys():
+            if self.fingerprint[attribute] == stranger.fingerprint[attribute]:
                 score += 1
                 
         return score/max_score
+    
+    meta = {
+        'ordering': ['-last_seen'],
+        'indexes': [
+            "fignerprint_hash",
+            "user_name",
+            "last_seen"
+            "-last_seen"
+        ]
+    }
         
-    def get_factors(self):
-        return float(len(self.fingerprint))
-
 class IPAddress(db.DynamicDocument):
     user = db.ReferenceField("User", required=True)
     user_name = db.StringField(required=True)
@@ -466,7 +482,6 @@ class User(db.DynamicDocument):
             if len(notifications_to_send) == count:
                 break
         
-        print notifications_to_send
         return notifications_to_send
         
     def is_authenticated(self):

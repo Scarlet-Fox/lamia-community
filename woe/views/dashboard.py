@@ -104,7 +104,6 @@ def acknowledge_notification():
 @login_required
 def dashboard_notifications():
     notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False)
-    print notifications
     parsed_notifications = []
     
     for notification in notifications:

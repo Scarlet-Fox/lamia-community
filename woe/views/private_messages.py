@@ -234,7 +234,6 @@ def message_index(pk, page, post):
 @login_required
 def create_message():
     request_json = request.get_json(force=True)
-    print request_json
 
     if len(request_json.get("title", "").strip()) == 0:
         return app.jsonify(error="Please enter a title.")
@@ -318,7 +317,6 @@ def create_message_index():
 @app.route('/message-topics', methods=['POST'])
 @login_required
 def messages_topics():
-    print time.time()
     request_json = request.get_json(force=True)
     page = request_json.get("page", 1)
     pagination = request_json.get("pagination", 20)
@@ -331,7 +329,6 @@ def messages_topics():
         maximum = 20
         
     messages = PrivateMessageTopic.objects(participating_users=current_user._get_current_object()).order_by("-last_reply_time").select_related(0)[minimum:maximum+10]
-    print time.time()
     parsed_messages = []
     
     for message in messages:
@@ -362,7 +359,6 @@ def messages_topics():
         _parsed["last_pages"] = _parsed["last_page"] > 1
         del _parsed["participants"]
         parsed_messages.append(_parsed)
-    print time.time()
         
     return app.jsonify(topics=parsed_messages[minimum:maximum], count=len(parsed_messages))
 

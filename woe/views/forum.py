@@ -237,10 +237,8 @@ def legacy_topic_index(slug):
     try:
         topic = Topic.objects(old_ipb_id=ipb_id)[0]
     except IndexError:
-        print "not here"
         return abort(404)
     
-    print "/t/"+topic.slug
     return redirect("/t/"+topic.slug)
 
 @app.route('/t/<slug>/edit-post', methods=['POST'])
@@ -372,7 +370,6 @@ def new_topic(slug):
         try:
             category = Category.objects(slug=slug)[0]
         except IndexError:
-            print "Error?"
             return abort(404)
         
         request_json = request.get_json(force=True)
