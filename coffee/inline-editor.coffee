@@ -159,7 +159,8 @@ $ ->
               <option value="caviar_dreams">Caviar</option>
               <option value="comic_reliefregular">Comic</option>
               <option value="droid_sans_monoregular">Monotype</option>
-              <option value="montserrat">Montserrat</option>
+              <option value="monterrey">Monterrey</option>
+              <option value="opensans">Open Sans</option>
             </select>
             <select title="Size" class="ql-size">
               <option value="8px">Micro</option>

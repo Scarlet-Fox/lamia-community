@@ -139,14 +139,54 @@
     font-style: normal;
 }
 @font-face {
-    font-family: 'montserrat';
-    src: url('/static/assets/webfont/montserrat/webfontkit-20150620-091638/montserrat-regular-webfont.eot');
-    src: url('/static/assets/webfont/montserrat/webfontkit-20150620-091638/montserrat-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('/static/assets/webfont/montserrat/webfontkit-20150620-091638/montserrat-regular-webfont.woff') format('woff'),
-         url('/static/assets/webfont/montserrat/webfontkit-20150620-091638/montserrat-regular-webfont.ttf') format('truetype'),
-         url('/static/assets/webfont/montserrat/webfontkit-20150620-091638/montserrat-regular-webfont.svg#comic_reliefregular') format('svg');
+    font-family: 'monterrey';
+    src: url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.eot');
+    src: url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.woff') format('woff'),
+         url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.svg#comic_reliefregular') format('svg');
     font-weight: normal;
     font-style: normal;
+}
+@font-face {
+    font-family: 'opensans';
+    src: url('/static/assets/webfont/opensans/opensans-regular-webfont.eot');
+    src: url('/static/assets/webfont/opensans/opensans-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/opensans/opensans-regular-webfont.woff') format('woff'),
+         url('/static/assets/webfont/opensans/opensans-regular-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/opensans/opensans-regular-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'opensans';
+    src: url('/static/assets/webfont/opensans/opensans-bold-webfont.eot');
+    src: url('/static/assets/webfont/opensans/opensans-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/opensans/opensans-bold-webfont.woff') format('woff'),
+         url('/static/assets/webfont/opensans/opensans-bold-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/opensans/opensans-bold-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'opensans';
+    src: url('/static/assets/webfont/opensans/opensans-italic-webfont.eot');
+    src: url('/static/assets/webfont/opensans/opensans-italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/opensans/opensans-italic-webfont.woff') format('woff'),
+         url('/static/assets/webfont/opensans/opensans-italic-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/opensans/opensans-italic-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'opensans';
+    src: url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.eot');
+    src: url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.woff') format('woff'),
+         url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: bold;
+    font-style: italic;
 }
 
 body {
@@ -216,19 +256,19 @@ border-radius:0px;
 }
 
 .panel-title {
-    color: white;
-  
-    font-weight: bold;
-    font-size: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
 }
 
 .panel-heading {
-    background: url("/static/local/img/luna-background.jpg");
-    border-radius: 0px;
-    color: white !important;
-    text-shadow: #000 0px 1px 2px !important;
-    background-attachment: fixed;
-    box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
+  background: url("/static/local/img/luna-background.jpg");
+  border-radius: 0px;
+  color: white !important;
+  text-shadow: #000 0px 1px 2px !important;
+  background-attachment: fixed;
+  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
+  font-weight: bold;
 }
 
 .bs-callout {
@@ -294,11 +334,10 @@ border-radius:0px;
   background-attachment: fixed;
   text-shadow: #000 0px 1px 2px !important;
   font-weight: bold;
-  font-size: 16px !important;
+  font-size: 14px !important;
   box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
   height: 44px;
 }
-
 
 .ql-snow.ql-toolbar .ql-picker.ql-font .ql-picker-label, .ql-snow.ql-toolbar .ql-picker.ql-size .ql-picker-label {
 background-color: rgb(248, 248, 248);}
@@ -323,6 +362,7 @@ background-color: rgb(248, 248, 248);}
   margin-bottom: 10px;
   box-shadow: 0px 2px 2px rgba(0,0,0,0.1);
   padding: 1px;
+  border: 1px solid #d5d5d5;
 }
 
 .click-to-play p {
