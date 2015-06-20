@@ -148,5 +148,98 @@ $ ->
           """
       else
         window.location = data.url
-        
+  
+  p_html = """
+    <div class="media-left">
+      <a href="/member/{{login_name}}"><img src="{{avatar_image}}" height="{{avatar_y}}" width="{{avatar_x}}"></a>
+    </div>
+    <div class="media-body">
+      <table class="table">
+        <tbody>
+        <tr>
+          <th>Group</th>
+          <td><span style="color:#F88379;"><strong>Members</strong></span><br></td>
+        </tr>
+        <tr>
+          <th>Joined</th>
+          <td>{{joined}}</td>
+        </tr>
+        <tr>
+          <th>Login Name</th>
+          <td>{{login_name}}</td>
+        </tr>
+        <tr>
+          <th>Last Seen</th>
+          <td>{{last_seen}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  """
+  hoverTemplate = Handlebars.compile(p_html)
+  
+  window.hover_cache = {}
+  $(document).on "mouseover", ".hover_user", (e) ->
+    e.preventDefault()
+    element = $(this)
+    user = element.attr("href").split("/").slice(-1)[0]
+    placement = "bottom"
+    if element.data("hplacement")?
+      placement = element.data("hplacement")
+    
+    if window.hover_cache[user]?
+      data = window.hover_cache[user]
+      _html = hoverTemplate(data)
+      element.popover
+        html: true
+        container: 'body'
+        title: data.name
+        content: _html
+        placement: placement
+      element.popover("show")
+      checkAndClear = (n=100) ->
+        setTimeout () ->
+          if $(".popover:hover").length != 0
+            do checkAndClear
+          else
+            element.popover("hide")
+        , n
+      checkAndClear(2000)
+    else
+      $.post "/get-user-info-api", JSON.stringify({user: user}), (data) ->
+        window.hover_cache[user] = data
+        _html = hoverTemplate(data)
+        element.popover
+          html: true
+          content: _html
+          container: 'body'
+          title: data.name
+          placement: placement
+        element.popover("show")
+        checkAndClear = (n=100) ->
+          setTimeout () ->
+            if $(".popover:hover").length != 0
+              do checkAndClear
+            else
+              element.popover("hide")
+          , n
+        checkAndClear(2000)
+      
+  # .popover
+  #   trigger: "hover"
+  #   html: true
+  #   container: 'body'
+  #   delay:
+  #     show: 500
+  #     hide: 100000
+  #   content: () ->
+  #     element = $(this)
+  #
+  #
+  #
+  #       _html = hoverTemplate(data)
+  #       console.log _html
+  #       return _html
+      
+      
   return

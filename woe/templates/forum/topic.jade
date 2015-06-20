@@ -25,7 +25,7 @@ nav.pagination-listing
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/handlebars.min.js")
+
 {% assets filters="rjsmin", output="generated/editor.js",
 "assets/quill/quill.js", "assets/dropzone/dropzone.js", "local/js/inline-editor.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}")

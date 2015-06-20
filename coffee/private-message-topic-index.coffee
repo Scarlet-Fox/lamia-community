@@ -169,9 +169,9 @@ $ ->
                 </div>
                 <div class="col-md-3 col-xs-8">
                   {{#if author_online}}
-                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> <a href="/member/{{author_login_name}}">{{author_name}}</a></b>
+                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> <a href="/member/{{author_login_name}}" class="hover_user">{{author_name}}</a></b>
                   {{else}}
-                  <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <a href="/member/{{author_login_name}}" class="inherit_colors">{{author_name}}</a></b>
+                  <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <a href="/member/{{author_login_name}}" class="hover_user inherit_colors">{{author_name}}</a></b>
                   {{/if}}
                   {{#unless author_group_name}}
                   <span style="color:#F88379;"><strong>Members</strong></span><br>

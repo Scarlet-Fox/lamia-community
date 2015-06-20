@@ -78,7 +78,7 @@ nav.pagination-listing
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/handlebars.min.js")
+
 {% assets filters="rjsmin", output="generated/category-index.js",
 "local/js/category-index.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}")

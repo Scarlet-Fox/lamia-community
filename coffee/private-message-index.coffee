@@ -80,7 +80,7 @@ $ ->
               <img src="{{last_post_author_avatar}}" width="{{last_post_x}}px" height="{{last_post_y}}px" class="avatar-mini">
             </span>
             <span class="topic-listing-recent">
-              <a href="/member/{{last_post_by_login_name}}" class="topic-listing-username">{{last_post_by}}</a>
+              <a href="/member/{{last_post_by_login_name}}" class="topic-listing-username hover_user">{{last_post_by}}</a>
               <br>
               <a href="" class="topic-listing-time">{{last_post_date}}</a>
             </span>

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/handlebars.min.js")
+
 {% assets filters="rjsmin", output="generated/dashboard.js",
 "assets/jquery.shuffle.modernizr.js", "local/js/dashboard.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}")

@@ -32,7 +32,7 @@ $ ->
     for author in window.authors
       _option = """<option value="#{author.id}" selected="selected">#{author.text}</option>"""
       $(".by-who").append _option 
-      $(".by-who-two").append _option  
+      $(".by-who-two").append _option
   
   $(".search-for").val(window.search)
   

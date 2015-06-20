@@ -38,7 +38,7 @@ nav.pagination-listing
 {% endblock %}
 
 {% block script %}
-script(src="/static/assets/handlebars.min.js")
+
 {% assets filters="rjsmin", output="generated/message-index.js",
 "local/js/private-message-index.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}")

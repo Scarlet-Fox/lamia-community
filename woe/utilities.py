@@ -141,17 +141,29 @@ class ForumHTMLCleaner(object):
         
 @app.template_filter('humanize_time')
 def humanize(time):
-    a = arrow.get(time)
-    b = arrow.utcnow().replace(hours=-24)
-    if a > b:
-        return a.humanize()
-    else:
-        return a.format("MMM D, hh:mm a")
+    if time == None:
+        return ""
+        
+    try:
+        a = arrow.get(time)
+        b = arrow.utcnow().replace(hours=-24)
+        if a > b:
+            return a.humanize()
+        else:
+            return a.format("MMM D, hh:mm a")
+    except:
+        return ""
         
 def humanize_time(time, format_str="MMM D YYYY, hh:mm a"):
-    a = arrow.get(time)
-    b = arrow.utcnow().replace(hours=-24)
-    if a > b:
-        return a.humanize()
-    else:
-        return a.format(format_str)
+    if time == None:
+        return ""
+        
+    try:
+        a = arrow.get(time)
+        b = arrow.utcnow().replace(hours=-24)
+        if a > b:
+            return a.humanize()
+        else:
+            return a.format(format_str)
+    except:
+        return ""

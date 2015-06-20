@@ -141,6 +141,8 @@ body(role='document')
       {% block content %}
       {% endblock %}
   #img-click-modal.modal.fade
+  script(src="/static/assets/handlebars.min.js")
+  
   {% assets filters="rjsmin", output="generated/base.js",
   "assets/jquery-1.11.3.js", "assets/socket.io.js", "assets/bootstrap.js",
   "assets/moment.js", "assets/socket.io.js", "assets/ie10-viewport-bug-workaround.js",

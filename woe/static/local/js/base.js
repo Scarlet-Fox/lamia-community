@@ -3,7 +3,7 @@
   var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   $(function() {
-    var socket;
+    var hoverTemplate, p_html, socket;
     window.RegisterAttachmentContainer = function(selector) {
       var gifModalHTML, imgModalHTML;
       imgModalHTML = function() {
@@ -133,6 +133,72 @@
           return window.location = data.url;
         }
       });
+    });
+    p_html = "<div class=\"media-left\">\n  <a href=\"/member/{{login_name}}\"><img src=\"{{avatar_image}}\" height=\"{{avatar_y}}\" width=\"{{avatar_x}}\"></a>\n</div>\n<div class=\"media-body\">\n  <table class=\"table\">\n    <tbody>\n    <tr>\n      <th>Group</th>\n      <td><span style=\"color:#F88379;\"><strong>Members</strong></span><br></td>\n    </tr>\n    <tr>\n      <th>Joined</th>\n      <td>{{joined}}</td>\n    </tr>\n    <tr>\n      <th>Login Name</th>\n      <td>{{login_name}}</td>\n    </tr>\n    <tr>\n      <th>Last Seen</th>\n      <td>{{last_seen}}</td>\n    </tr>\n    </tbody>\n  </table>\n</div>";
+    hoverTemplate = Handlebars.compile(p_html);
+    window.hover_cache = {};
+    $(document).on("mouseover", ".hover_user", function(e) {
+      var _html, checkAndClear, data, element, placement, user;
+      e.preventDefault();
+      element = $(this);
+      user = element.attr("href").split("/").slice(-1)[0];
+      placement = "bottom";
+      if (element.data("hplacement") != null) {
+        placement = element.data("hplacement");
+      }
+      if (window.hover_cache[user] != null) {
+        data = window.hover_cache[user];
+        _html = hoverTemplate(data);
+        element.popover({
+          html: true,
+          container: 'body',
+          title: data.name,
+          content: _html,
+          placement: placement
+        });
+        element.popover("show");
+        checkAndClear = function(n) {
+          if (n == null) {
+            n = 100;
+          }
+          return setTimeout(function() {
+            if ($(".popover:hover").length !== 0) {
+              return checkAndClear();
+            } else {
+              return element.popover("hide");
+            }
+          }, n);
+        };
+        return checkAndClear(2000);
+      } else {
+        return $.post("/get-user-info-api", JSON.stringify({
+          user: user
+        }), function(data) {
+          window.hover_cache[user] = data;
+          _html = hoverTemplate(data);
+          element.popover({
+            html: true,
+            content: _html,
+            container: 'body',
+            title: data.name,
+            placement: placement
+          });
+          element.popover("show");
+          checkAndClear = function(n) {
+            if (n == null) {
+              n = 100;
+            }
+            return setTimeout(function() {
+              if ($(".popover:hover").length !== 0) {
+                return checkAndClear();
+              } else {
+                return element.popover("hide");
+              }
+            }, n);
+          };
+          return checkAndClear(2000);
+        });
+      }
     });
   });
 

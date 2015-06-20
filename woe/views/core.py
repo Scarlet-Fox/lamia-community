@@ -13,7 +13,8 @@ from werkzeug import secure_filename
 import arrow, mimetypes, json, os, hashlib, time
 from woe.views.dashboard import broadcast
 from ipwhois import IPWhois
-import hashlib
+import urllib
+import HTMLParser
 
 if app.settings_file.get("lockout_on", False):
     @app.before_request
@@ -37,6 +38,28 @@ def log_request():
         l.user = current_user._get_current_object()
         l.user_name = current_user.login_name
     l.save()
+
+@app.route('/get-user-info-api', methods=['POST',])
+def get_user_info_api():
+    request_json = request.get_json(force=True)
+    user_name = unicode(request_json.get("user"))
+    user_name = urllib.unquote(user_name)
+    print user_name
+    
+    try:
+        user = User.objects(login_name=user_name)[0]
+    except:
+        return app.jsonify(data=False)
+    
+    return app.jsonify(
+        avatar_image=user.get_avatar_url("60"),
+        avatar_x=user.avatar_60_x,
+        avatar_y=user.avatar_60_y,
+        name=user.display_name,
+        login_name=user.login_name,
+        last_seen=humanize_time(user.last_seen),
+        joined=humanize_time(user.joined)
+    )
 
 @app.route('/pm-topic-list-api', methods=['GET'])
 @login_required
