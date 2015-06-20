@@ -26,8 +26,20 @@ class Fingerprint(db.DynamicDocument):
 
 class IPAddress(db.DynamicDocument):
     user = db.ReferenceField("User", required=True)
+    user_name = db.StringField(required=True)
     ip_address = db.StringField(required=True)
     last_seen = db.DateTimeField()
+    
+    meta = {
+        'ordering': ['-last_seen'],
+        'indexes': [
+            'last_seen',
+            '-last_seen',
+            'ip_address',
+            'user',
+            'user_name'
+        ]
+    }
     
 class Ban(db.DynamicDocument):
     user = db.ReferenceField("User", required=True)
@@ -187,14 +199,16 @@ class Report(db.DynamicDocument):
     created = db.DateTimeField(required=True)
     
 class Log(db.DynamicDocument):
-    content = db.GenericReferenceField()
-    user = db.ReferenceField("User", required=True)
-    ip_address = db.ReferenceField(IPAddress, required=True)
-    fingerprint = db.ReferenceField(Fingerprint, required=True)
-    action = db.StringField(required=True)
-    url = db.StringField(required=True)
-    data = db.DictField()
-    logged_at_time = db.DateTimeField(required=True)
+    method = db.StringField(required=True)
+    path = db.StringField(required=True)
+    ip_address = db.StringField(required=True)
+    agent_platform = db.StringField(required=True)
+    agent_browser = db.StringField(required=True)
+    agent_browser_version = db.StringField(required=True)
+    agent = db.StringField(required=True)
+    user = db.ReferenceField("User")
+    user_name = db.StringField(default="")
+    time = db.DateTimeField(required=True)
 
 class StatusViewer(db.DynamicEmbeddedDocument):
     last_seen = db.DateTimeField(required=True)

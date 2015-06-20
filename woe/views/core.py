@@ -1,6 +1,6 @@
 from woe import login_manager
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, ForumPostParser, Attachment
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, ForumPostParser, Attachment, IPAddress, Log
 from woe.models.forum import Category, Post, Topic
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
@@ -12,6 +12,29 @@ from wand.image import Image
 from werkzeug import secure_filename
 import arrow, mimetypes, json, os, hashlib, time
 from woe.views.dashboard import broadcast
+
+if app.settings_file.get("lockout_on", False):
+    @app.before_request
+    @login_required
+    def lockdown_site():
+        return abort(403)
+
+@app.before_request
+def log_request():
+    l = Log(
+        method=request.method,
+        path=request.path,
+        ip_address=request.remote_addr,
+        agent_platform=request.user_agent.platform,
+        agent_browser=request.user_agent.browser,
+        agent_browser_version=request.user_agent.version,
+        agent=request.user_agent.string,
+        time=arrow.utcnow().datetime
+    )
+    if current_user.is_authenticated():
+        l.user = current_user._get_current_object()
+        l.user_name = current_user.login_name
+    l.save()
 
 @app.route('/pm-topic-list-api', methods=['GET'])
 @login_required
@@ -649,6 +672,13 @@ def load_user(login_name):
     try:
         user = User.objects(login_name=login_name)[0]
         user.update(last_seen=arrow.utcnow().datetime)
+        try:
+            ip_address = IPAddress.objects(ip_address=request.remote_addr, user=user)[0]
+        except:
+            ip_address = IPAddress(ip_address=request.remote_addr, user=user, user_name=user.login_name)
+            ip_address.save()
+        ip_address.update(last_seen=arrow.utcnow().datetime)
+            
         if user.validated and not user.banned:
             return user
         else:

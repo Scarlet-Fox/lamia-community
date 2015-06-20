@@ -4,8 +4,8 @@ from flask.ext.login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose
 from flask_admin.contrib.mongoengine import ModelView
-from woe.models.core import User, StatusUpdate, Attachment, PrivateMessageTopic, PrivateMessage, Notification
-from woe.models.forum import Category, Topic, Prefix, Post
+from woe.models.core import *
+from woe.models.forum import *
 
 class AuthAdminIndexView(admin.AdminIndexView):
     @expose('/')
@@ -97,13 +97,29 @@ class PrivateMessageView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.login_name in ["luminescence", "zoop"])
 
-admin.add_view(UserView(User))
-admin.add_view(StatusView(StatusUpdate))
-admin.add_view(NotificationView(Notification))
+class IPAddressView(ModelView):
+    column_list = ("user_name", "ip_address", "last_seen")
+    column_filters = ("user_name", "ip_address", "last_seen")    
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+class LogView(ModelView):
+    column_list = ("user_name", "ip_address", "time", "method", "path")
+    column_filters = ("user_name", "ip_address", "time", "path", "method")    
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+admin.add_view(IPAddressView(IPAddress, category='Logging'))
+admin.add_view(LogView(Log, category='Logging'))
+admin.add_view(UserView(User, category='Core'))
+admin.add_view(StatusView(StatusUpdate, category='Core'))
+admin.add_view(NotificationView(Notification, category='Core'))
+admin.add_view(AttachView(Attachment, category='Core'))
 admin.add_view(PrivateMessageTopicView(PrivateMessageTopic, category='Private Messages'))
 admin.add_view(PrivateMessageView(PrivateMessage, category='Private Messages'))
 admin.add_view(CategoryView(Category, category='Forum'))
 admin.add_view(TopicView(Topic, category='Forum'))
 admin.add_view(PostView(Post, category='Forum'))
 admin.add_view(PrefixView(Prefix, category='Forum'))
-admin.add_view(AttachView(Attachment))
