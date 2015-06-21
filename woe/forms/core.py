@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import BooleanField, StringField, PasswordField, validators, SelectField
+from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField
 from woe.models.core import User, IPAddress
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wand.image import Image
@@ -76,6 +76,7 @@ class RegistrationForm(Form):
 class LoginForm(Form):
     username = StringField('Username', [validators.InputRequired()])
     password = PasswordField('Password', [validators.InputRequired()])
+    redirect_to = HiddenField('Next')
     
     def __get_user__(self, login_name):
         return User.objects(login_name=login_name)
@@ -96,6 +97,11 @@ class LoginForm(Form):
         self.user = user[0]
         if self.user.validated == False:
             raise validators.ValidationError("Your account is being validated, give us a moment. :)")
+            
+    def validate_redirect_to(self, field):
+        if not field.data.strip() == "":
+            if not field.data.startswith("/"):
+                raise validators.ValidationError("Improper redirect.")
 
 class DisplayNamePasswordForm(Form):
     display_name = StringField('Display Name')

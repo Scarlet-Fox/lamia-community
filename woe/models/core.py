@@ -253,6 +253,10 @@ class Log(db.DynamicDocument):
     user = db.ReferenceField("User")
     user_name = db.StringField(default="")
     time = db.DateTimeField()
+    error = db.BooleanField()
+    error_name = db.StringField()
+    error_code = db.StringField()
+    error_description = db.StringField()
     
     meta = {
         'ordering': ['-time'],
@@ -267,7 +271,8 @@ class Log(db.DynamicDocument):
             'agent',
             'user',
             'user_name',
-            'time'
+            'time',
+            'error'
         ]
     }
 

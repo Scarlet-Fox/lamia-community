@@ -15,12 +15,123 @@ from woe.views.dashboard import broadcast
 from ipwhois import IPWhois
 import urllib
 import HTMLParser
+from werkzeug.exceptions import default_exceptions, HTTPException
+
+login_manager.login_view = "sign_in"
+
+@app.errorhandler(500)
+def page_not_found(e):
+    l = Log(
+        method=request.method,
+        path=request.path,
+        ip_address=request.remote_addr,
+        agent_platform=request.user_agent.platform,
+        agent_browser=request.user_agent.browser,
+        agent_browser_version=request.user_agent.version,
+        agent=request.user_agent.string,
+        time=arrow.utcnow().datetime
+    )
+    try:
+        if current_user.is_authenticated():
+            l.user = current_user._get_current_object()
+            l.user_name = current_user.login_name
+    except:
+        pass
+        
+    if isinstance(e, HTTPException):
+        description = unicode(e.get_description(request.environ))
+        code = unicode(e.code)
+        name = unicode(e.name)
+    else:
+        description = "Shit... Something's broken!"
+        code = unicode(500)
+        name = "Server Error."
+        
+    l.error = True
+    l.error_name = name
+    l.error_code = code
+    l.error_description = description
+    l.save()
+    
+    return render_template('500.jade', page_title="SERVER ERROR! - World of Equestria"), 500
+
+@app.errorhandler(403)
+def page_not_found(e):
+    l = Log(
+        method=request.method,
+        path=request.path,
+        ip_address=request.remote_addr,
+        agent_platform=request.user_agent.platform,
+        agent_browser=request.user_agent.browser,
+        agent_browser_version=request.user_agent.version,
+        agent=request.user_agent.string,
+        time=arrow.utcnow().datetime
+    )
+    try:
+        if current_user.is_authenticated():
+            l.user = current_user._get_current_object()
+            l.user_name = current_user.login_name
+    except:
+        pass
+        
+    if isinstance(e, HTTPException):
+        description = unicode(e.get_description(request.environ))
+        code = unicode(e.code)
+        name = unicode(e.name)
+    else:
+        description = "Page not found."
+        code = unicode(403)
+        name = "Page Not Found."
+        
+    l.error = True
+    l.error_name = name
+    l.error_code = code
+    l.error_description = description
+    l.save()
+    
+    return render_template('403.jade', page_title="Page Not Found - World of Equestria"), 403
+
+@app.errorhandler(404)
+def page_not_found(e):
+    l = Log(
+        method=request.method,
+        path=request.path,
+        ip_address=request.remote_addr,
+        agent_platform=request.user_agent.platform,
+        agent_browser=request.user_agent.browser,
+        agent_browser_version=request.user_agent.version,
+        agent=request.user_agent.string,
+        time=arrow.utcnow().datetime
+    )
+    try:
+        if current_user.is_authenticated():
+            l.user = current_user._get_current_object()
+            l.user_name = current_user.login_name
+    except:
+        pass
+        
+    if isinstance(e, HTTPException):
+        description = unicode(e.get_description(request.environ))
+        code = unicode(e.code)
+        name = unicode(e.name)
+    else:
+        description = "Page not found."
+        code = unicode(404)
+        name = "Page Not Found."
+        
+    l.error = True
+    l.error_name = name
+    l.error_code = code
+    l.error_description = description
+    l.save()
+    
+    return render_template('404.jade', page_title="Page Not Found - World of Equestria"), 404
 
 @app.route('/under-construction')
 def under_construction():
     return render_template("under_construction.jade", page_title="We're working on the site!")
 
-if app.settings_file.get("lockout_on", False):
+if not app.settings_file.get("lockout_on", False):
     @app.before_request
     def lockdown_site():
         if not (request.path == "/under-construction" or request.path == "/sign-in" or "/static" in request.path):
@@ -997,7 +1108,9 @@ def sign_in():
             f.fingerprint_factors = len(fingerprint_data)
             f.save()
         
-        return redirect('/')
+        return redirect(form.redirect_to.data)
+    else:
+        form.redirect_to.data = request.args.get('next', "/")
         
     return render_template("sign_in.jade", page_title="Sign In - World of Equestria", form=form)
 

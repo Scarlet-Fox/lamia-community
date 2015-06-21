@@ -110,8 +110,8 @@ class IPAddressView(ModelView):
         return (current_user.is_authenticated() and current_user.is_admin)
 
 class LogView(ModelView):
-    column_list = ("user_name", "ip_address", "time", "method", "path")
-    column_filters = ("user_name", "ip_address", "time", "path", "method")    
+    column_list = ("user_name", "ip_address", "time", "method", "path", "error", "error_code")
+    column_filters = ("user_name", "ip_address", "time", "path", "method", "error", "error_code")    
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
