@@ -144,7 +144,6 @@ class Category(db.DynamicDocument):
     
     # Background info
     weight = db.IntField(default=0)
-    category_moderators = db.ListField(db.ReferenceField("User"))
     user_post_counts = db.DictField()
     data = db.DictField()
     

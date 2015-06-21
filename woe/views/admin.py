@@ -22,6 +22,7 @@ class UserView(ModelView):
     column_list = ("login_name", "display_name", "email_address", "banned", "validated", "status_count", "status_comment_count","last_seen")
     column_filters = ["banned","validated","disable_posts","disable_status","disable_status_participation","disable_pm","disable_topics","old_member_id"]
     column_searchable_list = ('login_name', 'display_name','about_me')
+    form_excluded_columns = ("ignored_users", "ignored_user_signatures","followed_by", "pending_friends", "rejected_friends", "friends")
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
@@ -46,6 +47,7 @@ class TopicView(ModelView):
     column_list = ("title","created","last_post_date", "creator", 'view_count', 'post_count')
     column_filters = ["sticky","hidden","closed","prefix"]
     column_searchable_list = ('title',)
+    form_excluded_columns = ("watchers", "banned_from_topic")
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
@@ -61,6 +63,7 @@ class StatusView(ModelView):
     can_delete = False
     column_list = ("author","attached_to_user","message","created","replies")
     column_filters = ["author_name","attached_to_user_name"]
+    form_excluded_columns = ("participants", "ignoring","blocked")
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
@@ -69,6 +72,7 @@ class PostView(ModelView):
     can_delete = False
     column_list = ("topic_name", "created", "author_name", "boop_count")
     column_filters = ('topic_name', 'author_name', 'html', 'old_ipb_id', 'hidden')
+    form_excluded_columns = ("boops", )
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
@@ -85,7 +89,7 @@ class PrivateMessageTopicView(ModelView):
     can_delete = False
     column_list = ("title", "creator_name", "created", "last_reply_time", "last_reply_name", "message_count", "participant_count")
     column_filters = ("creator_name","title","last_reply_name")
-    form_excluded_columns = ("last_reply_name", "created",)
+    form_excluded_columns = ("participating_users", "blocked_users","users_left_pm")
     
     def is_accessible(self):
         return current_user.login_name in ["luminescence", "zoop"]
