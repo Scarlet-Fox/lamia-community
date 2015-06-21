@@ -1093,7 +1093,7 @@ def sign_in():
         for key, value in sorted(fingerprint_data.items()):
             fingerprint_hash += unicode(key) + " "
             fingerprint_hash += unicode(value) + " "
-            
+        
         _fingerprint_hash = hashlib.sha256(unicode(fingerprint_hash)).hexdigest()
         
         try:
