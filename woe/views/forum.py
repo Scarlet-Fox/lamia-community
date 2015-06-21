@@ -367,9 +367,9 @@ def topic_index(slug, page, post):
             return abort(404)
     elif post == "last_seen":
         try:
-            last_seen = topic.last_seen_by.get(str(current_user._get_current_object().pk), arrow.utcnow().datetime)
+            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().pk), arrow.utcnow().timestamp)).datetime
         except:
-            last_seen = arrow.utcnow().datetime
+            last_seen = arrow.get(arrow.utcnow().timestamp).datetime
         
         try:
             post = Post.objects(topic=topic, hidden=False, created__lt=last_seen).order_by("-created")[0]
@@ -395,7 +395,7 @@ def topic_index(slug, page, post):
     
     topic.inc__view_count = 1
     try:
-        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().datetime
+        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
     except:
         pass
     topic.save()

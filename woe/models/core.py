@@ -123,10 +123,10 @@ class PrivateMessageTopic(db.DynamicDocument):
     title = db.StringField(required=True)
     creator = db.ReferenceField("User", required=True)
     creator_name = db.StringField(required=True)
-    created = db.DateTimeField(required=True)
-    
-    last_reply_by = db.ReferenceField("User")
     last_reply_name = db.StringField()
+
+    created = db.DateTimeField(required=True)
+    last_reply_by = db.ReferenceField("User")
     last_reply_time = db.DateTimeField()
     
     message_count = db.IntField(default=0)
@@ -519,7 +519,7 @@ class User(db.DynamicDocument):
     
     def set_password(self, password, rounds=12):
         self.legacy_password = None
-        self.password_hash = bcrypt.generate_password_hash(password.strip(),rounds)
+        self.password_hash = bcrypt.generate_password_hash(password.strip().encode('utf-8'),rounds).encode('utf-8')
         
     def check_password(self, password):
         if self.legacy_password:
@@ -533,7 +533,7 @@ class User(db.DynamicDocument):
             else:
                 return False
         else:
-            return bcrypt.check_password_hash(self.password_hash.encode('utf-8'), password.encode('utf-8'))
+            return bcrypt.check_password_hash(self.password_hash.encode('utf-8'), password.strip().encode('utf-8'))
         
     def get_avatar_url(self, size=""):
         if size != "":

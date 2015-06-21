@@ -21,6 +21,42 @@ def get_post_html_in_pm_topic(pk, post):
         
     return json.jsonify(content=post.message)
 
+@app.route('/messages/<pk>/kick-from-topic/<upk>', methods=['POST'])
+@login_required
+def kick_from_pm_topic(pk, upk):
+    try:
+        topic = PrivateMessageTopic.objects(pk=pk)[0]
+    except IndexError:
+        return abort(404)
+        
+    if not current_user._get_current_object() in topic.participating_users or not current_user._get_current_object() == topic.creator:
+        return abort(404)
+        
+    try:
+        target_user = User.objects(pk=upk)[0]
+    except:
+        return abort(404)
+        
+    topic.update(add_to_set__users_left_pm=target_user)
+    topic.update(add_to_set__blocked_users=target_user)
+    
+    return json.jsonify(url='/messages/'+str(topic.pk))
+
+@app.route('/messages/<pk>/leave-topic', methods=['POST'])
+@login_required
+def leave_pm_topic(pk):
+    try:
+        topic = PrivateMessageTopic.objects(pk=pk)[0]
+    except IndexError:
+        return abort(404)
+        
+    if not current_user._get_current_object() in topic.participating_users:
+        return abort(404)
+        
+    topic.update(add_to_set__users_left_pm=current_user._get_current_object())
+    
+    return json.jsonify(url='/messages')
+
 @app.route('/messages/<pk>/edit-post', methods=['POST'])
 @login_required
 def edit_post_in_pm_topic(pk):
@@ -204,7 +240,7 @@ def message_index(pk, page, post):
     except IndexError:
         return abort(404)
     
-    if not current_user._get_current_object() in topic.participating_users:
+    if not current_user._get_current_object() in topic.participating_users or current_user._get_current_object() in topic.users_left_pm or current_user._get_current_object() in topic.blocked_users:
         return abort(404)
         
     try:
@@ -219,9 +255,9 @@ def message_index(pk, page, post):
             return abort(404)
     elif post == "last_seen":
         try:
-            last_seen = topic.last_seen_by.get(str(current_user._get_current_object().pk), arrow.utcnow().datetime)
+            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().pk), arrow.utcnow().timestamp)).datetime
         except:
-            last_seen = arrow.utcnow().datetime
+            last_seen = arrow.get(arrow.utcnow().timestamp).datetime
         
         try:
             post = PrivateMessage.objects(topic=topic, created__lt=last_seen).order_by("-created")[0]
@@ -248,7 +284,7 @@ def message_index(pk, page, post):
         return render_template("core/messages_topic.jade", page_title="%s - World of Equestria" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.pk))
         
     try:
-        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().datetime
+        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
         topic.save()
     except:
         pass
@@ -353,7 +389,9 @@ def messages_topics():
         minimum = 0
         maximum = 20
         
-    messages = PrivateMessageTopic.objects(participating_users=current_user._get_current_object()).order_by("-last_reply_time").select_related(0)[minimum:maximum+10]
+    messages = PrivateMessageTopic.objects(participating_users=current_user._get_current_object(), 
+        users_left_pm__ne=current_user._get_current_object()
+        ).order_by("-last_reply_time").select_related(0)[minimum:maximum+10]
     parsed_messages = []
     
     for message in messages:
@@ -366,7 +404,11 @@ def messages_topics():
         if not participating:
             continue
             
-        _parsed = message.to_mongo().to_dict()
+        try:
+            _parsed = message.to_mongo().to_dict()
+        except:
+            _parsed = {}
+        print message
         _parsed["creator"] = message.creator.display_name
         _parsed["created"] = humanize_time(message.created, "MMM D YYYY")
         
@@ -377,12 +419,17 @@ def messages_topics():
         _parsed["last_post_by_login_name"] = message.last_reply_by.login_name
         _parsed["last_post_author_avatar"] = message.last_reply_by.get_avatar_url("40")
         _parsed["post_count"] = "{:,}".format(message.message_count)
+        _parsed["pk"] = message.pk
         try:
             _parsed["last_page"] = float(message.message_count)/float(pagination)
         except:
             _parsed["last_page"] = 1
         _parsed["last_pages"] = _parsed["last_page"] > 1
-        del _parsed["participants"]
+        
+        try:
+            del _parsed["participants"]
+        except:
+            pass
         parsed_messages.append(_parsed)
         
     return app.jsonify(topics=parsed_messages[minimum:maximum], count=len(parsed_messages))

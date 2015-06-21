@@ -85,6 +85,7 @@ class PrivateMessageTopicView(ModelView):
     can_delete = False
     column_list = ("title", "creator_name", "created", "last_reply_time", "last_reply_name", "message_count", "participant_count")
     column_filters = ("creator_name","title","last_reply_name")
+    form_excluded_columns = ("last_reply_name", "created",)
     
     def is_accessible(self):
         return current_user.login_name in ["luminescence", "zoop"]

@@ -24,6 +24,11 @@ def broadcast(to, category, url, title, description, content, author, priority=0
                 user = User.objects(login_name=to)[0]
             else:
                 user = u
+            try:
+                if current_user._get_current_object() == user:
+                    continue
+            except:
+                pass
         except IndexError:
             continue
         

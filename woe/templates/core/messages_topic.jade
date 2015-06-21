@@ -20,19 +20,25 @@
   .col-md-3
     ul.list-group.category
       li.list-group-item.sidebar-section-header.section-header Participants
-      for participant in topic.participants
+      for participant in topic.participating_users
         li.list-group-item
           .media-left
-            a(href="{{url_for('view_profile', login_name=participant.user.login_name)}}")
-              img.media-object(src="{{ participant.user.get_avatar_url("40") }}", width="40px", height="40px", class="avatar-mini")
+            a(href="{{url_for('view_profile', login_name=participant.login_name)}}")
+              img.media-object(src="{{ participant.get_avatar_url("40") }}", width="40px", height="40px", class="avatar-mini")
           .media-body
-            a.hover_user(href="{{url_for('view_profile', login_name=participant.user.login_name)}}") {{ participant.user.display_name }}
-            if current_user == participant.user:
-              br
-              a.inherit_colors(href="/messages/{{topic.pk}}/leave-topic") (Leave Topic)
-            elif current_user != participant.user and current_user == topic.creator:
-              br
-              a.inherit_colors(href="/messages/{{topic.pk}}/kick-from-topic/{{participant.user.pk}}") (Kick)
+            a.hover_user(href="{{url_for('view_profile', login_name=participant.login_name)}}") {{ participant.display_name }}
+            if participant in topic.users_left_pm
+              if participant in topic.blocked_users
+                p.text-muted <i>Was Kicked from PM</i>
+              else
+                p.text-muted <i>Has Left PM</i>
+            else
+              if current_user == participant
+                br
+                a.inherit_colors.post-link(href="/messages/{{topic.pk}}/leave-topic") (Leave Topic)
+              elif current_user != participant and current_user == topic.creator
+                br
+                a.inherit_colors.post-link(href="/messages/{{topic.pk}}/kick-from-topic/{{participant.pk}}") (Kick)
             
 nav.pagination-listing
 {% endblock %}

@@ -14,7 +14,6 @@ c.execute("select * from ipsmembers m left join ipsprofile_portal p ON m.member_
 
 blocks = {}
 
-
 for u in c.fetchall():
     try:
         blocks[u["member_id"]] = phpserialize.loads(u["ignored_users"])
@@ -50,8 +49,9 @@ for u in c.fetchall():
         except:
             m.title = ""
     timestamp = str(arrow.utcnow().timestamp) + "_"
-    m.set_password(str(timestamp)+str(arrow.utcnow().timestamp),12)
+    m.set_password(str(timestamp)+str(arrow.utcnow().timestamp),4)
     m.validated = True
+    m.legacy_password = True
     m.save()
     
     old_avatar_location = os.path.join(settings_file["woe_ipb_avatar_dir"],u["pp_main_photo"])
