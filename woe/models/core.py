@@ -185,6 +185,7 @@ class Notification(db.DynamicDocument):
     author = db.ReferenceField("User", required=True)
     author_name = db.StringField(required=True)
     acknowledged = db.BooleanField(default=False)
+    seen = db.BooleanField(default=False)
     emailed = db.BooleanField(default=False)
     priority = db.IntField(default=0)
     

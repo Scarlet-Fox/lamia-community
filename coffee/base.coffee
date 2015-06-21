@@ -92,7 +92,7 @@ $ ->
         notifications_listed[notifications_listed.length-1].remove()
         
       _html = """
-      <a href="#{data.url}" data-notification="#{data._id}" class="notification-link dropdown-notif-#{data._id}-#{data.category}">#{data.text}</a>
+      <li><a href="#{data.url}" data-notification="#{data._id}" class="notification-link dropdown-notif-#{data._id}-#{data.category}">#{data.text}</a></li>
       """
       
       if notifications_listed.length == 0
