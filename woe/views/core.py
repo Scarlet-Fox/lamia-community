@@ -1055,7 +1055,11 @@ def sign_in():
             return redirect("/banned")
             
         login_user(form.user)
-        fingerprint__info_from_browser = json.loads(request.form.get("log_in_token"))
+        
+        try:
+            fingerprint__info_from_browser = json.loads(request.form.get("log_in_token"))
+        except:
+            fingerprint__info_from_browser = {"pl": []}
         
         fingerprint_data = {}
         fingerprint_data["current_user"] = form.user.login_name
