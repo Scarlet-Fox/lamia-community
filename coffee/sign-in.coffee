@@ -1,5 +1,5 @@
 $ ->
-  try:
+  try
     pl = navigator.plugins.length
     val = []
     for i in [0...pl]
@@ -17,7 +17,7 @@ $ ->
         }))
         .appendTo('form')
       return true
-  except:
+  catch
     $("form").submit (e) ->
       $('<input />').attr('type', 'hidden')
         .attr('name', "log_in_token")
