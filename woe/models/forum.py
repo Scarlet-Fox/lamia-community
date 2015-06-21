@@ -148,7 +148,8 @@ class Category(db.DynamicDocument):
     data = db.DictField()
     
     # Security
-    restricted = db.BooleanField(default=True)
+    restricted = db.BooleanField(default=False)
+    allowed_users = db.ListField(db.ReferenceField("User"))
     allowed_prefixes = db.ListField(db.StringField())
     
     # Tracking

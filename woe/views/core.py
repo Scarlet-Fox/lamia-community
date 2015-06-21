@@ -835,7 +835,7 @@ def forgot_password():
     form = ForgotPasswordForm(csrf_enabled=False)
     if form.validate_on_submit():
         time = str(arrow.utcnow().timestamp)+"THIS IS A POINTLESS BIT OF TEXT LOL"
-        token = bcrypt.generate_password_hash(time,10).encode('utf-8')
+        token = bcrypt.generate_password_hash(time,10).encode('utf-8').replace("/","_")
         form.user.password_forgot_token = token
         form.user.password_forgot_token_date = arrow.utcnow().datetime
         form.user.save()

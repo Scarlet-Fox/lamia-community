@@ -1,12 +1,14 @@
 import MySQLdb
 import MySQLdb.cursors
 from woe.models.forum import Category
+from woe.models.core import User
 from slugify import slugify
 import json
 settings_file = json.loads(open("config.json").read())
 
 def import_categories(parent=-1):
     exclude = [14,]
+    restrict = [63,]
     db = MySQLdb.connect(user=settings_file["woe_old_user"], db=settings_file["woe_old_db"], passwd=settings_file["woe_old_pass"], cursorclass=MySQLdb.cursors.DictCursor,charset='latin1',use_unicode=True)
     cursor=db.cursor()
     cursor.execute("select * from ipsforums where parent_id=%s;", [parent,])
@@ -25,6 +27,9 @@ def import_categories(parent=-1):
         
         category.old_ipb_id = cat["id"]
         category.weight = cat["position"]
+        if category.old_ipb_id in restrict:
+            category.restricted = True
+            category.allowed_users = User.objects(old_member_id__in=[23,48])
         if category.old_ipb_id not in exclude:
             category.save()
             import_categories(parent=category.old_ipb_id)

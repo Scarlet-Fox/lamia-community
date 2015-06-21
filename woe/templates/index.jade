@@ -3,7 +3,7 @@
 {% block content %}
 .row
   .col-md-8
-    {% for category_list in categories.values() %}
+    {% for category_list in categories.values() if not category_list[0].restricted or current_user.is_admin or current_user in category_list[0].allowed_users %}
     ul.list-group.category 
       {% for category in category_list %}
       {% if loop.first %}
