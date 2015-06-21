@@ -242,16 +242,33 @@ class Report(db.DynamicDocument):
     }
 
 class Log(db.DynamicDocument):
-    method = db.StringField(required=True)
-    path = db.StringField(required=True)
-    ip_address = db.StringField(required=True)
-    agent_platform = db.StringField(required=True)
-    agent_browser = db.StringField(required=True)
-    agent_browser_version = db.StringField(required=True)
-    agent = db.StringField(required=True)
+    method = db.StringField()
+    path = db.StringField()
+    ip_address = db.StringField()
+    agent_platform = db.StringField()
+    agent_browser = db.StringField()
+    agent_browser_version = db.StringField()
+    agent = db.StringField()
     user = db.ReferenceField("User")
     user_name = db.StringField(default="")
-    time = db.DateTimeField(required=True)
+    time = db.DateTimeField()
+    
+    meta = {
+        'ordering': ['-time'],
+        'indexes': [
+            '-time',
+            'method',
+            'path',
+            'ip_address',
+            'agent_platform',
+            'agent_browser',
+            'agent_browser_version',
+            'agent',
+            'user',
+            'user_name',
+            'time'
+        ]
+    }
 
 class StatusViewer(db.DynamicEmbeddedDocument):
     last_seen = db.DateTimeField(required=True)

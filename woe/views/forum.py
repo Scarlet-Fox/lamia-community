@@ -222,7 +222,7 @@ def topic_posts(slug):
     max_page = math.ceil(float(topic.post_count)/float(pagination))
     if page > max_page:
         page = max_page
-    posts = Post.objects(hidden=False, topic=topic)[(page-1)*pagination:page*pagination]
+    posts = list(Post.objects(hidden=False, topic=topic, created__gte=arrow.get(topic.created).replace(hours=-24).datetime).order_by("created")[(page-1)*pagination:page*pagination])
     topic.update(post_count=post_count)
     parsed_posts = []
     
