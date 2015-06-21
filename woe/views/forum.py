@@ -574,8 +574,8 @@ def category_topics(slug):
         topics = Topic.objects(category=category, prefix__in=prefixes, hidden=False, post_count__gt=0).order_by("-sticky", "-last_post_date")[minimum:maximum]
         topic_count = Topic.objects(category=category, prefix__in=prefixes, hidden=False, post_count__gt=0).count()
     else:
-        topics = Topic.objects(category=category, post_count__gt=0).order_by("-sticky", "-last_post_date")[minimum:maximum]
-        topic_count = Topic.objects(category=category, post_count__gt=0).count()
+        topics = Topic.objects(category=category, post_count__gt=0, hidden=False).order_by("-sticky", "-last_post_date")[minimum:maximum]
+        topic_count = Topic.objects(category=category, post_count__gt=0, hidden=False).count()
     
     parsed_topics = []
     for topic in topics:
