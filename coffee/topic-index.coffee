@@ -260,7 +260,7 @@ $ ->
                           <div class="btn-group">
                             <button type="button" class="btn btn-default mention-button" data-author="{{author_login_name}}">@</button>
                             <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
-                            <button type="button" class="btn btn-default">Report</button>
+                            <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="post">Report</button>
                             <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>

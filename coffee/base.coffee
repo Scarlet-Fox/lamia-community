@@ -232,21 +232,48 @@ $ ->
           , n
         checkAndClear(2000)
       
-  # .popover
-  #   trigger: "hover"
-  #   html: true
-  #   container: 'body'
-  #   delay:
-  #     show: 500
-  #     hide: 100000
-  #   content: () ->
-  #     element = $(this)
-  #
-  #
-  #
-  #       _html = hoverTemplate(data)
-  #       console.log _html
-  #       return _html
-      
-      
+  reportModalHTML = () ->
+    return """
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Report Content</h4>
+        </div>
+        <div class="modal-body">
+          Ready to make a report? Supply a reason and click submit.
+          <br><br>
+          <input class="form-control report-reason" style="width: 400px; max-width: 100%;">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" id="modal-submit-report">Report</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+    """
+  
+  $(document).on "click", ".report-button", (e) ->
+    element = $(this)
+    $("#report-click-modal").html reportModalHTML()
+    $("#report-click-modal").data("pk", element.data("pk"))
+    $("#report-click-modal").data("type", element.data("type"))
+    
+    $("#modal-submit-report").click (e) ->
+      post_data = 
+        pk: $("#report-click-modal").data("pk")
+        text: $("#report-reason").val()
+        content_type: $("#report-click-modal").data("type")
+      $.post "/make-report", JSON.stringify(post_data), (data) ->
+        $("#report-click-modal").modal("hide")
+        element.text("Report Submitted")
+        element.addClass("btn-success")
+        element.addClass("disabled")
+    
+    $("#report-click-modal").modal("show")
+    
+    
+  
+    
+  
   return

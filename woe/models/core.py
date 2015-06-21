@@ -205,18 +205,42 @@ class ReportComment(db.DynamicDocument):
     text = db.StringField(required=True)
 
 class Report(db.DynamicDocument):
-    content = db.GenericReferenceField(required=True)
-    text = db.StringField(required=True)
+    content_type = db.StringField(required=True)
+    content_pk = db.StringField(required=True)
+    url = db.StringField(required=True)
+    report = db.StringField(required=True)
+    content_reported = db.StringField(required=True)
     initiated_by = db.ReferenceField("User", required=True)
+    initiated_by_u = db.StringField(required=True)
     STATUS_CHOICES = ( 
-        ('closed', 'Closed'), 
+        ('ignored', 'Ignored'), 
         ('open', 'Open'), 
         ('feedback', 'Feedback Requested'), 
-        ('waiting', 'Waiting') 
+        ('waiting', 'Waiting'),
+        ('action taken', 'Action Taken') 
     )
     status = db.StringField(choices=STATUS_CHOICES, default='open')
     created = db.DateTimeField(required=True)
+    handled_by = db.ReferenceField("User")
+    handled_by_u = db.StringField()
     
+    meta = {
+        'ordering': ['-created'],
+        'indexes': [
+            '-created',
+            'initiated_by_u',
+            'initiated_by',
+            'status',
+            {
+                'fields': ['$content_reported',],
+                'default_language': 'english'
+            },
+            'content_type',
+            'content_pk',
+            'url'
+        ]
+    }
+
 class Log(db.DynamicDocument):
     method = db.StringField(required=True)
     path = db.StringField(required=True)

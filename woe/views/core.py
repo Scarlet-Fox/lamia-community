@@ -1,6 +1,6 @@
 from woe import login_manager
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, ForumPostParser, Attachment, IPAddress, Log, Fingerprint
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, ForumPostParser, Attachment, IPAddress, Log, Fingerprint, Report
 from woe.models.forum import Category, Post, Topic
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
@@ -69,6 +69,81 @@ def get_user_info_api():
         last_seen=humanize_time(user.last_seen),
         joined=humanize_time(user.joined)
     )
+
+@app.route('/make-report', methods=['POST'])
+@login_required
+def make_report():
+    request_json = request.get_json(force=True)
+    
+    _type = request_json.get("content_type", "post")
+    text = request_json.get("reason", "Blank reason.")
+    
+    if _type == "post":
+        try:
+            content = Post.objects(pk=request_json.get("pk"))[0]
+        except:
+            return abort(500)
+        content_id = content.pk
+        content_html = content.html
+        url = "/t/%s/page/1/post/%s" % (content.topic.slug, content.pk)
+    elif _type == "pm":
+        try:
+            content = PrivateMessage.objects(pk=request_json.get("pk"))[0]
+        except:
+            return abort(500)
+        content_id = content.pk
+        content_html = content.message
+        url = "/messages/%s/page/1/post/%s" % (content.topic.pk, content.pk)
+    elif _type == "status":
+        try:
+            content = StatusUpdate.objects(pk=request_json.get("pk"))[0]
+        except:
+            return abort(500)
+        content_id = content.pk
+        content_html = content.message
+        url = "/messages/%s/page/1/post/%s" % (content.topic.pk, content.pk)
+    elif _type == "profile":
+        try:
+            content = User.objects(pk=request_json.get("pk"))[0]
+        except:
+            return abort(500)
+        content_id = content.pk
+        content_html = content.about_me
+        url = "/member/%s" % (content.login_name)
+    
+    try:
+        report = Report.objects(
+            content_type=_type, 
+            content_pk=str(content_id),
+            initiated_by=current_user._get_current_object(), 
+            created__gte=arrow.utcnow().replace(hours=-24).datetime
+            )[0]
+        return app.jsonify(status="reported")
+    except:
+        pass
+    
+    report = Report(
+        content_type = _type,
+        content_pk = str(content_id),
+        report = text,
+        content_reported = content_html,
+        initiated_by = current_user._get_current_object(),
+        initiated_by_u = current_user._get_current_object().display_name,
+        created = arrow.utcnow().datetime,
+        url = url
+    )
+    report.save()
+    
+    broadcast(
+        to=list(User.objects(is_admin=True)), 
+        category="mod", 
+        url=url,
+        title="A %s was reported by %s." % (_type, unicode(current_user._get_current_object().display_name)),
+        description=text, 
+        content=report, 
+        author=current_user._get_current_object()
+        )
+    return app.jsonify(status="reported")
 
 @app.route('/pm-topic-list-api', methods=['GET'])
 @login_required

@@ -118,6 +118,14 @@ class FingerprintView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class ReportView(ModelView):
+    column_list = ("initiated_by_u", "content_type", "content_pk", "url", "status", "created")
+    column_filters = ("initiated_by_u", "content_type", "content_pk", "url", "status", "created")  
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+admin.add_view(ReportView(Report))
 admin.add_view(FingerprintView(Fingerprint, category='Logging'))
 admin.add_view(IPAddressView(IPAddress, category='Logging'))
 admin.add_view(LogView(Log, category='Logging'))

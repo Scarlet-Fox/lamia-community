@@ -3,7 +3,7 @@
   var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   $(function() {
-    var hoverTemplate, p_html, socket;
+    var hoverTemplate, p_html, reportModalHTML, socket;
     window.RegisterAttachmentContainer = function(selector) {
       var gifModalHTML, imgModalHTML;
       imgModalHTML = function() {
@@ -210,6 +210,31 @@
           return checkAndClear(2000);
         });
       }
+    });
+    reportModalHTML = function() {
+      return "<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n    <div class=\"modal-header\">\n      <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n      <h4 class=\"modal-title\">Report Content</h4>\n    </div>\n    <div class=\"modal-body\">\n      Ready to make a report? Supply a reason and click submit.\n      <br><br>\n      <input class=\"form-control report-reason\" style=\"width: 400px; max-width: 100%;\">\n    </div>\n    <div class=\"modal-footer\">\n      <button type=\"button\" class=\"btn btn-danger\" id=\"modal-submit-report\">Report</button>\n      <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel</button>\n    </div>\n  </div>\n</div>";
+    };
+    $(document).on("click", ".report-button", function(e) {
+      var element;
+      element = $(this);
+      $("#report-click-modal").html(reportModalHTML());
+      $("#report-click-modal").data("pk", element.data("pk"));
+      $("#report-click-modal").data("type", element.data("type"));
+      $("#modal-submit-report").click(function(e) {
+        var post_data;
+        post_data = {
+          pk: $("#report-click-modal").data("pk"),
+          text: $("#report-reason").val(),
+          content_type: $("#report-click-modal").data("type")
+        };
+        return $.post("/make-report", JSON.stringify(post_data), function(data) {
+          $("#report-click-modal").modal("hide");
+          element.text("Report Submitted");
+          element.addClass("btn-success");
+          return element.addClass("disabled");
+        });
+      });
+      return $("#report-click-modal").modal("show");
     });
   });
 
