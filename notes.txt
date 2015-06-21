@@ -7,3 +7,8 @@ For PyPy:
 For fonts:
 
 * http://www.fontsquirrel.com/
+
+For Mongo:
+
+* Wired tiger is a little bitch
+* Remember to set option for setParameter=failIndexKeyTooLong=false -> in YAML is under setParameter
