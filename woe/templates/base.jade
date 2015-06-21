@@ -150,15 +150,19 @@ body(role='document')
   {% assets filters="rjsmin", output="generated/base.js",
   "assets/jquery-1.11.3.js", "assets/socket.io.js", "assets/bootstrap.js",
   "assets/moment.js", "assets/socket.io.js", "assets/ie10-viewport-bug-workaround.js",
-  "local/js/base.js", "assets/dotdotdot/jquery.dotdotdot.js",
+  "local/js/base.js", "assets/dotdotdot/jquery.dotdotdot.js", "assets/moment-timezone-with-data-2010-2020.js",
   "assets/ie-emulation-modes-warning.js" %}
   script(type="text/javascript", src="{{ASSET_URL}}")
   {% endassets %}
   script(type="text/javascript")
+    $(document).ready(function(){
+      window.my_tz = "US/Pacific";
+    });
   if current_user.is_authenticated()
     script(type="text/javascript")
       $(document).ready(function(){
         window.woe_is_me = "{{current_user.login_name}}";
+        window.my_tz = "{{current_user.time_zone}}";
         $(".href_span").click(function (e) {
           window.location = $(this).attr("href");
         });

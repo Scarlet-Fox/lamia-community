@@ -115,7 +115,7 @@
       return $(selector).find("blockquote").each(function() {
         var element, time;
         element = $(this);
-        time = moment.unix(element.data("time")).format("MMMM Do YYYY @ h:mm:ss a");
+        time = moment.unix(element.data("time")).tz(window.my_tz).format("MMMM Do YYYY @ h:mm:ss a");
         element.find("blockquote").remove();
         element.html(element.html().replace(new RegExp("<p>&nbsp;</p>", "g"), ""));
         element.dotdotdot({
