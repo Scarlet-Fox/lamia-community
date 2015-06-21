@@ -1,6 +1,6 @@
 from flask_wtf import Form
 from wtforms import BooleanField, StringField, PasswordField, validators, SelectField
-from woe.models.core import User
+from woe.models.core import User, IPAddress
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wand.image import Image
 import shutil, pytz, arrow
@@ -51,6 +51,11 @@ class RegistrationForm(Form):
             raise validators.ValidationError("We cannot accept registrations from users under 13 years old. This is the law. If you like this site, come back when you're over 13.")
     
     def validate_username(self, field):
+        ip_addresses = IPAddress.objects(ip_address=self.ip)
+        for address in ip_addresses:
+            if address.user.banned:
+                raise validators.ValidationError("It looks like your account was banned, please don't re-register. If this is a mistake, contact community-@-worldofequestria.com (remove the dashes).")
+        
         user_count = len(User.objects(login_name=field.data.lower().strip())) + len(User.objects(display_name__iexact=field.data.strip()))
         if user_count > 0:
             raise validators.ValidationError("Your username is already taken.")
@@ -91,9 +96,6 @@ class LoginForm(Form):
         self.user = user[0]
         if self.user.validated == False:
             raise validators.ValidationError("Your account is being validated, give us a moment. :)")
-            
-        if self.user.banned == True:
-            raise validators.ValidationError("I'm sorry, I'm so sorry, but it looks like you're banned.")
 
 class DisplayNamePasswordForm(Form):
     display_name = StringField('Display Name')

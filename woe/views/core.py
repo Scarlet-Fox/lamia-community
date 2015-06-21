@@ -16,12 +16,21 @@ from ipwhois import IPWhois
 import urllib
 import HTMLParser
 
+@app.before_request
+def intercept_banned():
+    if current_user._get_current_object().is_authenticated():
+        if current_user._get_current_object().banned and not (request.path == "/banned" or request.path == "/sign-out" or "/static" in request.path):
+            return redirect("/banned")
+
 @app.context_processor
 def inject_notification_count():
     c = current_user
-    if c.is_authenticated():
-        return dict(notification_count=c._get_current_object().get_notification_count())
-    else:
+    try:
+        if c.is_authenticated():
+            return dict(notification_count=c._get_current_object().get_notification_count())
+        else:
+            return dict(notification_count=0)
+    except:
         return dict(notification_count=0)
 
 if app.settings_file.get("lockout_on", False):
@@ -42,9 +51,12 @@ def log_request():
         agent=request.user_agent.string,
         time=arrow.utcnow().datetime
     )
-    if current_user.is_authenticated():
-        l.user = current_user._get_current_object()
-        l.user_name = current_user.login_name
+    try:
+        if current_user.is_authenticated():
+            l.user = current_user._get_current_object()
+            l.user_name = current_user.login_name
+    except:
+        pass
     l.save()
 
 @app.route('/get-user-info-api', methods=['POST',])
@@ -789,7 +801,7 @@ def load_user(login_name):
             ip_address.save()
         ip_address.update(last_seen=arrow.utcnow().datetime)
             
-        if user.validated and not user.banned:
+        if user.validated:
             return user
         else:
             return None
@@ -857,6 +869,7 @@ def register():
         return abort(404)
     
     form = RegistrationForm(csrf_enabled=False)
+    form.ip = request.remote_addr
     if form.validate_on_submit():
         new_user = User(
             login_name = form.username.data.strip().lower(),
@@ -919,7 +932,10 @@ def sign_in():
     
     form = LoginForm(csrf_enabled=False)
     if form.validate_on_submit():
-        login_user(form.user)    
+        if form.user.banned:
+            return redirect("/banned")
+            
+        login_user(form.user)
         fingerprint__info_from_browser = json.loads(request.form.get("log_in_token"))
         
         fingerprint_data = {}
@@ -977,7 +993,13 @@ def sign_in():
         return redirect('/')
         
     return render_template("sign_in.jade", page_title="Sign In - World of Equestria", form=form)
-    
+
+@app.route('/banned')
+def banned_user():
+    image_dir = os.path.join(os.getcwd(),"woe/static/banned_images/")
+    images = ["/static/banned_images/"+unicode(i) for i in os.listdir(image_dir)]
+    return render_template("banned.jade", page_title="You Are Banned.", images=images)
+
 @app.route('/sign-out', methods=['POST'])
 def sign_out():
     logout_user()
