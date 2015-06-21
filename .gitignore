@@ -4,6 +4,7 @@ avatars/
 uploads/
 node_modules/
 local/js/
+static/generated/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
