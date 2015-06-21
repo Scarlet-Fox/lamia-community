@@ -93,7 +93,7 @@
           this.flashError("This status update is full.");
           $("#submit-reply").addClass("disabled");
         }
-        return $("#status-status").text("Status Update - " + c + " / 100 Replies");
+        return $("#status-status").text(c + " / 100 Replies");
       };
 
       Status.prototype.updateCount = function(c) {
