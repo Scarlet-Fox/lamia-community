@@ -6,6 +6,7 @@ from wand.image import Image
 from urllib import quote
 from woe.models.forum import Post
 import arrow, re, os, math
+from flask.ext.login import current_user
 
 class Fingerprint(db.DynamicDocument):
     user = db.ReferenceField("User", required=True)
@@ -393,6 +394,7 @@ class User(db.DynamicDocument):
     
     information_fields = db.ListField(db.EmbeddedDocumentField(ProfileField))
     social_fields = db.ListField(db.EmbeddedDocumentField(ProfileField))
+    time_zone = db.StringField(default='US/Pacific')
     
     # Restoring account
     password_token = db.StringField()
@@ -407,7 +409,6 @@ class User(db.DynamicDocument):
     last_looked_at_notifications = db.DateTimeField()
     
     signatures = db.ListField(db.StringField())
-    timezone = db.IntField(default=0) # Relative to UTC
     birth_d = db.IntField()
     birth_m = db.IntField()
     birth_y = db.IntField()

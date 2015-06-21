@@ -154,6 +154,7 @@ body(role='document')
   "assets/ie-emulation-modes-warning.js" %}
   script(type="text/javascript", src="{{ASSET_URL}}")
   {% endassets %}
+  script(type="text/javascript")
   if current_user.is_authenticated()
     script(type="text/javascript")
       $(document).ready(function(){

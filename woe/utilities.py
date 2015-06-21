@@ -2,7 +2,8 @@ from lxml.html.clean import Cleaner
 import hashlib
 import arrow
 from woe import app
-import cgi, re
+import cgi, re, pytz
+from flask.ext.login import current_user
 from mongoengine.queryset import Q
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
@@ -145,12 +146,17 @@ def humanize(time):
         return ""
         
     try:
+        timezone = current_user._get_current_object().time_zone
+    except:
+        timezone = "US/Pacific"
+    
+    try:        
         a = arrow.get(time)
-        b = arrow.utcnow().replace(hours=-24)
+        b = arrow.utcnow().replace(hours=-1)
         if a > b:
             return a.humanize()
         else:
-            return a.format("MMM D, hh:mm a")
+            return a.to(timezone).format("MMM D YYYY, hh:mm a")
     except:
         return ""
         
@@ -159,11 +165,16 @@ def humanize_time(time, format_str="MMM D YYYY, hh:mm a"):
         return ""
         
     try:
+        timezone = current_user._get_current_object().time_zone
+    except:
+        timezone = "US/Pacific"
+        
+    try:
         a = arrow.get(time)
-        b = arrow.utcnow().replace(hours=-24)
+        b = arrow.utcnow().replace(hours=-1)
         if a > b:
             return a.humanize()
         else:
-            return a.format(format_str)
+            return a.to(timezone).format(format_str)
     except:
         return ""
