@@ -278,6 +278,11 @@ def message_index(pk, page, post):
     pagination = 20
     
     if post != "":
+        try:
+            topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
+            topic.save()
+        except:
+            pass
         target_date = post.created
         posts_before_target = PrivateMessage.objects(topic=topic, created__lt=target_date).count()
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1

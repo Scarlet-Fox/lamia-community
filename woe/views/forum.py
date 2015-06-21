@@ -388,16 +388,16 @@ def topic_index(slug, page, post):
             post = ""
     
     if post != "":
+        topic.inc__view_count = 1
+        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
+        topic.save()
         target_date = post.created
         posts_before_target = Post.objects(hidden=False, topic=topic, created__lt=target_date).count()
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
         return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, initial_post=str(post.pk))
     
     topic.inc__view_count = 1
-    try:
-        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
-    except:
-        pass
+    topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
     topic.save()
     return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page)
 
