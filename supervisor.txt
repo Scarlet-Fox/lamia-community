@@ -1,0 +1,4 @@
+[program:woe]
+command=/home/worldofequestria/pypy-woe/bin/gunicorn --worker-class sync --workers 8 --error-logfile=/home/worldofequestria/woe_logs/error.log --access-logfile=/home/worldofequestria/woe_logs/access.log woe:app -b 0.0.0.0:5001
+directory = /home/worldofequestria/woe
+user = worldofequestria
