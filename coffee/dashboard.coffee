@@ -105,7 +105,7 @@ $ ->
         else
           notification.reference = ""
           
-      notification._member_name = notification.member_name.replace(/\s/g, "")
+      notification._member_name = notification.member_pk
       
       existing_notification = $(".ref-#{notification.reference}-#{notification.category}-#{notification._member_name}")
       if existing_notification.length > 0 and notification.reference != ""
