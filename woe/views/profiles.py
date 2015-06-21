@@ -177,7 +177,7 @@ def change_display_name_password(login_name):
     except IndexError:
         abort(404)
         
-    if current_user != user and not current_user.is_admin:
+    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
         abort(404)
         
     form = DisplayNamePasswordForm(csrf_enabled=False)

@@ -16,7 +16,60 @@ $ ->
       else
         @element.data("editor_initial_html", @element.html())
         @setupEditor cancel_button
-    
+        
+    createAndShowEmoticonModal: () =>
+      this.quill.focus()
+      current_position = this.quill.getSelection()?.start
+      unless current_position?
+        current_position = this.quill.getLength()
+      $("#emoticon-modal-#{@quillID}").html(
+        """
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Pick an Emote! <img src="/static/emoticons/fluttershy_happy_by_angelishi.gif"></h4>
+              </div>
+              <div class="modal-body">
+                <img src="/static/emoticons/applejack_confused_by_angelishi-d6wk2ew.gif" class="emoticon-listing" data-emotecode=":wat:">
+                <img src="/static/emoticons/brohoof_by_angelishi-d6wk2et.gif" class="emoticon-listing" data-emotecode=":hoofbump:">
+                <img src="/static/emoticons/derpy_by_angelishi-d7amv0j.gif" class="emoticon-listing" data-emotecode=":derp:">
+                <img src="/static/emoticons/fluttershy_happy_by_angelishi.gif" class="emoticon-listing" data-emotecode=":)">
+                <img src="/static/emoticons/fluttershy_sad_by_angelishi.gif" class="emoticon-listing" data-emotecode=":(">
+                <img src="/static/emoticons/liar_applejack_by_angelishi-d7aglwl.gif" class="emoticon-listing" data-emotecode=":liarjack:">
+                <img src="/static/emoticons/love_spike_by_angelishi-d7amv0g.gif" class="emoticon-listing" data-emotecode=":love:">
+                <img src="/static/emoticons/moon_by_angelishi-d7amv0a.gif" class="emoticon-listing" data-emotecode=":moonjoy:">
+                <img src="/static/emoticons/nervous_aj_by_angelishi-d7ahd5y.gif" class="emoticon-listing" data-emotecode=":S">
+                <img src="/static/emoticons/pinkamena_by_angelishi-d6wk2er.gif" class="emoticon-listing" data-emotecode=":pinkamena:">
+                <img src="/static/emoticons/pinkie_laugh_by_angelishi-d6wk2ek.gif" class="emoticon-listing" data-emotecode=":D">
+                <img src="/static/emoticons/pinkie_mustache_by_angelishi-d6wk2eh.gif" class="emoticon-listing" data-emotecode=":mustache:">
+                <img src="/static/emoticons/pinkie_silly_by_angelishi-d6wk2ef.gif" class="emoticon-listing" data-emotecode=":P">
+                <img src="/static/emoticons/rainbowdash_cool_by_angelishi.gif" class="emoticon-listing" data-emotecode=":cool:">
+                <img src="/static/emoticons/rarity_happy_by_angelishi.gif" class="emoticon-listing" data-emotecode=":pleased:">
+                <img src="/static/emoticons/rarity_shock_2_by_angelishi-d6wk2eb.gif" class="emoticon-listing" data-emotecode=":shocked:">
+                <img src="/static/emoticons/rd_laugh_by_angelishi-d7aharw.gif" class="emoticon-listing" data-emotecode=":rofl:">
+                <img src="/static/emoticons/singing_rarity_by_angelishi-d7agp33.gif" class="emoticon-listing" data-emotecode=":sing:">
+                <img src="/static/emoticons/sun_happy_by_angelishi-d6wlo5g.gif" class="emoticon-listing" data-emotecode=":sunjoy:">
+                <img src="/static/emoticons/twilight___twitch_by_angelishi.gif" class="emoticon-listing" data-emotecode=":twitch:">
+                <img src="/static/emoticons/twilight_think_by_angelishi.gif" class="emoticon-listing" data-emotecode=":?">
+                <img src="/static/emoticons/twilight_wink_by_angelishi.gif" class="emoticon-listing" data-emotecode=";)">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        """)
+      
+      _this = this
+      $(".emoticon-listing").click (e) ->
+        e.preventDefault()
+        emoticon_code = $(this).data("emotecode")
+        _this.quill.insertText current_position, emoticon_code
+        $("#emoticon-modal-#{_this.quillID}").modal("hide") 
+        
+      $("#emoticon-modal-#{@quillID}").modal("show")
+      
     createAndShowMentionModal: () =>
       $("#mention-modal-#{@quillID}").html(
         """
@@ -59,6 +112,8 @@ $ ->
         minimumInputLength: 2
         
       $("#mention-modal-insert").click (e) =>
+        e.preventDefault()
+        
         __text = ""
         for val, i in $("#member-select").val()
           __text = __text + "[@#{val}]"
@@ -77,9 +132,12 @@ $ ->
       if @edit_reason
         @element.before @editReasonHTML
       @element.before """<div id="mention-modal-#{@quillID}" class="modal fade"></div>"""
+      @element.before """<div id="emoticon-modal-#{@quillID}" class="modal fade"></div>"""
       @element.before @toolbarHTML
       $("#toolbar-#{@quillID}").find(".ql-mention").click (e) =>
         do @createAndShowMentionModal
+      $("#toolbar-#{@quillID}").find(".ql-emoticons").click (e) =>
+        do @createAndShowEmoticonModal
       
       @element.after @dropzoneHTML
       @element.after @submitButtonHTML cancel_button
@@ -334,6 +392,7 @@ $ ->
           </span>
           <span class="ql-format-group">
             <span class="ql-mention ql-format-button ql-custom-button">@</span>
+            <span class="ql-emoticons ql-format-button ql-custom-button">&#9786;</span>
           </span>
         </div>
       """

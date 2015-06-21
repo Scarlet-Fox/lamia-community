@@ -686,6 +686,10 @@ body {
   cursor: pointer;
 }
 
+.emoticon-listing {
+  cursor: pointer;
+}
+
 a.inherit_colors {
   color: inherit;
 }

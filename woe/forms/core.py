@@ -47,6 +47,7 @@ class LoginForm(Form):
             
     def validate_password(self, field):
         user = self.__get_user__(self.username.data.lower().strip())
+        
         if not user:
             raise validators.ValidationError("Invalid username or password.")
         
@@ -68,9 +69,10 @@ class DisplayNamePasswordForm(Form):
     confirm_new_password = PasswordField('Confirm New Password')
     
     def validate_display_name(self, field):
-        user_count = len(User.objects(display_name__iexact=field.data.strip()))
-        if user_count > 0:
-            raise validators.ValidationError("That name is already taken.")
+        if self.user_object.display_name != field.data.strip():
+            user_count = len(User.objects(display_name__iexact=field.data.strip()))
+            if user_count > 0:
+                raise validators.ValidationError("That name is already taken.")
     
     def validate_current_password(self, field):
         if not self.user_object.check_password(field.data) and self.current_user.is_admin == False:

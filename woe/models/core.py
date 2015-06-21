@@ -494,6 +494,7 @@ class User(db.DynamicDocument):
         return False # Will only ever return False. Anonymous = guest user. We don't support those.
     
     def set_password(self, password, rounds=12):
+        self.legacy_password = None
         self.password_hash = bcrypt.generate_password_hash(password.strip(),rounds)
         
     def check_password(self, password):
