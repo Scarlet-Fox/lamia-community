@@ -3,6 +3,7 @@
 avatars/
 uploads/
 node_modules/
+local/js/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
