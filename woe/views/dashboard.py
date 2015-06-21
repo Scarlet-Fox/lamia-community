@@ -59,6 +59,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             "category": category,
             "author": author.display_name,
             "member_name": author.login_name,
+            "member_pk": author.pk,
             "member_disp_name": author.display_name,
             "author_url": "/member/"+author.login_name,
             "time": humanize_time(now.datetime),
@@ -114,6 +115,7 @@ def dashboard_notifications():
         parsed_["stamp"] = arrow.get(notification.created).timestamp
         parsed_["member_disp_name"] = notification.author.display_name
         parsed_["member_name"] = notification.author.login_name
+        parsed_["member_pk"] = notification.author.pk
         parsed_notifications.append(parsed_)
         
     return app.jsonify(notifications=parsed_notifications)
