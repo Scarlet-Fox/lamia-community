@@ -622,6 +622,7 @@ def category_index(slug):
 
 @app.route('/')
 def index():
+    return abort(500)
     start = time.time()
     categories = OrderedDict()
     

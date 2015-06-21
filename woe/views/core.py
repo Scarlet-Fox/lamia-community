@@ -16,11 +16,12 @@ from ipwhois import IPWhois
 import urllib
 import HTMLParser
 from werkzeug.exceptions import default_exceptions, HTTPException
-
+from  werkzeug.debug import get_current_traceback
 login_manager.login_view = "sign_in"
 
 @app.errorhandler(500)
-def page_not_found(e):
+def server_error(e):
+    traceback = get_current_traceback()
     l = Log(
         method=request.method,
         path=request.path,
@@ -50,13 +51,13 @@ def page_not_found(e):
     l.error = True
     l.error_name = name
     l.error_code = code
-    l.error_description = description
+    l.error_description = description + "\n\n" + traceback.plaintext
     l.save()
     
     return render_template('500.jade', page_title="SERVER ERROR! - World of Equestria"), 500
 
 @app.errorhandler(403)
-def page_not_found(e):
+def unauthorized_access(e):
     l = Log(
         method=request.method,
         path=request.path,
