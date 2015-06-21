@@ -223,8 +223,8 @@
         var post_data;
         post_data = {
           pk: $("#report-click-modal").data("pk"),
-          text: $("#report-reason").val(),
-          content_type: $("#report-click-modal").data("type")
+          content_type: $("#report-click-modal").data("type"),
+          reason: $("#report-reason").val()
         };
         return $.post("/make-report", JSON.stringify(post_data), function(data) {
           $("#report-click-modal").modal("hide");
