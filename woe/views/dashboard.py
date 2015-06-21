@@ -16,8 +16,6 @@ def broadcast(to, category, url, title, description, content, author, priority=0
     now = arrow.utcnow()
     author = author
     
-    send_dashboard_poke_to = []
-    
     for u in to:
         try:
             if not type(u) == User:
@@ -51,14 +49,13 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             priority = priority
         )
         
-        send_dashboard_poke_to.append(u)
-        
         if content != None:
             new_notification.content = content
         new_notification.save()
         
         data = {
-            "users": [u.login_name for u in send_dashboard_poke_to],
+            "users": [u.login_name, ],
+            "count": u.get_notification_count(),
             "category": category,
             "author": author.display_name,
             "member_name": author.login_name,
