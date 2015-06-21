@@ -3,7 +3,28 @@ from wtforms import BooleanField, StringField, PasswordField, validators, Select
 from woe.models.core import User
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wand.image import Image
-import shutil, pytz
+import shutil, pytz, arrow
+
+class ResetPasswordForm(Form):
+    password = PasswordField('Password', [validators.InputRequired()])
+    confirm_password = PasswordField('Confirm Password', [validators.InputRequired()])
+    
+    def validate_password(self, field):
+        if arrow.get(self.user.password_forgot_token_date).datetime < arrow.utcnow().replace(hours=-3).datetime:
+            raise validators.ValidationError("Your token has expired. You can get a new one by <a href=\"/forgot-password\">clicking here</a>.")
+    
+    def validate_confirm_password(self, field):
+        if field.data != self.password.data:
+            raise validators.ValidationError("Password and confirmation must match.")
+    
+class ForgotPasswordForm(Form):
+    email_address = StringField('Email address', [validators.Email(), validators.InputRequired()])
+    
+    def validate_email_address(self, field):
+        try:
+            self.user = User.objects(email_address=field.data)[0]
+        except:
+            raise validators.ValidationError("Invalid email address. You may want to contact us at community@worldofequestria.com if you can't remember.")
 
 class UserSettingsForm(Form):
     TIMEZONE_CHOICES = [(z, z) for z in pytz.common_timezones]

@@ -1,9 +1,9 @@
 from woe import login_manager
-from woe import app
+from woe import app, bcrypt
 from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, ForumPostParser, Attachment, IPAddress, Log, Fingerprint, Report
 from woe.models.forum import Category, Post, Topic
 from collections import OrderedDict
-from woe.forms.core import LoginForm, RegistrationForm
+from woe.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
@@ -23,7 +23,6 @@ def inject_notification_count():
         return dict(notification_count=c._get_current_object().get_notification_count())
     else:
         return dict(notification_count=0)
-
 
 if app.settings_file.get("lockout_on", False):
     @app.before_request
@@ -797,9 +796,59 @@ def load_user(login_name):
     except IndexError:
         return None
 
+@app.route('/password-reset/<token>', methods=['GET', 'POST'])
+def password_reset(token):
+    if current_user.is_authenticated():
+        return abort(404)
+    
+    try:
+        user = User.objects(password_forgot_token=token)[0]
+    except:
+        return abort(404)
+    
+    form = ResetPasswordForm(csrf_enabled=False)
+    form.user = user
+    if form.validate_on_submit():
+        user.password_forgot_token = None
+        user.password_forgot_token_date = None
+        user.set_password(form.password.data.strip())
+        user.save()
+        login_user(user)
+        broadcast(
+            to=[user,],
+            category="other", 
+            url="/member/"+unicode(user.login_name),
+            title="Password reset successful! Welcome back %s!" % (unicode(user.display_name),),
+            description="",
+            content=user, 
+            author=user
+            )
+        return redirect("/")
+        
+    return render_template("new_password.jade", page_title="Forgot Password - World of Equestria", form=form, token=token)
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if current_user.is_authenticated():
+        return abort(404)
+    
+    form = ForgotPasswordForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        time = str(arrow.utcnow().timestamp)+"THIS IS A POINTLESS BIT OF TEXT LOL"
+        token = bcrypt.generate_password_hash(time,10).encode('utf-8')
+        form.user.password_forgot_token = token
+        form.user.password_forgot_token_date = arrow.utcnow().datetime
+        form.user.save()
+        return render_template("forgot_password_confirm.jade", page_title="Forgot Password - World of Equestria", profile=form.user)
+    
+    return render_template("forgot_password.jade", page_title="Forgot Password - World of Equestria", form=form)
+
 @app.route('/hello/<pk>')
 def confirm_register(pk):
-    user = User.objects(pk=pk)[0]
+    try:
+        user = User.objects(pk=pk)[0]
+    except:
+        return abort(404)
     return render_template("welcome_new_user.jade", page_title="Welcome! - World of Equestria", profile=user)
 
 @app.route('/register', methods=['GET', 'POST'])

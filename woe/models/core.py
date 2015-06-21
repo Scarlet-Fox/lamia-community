@@ -371,6 +371,10 @@ class User(db.DynamicDocument):
     email_address = db.EmailField(required=True)
     emails_muted = db.BooleanField(default=False)
     
+    # Forgot password stuff
+    password_forgot_token = db.StringField()
+    password_forgot_token_date = db.DateTimeField()
+    
     # Customizable display values
     
     title = db.StringField(default="")
@@ -489,7 +493,8 @@ class User(db.DynamicDocument):
             'old_member_id',
             'display_name',
             'login_name',
-            'email_address'
+            'email_address',
+            'password_forgot_token'
         ]
     }
     
