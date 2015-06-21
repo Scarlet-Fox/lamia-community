@@ -53,7 +53,7 @@
           {% endif %}
           if current_user == profile
             li(role="presentation")
-              a(href="/member/{{profile.login_name}}/settings") Settings
+              a(href="/member/{{profile.login_name}}/change-settings") Settings
   .col-sm-8
     {% block profile_content %}
     .panel.panel-default

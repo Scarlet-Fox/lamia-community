@@ -1,5 +1,5 @@
 from woe.models.core import User, DisplayNameHistory, ForumPostParser, IPAddress, Fingerprint
-from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm
+from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from flask.ext.login import login_required, current_user
@@ -169,6 +169,27 @@ def change_avatar_or_title(login_name):
     
     return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - World of Equestria")
 
+@app.route('/member/<login_name>/change-settings', methods=['GET', 'POST'])
+@login_required
+def change_user_settings(login_name):
+    try:
+        user = User.objects(login_name=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+        
+    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+        abort(404)
+    
+    form = UserSettingsForm(csrf_enabled=False)
+    
+    if form.validate_on_submit():
+        user.update(time_zone=form.time_zone.data)
+        return redirect("/member/"+user.login_name)
+    else:
+        form.time_zone.data = user.time_zone
+        
+    return render_template("profile/change_user_settings.jade", profile=user, form=form, page_title="Change Settings - World of Equestria")
+
 @app.route('/member/<login_name>/change-account', methods=['GET', 'POST'])
 @login_required
 def change_display_name_password(login_name):
@@ -203,7 +224,7 @@ def change_display_name_password(login_name):
         form.display_name.data = user.display_name
         form.email.data = user.email_address
         
-    return render_template("profile/change_account.jade", profile=user, form=form, page_title="Change Account Settings - World of Equestria")
+    return render_template("profile/change_account.jade", profile=user, form=form, page_title="Change Account Details - World of Equestria")
 
 @app.route('/member/<login_name>/edit-profile', methods=['GET', 'POST'])
 @login_required

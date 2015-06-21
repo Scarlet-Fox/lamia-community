@@ -3,7 +3,15 @@ from wtforms import BooleanField, StringField, PasswordField, validators, Select
 from woe.models.core import User
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wand.image import Image
-import shutil
+import shutil, pytz
+
+class UserSettingsForm(Form):
+    TIMEZONE_CHOICES = [(z, z) for z in pytz.common_timezones]
+    time_zone = SelectField('Time zone', choices=TIMEZONE_CHOICES)
+    
+    def validate_time_zone(self, field):
+        if field.data not in pytz.common_timezones:
+            raise validators.ValidationError("Invalid time zone.")
 
 class RegistrationForm(Form):
     username = StringField('Username', [validators.InputRequired(),
