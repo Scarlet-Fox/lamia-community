@@ -18,7 +18,10 @@ head
     meta(name='viewport', content='width=device-width, initial-scale=1')
     meta(name='description', content='')
     meta(name='author', content='')
-    title {{ page_title }}
+    if notification_count
+      title ({{notification_count}}) - {{ page_title }}
+    else
+      title {{ page_title }}
     if current_user.is_authenticated() and current_user.custom_theme
       {% assets filters="cssmin", output="generated/woe-core.css",
       "assets/bootstrap.css", "assets/quill/quill.base.css", "assets/quill/quill.snow.css", 
@@ -125,7 +128,7 @@ body(role='document')
             if current_user.is_authenticated()
               li.dropdown#dashboard-li
                 a.dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
-                  span.badge#notification-counter {{current_user.get_notification_count()}}
+                  span.badge.notification-counter {{notification_count}}
                 ul.dropdown-menu#notification-dropdown(role='menu')
                   li
                     a(href='/dashboard') Dashboard

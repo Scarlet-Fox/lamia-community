@@ -134,6 +134,7 @@ class PrivateMessageTopic(db.DynamicDocument):
     users_left_pm = db.ListField(db.ReferenceField("User"))
     participants = db.ListField(db.EmbeddedDocumentField(PrivateMessageParticipant))
     participant_count = db.IntField(default=0)
+    last_seen_by = db.DictField() # User : last_seen_utc
     
     labels = db.ListField(db.StringField())
     old_ipb_id = db.IntField()
@@ -631,6 +632,17 @@ class ForumPostParser(object):
                         new_x = image.width
                         new_y = image.height
                 else:
+                    filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
+                    if attachment.x_size == 0 or attachment.y_size == 0:
+                        try:
+                            image = Image(filename=filepath)
+                        except:
+                            continue
+                            
+                        attachment.x_size = image.width
+                        attachment.y_size = image.height
+                        attachment.save()
+                        
                     resize_measure = min(float(size)/float(attachment.x_size),float(size)/float(attachment.y_size))
                     new_x = int(round(attachment.x_size*resize_measure))
                     new_y = int(round(attachment.y_size*resize_measure))

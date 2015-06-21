@@ -50,6 +50,7 @@ for s in c.fetchall():
     status_reply_cursor.close()
     status.replies = len(status.comments)
     status.participant_count = len(participants.keys())
+    status.participants = participants.keys()
     status.save()
 
 c.close()

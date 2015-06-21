@@ -79,9 +79,11 @@ $ ->
   
   socket.on "notify", (data) ->
     if window.woe_is_me in data.users
-      counter_element = $("#notification-counter")
+      counter_element = $(".notification-counter")
       count = parseInt(counter_element.text())+1
       counter_element.text(count)
+      window_title_count = document.title.split(" - ")[0]
+      document.title = document.title.replace(window_title_count, "(#{count})")
       notification_listing = $("#notification-listing")
       notifications_listed = $("a.notification-link")
       if notifications_listed.length > 14

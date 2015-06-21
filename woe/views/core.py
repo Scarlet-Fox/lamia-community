@@ -16,6 +16,15 @@ from ipwhois import IPWhois
 import urllib
 import HTMLParser
 
+@app.context_processor
+def inject_notification_count():
+    c = current_user
+    if c.is_authenticated():
+        return dict(notification_count=c._get_current_object().get_notification_count())
+    else:
+        return dict(notification_count=0)
+
+
 if app.settings_file.get("lockout_on", False):
     @app.before_request
     @login_required
@@ -383,7 +392,7 @@ def create_new_status():
     try:
         users_last_status = StatusUpdate.objects(author=current_user._get_current_object()).order_by("-created")[0]
         difference = (arrow.utcnow().datetime - arrow.get(users_last_status.created).datetime).seconds
-        if difference < 360:
+        if difference < 360 and not current_user._get_current_object().is_admin:
             return app.jsonify(error="Please wait %s seconds before you create another status update." % (360 - difference))
     except:
         pass
@@ -596,6 +605,7 @@ def make_status_update_reply(status):
     parsed_reply["user_name"] = sc.author.display_name
     parsed_reply["user_avatar"] = sc.author.get_avatar_url("40")
     parsed_reply["user_avatar_x"] = sc.author.avatar_40_x
+    parsed_reply["author_login_name"] = sc.author.login_name
     parsed_reply["user_avatar_y"] = sc.author.avatar_40_y
     parsed_reply["time"] = humanize_time(sc.created)
     
@@ -651,6 +661,7 @@ def status_update_replies(status):
     for reply in status.comments:
         parsed_reply = reply.to_mongo().to_dict()
         parsed_reply["user_name"] = reply.author.display_name
+        parsed_reply["author_login_name"] = reply.author.login_name
         parsed_reply["user_avatar"] = reply.author.get_avatar_url("40")
         parsed_reply["user_avatar_x"] = reply.author.avatar_40_x
         parsed_reply["user_avatar_y"] = reply.author.avatar_40_y

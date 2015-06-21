@@ -211,15 +211,34 @@ def message_index(pk, page, post):
         page = int(page)
     except:
         page = 1
-        
-    if post != "":
+
+    if post == "latest_post":
         try:
-            post = PrivateMessage.objects(topic=topic, pk=post)[0]
+            post = PrivateMessage.objects(topic=topic).order_by("-created")[0]
         except:
             return abort(404)
+    elif post == "last_seen":
+        try:
+            last_seen = topic.last_seen_by.get(str(current_user._get_current_object().pk), arrow.utcnow().datetime)
+        except:
+            last_seen = arrow.utcnow().datetime
+        
+        try:
+            post = PrivateMessage.objects(topic=topic, created__lt=last_seen).order_by("-created")[0]
+        except:
+            try:
+                post = PrivateMessage.objects(topic=topic, pk=post)[0]
+            except:
+                return abort(404)
     else:
-        post = ""
-    
+        if post != "":
+            try:
+                post = PrivateMessage.objects(topic=topic, pk=post)[0]
+            except:
+                return abort(404)
+        else:
+            post = ""
+     
     pagination = 20
     
     if post != "":
@@ -227,6 +246,12 @@ def message_index(pk, page, post):
         posts_before_target = PrivateMessage.objects(topic=topic, created__lt=target_date).count()
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
         return render_template("core/messages_topic.jade", page_title="%s - World of Equestria" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.pk))
+        
+    try:
+        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().datetime
+        topic.save()
+    except:
+        pass
         
     return render_template("core/messages_topic.jade", page_title="%s - World of Equestria" % (unicode(topic.title),), topic=topic, initial_page=page,)
 

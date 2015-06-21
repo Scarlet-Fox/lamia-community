@@ -25,7 +25,7 @@
                 span.subcategory-listing-recent
                   a(href="/t/{{category.last_topic.slug}}") {{category.last_topic.title}}
                   br
-                  a(href="/t/{{category.last_topic.slug}}") {{category.last_post_date|humanize_time}}
+                  a(href="/t/{{category.last_topic.slug}}/page/1/post/last_seen") {{category.last_post_date|humanize_time}}
             {% endif %}
       {% endif %}
       {% endfor %}

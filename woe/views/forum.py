@@ -64,7 +64,7 @@ def new_post_in_topic(slug):
     try: # TODO : Cannot do this for roleplay topics.
         users_last_post = Post.objects(author=current_user._get_current_object()).order_by("-created")[0]
         difference = (arrow.utcnow().datetime - arrow.get(users_last_post.created).datetime).seconds
-        if difference < 30:
+        if difference < 30 and not current_user._get_current_object().is_admin:
             return app.jsonify(error="Please wait %s seconds before posting again." % (30 - difference))
     except:
         pass
@@ -331,7 +331,6 @@ def topic_index(slug, page, post):
         topic = Topic.objects(slug=slug)[0]
     except IndexError:
         return abort(404)
-    # TODO : Check if someone is topic banned.
     pagination = 20
     
     if current_user._get_current_object() in topic.banned_from_topic:
@@ -341,14 +340,33 @@ def topic_index(slug, page, post):
         page = int(page)
     except:
         page = 1
-        
-    if post != "":
+    
+    if post == "latest_post":
         try:
-            post = Post.objects(topic=topic, pk=post, hidden=False)[0]
+            post = Post.objects(topic=topic, hidden=False).order_by("-created")[0]
         except:
             return abort(404)
+    elif post == "last_seen":
+        try:
+            last_seen = topic.last_seen_by.get(str(current_user._get_current_object().pk), arrow.utcnow().datetime)
+        except:
+            last_seen = arrow.utcnow().datetime
+        
+        try:
+            post = Post.objects(topic=topic, hidden=False, created__lt=last_seen).order_by("-created")[0]
+        except:
+            try:
+                post = Post.objects(topic=topic, pk=post, hidden=False)[0]
+            except:
+                return abort(404)
     else:
-        post = ""
+        if post != "":
+            try:
+                post = Post.objects(topic=topic, pk=post, hidden=False)[0]
+            except:
+                return abort(404)
+        else:
+            post = ""
     
     if post != "":
         target_date = post.created
@@ -356,7 +374,12 @@ def topic_index(slug, page, post):
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
         return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, initial_post=str(post.pk))
     
-    topic.update(inc__view_count=1)
+    topic.inc__view_count = 1
+    try:
+        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().datetime
+    except:
+        pass
+    topic.save()
     return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])

@@ -85,7 +85,7 @@ $ ->
               <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/1">1</a></span>
               {{#if last_pages}}
               <span class="badge" style="">...</span>
-              <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/{{last_page}}">{{last_page}}</a></span>
+              <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/1/post/latest_post">{{last_page}}</a></span>
               {{/if}}
             </span>
           </div>
@@ -103,7 +103,7 @@ $ ->
             <span class="topic-listing-recent">
               <a href="/member/{{last_post_by_login_name}}" class="topic-listing-username hover_user">{{last_post_by}}</a>
               <br>
-              <a href="" class="topic-listing-time">{{last_post_date}}</a>
+              <a href="/t/{{slug}}/page/1/post/last_seen" class="topic-listing-time">{{last_post_date}}</a>
             </span>
           </div>
         </div>
