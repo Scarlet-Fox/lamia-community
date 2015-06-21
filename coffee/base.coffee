@@ -262,7 +262,7 @@ $ ->
       post_data = 
         pk: $("#report-click-modal").data("pk")
         content_type: $("#report-click-modal").data("type")
-        reason: $("#report-reason").val()
+        reason: $(".report-reason").val()
       $.post "/make-report", JSON.stringify(post_data), (data) ->
         $("#report-click-modal").modal("hide")
         element.text("Report Submitted")
