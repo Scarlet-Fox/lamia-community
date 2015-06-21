@@ -8,16 +8,18 @@
       for (i = j = 0, ref = pl; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
         val.push(navigator.plugins[i]);
       }
-      return $("form").submit(function(e) {
-        $('<input />').attr('type', 'hidden').attr('name', "log_in_token").attr('value', JSON.stringify({
-          pl: val,
-          sw: window.screen.width,
-          cd: window.screen.colorDepth,
-          sh: window.screen.height,
-          tz: (new Date()).getTimezoneOffset()
-        })).appendTo('form');
-        return true;
-      });
+      if (navigator.userAgent.match(/iPhone/i) == null) {
+        return $("form").submit(function(e) {
+          $('<input />').attr('type', 'hidden').attr('name', "log_in_token").attr('value', JSON.stringify({
+            pl: val,
+            sw: window.screen.width,
+            cd: window.screen.colorDepth,
+            sh: window.screen.height,
+            tz: (new Date()).getTimezoneOffset()
+          })).appendTo('form');
+          return true;
+        });
+      }
     } catch (_error) {
       return $("form").submit(function(e) {
         $('<input />').attr('type', 'hidden').attr('name', "log_in_token").attr('value', JSON.stringify({})).appendTo('form');
