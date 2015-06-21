@@ -1107,8 +1107,11 @@ def sign_in():
             f.fingerprint_hash = _fingerprint_hash
             f.fingerprint_factors = len(fingerprint_data)
             f.save()
-        
-        return redirect(form.redirect_to.data)
+            
+        try:
+            return redirect(form.redirect_to.data)
+        except:
+            return redirect("/")
     else:
         form.redirect_to.data = request.args.get('next', "/")
         
