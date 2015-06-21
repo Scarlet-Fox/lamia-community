@@ -15,7 +15,12 @@ class RegistrationForm(Form):
         ('kaiju', 'a kaiju'), 
         ('pony', 'a pony'), 
         ('darkestdungeon', 'an eldritch abomination')])
-        
+    over_thirteen = BooleanField('Are you at or above the age of 13?')
+    
+    def validate_over_thirteen(self, field):
+        if not field.data:
+            raise validators.ValidationError("We cannot accept registrations from users under 13 years old. This is the law. If you like this site, come back when you're over 13.")
+    
     def validate_username(self, field):
         user_count = len(User.objects(login_name=field.data.lower().strip())) + len(User.objects(display_name__iexact=field.data.strip()))
         if user_count > 0:

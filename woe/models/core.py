@@ -416,6 +416,7 @@ class User(db.DynamicDocument):
     hide_login = db.BooleanField(default=False)
     banned = db.BooleanField(default=False)
     validated = db.BooleanField(default=False)
+    over_thirteen = db.BooleanField(default=False)
     
     warning_points = db.IntField(default=0)
     

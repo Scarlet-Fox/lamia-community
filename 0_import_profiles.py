@@ -52,6 +52,7 @@ for u in c.fetchall():
     m.set_password(str(timestamp)+str(arrow.utcnow().timestamp),4)
     m.validated = True
     m.legacy_password = True
+    m.over_thirteen = True
     m.save()
     
     old_avatar_location = os.path.join(settings_file["woe_ipb_avatar_dir"],u["pp_main_photo"])

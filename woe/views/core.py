@@ -816,6 +816,7 @@ def register():
         )
         new_user.set_password(form.password.data.strip())
         new_user.joined = arrow.utcnow().datetime
+        new_user.over_thirteeen = True
         new_user.save()
         
         broadcast(

@@ -37,6 +37,9 @@
           .form-group
             {{ form.question.label }}
             {{ form.question(class="form-control") }}
+          .form-group
+            label
+              {{ form.over_thirteen() }} Are you at or over the age of 13?
           button(type="submit").btn.btn-default Submit
           br
           br
