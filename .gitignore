@@ -2,6 +2,7 @@
 .webassets-cache
 avatars/
 uploads/
+node_modules/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
