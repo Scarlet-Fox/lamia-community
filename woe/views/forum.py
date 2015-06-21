@@ -622,7 +622,6 @@ def category_index(slug):
 
 @app.route('/')
 def index():
-    start = time.time()
     categories = OrderedDict()
     
     for category in Category.objects(root_category=True):
