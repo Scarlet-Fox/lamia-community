@@ -123,20 +123,25 @@ $ ->
         spoiler.hide()
       else
         spoiler.show()
-      
+    
+    blockquote_attribution_html = """
+      <p>On {{#if link}}<a href="{{link}}" target="_blank">{{/if}}{{time}}{{#if link}}</a>{{/if}}, {{#if authorlink}}<a href="{{authorlink}}" class="hover_user" target="_blank">{{/if}}{{author}}{{#if authorlink}}</a>{{/if}} said:</p>
+    """
+    blockquote_attribution_template = Handlebars.compile(blockquote_attribution_html)
+    
     $(selector).find("blockquote").each () ->
       element = $(this)
       time = moment.unix(element.data("time")).format("MMMM Do YYYY @ h:mm:ss a")
+      element.find("blockquote").remove()
+      element.html(element.html().replace(new RegExp("<p>&nbsp;</p>", "g"), ""))
+      element.dotdotdot({height: 100})
       if time != "Invalid date"
-        if element.data("link")?
-          element.prepend """
-            <p>On #{time}, <a href="">#{element.data("author")} said:</a></p>
-            """    
-        else
-          element.prepend """
-            <p>On #{time}, #{element.data("author")} said:</p>
-            """   
-            
+        element.prepend blockquote_attribution_template
+          link: element.data("link")
+          time: time
+          author: element.data("author")
+          authorlink: element.data("authorlink")
+        
   $("#new-status").click (e) ->
     e.preventDefault()
     $.post "/create-status", JSON.stringify({message: $("#status-new").val()}), (data) ->

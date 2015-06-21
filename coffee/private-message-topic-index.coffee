@@ -58,7 +58,16 @@ $ ->
                 topic.max_pages = Math.ceil data.count/topic.pagination
                 topic.page = topic.max_pages
                 do topic.refreshPosts
-      
+                
+      $("#post-container").delegate ".reply-button", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        my_content = ""
+        $.get "/messages/#{topic.pk}/edit-post/#{element.data("pk")}", (data) ->
+          my_content = "[reply=#{element.data("pk")}:pm]"
+          topic.inline_editor.quill.insertText topic.inline_editor.quill.getLength(), my_content 
+          topic.inline_editor.element[0].scrollIntoView()
+
       $("#post-container").delegate ".post-edit", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -206,7 +215,7 @@ $ ->
                         {{#if _is_logged_in}}
                         <div class="btn-group" role="group" aria-label="...">
                           <div class="btn-group">
-                            <button type="button" class="btn btn-default">Reply</button>
+                            <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
                             <button type="button" class="btn btn-default">Report</button>
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                               <span class="caret"></span>
@@ -287,11 +296,11 @@ $ ->
           setTimeout () ->
             $("#postlink-#{window._initial_post}")[0].scrollIntoView()
             window._initial_post = ""
-          , 100
+          , 300
         else
           setTimeout () ->
             $("#topic-breadcrumb")[0].scrollIntoView()
-          , 100
+          , 300
         window.setupContent()
                 
   window.topic = new Topic($("#post-container").data("pk"))

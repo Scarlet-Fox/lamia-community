@@ -100,6 +100,7 @@
       return window.addExtraHTML("body");
     };
     window.addExtraHTML = function(selector) {
+      var blockquote_attribution_html, blockquote_attribution_template;
       $(selector).find(".content-spoiler").before("<a class=\"btn btn-info btn-xs toggle-spoiler\">Toggle Spoiler</a>");
       $(selector).find(".toggle-spoiler").click(function(e) {
         var spoiler;
@@ -110,16 +111,24 @@
           return spoiler.show();
         }
       });
+      blockquote_attribution_html = "<p>On {{#if link}}<a href=\"{{link}}\" target=\"_blank\">{{/if}}{{time}}{{#if link}}</a>{{/if}}, {{#if authorlink}}<a href=\"{{authorlink}}\" class=\"hover_user\" target=\"_blank\">{{/if}}{{author}}{{#if authorlink}}</a>{{/if}} said:</p>";
+      blockquote_attribution_template = Handlebars.compile(blockquote_attribution_html);
       return $(selector).find("blockquote").each(function() {
         var element, time;
         element = $(this);
         time = moment.unix(element.data("time")).format("MMMM Do YYYY @ h:mm:ss a");
+        element.find("blockquote").remove();
+        element.html(element.html().replace(new RegExp("<p>&nbsp;</p>", "g"), ""));
+        element.dotdotdot({
+          height: 100
+        });
         if (time !== "Invalid date") {
-          if (element.data("link") != null) {
-            return element.prepend("<p>On " + time + ", <a href=\"\">" + (element.data("author")) + " said:</a></p>");
-          } else {
-            return element.prepend("<p>On " + time + ", " + (element.data("author")) + " said:</p>");
-          }
+          return element.prepend(blockquote_attribution_template({
+            link: element.data("link"),
+            time: time,
+            author: element.data("author"),
+            authorlink: element.data("authorlink")
+          }));
         }
       });
     };

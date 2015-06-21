@@ -94,6 +94,15 @@ $ ->
             element.children(".badge").text(element.data("count"))
             element.children(".badge").css("background-color", "#555")
       
+      $("#post-container").delegate ".reply-button", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        my_content = ""
+        $.get "/t/#{topic.slug}/edit-post/#{element.data("pk")}", (data) ->
+          my_content = "[reply=#{element.data("pk")}:post]"
+          topic.inline_editor.quill.insertText topic.inline_editor.quill.getLength(), my_content 
+          topic.inline_editor.element[0].scrollIntoView()
+      
       $("#post-container").delegate ".mention-button", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -250,7 +259,7 @@ $ ->
                         <div class="btn-group" role="group" aria-label="...">
                           <div class="btn-group">
                             <button type="button" class="btn btn-default mention-button" data-author="{{author_login_name}}">@</button>
-                            <button type="button" class="btn btn-default">Reply</button>
+                            <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
                             <button type="button" class="btn btn-default">Report</button>
                             <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                               <span class="caret"></span>
@@ -346,11 +355,11 @@ $ ->
           setTimeout () ->
             $("#postlink-#{window._initial_post}")[0].scrollIntoView()
             window._initial_post = ""
-          , 100
+          , 300
         else
           setTimeout () ->
             $("#topic-breadcrumb")[0].scrollIntoView()
-          , 100
+          , 300
         window.setupContent()
                 
   window.topic = new Topic($("#post-container").data("slug"))

@@ -4,6 +4,7 @@ from woe import bcrypt
 from woe.utilities import ipb_password_check
 from wand.image import Image
 from urllib import quote
+from woe.models.forum import Post
 import arrow, re, os, math
 
 class Fingerprint(db.DynamicDocument):
@@ -523,6 +524,7 @@ spoiler_re = re.compile(r'\[spoiler\]')
 end_spoiler_re = re.compile(r'\[\/spoiler\]')
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
+reply_re = re.compile(r'\[reply=(.+?):(post|pm)\]')
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -553,33 +555,6 @@ class ForumPostParser(object):
         pass
         
     def parse(self, html):
-        mentions = mention_re.findall(html)
-        for mention in mentions:
-            try:
-                user = User.objects(login_name=mention)[0]
-                html = html.replace("[@%s]" % unicode(mention), """<a href="/members/%s" class="hover_user">@%s</a>""" % (user.login_name, user.display_name), 1)
-            except:
-                html = html.replace("[@%s]" % unicode(mention), "", 1)
-            
-        # parse html
-        html = html.replace("[hr]", "<hr>")
-        
-        prefix_bbcode_in_post = prefix_re.findall(html)
-        for prefix_bbcode in prefix_bbcode_in_post:
-            html = html.replace(prefix_bbcode[0], """<span class="badge prefix" style="background:%s; font-size: 10px; font-weight: normal; vertical-align: top; margin-top: 2px;">%s</span>""" % (prefix_bbcode[1], prefix_bbcode[2],))
-        
-        # parse smileys
-        for smiley in emoticon_codes.keys():
-            img_html = """<img src="%s" />""" % (os.path.join("/static/emoticons",emoticon_codes[smiley]),)
-            html = html.replace(smiley, img_html)
-
-        # parse spoilers
-        spoiler_bbcode_in_post = spoiler_re.findall(html)
-        for spoiler_bbcode in spoiler_bbcode_in_post:
-            if end_spoiler_re.search(html):
-                html = html.replace("[spoiler]", """<div class="content-spoiler"><div> <!-- spoiler div -->""", 1)
-                html = html.replace("[/spoiler]", """</div></div> <!-- /spoiler div -->""", 1)
-        
         # parse attachment tags
         attachment_bbcode_in_post = attachment_re.findall(html)
         
@@ -668,5 +643,60 @@ class ForumPostParser(object):
                     <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
                     """ % (quote(url), new_x, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
+
+        replies = reply_re.findall(html)
+        for reply in replies:
+            if reply[1] == "post":
+                _replying_to = Post.objects(pk=reply[0])[0]
+                html = html.replace("[reply=%s:%s]" % (reply[0],reply[1]), """
+                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
+                %s
+                </blockquote> 
+                """ % (
+                    arrow.get(_replying_to.created).timestamp,
+                    "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.pk),
+                    _replying_to.author.display_name,
+                    "/member/%s" % _replying_to.author.login_name,
+                    _replying_to.html.replace("img", "imgdisabled")
+                ))
+            if reply[1] == "pm":
+                _replying_to = PrivateMessage.objects(pk=reply[0])[0]
+                html = html.replace("[reply=%s:%s]" % (reply[0],reply[1]), """
+                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
+                %s
+                </blockquote> 
+                """ % (
+                    arrow.get(_replying_to.created).timestamp,
+                    "/messages/%s/page/1/post/%s" % (_replying_to.topic.pk, _replying_to.pk),
+                    _replying_to.author.display_name,
+                    "/member/%s" % _replying_to.author.login_name,
+                    _replying_to.message.replace("img", "imgdisabled")
+                ))
+                    
+        mentions = mention_re.findall(html)
+        for mention in mentions:
+            try:
+                user = User.objects(login_name=mention)[0]
+                html = html.replace("[@%s]" % unicode(mention), """<a href="/members/%s" class="hover_user">@%s</a>""" % (user.login_name, user.display_name), 1)
+            except:
+                html = html.replace("[@%s]" % unicode(mention), "", 1) 
         
+        html = html.replace("[hr]", "<hr>")
+        
+        prefix_bbcode_in_post = prefix_re.findall(html)
+        for prefix_bbcode in prefix_bbcode_in_post:
+            html = html.replace(prefix_bbcode[0], """<span class="badge prefix" style="background:%s; font-size: 10px; font-weight: normal; vertical-align: top; margin-top: 2px;">%s</span>""" % (prefix_bbcode[1], prefix_bbcode[2],))
+        
+        # parse smileys
+        for smiley in emoticon_codes.keys():
+            img_html = """<img src="%s" />""" % (os.path.join("/static/emoticons",emoticon_codes[smiley]),)
+            html = html.replace(smiley, img_html)
+
+        # parse spoilers
+        spoiler_bbcode_in_post = spoiler_re.findall(html)
+        for spoiler_bbcode in spoiler_bbcode_in_post:
+            if end_spoiler_re.search(html):
+                html = html.replace("[spoiler]", """<div class="content-spoiler"><div> <!-- spoiler div -->""", 1)
+                html = html.replace("[/spoiler]", """</div></div> <!-- /spoiler div -->""", 1)
+                
         return html

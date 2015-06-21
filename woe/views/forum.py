@@ -11,6 +11,7 @@ from woe.views.dashboard import broadcast
 import re
 
 mention_re = re.compile("\[@(.*?)\]")
+reply_re = re.compile(r'\[reply=(.+?):(post)\]')
 
 @app.route('/category-list-api', methods=['GET'])
 @login_required
@@ -144,7 +145,25 @@ def new_post_in_topic(slug):
       url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
       title="%s mentioned you in %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
       description=new_post.html, 
-      content=topic, 
+      content=new_post, 
+      author=new_post.author
+      )
+
+    replies = reply_re.findall(post_html)
+    to_notify = {}
+    for reply_ in replies:
+        try:
+            to_notify[reply_] = Post.objects(pk=reply_[0])[0].author
+        except:
+            continue
+        
+    broadcast(
+      to=to_notify.values(),
+      category="topic_reply", 
+      url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
+      title="%s replied to you in %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
+      description=new_post.html, 
+      content=new_post, 
       author=new_post.author
       )
 

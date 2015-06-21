@@ -72,8 +72,8 @@ script(type="text/javascript")
   });
 
 {% assets filters="rjsmin", output="generated/search.js",
-"local/js/search.js", "assets/dotdotdot/jquery.dotdotdot.js", 
-"assets/bootstrap-datepicker/bootstrap-datepicker.js", "assets/select2/select2.full.js" %}
+"local/js/search.js", "assets/bootstrap-datepicker/bootstrap-datepicker.js", 
+"assets/select2/select2.full.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}")
 {% endassets %}
 {% endblock %}
