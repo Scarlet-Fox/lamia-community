@@ -16,6 +16,19 @@ from ipwhois import IPWhois
 import urllib
 import HTMLParser
 
+@app.route('/under-construction')
+def under_construction():
+    return render_template("under_construction.jade", page_title="We're working on the site!")
+
+if app.settings_file.get("lockout_on", False):
+    @app.before_request
+    def lockdown_site():
+        if not (request.path == "/under-construction" or request.path == "/sign-in" or "/static" in request.path):
+            if current_user._get_current_object().is_authenticated() and (current_user._get_current_object().is_admin or current_user._get_current_object().is_allowed_during_construction):
+                pass
+            else:
+                return redirect("/under-construction")
+
 @app.before_request
 def intercept_banned():
     if current_user._get_current_object().is_authenticated():
@@ -32,12 +45,6 @@ def inject_notification_count():
             return dict(notification_count=0)
     except:
         return dict(notification_count=0)
-
-if app.settings_file.get("lockout_on", False):
-    @app.before_request
-    @login_required
-    def lockdown_site():
-        return abort(403)
 
 @app.before_request
 def log_request():

@@ -370,6 +370,7 @@ class User(db.DynamicDocument):
     password_hash = db.StringField()
     email_address = db.EmailField(required=True)
     emails_muted = db.BooleanField(default=False)
+    is_allowed_during_construction = db.BooleanField(default=False)
     
     # Forgot password stuff
     password_forgot_token = db.StringField()
