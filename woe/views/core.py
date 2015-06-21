@@ -1065,7 +1065,7 @@ def sign_in():
         
         for browser_plugin in fingerprint__info_from_browser.get("pl", []):
             try:
-                fingerprint_data[browser_plugin["name"]] = browser_plugin["description"]
+                fingerprint_data[browser_plugin["name"].replace(".", "dt").replace("$", "dl")] = browser_plugin["description"]
             except:
                 pass
                 
@@ -1106,7 +1106,10 @@ def sign_in():
             f.fingerprint = fingerprint_data
             f.fingerprint_hash = _fingerprint_hash
             f.fingerprint_factors = len(fingerprint_data)
-            f.save()
+            try:
+                f.save()
+            except:
+                pass
             
         try:
             return redirect(form.redirect_to.data)
