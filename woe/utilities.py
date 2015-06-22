@@ -20,7 +20,10 @@ def parse_search_string_return_q(search_text, fields_to_search):
     token_buffer = ""
     quote_active = False
     negative = False
-    for i, token in enumerate(search_tokens):  
+    for i, token in enumerate(search_tokens):
+        if token.strip() == "":
+            continue
+            
         if token[0] == "-":
             negative = True
             token = token[1:]
