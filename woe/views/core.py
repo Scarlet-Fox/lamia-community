@@ -1098,7 +1098,7 @@ def sign_in():
             fingerprint_hash += unicode(key) + " "
             fingerprint_hash += unicode(value) + " "
         
-        _fingerprint_hash = hashlib.sha256(unicode(fingerprint_hash)).hexdigest()
+        _fingerprint_hash = hashlib.sha256(fingerprint_hash.encode('utf-8')).hexdigest()
         
         try:
             f = Fingerprint.objects(fingerprint_hash=_fingerprint_hash)[0]
