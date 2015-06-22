@@ -499,7 +499,7 @@ def search_display():
 @app.route('/status-updates', methods=['GET', 'POST'])
 @login_required
 def status_update_index():
-    count = session.get("count", 10)
+    count = session.get("count", 40)
     authors = session.get("authors", [])
     search = session.get("search", "")
     
