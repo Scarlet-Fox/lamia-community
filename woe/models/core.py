@@ -625,7 +625,7 @@ class ForumPostParser(object):
                 size = "5"
             if int(size) > 700:
                 size = "700"
-            if int(size) == attachment.x_size:
+            if int(size) == attachment.x_size and attachment.extension != "gif":
                 url = os.path.join("/static/uploads", attachment.path)
                 show_box = "no"
                 
@@ -652,7 +652,7 @@ class ForumPostParser(object):
                         attachment.save()
                     resize_measure = min(float(size)/float(xsize),float(size)/float(ysize))
                     image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
-                    if attachment.extension == "gif" and attachment.size_in_bytes > 1024*1024: # Larger than one megabyte.
+                    if attachment.extension == "gif" and attachment.size_in_bytes > 512*1024: # Larger than 1/2 megabyte.
                         image.save(filename=sizepath.replace(".gif",".animated.gif"))
                         first_frame = image.sequence[0].clone()
                         first_frame.save(filename=sizepath)
@@ -686,7 +686,7 @@ class ForumPostParser(object):
                 else:
                     show_box = "no"
                                     
-                if attachment.extension == "gif" and attachment.size_in_bytes > 1024*1024:
+                if attachment.extension == "gif" and attachment.size_in_bytes > 512*1024:
                     new_size = os.path.getsize(sizepath.replace(".gif",".animated.gif"))
                     image_html = """
                     <div class="click-to-play">
