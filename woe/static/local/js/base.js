@@ -4,6 +4,9 @@
 
   $(function() {
     var hoverTemplate, p_html, reportModalHTML, socket;
+    $.ajaxSetup({
+      cache: false
+    });
     window.RegisterAttachmentContainer = function(selector) {
       var gifModalHTML, imgModalHTML;
       imgModalHTML = function() {

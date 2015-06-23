@@ -1,4 +1,7 @@
 $ ->
+  $.ajaxSetup
+    cache: false
+  
   window.RegisterAttachmentContainer = (selector) ->
     imgModalHTML = () ->
       return """

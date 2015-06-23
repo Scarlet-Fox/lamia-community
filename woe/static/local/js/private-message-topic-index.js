@@ -172,6 +172,7 @@
             return window.location = window.location;
           }, 200);
         });
+        window.RegisterAttachmentContainer("#post-container");
       }
 
       Topic.prototype.paginationHTMLTemplate = function() {
