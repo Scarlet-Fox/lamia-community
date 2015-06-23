@@ -674,9 +674,9 @@ class ForumPostParser(object):
                         attachment.y_size = image.height
                         attachment.save()
                         
-                        resize_measure = float(size)/float(attachment.x_size)
-                        new_x = int(round(attachment.x_size*resize_measure))
-                        new_y = int(round(attachment.y_size*resize_measure))
+                    resize_measure = float(size)/float(attachment.x_size)
+                    new_x = int(round(attachment.x_size*resize_measure))
+                    new_y = int(round(attachment.y_size*resize_measure))
             
                 url = os.path.join("/static/uploads", 
                     ".".join(attachment_path.split(".")[:-1])+".custom_size."+size+"."+attachment_path.split(".")[-1])
