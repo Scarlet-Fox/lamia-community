@@ -652,7 +652,7 @@ class ForumPostParser(object):
                         attachment.save()
                     resize_measure = float(size)/float(xsize)
                     image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
-                    if attachment.extension == "gif" and attachment.size_in_bytes > 1024*1024: # Larger than 1/2 megabyte.
+                    if attachment.extension == "gif" and len(image.make_blob()) > 1024*1024: # Larger than 1 megabyte.
                         image.save(filename=sizepath.replace(".gif",".animated.gif"))
                         first_frame = image.sequence[0].clone()
                         first_frame.save(filename=sizepath)
