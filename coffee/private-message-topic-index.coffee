@@ -139,6 +139,8 @@ $ ->
         setTimeout(() ->
           window.location = window.location
         , 200)
+        
+      window.RegisterAttachmentContainer "#post-container"
               
     paginationHTMLTemplate: () ->
       return """

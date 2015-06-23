@@ -19,3 +19,4 @@ CRON JOBS:
 * /home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload -s /home/worldofequestria/backups/ /
 * /home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload -s /home/worldofequestria/woe/woe/static/ /
 * rm /home/worldofequestria/backups/*
+* tar -zcvf /home/worldofequestria/static-`date "+%Y.%m.%d-%H.%M.%S"`.tar.gz /home/worldofequestria/woe/woe/static/;/home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload /home/worldofequestria/static-* /;rm /home/worldofequestria/static-*
