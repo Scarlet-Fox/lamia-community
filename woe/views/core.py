@@ -365,10 +365,10 @@ def search_lookup():
         
     try:
         authors = list(User.objects(pk__in=request_json.get("authors",[])))
-        session["authors"] = authors
+        session["search_authors"] = authors
     except:
         authors = []
-        session["authors"] = []
+        session["search_authors"] = []
         
     query = request_json.get("q", "")[0:300]
     session["query"] = query
@@ -479,8 +479,8 @@ def search_display():
     end_date = session.get("end_date", "")
     categories = [{"id": unicode(c.pk), "text": c.name} for c in session.get("categories", [])]
     topics = [{"id": unicode(t.pk), "text": t.title} for t in session.get("topics", [])]
-    if session.get("authors"):
-        authors = [{"id": unicode(a.pk), "text": a.display_name} for a in session.get("authors", [])]
+    if session.get("search_authors"):
+        authors = [{"id": unicode(a.pk), "text": a.display_name} for a in session.get("search_authors", [])]
     else:
         authors = []
     query = session.get("query","")
