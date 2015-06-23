@@ -650,7 +650,7 @@ class ForumPostParser(object):
                         attachment.x_size = xsize
                         attachment.y_size = ysize
                         attachment.save()
-                    resize_measure = min(float(size)/float(xsize),float(size)/float(ysize))
+                    resize_measure = float(size)/float(xsize)
                     image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
                     if attachment.extension == "gif" and attachment.size_in_bytes > 512*1024: # Larger than 1/2 megabyte.
                         image.save(filename=sizepath.replace(".gif",".animated.gif"))
@@ -674,7 +674,7 @@ class ForumPostParser(object):
                         attachment.y_size = image.height
                         attachment.save()
                         
-                    resize_measure = min(float(size)/float(attachment.x_size),float(size)/float(attachment.y_size))
+                    resize_measure = float(size)/float(xsize)
                     new_x = int(round(attachment.x_size*resize_measure))
                     new_y = int(round(attachment.y_size*resize_measure))
             
