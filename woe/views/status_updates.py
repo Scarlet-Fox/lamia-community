@@ -258,14 +258,6 @@ def create_new_status():
         _html = cleaner.escape(request_json.get("message", "").strip())
     except:
         return abort(500)
-    
-    try:
-        users_last_status = StatusUpdate.objects(author=current_user._get_current_object()).order_by("-created")[0]
-        difference = (arrow.utcnow().datetime - arrow.get(users_last_status.created).datetime).seconds
-        if difference < 360 and not current_user._get_current_object().is_admin:
-            return app.jsonify(error="Please wait %s seconds before you create another status update." % (360 - difference))
-    except:
-        pass
         
     status.message = _html
     status.participants.append(status.author)
