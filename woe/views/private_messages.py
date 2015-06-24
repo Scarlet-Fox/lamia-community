@@ -155,6 +155,8 @@ def new_message_in_pm_topic(pk):
     for u in topic.participating_users:
         if u == message.author:
             continue
+        if u in topic.users_left_pm or u in topic.blocked_users:
+            continue
         notify_users.append(u)
     
     broadcast(
@@ -395,7 +397,8 @@ def messages_topics():
         maximum = 20
         
     messages = PrivateMessageTopic.objects(participating_users=current_user._get_current_object(), 
-        users_left_pm__ne=current_user._get_current_object()
+        users_left_pm__ne=current_user._get_current_object(),
+        blocked_users__ne=current_user._get_current_object()
         ).order_by("-last_reply_time").select_related(0)[minimum:maximum+10]
     parsed_messages = []
     
