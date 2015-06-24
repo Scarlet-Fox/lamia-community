@@ -76,6 +76,8 @@ import views.dashboard
 import views.profiles
 import views.admin
 import views.private_messages
+import views.search
+import views.status_updates
 import utilities
 
 if __name__ == '__main__':
