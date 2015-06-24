@@ -243,6 +243,16 @@ $ ->
           <div id="dropzone-#{@quillID}" class="dropzone" style="display: none;"></div>
       """
     
+    disableSaveButton: () =>
+      $("#save-text-#{@quillID}").addClass("disabled")
+      $("#upload-files-#{@quillID}").addClass("disabled")
+      $("#cancel-edit-#{@quillID}").addClass("disabled")
+    
+    enableSaveButton: () =>
+      $("#save-text-#{@quillID}").removeClass("disabled")
+      $("#upload-files-#{@quillID}").removeClass("disabled")
+      $("#cancel-edit-#{@quillID}").removeClass("disabled")
+    
     submitButtonHTML: (cancel_button=false) =>
       if cancel_button == true
         return """

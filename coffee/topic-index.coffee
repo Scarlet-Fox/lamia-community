@@ -43,7 +43,9 @@ $ ->
         @inline_editor = new InlineEditor "#new-post-box", "", false
       
         @inline_editor.onSave (html, text) ->
+          topic.inline_editor.disableSaveButton()
           $.post "/t/#{topic.slug}/new-post", JSON.stringify({post: html, text: text}), (data) =>
+            topic.inline_editor.enableSaveButton()
             if data.closed_topic?
               topic.inline_editor.flashError "Topic Closed: #{data.closed_message}"
                 
