@@ -719,8 +719,10 @@ def index():
     post_count = Post.objects().count()
     member_count = User.objects(banned=False).count()
     newest_member = User.objects().order_by("-joined")[0]
+    recently_replied_topics = Topic.objects(post_count__gt=0, hidden=False).order_by("-last_post_date")[:5]
+    recently_created_topics = Topic.objects(post_count__gt=0, hidden=False).order_by("-created")[:5]
     
     return render_template("index.jade", page_title="World of Equestria!",
         categories=categories, status_updates=cleaned_statuses[:5], online_users=online_users,
         post_count=post_count, member_count=member_count, newest_member=newest_member, 
-        online_user_count=online_users.count())
+        online_user_count=online_users.count(), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)

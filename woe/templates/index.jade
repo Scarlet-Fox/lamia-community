@@ -12,11 +12,11 @@
       li.list-group-item.subcategory.category-subcategories
         div
           .row
-            .col-xs-12.col-sm-6
+            .col-xs-4.col-sm-6
               span.subcategory-listing-name 
                 a(href="/category/{{category.slug}}")= category.name
             {% if category.post_count != 0 %}
-            .col-sm-6.hidden-xs.hidden-sm
+            .col-sm-6.col-xs-8
               .media-left
                 span.subcategory-listing-recent-image
                   a(href="{{url_for('view_profile', login_name=category.last_post_by.login_name)}}")
@@ -30,6 +30,41 @@
       {% endif %}
       {% endfor %}
     {% endfor %}
+    .row
+      .col-md-6
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title New Topics
+          ul.list-group.panel-body
+            for t in recently_created_topics
+              li.list-group-item.hidden-sm.hidden-md.hidden-lg
+                a(href="/t/{{t.slug}}")= t.title
+              li.list-group-item.hidden-xs
+                .media-left
+                  span.subcategory-listing-recent-image
+                    a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
+                      img(src="{{t.last_post_author_avatar}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
+                .media-body
+                  a(href="/t/{{t.slug}}")= t.title
+                  br
+                  a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.last_post_date|humanize_time}}
+      .col-md-6
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title Recently Replied to Topics
+          ul.list-group.panel-body
+            for t in recently_replied_topics
+              li.list-group-item.hidden-sm.hidden-md.hidden-lg
+                a(href="/t/{{t.slug}}")= t.title
+              li.list-group-item.hidden-xs
+                .media-left
+                  span.subcategory-listing-recent-image
+                    a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
+                      img(src="{{t.last_post_author_avatar}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
+                .media-body
+                  a(href="/t/{{t.slug}}")= t.title
+                  br
+                  a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.last_post_date|humanize_time}}
   .col-md-4
     if current_user.is_authenticated()
       ul.list-group.category
