@@ -498,7 +498,7 @@ def sign_in():
         for browser_plugin in fingerprint__info_from_browser.get("pl", []):
             try:
                 for browser_plugin_object in browser_plugin.keys():
-                    fingerprint_data[browser_plugin_object.replace(".", "dt").replace("$", "dl")] = browser_plugin[browser_plugin_object]
+                    fingerprint_data[browser_plugin_object] = browser_plugin[browser_plugin_object]
             except:
                 pass
             
@@ -507,6 +507,18 @@ def sign_in():
         fingerprint_data["agent_browser_version"] = request.user_agent.version
         fingerprint_data["agent"] = request.user_agent.string
         
+        for element in request.user_agent.platform.split(" "):
+            fingerprint_data[element] = element
+        
+        for element in request.user_agent.browser.split(" "):
+            fingerprint_data[element] = element
+        
+        for element in request.user_agent.version.split(" "):
+            fingerprint_data[element] = element
+        
+        for element in request.user_agent.string.split(" "):
+            fingerprint_data[element] = element
+        
         try:
             obj = IPWhois(request.remote_addr)
             results=obj.lookup(get_referral=True)
@@ -514,10 +526,12 @@ def sign_in():
         except:
             pass
         
+        clean_fingerprint_data = {}
         fingerprint_hash = ""
         for key, value in sorted(fingerprint_data.items()):
             fingerprint_hash += unicode(key) + " "
             fingerprint_hash += unicode(value) + " "
+            clean_fingerprint_data[key.replace(".", "dt").replace("$", "dl")]=value
         
         _fingerprint_hash = hashlib.sha256(fingerprint_hash.encode('utf-8')).hexdigest()
         
@@ -529,9 +543,9 @@ def sign_in():
             f.user = form.user
             f.user_name = form.user.login_name
             f.last_seen = arrow.utcnow().datetime
-            f.fingerprint = fingerprint_data
+            f.fingerprint = clean_fingerprint_data
             f.fingerprint_hash = _fingerprint_hash
-            f.fingerprint_factors = len(fingerprint_data)
+            f.fingerprint_factors = len(clean_fingerprint_data)
             try:
                 f.save()
             except:
