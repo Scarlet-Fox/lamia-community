@@ -733,7 +733,7 @@ class ForumPostParser(object):
                     "/messages/%s/page/1/post/%s" % (_replying_to.topic.pk, _replying_to.pk),
                     _replying_to.author.display_name,
                     "/member/%s" % _replying_to.author.login_name,
-                    re.sub(reply_re, "", _replying_to.html.replace("img", "imgdisabled"))
+                    re.sub(reply_re, "", _replying_to.message.replace("img", "imgdisabled"))
                 ))
                     
         mentions = mention_re.findall(html)
