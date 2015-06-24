@@ -42,8 +42,8 @@
               li.list-group-item.hidden-xs
                 .media-left
                   span.subcategory-listing-recent-image
-                    a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
-                      img(src="{{t.last_post_author_avatar}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
+                    a(href="{{url_for('view_profile', login_name=t.creator.login_name)}}")
+                      img(src="{{t.creator.get_avatar_url("40")}}", width="{{t.creator.avatar_40_x}}", height="{{t.creator.avatar_40_y}}", class="avatar-mini")
                 .media-body
                   a(href="/t/{{t.slug}}")= t.title
                   br
