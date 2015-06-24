@@ -14,7 +14,7 @@
           .row
             .col-xs-12.col-sm-6
               span.subcategory-listing-name 
-                a(href="/category/{{category.slug}}") {{category.name}}
+                a(href="/category/{{category.slug}}")= category.name
             {% if category.post_count != 0 %}
             .col-sm-6.hidden-xs.hidden-sm
               .media-left
@@ -23,7 +23,7 @@
                     img(src="{{category.last_post_author_avatar}}", width="{{category.last_post_by.avatar_40_x}}", height="{{category.last_post_by.avatar_40_y}}", class="avatar-mini")
               .media-body
                 span.subcategory-listing-recent
-                  a(href="/t/{{category.last_topic.slug}}") {{category.last_topic.title}}
+                  a(href="/t/{{category.last_topic.slug}}")= category.last_topic.title
                   br
                   a(href="/t/{{category.last_topic.slug}}/page/1/post/last_seen") {{category.last_post_date|humanize_time}}
             {% endif %}
@@ -52,7 +52,7 @@
           span.discuss 
             a(href="/status/{{status.pk}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
           br
-          p.status-message {{ status.message }}
+          p.status-message {{status.message}}
           span.status-reply-time 
             a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
       {% endfor %}

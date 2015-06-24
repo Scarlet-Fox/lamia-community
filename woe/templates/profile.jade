@@ -15,7 +15,7 @@
         {% else %}
         img.center-block.profile-page-avatar#profile-avatar(src="", width="200px", height="200px")
         {% endif %}
-        span.text-muted {{profile.title}}
+        span.text-muted= profile.title
       if current_user.is_authenticated() and current_user.is_admin and not profile.validated
         center
           a.btn.btn-warning.post-link(href="/member/{{profile.login_name}}/validate-user") Validate User

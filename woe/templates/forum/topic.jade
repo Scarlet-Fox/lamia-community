@@ -6,13 +6,13 @@
     a(href="/") Home
   {% if topic.category.parent != None and topic.category.parent.root_category != True %}
   li.active 
-    a(href="{{url_for('category_index', slug=topic.category.parent.slug)}}") {{topic.category.parent.name}}
+    a(href="{{url_for('category_index', slug=topic.category.parent.slug)}}")= topic.category.parent.name
   {% endif %}
   li.active 
-    a(href="{{url_for('category_index', slug=topic.category.slug)}}") {{topic.category.name}}
+    a(href="{{url_for('category_index', slug=topic.category.slug)}}")= topic.category.name
   li.active
     b
-      a(href="{{url_for('topic_index', slug=topic.slug)}}") {{topic.title}}
+      a(href="{{url_for('topic_index', slug=topic.slug)}}")= topic.title
 .row
   .col-md-12
     ul.list-group.category

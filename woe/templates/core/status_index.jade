@@ -85,15 +85,15 @@
                 a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
                   img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}px", height="{{status.author.avatar_40_y}}px", class="avatar-mini")
               .media-body
-                a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+                a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}")= status.author.display_name
                 if status.attached_to_user != None
-                  span &nbsp;says to <a href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}">{{status.attached_to_user.display_name}}</a>:
+                  span &nbsp;says to <a href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}">{{status.attached_to_user.display_name|e}}</a>:
                 else
                   span &nbsp;says:
                 span.discuss 
                   a.status-reply-time.float-right(href="/status/{{status.pk}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
                 br
-                p.status-message {{ status.message }}
+                p.status-message= status.message
                 span.status-reply-time 
                   a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
         {% endfor %}

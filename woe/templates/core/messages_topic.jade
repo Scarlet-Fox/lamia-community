@@ -26,7 +26,7 @@
             a(href="{{url_for('view_profile', login_name=participant.login_name)}}")
               img.media-object(src="{{ participant.get_avatar_url("40") }}", width="40px", height="40px", class="avatar-mini")
           .media-body
-            a.hover_user(href="{{url_for('view_profile', login_name=participant.login_name)}}") {{ participant.display_name }}
+            a.hover_user(href="{{url_for('view_profile', login_name=participant.login_name)}}")= participant.display_name
             if participant in topic.users_left_pm
               if participant in topic.blocked_users
                 p.text-muted <i>Was Kicked from PM</i>

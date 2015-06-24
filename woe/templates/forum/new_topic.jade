@@ -1,3 +1,4 @@
+{% autoescape true %}
 {% extends "base.jade" %}
 
 {% block content %}
@@ -52,3 +53,4 @@ script(type="text/javascript")
 script(type="text/javascript", src="{{ASSET_URL}}")
 {% endassets %}
 {% endblock %}
+{% endautoescape %}
