@@ -281,7 +281,10 @@ $ ->
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                              <li><a href="" class="post-edit" data-pk="{{_id}}">Edit</a></li>
+                              <li><a href="" class="post-edit" data-pk="{{_id}}">Edit Post</a></li>
+                              {{#if topic_leader}}
+                               <li><a href="{{topic_leader}}">Edit Topic</a></li>
+                              {{/if}}
                               <li><a href="">Hide</a></li>
                             </ul>
                             {{else}}
@@ -292,7 +295,10 @@ $ ->
                                   <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                  <li><a href="" class="post-edit" data-pk="{{_id}}">Edit</a></li>
+                                  <li><a href="" class="post-edit" data-pk="{{_id}}">Edit Post</a></li>
+                                  {{#if topic_leader}}
+                                   <li><a href="{{topic_leader}}">Edit Topic</a></li>
+                                  {{/if}}
                                 </ul>
                               {{/if}}
                             {{/if}}

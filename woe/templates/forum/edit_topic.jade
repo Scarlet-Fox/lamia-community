@@ -5,34 +5,39 @@
   li
     a(href="/") Home
   {% if category.parent != None and category.parent.root_category != True %}
-  li.active 
+  li 
     a(href="{{url_for('category_index', slug=category.parent.slug)}}") {{category.parent.name}}
   {% endif %}
-  li.active 
+  li 
     a(href="{{url_for('category_index', slug=category.slug)}}") {{category.name}}
+  li 
+    a(href="{{url_for('topic_index', slug=topic.slug)}}") {{topic.name}}
   li.active
     b
-      a(href="{{url_for('new_topic', slug=category.slug)}}") New Topic
+      a(href="{{url_for('edit_topic', slug=topic.slug)}}") Edit Topic
 .row
   .col-md-12
-    h2 Create a Topic
-    form#new-topic-form(method="post", data-slug="{{category.slug}}")
+    h2 Edit Topic
+    form#edit-topic-form(method="post", data-slug="{{topic.slug}}")
       .row
         .col-md-8
           .row
             .form-group.col-md-8
               label(for="title") Title
-              input.form-control#title(value="")
+              input.form-control#title(value=topic.title)
           if category.allowed_prefixes
             .row
               .form-group.col-md-6
                 label(for="title") Prefix
                 select#prefix.form-control
                   for prefix in category.allowed_prefixes
-                    option(value="{{prefix}}") {{prefix}}
+                    if prefix == topic.prefix:
+                      option(value="{{prefix}}", selected) {{prefix}}
+                    else
+                      option(value="{{prefix}}") {{prefix}}
           .row
             .form-group.col-md-12
-              #new-post-box
+              #new-post-box {{topic.first_post.html}}
 nav.pagination-listing
 {% endblock %}
 
@@ -44,10 +49,9 @@ script(type="text/javascript", src="{{ASSET_URL}}")
 {% endassets %}
 script(type="text/javascript")
   $(document).ready(function(){  
-  
   });
 {% assets filters="rjsmin", output="generated/new-topic.js",
-"local/js/new-topic.js" %}
+"local/js/edit-topic.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}")
 {% endassets %}
 {% endblock %}

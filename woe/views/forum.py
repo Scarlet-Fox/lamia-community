@@ -240,6 +240,8 @@ def topic_posts(slug):
         parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
+        if post == topic.first_post:
+            parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"
         parsed_post["author_login_name"] = post.author.login_name
         parsed_post["group_pre_html"] = post.author.group_pre_html
         parsed_post["author_group_name"] = post.author.group_name
@@ -432,6 +434,76 @@ def category_filter_preferences(slug):
         preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
         return json.jsonify(preferences=preferences)
 
+@app.route('/t/<slug>/edit-topic', methods=['GET', 'POST'])
+@login_required
+def edit_topic(slug):
+    try:
+        topic = Topic.objects(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+        
+    category = topic.category
+            
+    if request.method == 'POST':
+        if current_user._get_current_object() != topic.creator:
+            if not current_user._get_current_object().is_admin and not current_user._get_current_object().is_mod:
+                if current_user._get_current_object() not in topic.topic_moderators:
+                    return abort(404)
+        
+        request_json = request.get_json(force=True)
+    
+        if request_json.get("title", "").strip() == "":
+            return app.jsonify(error="Please enter a title.")
+    
+        if request_json.get("text", "").strip() == "":
+            return app.jsonify(error="Please enter actual text for your topic.")
+    
+        if len(category.allowed_prefixes) > 0:
+            if request_json.get("prefix", "").strip() == "":
+                return app.jsonify(error="Please choose a prefix.")
+        
+            if not request_json.get("prefix", "").strip() in category.allowed_prefixes:
+                return app.jsonify(error="Please choose a valid prefix.")
+        
+        cleaner = ForumHTMLCleaner()
+        try:
+            post_html = cleaner.clean(request_json.get("html", ""))
+        except:
+            return abort(500)
+            
+        try:
+            prefix = Prefix.objects(prefix=request_json.get("prefix", "").strip())[0]
+        except IndexError:
+            prefix = ""
+            
+        history = PostHistory()
+        history.creator = current_user._get_current_object()
+        history.created = arrow.utcnow().datetime
+        history.html = topic.first_post.html
+        history.data = topic.first_post.data
+        history.reason = request_json.get("edit_reason", "")
+    
+        if request_json.get("edit_reason", "").strip() == "":
+            return app.jsonify(error="Please include an edit reason.")
+    
+        topic.title = request_json.get("title")
+        if prefix != "":
+            topic.pre_html = prefix.pre_html
+            topic.prefix = prefix.prefix
+            topic.post_html = prefix.post_html
+            topic.prefix_reference = prefix
+            
+        topic.save()
+        
+        first_post = topic.first_post
+        first_post.history.append(history)
+        first_post.modified = arrow.utcnow().datetime
+        first_post.html = post_html
+        first_post.save()
+        return app.jsonify(url="/t/"+topic.slug)
+    else:
+        return render_template("forum/edit_topic.jade", page_title="Edit Topic", category=category, topic=topic)
+        
 @app.route('/category/<slug>/new-topic', methods=['GET', 'POST'])
 @login_required
 def new_topic(slug):
@@ -590,6 +662,10 @@ def category_topics(slug):
         parsed_topic = topic.to_mongo().to_dict()
         parsed_topic["creator"] = topic.creator.display_name
         parsed_topic["created"] = humanize_time(topic.created, "MMM D YYYY")
+        if topic.prefix != None:
+            parsed_topic["pre_html"] = topic.prefix_reference.pre_html
+            parsed_topic["post_html"] = topic.prefix_reference.post_html
+            parsed_topic["prefix"] = topic.prefix_reference.prefix
         if topic.last_post_date:
             parsed_topic["last_post_date"] = humanize_time(topic.last_post_date)
             parsed_topic["last_post_by"] = topic.last_post_by.display_name
