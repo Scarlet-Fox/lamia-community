@@ -165,7 +165,10 @@ def make_status_update_reply(status):
         return app.jsonify(error="This status update is full!")
         
     request_json = request.get_json(force=True)
-
+    
+    if request_json.get("reply", "").strip() == "":
+        return app.jsonify(error="Your status update is empty.")
+    
     cleaner = ForumHTMLCleaner()
     try:
         _html = cleaner.escape(request_json.get("reply", ""))
