@@ -507,17 +507,29 @@ def sign_in():
         fingerprint_data["agent_browser_version"] = request.user_agent.version
         fingerprint_data["agent"] = request.user_agent.string
         
-        for element in request.user_agent.platform.split(" "):
-            fingerprint_data[element] = element
+        try:
+            for element in request.user_agent.platform.split(" "):
+                fingerprint_data[element] = element
+        except:
+            pass
         
-        for element in request.user_agent.browser.split(" "):
-            fingerprint_data[element] = element
+        try:
+            for element in request.user_agent.browser.split(" "):
+                fingerprint_data[element] = element
+        except:
+            pass
         
-        for element in request.user_agent.version.split(" "):
-            fingerprint_data[element] = element
+        try:
+            for element in request.user_agent.version.split(" "):
+                fingerprint_data[element] = element
+        except:
+            pass
         
-        for element in request.user_agent.string.split(" "):
-            fingerprint_data[element] = element
+        try:
+            for element in request.user_agent.string.split(" "):
+                fingerprint_data[element] = element
+        except:
+            pass
         
         try:
             obj = IPWhois(request.remote_addr)
