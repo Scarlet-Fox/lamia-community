@@ -578,6 +578,12 @@ class User(db.DynamicDocument):
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\]')
 end_spoiler_re = re.compile(r'\[\/spoiler\]')
+bold_re = re.compile(r'\[b\]')
+end_bold_re = re.compile(r'\[\/b\]')
+italic_re = re.compile(r'\[i\]')
+end_italic_re = re.compile(r'\[\/i\]')
+strike_re = re.compile(r'\[s\]')
+end_strike_re = re.compile(r'\[\/s\]')
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post|pm)\]')
@@ -755,5 +761,21 @@ class ForumPostParser(object):
             if end_spoiler_re.search(html):
                 html = html.replace("[spoiler]", """<div class="content-spoiler"><div> <!-- spoiler div -->""", 1)
                 html = html.replace("[/spoiler]", """</div></div> <!-- /spoiler div -->""", 1)
-                
+
+        strong_bbcode_in_post = bold_re.findall(html)
+        for strong_bbcode in strong_bbcode_in_post:
+            if end_bold_re.search(html):
+                html = html.replace("[b]", """<strong>""", 1)
+                html = html.replace("[/b]", """</strong>""", 1)
+        italic_bbcode_in_post = italic_re.findall(html)
+        for italic_bbcode in italic_bbcode_in_post:
+            if end_italic_re.search(html):
+                html = html.replace("[i]", """<em>""", 1)
+                html = html.replace("[/i]", """</em>""", 1)
+        strike_bbcode_in_post = strike_re.findall(html)
+        for strike_bbcode in strike_bbcode_in_post:
+            if end_strike_re.search(html):
+                html = html.replace("[s]", """<span style="text-decoration: line-through;"><span> <!-- strike span -->""", 1)
+                html = html.replace("[/s]", """</span></span> <!-- /strike span -->""", 1)
+
         return html
