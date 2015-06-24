@@ -109,6 +109,14 @@ def new_message_in_pm_topic(pk):
     
     if request_json.get("text", "").strip() == "":
         return app.jsonify(error="Your post is empty.")
+    
+    non_left_or_blocked_users = 0
+    for user in topic.participating_users:
+        if user not in topic.users_left_pm and user not in topic.blocked_users:
+            non_left_or_blocked_users += 1
+        
+    if non_left_or_blocked_users == 1:
+        return app.jsonify(error="There is only one participant in this private message. Don't talk to yourself. :)")
         
     cleaner = ForumHTMLCleaner()
     try:
