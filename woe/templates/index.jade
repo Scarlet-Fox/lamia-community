@@ -1,6 +1,37 @@
 {% extends "base.jade" %}
 
 {% block content %}
+.row.hidden-sm.hidden-md.hidden-lg
+  .col-md-6
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title New Topics
+      ul.list-group.panel-body
+        for t in recently_created_topics
+          li.list-group-item
+            .media-left
+              span.subcategory-listing-recent-image
+                a(href="{{url_for('view_profile', login_name=t.creator.login_name)}}")
+                  img(src="{{t.creator.get_avatar_url("40")}}", width="{{t.creator.avatar_40_x}}", height="{{t.creator.avatar_40_y}}", class="avatar-mini")
+            .media-body
+              a(href="/t/{{t.slug}}")= t.title
+              br
+              a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
+  .col-md-6
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title Recently Replied to Topics
+      ul.list-group.panel-body
+        for t in recently_replied_topics
+          li.list-group-item
+            .media-left
+              span.subcategory-listing-recent-image
+                a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
+                  img(src="{{t.last_post_author_avatar}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
+            .media-body
+              a(href="/t/{{t.slug}}")= t.title
+              br
+              a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.last_post_date|humanize_time}}
 .row
   .col-md-8
     {% for category_list in categories.values() if not category_list[0].restricted or current_user.is_admin or current_user in category_list[0].allowed_users %}
@@ -30,16 +61,14 @@
       {% endif %}
       {% endfor %}
     {% endfor %}
-    .row
+    .row.hidden-xs
       .col-md-6
         .panel.panel-default
           .panel-heading
             h3.panel-title New Topics
           ul.list-group.panel-body
             for t in recently_created_topics
-              li.list-group-item.hidden-sm.hidden-md.hidden-lg
-                a(href="/t/{{t.slug}}")= t.title
-              li.list-group-item.hidden-xs
+              li.list-group-item
                 .media-left
                   span.subcategory-listing-recent-image
                     a(href="{{url_for('view_profile', login_name=t.creator.login_name)}}")
@@ -54,9 +83,7 @@
             h3.panel-title Recently Replied to Topics
           ul.list-group.panel-body
             for t in recently_replied_topics
-              li.list-group-item.hidden-sm.hidden-md.hidden-lg
-                a(href="/t/{{t.slug}}")= t.title
-              li.list-group-item.hidden-xs
+              li.list-group-item
                 .media-left
                   span.subcategory-listing-recent-image
                     a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
