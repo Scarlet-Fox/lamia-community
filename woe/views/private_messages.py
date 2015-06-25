@@ -330,6 +330,9 @@ def create_message():
             
             if current_user._get_current_object() in u.ignored_users:
                 return app.jsonify(error="You can not send a message to %s." % (u.display_name,))
+                
+            if current_user._get_current_object() == u:
+                return app.jsonify(error="Stop talking to yourself! (Remove yourself from the \"to\" list.)")
             
             participant_users.append(u)
         except IndexError:
