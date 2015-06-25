@@ -84,11 +84,12 @@ $ ->
     if window.woe_is_me in data.users
       counter_element = $(".notification-counter")
       counter_element.text(data.count)
-      if document.title.split(" - ").length == 1
-        document.title = "(#{data.count}) - " + document.title
+      
+      title_count = document.title.match(/\(\d+\)/)
+      if title_count
+        document.title = document.title.replace(title_count[0], "(#{data.count})")        
       else
-        window_title_count = document.title.split(" - ")[0]
-        document.title = document.title.replace(window_title_count, "(#{data.count})")
+        document.title = "(#{data.count}) - " + document.title
       notification_listing = $("#notification-listing")
       notifications_listed = $("a.notification-link")
       if notifications_listed.length > 14
