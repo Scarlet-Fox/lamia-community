@@ -47,7 +47,7 @@
                 .media-body
                   a(href="/t/{{t.slug}}")= t.title
                   br
-                  a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.last_post_date|humanize_time}}
+                  a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
       .col-md-6
         .panel.panel-default
           .panel-heading
