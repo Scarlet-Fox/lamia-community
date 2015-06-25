@@ -615,87 +615,90 @@ class ForumPostParser(object):
                 attachment = Attachment.objects(pk=attachment_bbcode[0])[0]
             except:
                 pass
+            
+            try:
+                size = attachment_bbcode[1]
+                if int(size) < 5:
+                    size = "5"
+                if int(size) > 700:
+                    size = "700"
+                if int(size) == attachment.x_size and attachment.size_in_bytes < 1024*1024:
+                    url = os.path.join("/static/uploads", attachment.path)
+                    show_box = "no"
                 
-            size = attachment_bbcode[1]
-            if int(size) < 5:
-                size = "5"
-            if int(size) > 700:
-                size = "700"
-            if int(size) == attachment.x_size and attachment.size_in_bytes < 1024*1024:
-                url = os.path.join("/static/uploads", attachment.path)
-                show_box = "no"
-                
-                image_html = """
-                <img class="attachment-image" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                """ % (quote(url), attachment.x_size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
-                html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
-            else:
-                attachment_path = attachment.path
-                filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
-                sizepath = os.path.join(os.getcwd(), "woe/static/uploads", 
-                    ".".join(filepath.split(".")[:-1])+".custom_size."+size+"."+filepath.split(".")[-1])
-                
-                if not os.path.exists(sizepath):
-                    try:
-                        image = Image(filename=filepath)
-                    except:
-                        continue
-                    xsize = image.width
-                    ysize = image.height
-                    if attachment.x_size == 0:
-                        attachment.x_size = xsize
-                        attachment.y_size = ysize
-                        attachment.save()
-                    resize_measure = float(size)/float(xsize)
-                    image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
-                    if attachment.extension == "gif" and len(image.make_blob()) > 1024*1024: # Larger than 1 megabyte.
-                        image.save(filename=sizepath.replace(".gif",".animated.gif"))
-                        first_frame = image.sequence[0].clone()
-                        first_frame.save(filename=sizepath)
-                        new_x = image.width
-                        new_y = image.height
-                    else:
-                        image.save(filename=sizepath)
-                        new_x = image.width
-                        new_y = image.height
+                    image_html = """
+                    <img class="attachment-image" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                    """ % (quote(url), attachment.x_size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                    html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
                 else:
+                    attachment_path = attachment.path
                     filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
-                    if attachment.x_size == 0 or attachment.y_size == 0:
+                    sizepath = os.path.join(os.getcwd(), "woe/static/uploads", 
+                        ".".join(filepath.split(".")[:-1])+".custom_size."+size+"."+filepath.split(".")[-1])
+                
+                    if not os.path.exists(sizepath):
                         try:
                             image = Image(filename=filepath)
                         except:
                             continue
+                        xsize = image.width
+                        ysize = image.height
+                        if attachment.x_size == 0:
+                            attachment.x_size = xsize
+                            attachment.y_size = ysize
+                            attachment.save()
+                        resize_measure = float(size)/float(xsize)
+                        image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
+                        if attachment.extension == "gif" and len(image.make_blob()) > 1024*1024: # Larger than 1 megabyte.
+                            image.save(filename=sizepath.replace(".gif",".animated.gif"))
+                            first_frame = image.sequence[0].clone()
+                            first_frame.save(filename=sizepath)
+                            new_x = image.width
+                            new_y = image.height
+                        else:
+                            image.save(filename=sizepath)
+                            new_x = image.width
+                            new_y = image.height
+                    else:
+                        filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
+                        if attachment.x_size == 0 or attachment.y_size == 0:
+                            try:
+                                image = Image(filename=filepath)
+                            except:
+                                continue
                             
-                        attachment.x_size = image.width
-                        attachment.y_size = image.height
-                        attachment.save()
+                            attachment.x_size = image.width
+                            attachment.y_size = image.height
+                            attachment.save()
                         
-                    resize_measure = float(size)/float(attachment.x_size)
-                    new_x = int(round(attachment.x_size*resize_measure))
-                    new_y = int(round(attachment.y_size*resize_measure))
+                        resize_measure = float(size)/float(attachment.x_size)
+                        new_x = int(round(attachment.x_size*resize_measure))
+                        new_y = int(round(attachment.y_size*resize_measure))
             
-                url = os.path.join("/static/uploads", 
-                    ".".join(attachment_path.split(".")[:-1])+".custom_size."+size+"."+attachment_path.split(".")[-1])
+                    url = os.path.join("/static/uploads", 
+                        ".".join(attachment_path.split(".")[:-1])+".custom_size."+size+"."+attachment_path.split(".")[-1])
                 
-                if abs(new_x - attachment.x_size) > 100 and new_x < attachment.x_size:
-                    show_box = "yes"
-                else:
-                    show_box = "no"
+                    if abs(new_x - attachment.x_size) > 100 and new_x < attachment.x_size:
+                        show_box = "yes"
+                    else:
+                        show_box = "no"
                                     
-                if attachment.extension == "gif" and attachment.size_in_bytes > 1024*1024:
-                    show_box = "yes"
-                    new_size = os.path.getsize(sizepath.replace(".gif",".animated.gif"))
-                    image_html = """
-                    <div class="click-to-play">
+                    if attachment.extension == "gif" and attachment.size_in_bytes > 1024*1024:
+                        show_box = "yes"
+                        new_size = os.path.getsize(sizepath.replace(".gif",".animated.gif"))
+                        image_html = """
+                        <div class="click-to-play">
+                            <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                            <p class="text-warning">This file is %sKB large, click to play.</p>
+                        </div>
+                        """ % (quote(url), new_x, show_box, attachment.alt, quote(attachment.path), int(float(new_size)/1024), int(float(new_size)/1024))
+                    else:                
+                        image_html = """
                         <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                        <p class="text-warning">This file is %sKB large, click to play.</p>
-                    </div>
-                    """ % (quote(url), new_x, show_box, attachment.alt, quote(attachment.path), int(float(new_size)/1024), int(float(new_size)/1024))
-                else:                
-                    image_html = """
-                    <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                    """ % (quote(url), new_x, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
-                html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
+                        """ % (quote(url), new_x, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                    html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
+            except:
+                continue
 
         replies = reply_re.findall(html)
         for reply in replies:
