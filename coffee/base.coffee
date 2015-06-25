@@ -99,13 +99,13 @@ $ ->
       else
         document.title = "(#{data.count}) - " + document.title
       
-      notification_listing = $("#notification-dropdown")
+      notification_listing = $(".notification-dropdown")
       notifications_listed = $(".notification-li")
       if notifications_listed.length > 14
         notifications_listed[notifications_listed.length-1].remove()
       
       if $(".notification-li").length == 0
-        $("#notification-dropdown").append(notificationTemplate(data))
+        $(".notification-dropdown").append(notificationTemplate(data))
       else
         $(notifications_listed.first()).before(notificationTemplate(data))
   

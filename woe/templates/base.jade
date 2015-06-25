@@ -60,7 +60,7 @@ body(role='document')
                 span.badge.notification-counter {{notification_count}}
               else
                 span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
-            ul.dropdown-menu#notification-dropdown(role='menu')
+            ul.dropdown-menu.notification-dropdown(role='menu')
               li
                 a(href='/dashboard') Dashboard&nbsp;
                   span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
@@ -162,7 +162,7 @@ body(role='document')
                     span.badge.notification-counter {{notification_count}}
                   else
                     span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
-                ul.dropdown-menu#notification-dropdown(role='menu')
+                ul.dropdown-menu.notification-dropdown(role='menu')
                   li
                     a(href='/dashboard') Dashboard&nbsp;
                       span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
