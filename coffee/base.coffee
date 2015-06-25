@@ -114,7 +114,7 @@ $ ->
     $.post $(this).attr("href"), (data) ->
       window.location = data.url
 
-  $("#notification-dropdown").delegate ".notification-link", "click", (e) ->
+  $(".notification-dropdown").delegate ".notification-link", "click", (e) ->
     e.preventDefault()
     $.post "/dashboard/ack_notification", JSON.stringify({notification: $(this).data("notification")}), (data) =>
       window.location = $(this).attr("href")
