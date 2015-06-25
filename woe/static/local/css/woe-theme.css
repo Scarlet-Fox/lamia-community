@@ -729,3 +729,20 @@ a.inherit_colors {
 .ql-custom-button:hover {
   color: #06c !important;
 }
+
+.mini-notification-button {
+  position: relative;
+  float: left;
+  padding: 9px 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  background-color: transparent;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #777;
+}
+
+.navbar-default .mini-notification-button {
+  border-color: #ddd;
+}

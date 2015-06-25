@@ -49,6 +49,24 @@ body(role='document')
     nav.navbar.navbar-default
       .container-fluid
         .navbar-header
+          a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.login_name}}')
+            img(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 7px; margin-left: 0px;', class="avatar-mini")
+          a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/')
+            span.glyphicon.glyphicon-home()
+          if current_user.is_authenticated()
+            a.button.mini-notification-button.collapsed.dropdown-toggle.notification-dropdown-toggle.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
+              if notification_count == 0
+                span.badge.notification-counter {{notification_count}}
+              else
+                span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
+            ul.dropdown-menu#notification-dropdown(role='menu')
+              li
+                a(href='/dashboard') Dashboard&nbsp;
+                  span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
+              li.divider
+              for notification in current_user.get_recent_notifications(15)
+                li.notification-li
+                  a.notification-link(href='{{notification.url}}', data-notification="{{notification.pk}}")= notification.text
           button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
             span.sr-only Toggle navigation
             span.icon-bar
@@ -100,7 +118,17 @@ body(role='document')
             li
               a(href='/search')
                 | Search
-          ul.nav.navbar-nav.navbar-right
+            li.divider.hidden-sm.hidden-md.hidden-lg
+              hr
+            li.hidden-sm.hidden-md.hidden-lg
+              a(href='/dashboard') Dashboard
+            li.hidden-sm.hidden-md.hidden-lg
+              a(href='/messages') Messages
+            li.hidden-sm.hidden-md.hidden-lg
+              a(href='/member/{{current_user.login_name}}') Profile
+            li.hidden-sm.hidden-md.hidden-lg
+              a#sign-out(href='#') Sign Out
+          ul.nav.navbar-nav.navbar-right.hidden-xs
             if current_user.is_authenticated()
               li
                 img(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 5px; margin-left: 15px;', class="avatar-mini")
@@ -127,7 +155,7 @@ body(role='document')
                 a(href='/register')
                   | Register
             if current_user.is_authenticated()
-              li.dropdown#dashboard-li
+              li.dropdown#dashboard-li.hidden-xs
                 a.dropdown-toggle.notification-dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
                   if notification_count == 0
                     span.badge.notification-counter {{notification_count}}
