@@ -56,6 +56,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         data = {
             "users": [u.login_name, ],
             "count": u.get_notification_count(),
+            "dashboard_count": u.get_dashboard_notifications(),
             "category": category,
             "author": author.display_name,
             "member_name": author.login_name,
@@ -80,14 +81,37 @@ def broadcast(to, category, url, title, description, content, author, priority=0
 @app.route('/dashboard/ack_category', methods=["POST",])
 @login_required
 def acknowledge_category():
+    try:
+        notifications = Notification.objects(seen=False)
+    except:
+        pass
+    notifications.update(seen=True)
+    
     request_json = request.get_json(force=True)
     notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False, category=request_json.get("category",""))
     notifications.update(acknowledged=True)
+    return app.jsonify(success=True, count=current_user._get_current_object().get_dashboard_notifications())
+    
+@app.route('/dashboard/mark_seen', methods=["POST",])
+@login_required
+def mark_all_notifications():
+    try:
+        notifications = Notification.objects(seen=False)
+    except:
+        return app.jsonify(success=False)
+        
+    notifications.update(seen=True)
     return app.jsonify(success=True)
 
 @app.route('/dashboard/ack_notification', methods=["POST",])
 @login_required
 def acknowledge_notification():
+    try:
+        notifications = Notification.objects(seen=False)
+    except:
+        pass
+    notifications.update(seen=True)
+    
     request_json = request.get_json(force=True)
     try:
         notification = Notification.objects(pk=request_json.get("notification",""))[0]
@@ -96,16 +120,16 @@ def acknowledge_notification():
     notification.update(acknowledged=True)
     
     try:
-        notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False, content=notification.content, author=notification.author)
+        notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False, content=notification.content)
         notifications.update(acknowledged=True)
     except:
         return app.jsonify(success=False)
     
-    return app.jsonify(success=True)
+    return app.jsonify(success=True, count=current_user._get_current_object().get_dashboard_notifications())
 
 @app.route('/dashboard/notifications', methods=["POST",])
 @login_required
-def dashboard_notifications():
+def dashboard_notifications():    
     notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False)
     parsed_notifications = []
     
@@ -123,4 +147,10 @@ def dashboard_notifications():
 @app.route('/dashboard')
 @login_required
 def view_dashboard():
+    try:
+        notifications = Notification.objects(seen=False)
+    except:
+        pass
+    notifications.update(seen=True)
+    
     return render_template("dashboard.jade", page_title="Your Dashboard - World of Equestria")

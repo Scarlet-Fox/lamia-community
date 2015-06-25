@@ -39,14 +39,17 @@ $ ->
           $(".nothing-new").remove()
           _panel.addToPanel(data, true)
           do _panel.setPanelDates
+          
+      $("#dashboard-container").on 'removed.shuffle', (e) =>
+        do @isPanelEmpty
       
       $("#dashboard-container").delegate ".ack_all", "click", (e) ->
         e.preventDefault()
         panel = $("#"+$(this).data("panel"))
         $.post "/dashboard/ack_category", JSON.stringify({category: panel.attr("id")}), (data) =>
           if data.success?
-            panel.remove()
-            do _panel.isPanelEmpty
+            $(".dashboard-counter").text(data.count)
+            $("#dashboard-container").shuffle("remove", panel)
       
       $("#dashboard-container").delegate ".ack_single_href", "click", (e) ->
         e.preventDefault()
@@ -60,12 +63,11 @@ $ ->
         panel = $("#"+$(this).data("panel"))
         $.post "/dashboard/ack_notification", JSON.stringify({notification: notification.attr("id")}), (data) =>
           if data.success?
+            $(".dashboard-counter").text(data.count)
             if panel_notifs.children().length < 2
-              panel.remove()
-              do _panel.isPanelEmpty
+              $("#dashboard-container").shuffle("remove", panel)
             else
               notification.remove()
-              do _panel.isPanelEmpty
               
     isPanelEmpty: () ->
       if $(".dashboard-panel").length == 0

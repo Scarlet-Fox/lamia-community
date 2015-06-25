@@ -79,31 +79,35 @@ $ ->
         $("#img-click-modal").modal('hide')
   
   socket = io.connect('http://' + document.domain + ':3000' + '')
-  
+
+  notificationHTML = """
+      <li class="notification-li"><a href="{{url}}" data-notification="{{_id}}" class="notification-link dropdown-notif-{{_id}}-{{category}}">{{text}}</a></li>
+      """
+      
+  notificationTemplate = Handlebars.compile(notificationHTML)
+
   socket.on "notify", (data) ->
     if window.woe_is_me in data.users
       counter_element = $(".notification-counter")
       counter_element.text(data.count)
+      counter_element.css("background-color", "#B22222")
+      $(".dashboard-counter").text(data.dashboard_count)
       
       title_count = document.title.match(/\(\d+\)/)
       if title_count
         document.title = document.title.replace(title_count[0], "(#{data.count})")        
       else
         document.title = "(#{data.count}) - " + document.title
-      notification_listing = $("#notification-listing")
-      notifications_listed = $("a.notification-link")
+      
+      notification_listing = $("#notification-dropdown")
+      notifications_listed = $(".notification-li")
       if notifications_listed.length > 14
         notifications_listed[notifications_listed.length-1].remove()
-        
-      _html = """
-      <li><a href="#{data.url}" data-notification="#{data._id}" class="notification-link dropdown-notif-#{data._id}-#{data.category}">#{data.text}</a></li>
-      """
       
-      if notifications_listed.length == 0
-        $("#notification-dropdown").append(_html)
+      if $(".notification-li").length == 0
+        $("#notification-dropdown").append(notificationTemplate(data))
       else
-        if notification_listing.find("dropdown-notif-#{data.id}-#{data.category}").length  == 0
-          $(notifications_listed[0]).before(_html)
+        $(notifications_listed.first()).before(notificationTemplate(data))
   
   $(".post-link").click (e) ->
     e.preventDefault()
@@ -114,6 +118,11 @@ $ ->
     e.preventDefault()
     $.post "/dashboard/ack_notification", JSON.stringify({notification: $(this).data("notification")}), (data) =>
       window.location = $(this).attr("href")
+      
+  $(".notification-dropdown-toggle").click (e) ->
+    $.post "/dashboard/mark_seen", (d) ->
+      $(".notification-counter").text("0")
+      $(".notification-counter").css("background-color", "#777")
 
   window.setupContent = () ->
     window.addExtraHTML("body")

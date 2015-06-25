@@ -128,15 +128,19 @@ body(role='document')
                   | Register
             if current_user.is_authenticated()
               li.dropdown#dashboard-li
-                a.dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
-                  span.badge.notification-counter {{notification_count}}
+                a.dropdown-toggle.notification-dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
+                  if notification_count == 0
+                    span.badge.notification-counter {{notification_count}}
+                  else
+                    span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
                 ul.dropdown-menu#notification-dropdown(role='menu')
                   li
-                    a(href='/dashboard') Dashboard
+                    a(href='/dashboard') Dashboard&nbsp;
+                      span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
                   li.divider
                   for notification in current_user.get_recent_notifications(15)
-                    li
-                      a.notification-link(href='{{notification.url}}', data-notification="{{notification.pk}}") {{notification.text}}
+                    li.notification-li
+                      a.notification-link(href='{{notification.url}}', data-notification="{{notification.pk}}")= notification.text
                       
         // /.nav-collapse
       // /.container-fluid
