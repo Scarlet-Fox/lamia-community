@@ -107,12 +107,14 @@ def status_update_index():
     user_q_ = Q()
     if len(users) > 0:
         user_q_ = Q(author__in=list(users))
+        
+    hidden_q_ = Q(hidden=False)
     
     search_q_ = Q()
     if search != "":
         search_q_ = parse_search_string_return_q(search, ["message",])
         
-    status_updates = StatusUpdate.objects(user_q_ & search_q_)[:count]
+    status_updates = StatusUpdate.objects(user_q_ & search_q_ & hidden_q_)[:count]
     
     if request.method == 'POST':
         parsed_statuses = []
