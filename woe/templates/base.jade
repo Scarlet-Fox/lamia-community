@@ -83,6 +83,8 @@ body(role='document')
               li#register-li.hidden-sm.hidden-md.hidden-lg
                 a(href='/register')
                   | Register
+              li
+                hr
             li#forum-li
               a(href='/') Forum
               li
@@ -119,16 +121,17 @@ body(role='document')
             li
               a(href='/search')
                 | Search
-            li.divider.hidden-sm.hidden-md.hidden-lg
-              hr
-            li.hidden-sm.hidden-md.hidden-lg
-              a(href='/dashboard') Dashboard
-            li.hidden-sm.hidden-md.hidden-lg
-              a(href='/messages') Messages
-            li.hidden-sm.hidden-md.hidden-lg
-              a(href='/member/{{current_user.login_name}}') Profile
-            li.hidden-sm.hidden-md.hidden-lg
-              a.sign-out(href='#') Sign Out
+            if current_user.is_authenticated()
+              li.divider.hidden-sm.hidden-md.hidden-lg
+                hr
+              li.hidden-sm.hidden-md.hidden-lg
+                a(href='/dashboard') Dashboard
+              li.hidden-sm.hidden-md.hidden-lg
+                a(href='/messages') Messages
+              li.hidden-sm.hidden-md.hidden-lg
+                a(href='/member/{{current_user.login_name}}') Profile
+              li.hidden-sm.hidden-md.hidden-lg
+                a.sign-out(href='#') Sign Out
           ul.nav.navbar-nav.navbar-right.hidden-xs
             if current_user.is_authenticated()
               li
