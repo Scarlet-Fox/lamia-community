@@ -128,7 +128,7 @@ body(role='document')
             li.hidden-sm.hidden-md.hidden-lg
               a(href='/member/{{current_user.login_name}}') Profile
             li.hidden-sm.hidden-md.hidden-lg
-              a#sign-out(href='#') Sign Out
+              a.sign-out(href='#') Sign Out
           ul.nav.navbar-nav.navbar-right.hidden-xs
             if current_user.is_authenticated()
               li
@@ -147,7 +147,7 @@ body(role='document')
                       a(href='/member/{{current_user.login_name}}') Profile
                     li.divider
                     li
-                      a#sign-out(href='#') Sign Out
+                      a.sign-out(href='#') Sign Out
             else
               li#sign-in-li.hidden-xs
                 a(href='/sign-in')
@@ -200,7 +200,7 @@ body(role='document')
         $(".href_span").click(function (e) {
           window.location = $(this).attr("href");
         });
-        $("#sign-out").click(function(e) {
+        $(".sign-out").click(function(e) {
           e.preventDefault();
           $.post("/sign-out", function(data) {
             window.location = "/";
