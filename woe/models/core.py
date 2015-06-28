@@ -542,6 +542,7 @@ class Attachment(db.DynamicDocument):
     extension = db.StringField(required=True)
     size_in_bytes = db.IntField(required=True)
     created_date = db.DateTimeField(required=True)
+    do_not_convert = db.BooleanField(default=False)
     owner = db.ReferenceField("User", required=True, reverse_delete_rule=db.CASCADE)
     used_in = db.IntField(default=1)
     old_ipb_id = db.IntField()
