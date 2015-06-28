@@ -42,7 +42,7 @@ $ ->
       window.socket = socket
       
       do @refreshPosts
-
+      
       if window._can_edit?
         @inline_editor = new InlineEditor "#new-post-box", "", false
       
@@ -77,7 +77,11 @@ $ ->
                 window.addExtraHTML $("#post-"+data.newest_post._id)
               else
                 window.location = "/t/#{topic.slug}/page/1/post/latest_post"
-
+      
+      $("#post-container").delegate ".go-to-end-of-page", "click", (e) ->
+        e.preventDefault()
+        $("#new-post-box")[0].scrollIntoView()
+      
       $("#post-container").delegate ".boop-button", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -315,6 +319,8 @@ $ ->
                                <li><a href="{{topic_leader}}">Edit Topic</a></li>
                               {{/if}}
                               <li><a href="">Hide</a></li>
+                              <li class="divider hidden-md hidden-sm hidden-lg"></li>
+                              <li class="hidden-md hidden-sm hidden-lg"><a class="go-to-end-of-page" href="">Go to End</a></li>
                             </ul>
                             {{else}}
                               {{#if is_author}}
@@ -328,6 +334,8 @@ $ ->
                                   {{#if topic_leader}}
                                    <li><a href="{{topic_leader}}">Edit Topic</a></li>
                                   {{/if}}
+                                  <li class="divider hidden-md hidden-sm hidden-lg"></li>
+                                  <li class="hidden-md hidden-sm hidden-lg"><a class="go-to-end-of-page" href="">Go to End</a></li>
                                 </ul>
                               {{/if}}
                             {{/if}}
