@@ -114,15 +114,16 @@ $ ->
         else
           document.title = "(#{data.count}) - " + document.title
       
-        notification_listing = $(".notification-dropdown")
-        notifications_listed = $(".notification-li")
-        if notifications_listed.length > 14
-          notifications_listed[notifications_listed.length-1].remove()
+        if $($(".notification-dropdown")[0]).find(".notification-li").length > 14
+          $(".notification-dropdown").each () ->
+            $(this).find(".notification-li")[$(this).find(".notification-li").length-1].remove()
       
-        if $(".notification-li").length == 0
-          $(".notification-dropdown").append(notificationTemplate(data))
+        if $($(".notification-dropdown")[0]).find(".notification-li").length == 0
+          $(".notification-dropdown").each () ->
+            $(this).append(notificationTemplate(data))
         else
-          $(notifications_listed.first()).before(notificationTemplate(data))
+          $(".notification-dropdown").each () ->
+            $(this).find(".notification-li").first().before(notificationTemplate(data))
   
   $(".post-link").click (e) ->
     e.preventDefault()
