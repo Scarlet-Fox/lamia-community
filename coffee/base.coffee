@@ -7,6 +7,10 @@ $ ->
   
   $(".href_span").click (e) ->
     window.location = $(this).attr("href")
+    
+  $(".to-top").click (e) ->
+    e.preventDefault()
+    window.scrollTo 0, 0
   
   $(".sign-out").click (e) ->
     e.preventDefault()
