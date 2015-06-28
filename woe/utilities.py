@@ -2,7 +2,7 @@ from lxml.html.clean import Cleaner
 import hashlib
 import arrow
 from woe import app
-import cgi, re, pytz
+import cgi, re, pytz, os
 from flask.ext.login import current_user
 from mongoengine.queryset import Q
 
@@ -115,6 +115,31 @@ def ipb_password_check(salt, old_hash, password):
     
     return new_hash == old_hash
 
+emoticon_codes = {
+    ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
+    ":hoofbump:" : "brohoof_by_angelishi-d6wk2et.gif",
+    ":derp:" : "derpy_by_angelishi-d7amv0j.gif",  
+    ":)" : "fluttershy_happy_by_angelishi.gif",  
+    ":(" : "fluttershy_sad_by_angelishi.gif",  
+    ":liarjack:" : "liar_applejack_by_angelishi-d7aglwl.gif",  
+    ":love:" : "love_spike_by_angelishi-d7amv0g.gif",  
+    ":moonjoy:" : "moon_by_angelishi-d7amv0a.gif",  
+    ":S" : "nervous_aj_by_angelishi-d7ahd5y.gif",  
+    ":pinkamena:" : "pinkamena_by_angelishi-d6wk2er.gif",  
+    ":D" : "pinkie_laugh_by_angelishi-d6wk2ek.gif",  
+    ":mustache:" : "pinkie_mustache_by_angelishi-d6wk2eh.gif",  
+    ":P" : "pinkie_silly_by_angelishi-d6wk2ef.gif",  
+    ":cool:" : "rainbowdash_cool_by_angelishi.gif",  
+    ":pleased:" : "rarity_happy_by_angelishi.gif",  
+    ":shocked:" : "rarity_shock_2_by_angelishi-d6wk2eb.gif",  
+    ":rofl:" : "rd_laugh_by_angelishi-d7aharw.gif",  
+    ":sing:" : "singing_rarity_by_angelishi-d7agp33.gif",  
+    ":sunjoy:" : "sun_happy_by_angelishi-d6wlo5g.gif",  
+    ":twitch:" : "twilight___twitch_by_angelishi.gif",  
+    ":?" : "twilight_think_by_angelishi.gif",  
+    ";)" : "twilight_wink_by_angelishi.gif"
+}
+
 class ForumHTMLCleaner(object):
     def __init__(self):
         self.cleaner = Cleaner(
@@ -131,6 +156,10 @@ class ForumHTMLCleaner(object):
         urls = url_rgx.findall(text)
         for url in urls:
             text = text.replace(url, """<a href="%s" target="_blank">%s</a>""" % (unicode(url), unicode(url),), 1)
+            
+        for smiley in emoticon_codes.keys():
+            img_html = """<img src="%s" />""" % (os.path.join("/static/emoticons",emoticon_codes[smiley]),)
+            text = text.replace(smiley, img_html)
             
         return text    
     
