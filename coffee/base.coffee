@@ -155,7 +155,7 @@ $ ->
         spoiler.show()
     
     blockquote_attribution_html = """
-      <p>On {{#if link}}<a href="{{link}}" target="_blank">{{/if}}{{time}}{{#if link}}</a>{{/if}}, {{#if authorlink}}<a href="{{authorlink}}" class="hover_user" target="_blank">{{/if}}{{author}}{{#if authorlink}}</a>{{/if}} said:</p>
+      <p>{{#if time}}On {{#if link}}<a href="{{link}}" target="_blank">{{time}}{{/if}}{{#if link}}</a>{{/if}}, {{/if}}{{#if authorlink}}<a href="{{authorlink}}" class="hover_user" target="_blank">{{/if}}<strong>{{author}}</strong>{{#if authorlink}}</a>{{/if}} said:</p>
     """
     blockquote_attribution_template = Handlebars.compile(blockquote_attribution_html)
     
@@ -169,6 +169,12 @@ $ ->
         element.prepend blockquote_attribution_template
           link: element.data("link")
           time: time
+          author: element.data("author")
+          authorlink: element.data("authorlink")
+      else
+        element.prepend blockquote_attribution_template
+          link: element.data("link")
+          time: false
           author: element.data("author")
           authorlink: element.data("authorlink")
         
