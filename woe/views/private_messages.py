@@ -407,28 +407,23 @@ def messages_topics():
     except:
         minimum = 0
         maximum = 20
-        
+    
+    messages_count = PrivateMessageTopic.objects(participating_users=current_user._get_current_object(), 
+        users_left_pm__ne=current_user._get_current_object(),
+        blocked_users__ne=current_user._get_current_object()
+        ).count()  
     messages = PrivateMessageTopic.objects(participating_users=current_user._get_current_object(), 
         users_left_pm__ne=current_user._get_current_object(),
         blocked_users__ne=current_user._get_current_object()
-        ).order_by("-last_reply_time").select_related(0)[minimum:maximum+10]
+        ).order_by("-last_reply_time")[minimum:maximum]
+        
     parsed_messages = []
     
-    for message in messages:
-        participating = False
-        for participant in message.participants:
-            if participant.user == current_user._get_current_object():
-                if not participant.left_pm and not participant.blocked:
-                    participating = True
-            
-        if not participating:
-            continue
-            
+    for message in messages:        
         try:
             _parsed = message.to_mongo().to_dict()
         except:
             _parsed = {}
-        print message
         _parsed["creator"] = message.creator.display_name
         _parsed["created"] = humanize_time(message.created, "MMM D YYYY")
         
@@ -450,9 +445,10 @@ def messages_topics():
             del _parsed["participants"]
         except:
             pass
+        
         parsed_messages.append(_parsed)
         
-    return app.jsonify(topics=parsed_messages[minimum:maximum], count=len(parsed_messages))
+    return app.jsonify(topics=parsed_messages, count=messages_count)
 
 @app.route('/messages', methods=['GET'])
 @login_required

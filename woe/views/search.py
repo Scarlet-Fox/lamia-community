@@ -126,7 +126,7 @@ def search_lookup():
     elif content_type == "topics":
         _q_objects = _q_objects &  parse_search_string_return_q(query, ["title",])
         count = Topic.objects(_q_objects).count()
-        results = Topic.objects(_q_objects, hidden=False).order_by("-created")[(page-1)*pagination:pagination*page]
+        results = Topic.objects(_q_objects, hidden=False).order_by("-last_post_date")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
@@ -152,7 +152,10 @@ def search_lookup():
             parsed_result["readmore"] = False
             parsed_results.append(parsed_result)
     elif content_type == "messages":
-        my_message_topics = PrivateMessageTopic.objects(participating_users=current_user._get_current_object())
+        my_message_topics = PrivateMessageTopic.objects(
+            participating_users=current_user._get_current_object(), 
+            blocked_users__ne=current_user._get_current_object(),
+            users_left_pm__ne=current_user._get_current_object())
         _q_objects = _q_objects & (parse_search_string_return_q(query, ["topic_name",]) | parse_search_string_return_q(query, ["message",]))
         _q_objects = _q_objects & Q(topic__in=my_message_topics)
         count = PrivateMessage.objects(_q_objects).count()

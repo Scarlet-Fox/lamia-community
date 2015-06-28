@@ -4,7 +4,7 @@ $ ->
       category = @
       @page = 1
       @max_pages = 1
-      @pagination = $(".topic-listing").data("pagination")
+      @pagination = 20
       @topicHTML = Handlebars.compile(@topicHTMLTemplate())
       @paginationHTML = Handlebars.compile(@paginationHTMLTemplate())
       
@@ -92,7 +92,7 @@ $ ->
       {{/unless}}
       """  
       
-    refreshTopics: () ->
+    refreshTopics: () =>
       new_topic_html = ""
       $.post "/message-topics", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
         for topic, i in data.topics
