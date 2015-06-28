@@ -16,6 +16,7 @@ manager.add_command("runserver", Server(
 def runprofiler():
     from werkzeug.contrib.profiler import ProfilerMiddleware
     app.config['PROFILE'] = True
+    app.config["DEBUG_TB_PROFILER_ENABLED"] = True
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[30])
     app.run(debug = True, host = '0.0.0.0')
 

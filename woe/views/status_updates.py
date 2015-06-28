@@ -336,6 +336,13 @@ def toggle_status_ignoring(status):
         status = StatusUpdate.objects(id=status)[0]
     except:
         return abort(404)
+        
+    if not current_user._get_current_object() in status.participants:
+        try:
+            status.update(add_to_set__participants=current_user._get_current_object())
+            return app.jsonify(url="/status/"+str(status.pk))
+        except:
+            return app.jsonify(url="/status/"+str(status.pk))
     
     if not current_user._get_current_object() in status.ignoring:
         status.update(add_to_set__ignoring=current_user._get_current_object())

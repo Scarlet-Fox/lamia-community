@@ -1,6 +1,7 @@
 from werkzeug.contrib.fixers import ProxyFix
 from flask import Flask
 from flask.ext.mongoengine import MongoEngine, MongoEngineSessionInterface
+from flask_debugtoolbar import DebugToolbarExtension
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
 from flask.ext.admin import Admin
@@ -33,6 +34,7 @@ cache.init_app(app)
 db = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(db)
 bcrypt = Bcrypt(app)
+toolbar = DebugToolbarExtension(app)
 
 try:
     import simplejson as json

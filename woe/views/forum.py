@@ -718,7 +718,7 @@ def index():
     online_users = User.objects(last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
     post_count = Post.objects().count()
     member_count = User.objects(banned=False).count()
-    newest_member = User.objects().order_by("-joined")[0]
+    newest_member = User.objects(banned=False).order_by("-joined")[0]
     recently_replied_topics = Topic.objects(post_count__gt=0, hidden=False).order_by("-last_post_date")[:5]
     recently_created_topics = Topic.objects(post_count__gt=0, hidden=False).order_by("-created")[:5]
     
