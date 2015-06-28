@@ -13,8 +13,11 @@ app.get "/", (req, res) ->
   
 app.post "/notify", (req, res) ->
   for client in socketList
-    if client.user in req.body.users
-      client.emit "notify", req.body
+    try
+      if client.user in req.body.users
+        client.emit "notify", req.body
+    catch
+      continue
   res.send 'ok'
 
 io.on 'connection', (client) ->
@@ -29,8 +32,11 @@ io.on 'connection', (client) ->
     
   client.on "disconnect", () ->
     for socket, i in socketList
-      if socket.id == client.id
-        socketList.splice(i, 1)
+      try
+        if socket.id == client.id
+          socketList.splice(i, 1)
+      catch
+        continue
       
   client.on "event", (data) ->
     room = data.room

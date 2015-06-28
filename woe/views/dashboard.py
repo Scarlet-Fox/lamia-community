@@ -4,7 +4,13 @@ from flask import abort, redirect, url_for, request, render_template, make_respo
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
 from flask.ext.login import login_required, current_user
 import arrow, urllib2
+from threading import Thread
 import json as py_json
+
+def send_message(data):
+    req = urllib2.Request(app.settings_file["listener"]+"/notify")
+    req.add_header('Content-Type', 'application/json')
+    response = urllib2.urlopen(req, py_json.dumps(data))
 
 def broadcast(to, category, url, title, description, content, author, priority=0):
     if category not in [x[0] for x in Notification.NOTIFICATION_CATEGORIES]:
@@ -74,17 +80,14 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             data["reference"] = str(new_notification.content.pk)
         except:
             data["reference"] = ""
-        req = urllib2.Request(app.settings_file["listener"]+"/notify")
-        req.add_header('Content-Type', 'application/json')
-        response = urllib2.urlopen(req, py_json.dumps(data))
+            
+        thread = Thread(target=send_message, args=(data, ))
+        thread.start()
 
 @app.route('/dashboard/ack_category', methods=["POST",])
 @login_required
 def acknowledge_category():
-    try:
-        notifications = Notification.objects(seen=False)
-    except:
-        pass
+    notifications = Notification.objects(seen=False, user=current_user._get_current_object())
     notifications.update(seen=True)
     
     request_json = request.get_json(force=True)
@@ -95,10 +98,7 @@ def acknowledge_category():
 @app.route('/dashboard/mark_seen', methods=["POST",])
 @login_required
 def mark_all_notifications():
-    try:
-        notifications = Notification.objects(seen=False)
-    except:
-        return app.jsonify(success=False)
+    notifications = Notification.objects(seen=False, user=current_user._get_current_object())
         
     notifications.update(seen=True)
     return app.jsonify(success=True)
@@ -106,15 +106,14 @@ def mark_all_notifications():
 @app.route('/dashboard/ack_notification', methods=["POST",])
 @login_required
 def acknowledge_notification():
-    try:
-        notifications = Notification.objects(seen=False)
-    except:
-        pass
+    notifications = Notification.objects(seen=False, user=current_user._get_current_object())
     notifications.update(seen=True)
     
     request_json = request.get_json(force=True)
     try:
         notification = Notification.objects(pk=request_json.get("notification",""))[0]
+        if notification.user != current_user._get_current_object():
+            return app.jsonify(success=False)
     except:
         return app.jsonify(success=False)
     notification.update(acknowledged=True)
@@ -150,10 +149,7 @@ def dashboard_notifications():
 @app.route('/dashboard')
 @login_required
 def view_dashboard():
-    try:
-        notifications = Notification.objects(seen=False)
-    except:
-        pass
+    notifications = Notification.objects(seen=False, user=current_user._get_current_object())
     notifications.update(seen=True)
     
     return render_template("dashboard.jade", page_title="Your Dashboard - World of Equestria")
