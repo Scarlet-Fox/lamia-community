@@ -61,8 +61,8 @@ class PrefixView(ModelView):
 
 class StatusView(ModelView):
     can_delete = False
-    column_list = ("author","attached_to_user","message","created","replies")
-    column_filters = ["author_name","attached_to_user_name"]
+    column_list = ("author","attached_to_user","message","created","replies", "hidden", "locked", "muted")
+    column_filters = ["author_name","attached_to_user_name", "hidden", "locked", "muted"]
     form_excluded_columns = ("participants", "ignoring","blocked")
     
     def is_accessible(self):
