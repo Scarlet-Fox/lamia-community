@@ -37,7 +37,29 @@ def topic_list_api():
     topics = Topic.objects(q_)
     results = [{"text": unicode(t.title), "id": str(t.pk)} for t in topics]
     return app.jsonify(results=results)
+
+@app.route('/t/<slug>/toggle-follow', methods=['POST'])
+@login_required
+def toggle_follow_topic(slug):
+    try:
+        topic = Topic.objects(slug=slug)[0]
+    except IndexError:
+        return abort(404)
     
+    if current_user._get_current_object() in topic.banned_from_topic:
+        return abort(404)
+        
+    if not current_user._get_current_object() in topic.watchers:
+        topic.update(add_to_set__watchers=current_user._get_current_object())
+    else:
+        try:
+            topic.watchers.remove(current_user._get_current_object())
+        except:
+            pass
+        topic.save()
+    
+    return app.jsonify(url="/t/"+unicode(topic.slug)+"")
+
 @app.route('/t/<slug>/new-post', methods=['POST'])
 @login_required
 def new_post_in_topic(slug):
@@ -114,34 +136,17 @@ def new_post_in_topic(slug):
     parsed_post["group_post_html"] = new_post.author.group_post_html
     
     post_count = Post.objects(hidden=False, topic=topic).count()
-    
-    notify_users = []
-    for u in topic.watchers:
-        if u == new_post.author:
-            continue
-            
-        notify_users.append(u)
-    
-    broadcast(
-        to=notify_users,
-        category="topic", 
-        url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
-        title="%s has replied to %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
-        description=new_post.html, 
-        content=topic, 
-        author=new_post.author
-        )
 
     mentions = mention_re.findall(post_html)
-    to_notify = {}
+    to_notify_m = {}
     for mention in mentions:
         try:
-            to_notify[mention] = User.objects(login_name=mention)[0]
+            to_notify_m[mention] = User.objects(login_name=mention)[0]
         except:
             continue
         
     broadcast(
-      to=to_notify.values(),
+      to=to_notify_m.values(),
       category="mention", 
       url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
       title="%s mentioned you in %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
@@ -167,6 +172,40 @@ def new_post_in_topic(slug):
       content=new_post, 
       author=new_post.author
       )
+    
+    print to_notify.values()
+    print to_notify_m.values()
+    
+    notify_users = []
+    for u in topic.watchers:
+        if u == new_post.author:
+            continue
+        
+        skip_user = False
+        for _u in to_notify.values():
+            if _u.pk == u.pk:
+                skip_user = True
+                break
+            
+        for _u in to_notify_m.values():
+            if _u.pk == u.pk:
+                skip_user = True
+                break
+                
+        if skip_user:
+            continue
+            
+        notify_users.append(u)
+    
+    broadcast(
+        to=notify_users,
+        category="topic", 
+        url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
+        title="%s has replied to %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
+        description=new_post.html, 
+        content=topic, 
+        author=new_post.author
+        )
 
     return app.jsonify(newest_post=parsed_post, count=post_count, success=True)    
     
