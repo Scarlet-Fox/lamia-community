@@ -22,7 +22,7 @@ strike_re = re.compile(r'\[s\]')
 end_strike_re = re.compile(r'\[\/s\]')
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
-reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:?.+?)\]')
+reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+)?\]')
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",

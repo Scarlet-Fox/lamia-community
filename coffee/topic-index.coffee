@@ -25,7 +25,11 @@ $ ->
           if topic.page == topic.max_pages
             data.post._is_topic_mod = topic.is_mod
             data.post._is_logged_in = topic.is_logged_in
-            data.show_boop = false
+            data.post.show_boop = true
+            if data.post.author_login_name == window.woe_is_me
+              data.post.can_boop = false
+            else
+              data.post.can_boop = true
             $("#post-container").append topic.postHTML data.post
             window.addExtraHTML $("#post-"+data.post._id)
             if topic.inline_editor?
@@ -64,7 +68,11 @@ $ ->
                 
               if topic.page == topic.max_pages
                 data.newest_post.author_online = true
-                data.newest_post.show_boop = false
+                data.newest_post.show_boop = true
+                data.newest_post.can_boop = false
+                data.newest_post._is_topic_mod = topic.is_mod
+                data.newest_post._is_logged_in = topic.is_logged_in
+                data.newest_post.author_login_name = window.woe_is_me
                 $("#post-container").append topic.postHTML data.newest_post
                 window.addExtraHTML $("#post-"+data.newest_post._id)
               else
@@ -102,11 +110,16 @@ $ ->
           my_content = "[reply=#{element.data("pk")}:post:#{data.author}]\n\n"
           x = window.scrollX  
           y = window.scrollY
-          topic.inline_editor.quill.focus()
+          try
+            topic.inline_editor.quill.focus()
+          catch
+            current_position = 0
+          
           window.scrollTo x, y
-          current_position = topic.inline_editor.quill.getSelection()?.start
           unless current_position?
-            current_position = topic.inline_editor.quill.getLength()
+            current_position = topic.inline_editor.quill.getSelection()?.start
+            unless current_position?
+              current_position = topic.inline_editor.quill.getLength()
           topic.inline_editor.quill.insertText current_position, my_content 
       
       $("#post-container").delegate ".mention-button", "click", (e) ->
@@ -114,11 +127,17 @@ $ ->
         element = $(this)
         x = window.scrollX  
         y = window.scrollY
-        topic.inline_editor.quill.focus()
+        try
+          topic.inline_editor.quill.focus()
+        catch
+          current_position = 0
+          
         window.scrollTo x, y
-        current_position = topic.inline_editor.quill.getSelection()?.start
         unless current_position?
-          current_position = topic.inline_editor.quill.getLength()
+          current_position = topic.inline_editor.quill.getSelection()?.start
+          unless current_position?
+            current_position = topic.inline_editor.quill.getLength()
+          
         topic.inline_editor.quill.insertText current_position, "[@#{element.data("author")}], "
       
       $("#post-container").delegate ".post-edit", "click", (e) ->
