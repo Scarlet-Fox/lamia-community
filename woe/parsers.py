@@ -61,20 +61,20 @@ def resize_image_save_custom(image_file_location, new_image_file, new_x_size, at
     
     if original_x != new_x_size:
         resize_measure = float(new_x_size)/float(original_x)
-        try:
-            source_image.resize(int(round(original_x*resize_measure)),int(round(original_y*resize_measure)))
-        except:
-            attachment.update(do_not_convert=True)  
+        # try:
+        source_image.resize(int(round(original_x*resize_measure)),int(round(original_y*resize_measure)))
+        # except:
+        #     attachment.update(do_not_convert=True)
     
-    try:
-        if attachment.extension == "gif":
-            source_image.save(filename=new_image_file.replace(".gif",".animated.gif"))
-            first_frame = source_image.sequence[0].clone()
-            first_frame.save(filename=new_image_file)
-        else:
-            image.save(filename=sizepath)
-    except:
-        attachment.update(do_not_convert=True)
+    # try:
+    if attachment.extension == "gif":
+        source_image.save(filename=new_image_file.replace(".gif",".animated.gif"))
+        first_frame = source_image.sequence[0].clone()
+        first_frame.save(filename=new_image_file)
+    else:
+        source_image.save(filename=new_image_file)
+    # except:
+    #     attachment.update(do_not_convert=True)
 
 class ForumPostParser(object):
     def __init__(self):

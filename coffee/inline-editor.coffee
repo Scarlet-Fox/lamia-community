@@ -16,7 +16,66 @@ $ ->
       else
         @element.data("editor_initial_html", @element.html())
         @setupEditor cancel_button
+    
+    createAndShowImageLinkModal: () =>
+      this.quill.focus()
+      current_position = this.quill.getSelection()?.start
+      unless current_position?
+        current_position = this.quill.getLength()
+      
+      $("#image-link-modal-#{@quillID}").html(
+        """
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Paste image URL</h4>
+              </div>
+              <div class="modal-body">
+                <span id="image-link-instructions">Use this to insert images into your post.</span>
+                <br><br>
+                <input id="image-link-select" class="form-control" style="max-width: 100%; width: 400px;" multiple="multiple">
+                <img id="image-link-load" src="/static/loading.gif" style="display: none;">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="image-link-modal-insert">Insert</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        """)
+      
+      _this = this
+      $("#image-link-modal-insert").click (e) ->
+        e.preventDefault()
         
+        $(".image-link-error").remove()
+        $("#image-link-instructions").text("Processing your image...")
+        $("#image-link-load").show()
+        $("#image-link-modal-insert").addClass("disabled")
+        $("#image-link-select").hide()
+        
+        $.post "/upload-image", JSON.stringify({image: $("#image-link-select").val()}), (data) ->
+        
+          $("#image-link-instructions").text("Use this to insert images into your post.")
+          $("#image-link-load").hide()
+          $("#image-link-modal-insert").removeClass("disabled")
+          $("#image-link-select").show()
+        
+          if data.error
+            if $(".image-link-error").length == 0
+              $("#image-link-select").before """
+              <div class="image-link-error alert alert-danger alert-dismissible fade in" role="alert" id="create-status-error">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                #{data.error}
+              </div>
+              """
+          else
+            $("#image-link-modal-#{_this.quillID}").modal("hide") 
+            _this.quill.insertText current_position, "[attachment=#{data.attachment}:#{data.xsize}]"
+        
+      $("#image-link-modal-#{@quillID}").modal("show")
+      
     createAndShowEmoticonModal: () =>
       this.quill.focus()
       current_position = this.quill.getSelection()?.start
@@ -133,11 +192,14 @@ $ ->
         @element.before @editReasonHTML
       @element.before """<div id="mention-modal-#{@quillID}" class="modal fade"></div>"""
       @element.before """<div id="emoticon-modal-#{@quillID}" class="modal fade"></div>"""
+      @element.before """<div id="image-link-modal-#{@quillID}" class="modal fade"></div>"""
       @element.before @toolbarHTML
       $("#toolbar-#{@quillID}").find(".ql-mention").click (e) =>
         do @createAndShowMentionModal
       $("#toolbar-#{@quillID}").find(".ql-emoticons").click (e) =>
         do @createAndShowEmoticonModal
+      $("#toolbar-#{@quillID}").find(".ql-image-link").click (e) =>
+        do @createAndShowImageLinkModal
       
       @element.after @dropzoneHTML
       @element.after @submitButtonHTML cancel_button
@@ -145,7 +207,6 @@ $ ->
       quill = new Quill "#post-editor-#{@quillID}", 
         modules:
           'link-tooltip': true
-          'image-tooltip': true
           'toolbar': { container: "#toolbar-#{@quillID}" }
         theme: 'snow'
         
@@ -225,6 +286,8 @@ $ ->
       do $("#post-editor-#{@quillID}").remove
       Dropzone.forElement("#dropzone-#{@quillID}").destroy()
       do $("#dropzone-#{@quillID}").remove
+      do $("#emoticon-modal-#{@quillID}").remove
+      do $("#mention-modal-#{@quillID}").remove
       do $("#edit-reason-#{@quillID}").parent().parent().remove
     
     editReasonHTML: () =>
@@ -360,7 +423,7 @@ $ ->
           <span class="ql-format-group">
             <span title="Link" class="ql-format-button ql-link"></span>
             <span class="ql-format-separator"></span>
-            <span title="Image" class="ql-format-button ql-image"></span>
+            <span title="Image" class="ql-format-button ql-image-link ql-custom-button"><span class="glyphicon glyphicon-picture"></span></span>
           </span>
           <span class="ql-format-group">
             <span class="ql-mention ql-format-button ql-custom-button">@</span>
