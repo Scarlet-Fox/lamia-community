@@ -7,6 +7,8 @@ from urllib import quote
 from woe.models.forum import Post
 import arrow, re, os, math
 from flask.ext.login import current_user
+from woe.models.core import Attachment, User, PrivateMessage
+from woe.models.forum import Post
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\]')

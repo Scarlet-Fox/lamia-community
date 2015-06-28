@@ -85,7 +85,7 @@ def scrub_json(list_of_json, fields_to_scrub=[]):
             except KeyError:
                 continue
 
-def get_top_frequences(frequencies, trim, floor=10):
+def get_top_frequences(frequencies, trim, floor=1):
     inside_out = {}
     
     for key, value in frequencies.items():

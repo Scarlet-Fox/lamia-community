@@ -78,18 +78,12 @@ def process_post(post):
             except:
                 pass
         except HTTPError:
-            post_html = post_html.replace("".join(image_html), "",1)
-            post.update(html=post_html)
             print "Skipping %s" % str(image_html)
             continue
         except URLError:
-            post_html = post_html.replace("".join(image_html), "",1)
-            post.update(html=post_html)
             print "Skipping %s" % str(image_html)
             continue
         except:
-            post_html = post_html.replace("".join(image_html), "",1)
-            post.update(html=post_html)
             print "Skipping %s" % str(image_html)
             continue
             
