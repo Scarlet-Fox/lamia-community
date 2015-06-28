@@ -501,7 +501,8 @@ class User(db.DynamicDocument):
             'display_name',
             'login_name',
             'email_address',
-            'password_forgot_token'
+            'password_forgot_token',
+            'banned'
         ]
     }
     

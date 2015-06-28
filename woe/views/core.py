@@ -151,7 +151,7 @@ def intercept_banned():
 def inject_notification_count():
     c = current_user
     try:
-        if c.is_authenticated():
+        if c._get_current_object().is_authenticated():
             return dict(notification_count=c._get_current_object().get_notification_count())
         else:
             return dict(notification_count=0)

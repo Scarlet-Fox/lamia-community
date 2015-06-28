@@ -34,7 +34,8 @@ cache.init_app(app)
 db = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(db)
 bcrypt = Bcrypt(app)
-toolbar = DebugToolbarExtension(app)
+if settings_file.get("toolbar", False):
+    toolbar = DebugToolbarExtension(app)
 
 try:
     import simplejson as json

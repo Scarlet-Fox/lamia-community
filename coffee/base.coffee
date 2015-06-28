@@ -2,6 +2,17 @@ $ ->
   $.ajaxSetup
     cache: false
   
+  if not window.my_tz?
+    window.my_tz = "US/Pacific"
+  
+  $(".href_span").click (e) ->
+    window.location = $(this).attr("href")
+  
+  $(".sign-out").click (e) ->
+    e.preventDefault()
+    $.post "/sign-out", (data) ->
+      window.location = "/"
+  
   window.RegisterAttachmentContainer = (selector) ->
     imgModalHTML = () ->
       return """
@@ -78,36 +89,40 @@ $ ->
         element.attr("src", element.attr("src").replace(".gif", ".animated.gif"))
         $("#img-click-modal").modal('hide')
   
-  socket = io.connect('http://' + document.domain + ':3000' + '')
+  if window.logged_in
+    socket = io.connect('http://' + document.domain + ':3000' + '')
 
   notificationHTML = """
       <li class="notification-li"><a href="{{url}}" data-notification="{{_id}}" class="notification-link dropdown-notif-{{_id}}-{{category}}">{{text}}</a></li>
       """
       
   notificationTemplate = Handlebars.compile(notificationHTML)
-
-  socket.on "notify", (data) ->
-    if window.woe_is_me in data.users
-      counter_element = $(".notification-counter")
-      counter_element.text(data.count)
-      counter_element.css("background-color", "#B22222")
-      $(".dashboard-counter").text(data.dashboard_count)
+  
+  if window.logged_in
+    socket.emit "user", {user: window.woe_is_me}
+    
+    socket.on "notify", (data) ->
+      if window.woe_is_me in data.users
+        counter_element = $(".notification-counter")
+        counter_element.text(data.count)
+        counter_element.css("background-color", "#B22222")
+        $(".dashboard-counter").text(data.dashboard_count)
       
-      title_count = document.title.match(/\(\d+\)/)
-      if title_count
-        document.title = document.title.replace(title_count[0], "(#{data.count})")        
-      else
-        document.title = "(#{data.count}) - " + document.title
+        title_count = document.title.match(/\(\d+\)/)
+        if title_count
+          document.title = document.title.replace(title_count[0], "(#{data.count})")        
+        else
+          document.title = "(#{data.count}) - " + document.title
       
-      notification_listing = $(".notification-dropdown")
-      notifications_listed = $(".notification-li")
-      if notifications_listed.length > 14
-        notifications_listed[notifications_listed.length-1].remove()
+        notification_listing = $(".notification-dropdown")
+        notifications_listed = $(".notification-li")
+        if notifications_listed.length > 14
+          notifications_listed[notifications_listed.length-1].remove()
       
-      if $(".notification-li").length == 0
-        $(".notification-dropdown").append(notificationTemplate(data))
-      else
-        $(notifications_listed.first()).before(notificationTemplate(data))
+        if $(".notification-li").length == 0
+          $(".notification-dropdown").append(notificationTemplate(data))
+        else
+          $(notifications_listed.first()).before(notificationTemplate(data))
   
   $(".post-link").click (e) ->
     e.preventDefault()

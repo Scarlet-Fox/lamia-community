@@ -184,6 +184,16 @@ body(role='document')
   #report-click-modal.modal.fade
   script(src="/static/assets/handlebars.min.js")
   
+  script(type="text/javascript")
+  if current_user.is_authenticated()
+    script(type="text/javascript")
+      window.woe_is_me = "{{current_user.login_name}}";
+      window.my_tz = "{{current_user.time_zone}}";
+      {% if current_user.is_authenticated() %}
+      window.logged_in = true;
+      {% else %}
+      window.logged_in = false;
+      {% endif %}
   {% assets filters="rjsmin", output="generated/base.js",
   "assets/jquery-1.11.3.js", "assets/socket.io.js", "assets/bootstrap.js",
   "assets/moment.js", "assets/socket.io.js", "assets/ie10-viewport-bug-workaround.js",
@@ -191,24 +201,5 @@ body(role='document')
   "assets/ie-emulation-modes-warning.js" %}
   script(type="text/javascript", src="{{ASSET_URL}}")
   {% endassets %}
-  script(type="text/javascript")
-    $(document).ready(function(){
-      window.my_tz = "US/Pacific";
-    });
-  if current_user.is_authenticated()
-    script(type="text/javascript")
-      $(document).ready(function(){
-        window.woe_is_me = "{{current_user.login_name}}";
-        window.my_tz = "{{current_user.time_zone}}";
-        $(".href_span").click(function (e) {
-          window.location = $(this).attr("href");
-        });
-        $(".sign-out").click(function(e) {
-          e.preventDefault();
-          $.post("/sign-out", function(data) {
-            window.location = "/";
-          });
-        });
-      });
   {% block script %}
   {% endblock %}
