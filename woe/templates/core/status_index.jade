@@ -93,7 +93,7 @@
                 span.discuss 
                   a.status-reply-time.float-right(href="/status/{{status.pk}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
                 br
-                p.status-message= status.message
+                p.status-message {{status.message}}
                 span.status-reply-time 
                   a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
         {% endfor %}
