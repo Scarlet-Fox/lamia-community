@@ -20,7 +20,7 @@ def get_post_html_in_pm_topic(pk, post):
     except:
         return abort(404)
         
-    return json.jsonify(content=post.message)
+    return json.jsonify(content=post.message, author=post.author.display_name)
 
 @app.route('/messages/<pk>/kick-from-topic/<upk>', methods=['POST'])
 @login_required

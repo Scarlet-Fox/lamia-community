@@ -64,9 +64,15 @@ $ ->
         element = $(this)
         my_content = ""
         $.get "/messages/#{topic.pk}/edit-post/#{element.data("pk")}", (data) ->
-          my_content = "[reply=#{element.data("pk")}:pm]"
-          topic.inline_editor.quill.insertText topic.inline_editor.quill.getLength(), my_content 
-          topic.inline_editor.element[0].scrollIntoView()
+          my_content = "[reply=#{element.data("pk")}:pm:#{data.author}]\n\n"
+          x = window.scrollX  
+          y = window.scrollY
+          topic.inline_editor.quill.focus()
+          window.scrollTo x, y
+          current_position = topic.inline_editor.quill.getSelection()?.start
+          unless current_position?
+            current_position = topic.inline_editor.quill.getLength()
+          topic.inline_editor.quill.insertText current_position, my_content 
 
       $("#post-container").delegate ".post-edit", "click", (e) ->
         e.preventDefault()

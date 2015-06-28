@@ -22,7 +22,7 @@ strike_re = re.compile(r'\[s\]')
 end_strike_re = re.compile(r'\[\/s\]')
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
-reply_re = re.compile(r'\[reply=(.+?):(post|pm)\]')
+reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:?.+?)\]')
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -144,7 +144,7 @@ class ForumPostParser(object):
         for reply in replies:
             if reply[1] == "post":
                 _replying_to = Post.objects(pk=reply[0])[0]
-                html = html.replace("[reply=%s:%s]" % (reply[0],reply[1]), """
+                html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
                 %s
                 </blockquote> 
@@ -157,7 +157,7 @@ class ForumPostParser(object):
                 ))
             if reply[1] == "pm":
                 _replying_to = PrivateMessage.objects(pk=reply[0])[0]
-                html = html.replace("[reply=%s:%s]" % (reply[0],reply[1]), """
+                html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
                 %s
                 </blockquote> 

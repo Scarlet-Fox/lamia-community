@@ -101,7 +101,7 @@ $ ->
         element = $(this)
         my_content = ""
         $.get "/t/#{topic.slug}/edit-post/#{element.data("pk")}", (data) ->
-          my_content = "[reply=#{element.data("pk")}:post]\n\n"
+          my_content = "[reply=#{element.data("pk")}:post:#{data.author}]\n\n"
           x = window.scrollX  
           y = window.scrollY
           topic.inline_editor.quill.focus()

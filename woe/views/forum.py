@@ -173,9 +173,6 @@ def new_post_in_topic(slug):
       author=new_post.author
       )
     
-    print to_notify.values()
-    print to_notify_m.values()
-    
     notify_users = []
     for u in topic.watchers:
         if u == new_post.author:
@@ -368,7 +365,6 @@ def edit_topic_post_html(slug):
     clean_html_parser = ForumPostParser()    
     return app.jsonify(html=clean_html_parser.parse(post.html), success=True)
 
-
 @app.route('/t/<slug>/edit-post/<post>', methods=['GET'])
 @login_required
 def get_post_html_in_topic(slug, post):
@@ -382,7 +378,7 @@ def get_post_html_in_topic(slug, post):
     except:
         return abort(404)
         
-    return json.jsonify(content=post.html)
+    return json.jsonify(content=post.html, author=post.author.display_name)
 
 @app.route('/t/<slug>', methods=['GET'], defaults={'page': 1, 'post': ""})
 @app.route('/t/<slug>/page/<page>', methods=['GET'], defaults={'post': ""})
