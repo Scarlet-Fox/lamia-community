@@ -216,6 +216,12 @@ $ ->
           <th>Last Seen</th>
           <td>{{last_seen}}</td>
         </tr>
+        {{#if last_seen_at}}
+        <tr>
+          <th>Last Seen At</th>
+          <td><a href="{{last_seen_url}}">{{last_seen_at}}</a></td>
+        </tr>
+        {{/if}}
         </tbody>
       </table>
     </div>

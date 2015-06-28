@@ -87,7 +87,7 @@
               .media-body
                 a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}")= status.author.display_name
                 if status.attached_to_user != None
-                  span &nbsp;says to <a href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}">{{status.attached_to_user.display_name|e}}</a>:
+                  span &nbsp;says to <a class="hover_user" href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}">{{status.attached_to_user.display_name|e}}</a>:
                 else
                   span &nbsp;says:
                 span.discuss 
