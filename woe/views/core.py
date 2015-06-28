@@ -708,7 +708,18 @@ def user_list_api():
     if len(query) < 2:
         return app.jsonify(results=[])
     results = [{"text": unicode(u.display_name), "id": str(u.pk)} for u in User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query))]
-    return app.jsonify(results=results)
+    
+    results_starting_ = []
+    results_other_ = []
+    
+    for result in results:
+        if result["text"].lower().startswith(query.lower()[0]):
+            results_starting_.append(result)
+        else:
+            results_other_.append(result)
+            
+    results_starting_.extend(results_other_)
+    return app.jsonify(results=results_starting_)
     
 @app.route('/user-list-api-variant', methods=['GET'])
 @login_required
@@ -717,4 +728,15 @@ def user_list_api_variant():
     if len(query) < 2:
         return app.jsonify(results=[])
     results = [{"text": unicode(u.display_name), "id": unicode(u.login_name)} for u in User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query))]
-    return app.jsonify(results=results)
+    
+    results_starting_ = []
+    results_other_ = []
+    
+    for result in results:
+        if result["text"].lower().startswith(query.lower()[0]):
+            results_starting_.append(result)
+        else:
+            results_other_.append(result)
+            
+    results_starting_.extend(results_other_)
+    return app.jsonify(results=results_starting_)
