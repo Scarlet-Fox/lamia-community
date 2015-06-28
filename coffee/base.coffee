@@ -232,38 +232,21 @@ $ ->
   $(document).on "mouseover", ".hover_user", (e) ->
     e.preventDefault()
     element = $(this)
-    user = element.attr("href").split("/").slice(-1)[0]
-    placement = "bottom"
-    if element.data("hplacement")?
-      placement = element.data("hplacement")
     
-    if window.hover_cache[user]?
-      data = window.hover_cache[user]
-      _html = hoverTemplate(data)
-      element.popover
-        html: true
-        container: 'body'
-        title: data.name
-        content: _html
-        placement: placement
-      element.popover("show")
-      checkAndClear = (n=100) ->
-        setTimeout () ->
-          if $(".popover:hover").length != 0
-            do checkAndClear
-          else
-            element.popover("hide")
-        , n
-      checkAndClear(2000)
-    else
-      $.post "/get-user-info-api", JSON.stringify({user: user}), (data) ->
-        window.hover_cache[user] = data
+    timeout = setTimeout () ->
+      user = element.attr("href").split("/").slice(-1)[0]
+      placement = "bottom"
+      if element.data("hplacement")?
+        placement = element.data("hplacement")
+    
+      if window.hover_cache[user]?
+        data = window.hover_cache[user]
         _html = hoverTemplate(data)
         element.popover
           html: true
-          content: _html
           container: 'body'
           title: data.name
+          content: _html
           placement: placement
         element.popover("show")
         checkAndClear = (n=100) ->
@@ -274,7 +257,33 @@ $ ->
               element.popover("hide")
           , n
         checkAndClear(2000)
-      
+      else
+        $.post "/get-user-info-api", JSON.stringify({user: user}), (data) ->
+          window.hover_cache[user] = data
+          _html = hoverTemplate(data)
+          element.popover
+            html: true
+            content: _html
+            container: 'body'
+            title: data.name
+            placement: placement
+          element.popover("show")
+          checkAndClear = (n=100) ->
+            setTimeout () ->
+              if $(".popover:hover").length != 0
+                do checkAndClear
+              else
+                element.popover("hide")
+            , n
+          checkAndClear(2000)
+    , 1000
+    element.data("timeout", timeout)
+    
+  $(document).on "mouseout", ".hover_user", (e) ->
+    e.preventDefault()
+    element = $(this)
+    clearTimeout element.data("timeout")
+    
   reportModalHTML = () ->
     return """
     <div class="modal-dialog">
