@@ -55,9 +55,7 @@ $ ->
                   if topic.inline_editor.quill.getText().trim() != "" and $("#new-post-box").find(".ql-editor").is(":focus")
                     $("#new-post-box")[0].scrollIntoView()
               else
-                topic.max_pages = Math.ceil data.count/topic.pagination
-                topic.page = topic.max_pages
-                do topic.refreshPosts
+                window.location = "/messages/#{topic.pk}/page/1/post/latest_post"
                 
       $("#post-container").delegate ".reply-button", "click", (e) ->
         e.preventDefault()

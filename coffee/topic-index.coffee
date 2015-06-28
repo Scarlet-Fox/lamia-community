@@ -68,9 +68,7 @@ $ ->
                 $("#post-container").append topic.postHTML data.newest_post
                 window.addExtraHTML $("#post-"+data.newest_post._id)
               else
-                topic.max_pages = Math.ceil data.count/topic.pagination
-                topic.page = topic.max_pages
-                do topic.refreshPosts
+                window.location = "/t/#{topic.slug}/page/1/post/latest_post"
 
       $("#post-container").delegate ".boop-button", "click", (e) ->
         e.preventDefault()
