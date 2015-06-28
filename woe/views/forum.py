@@ -698,6 +698,13 @@ def category_topics(slug):
         parsed_topic = topic.to_mongo().to_dict()
         parsed_topic["creator"] = topic.creator.display_name
         parsed_topic["created"] = humanize_time(topic.created, "MMM D YYYY")
+        
+        parsed_topic["updated"] = False
+        if current_user.is_authenticated():
+            if topic.last_seen_by.get(str(current_user._get_current_object().pk)) != None:
+                if arrow.get(topic.last_post_date).timestamp > topic.last_seen_by.get(str(current_user._get_current_object().pk)):
+                    parsed_topic["updated"] = True
+        
         if topic.prefix != None:
             parsed_topic["pre_html"] = topic.prefix_reference.pre_html
             parsed_topic["post_html"] = topic.prefix_reference.post_html

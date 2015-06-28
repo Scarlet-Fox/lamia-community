@@ -77,7 +77,7 @@ $ ->
             {{#if prefix}}
             {{{pre_html}}}{{#if sticky}}<span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>&nbsp;{{/if}}{{{prefix}}}{{{post_html}}}
             {{/if}}
-            <a href="/t/{{slug}}">{{title}}</a><br>
+            <a href="/t/{{slug}}">{{#if updated}}<strong>{{/if}}{{title}}{{#if updated}}</strong>{{/if}}</a><br>
             <span class="topic-author">
               Started by {{creator}}, {{created}}
             </span>
