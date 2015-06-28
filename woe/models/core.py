@@ -39,6 +39,7 @@ class User(db.DynamicDocument):
     display_name = db.StringField(required=True, unique=True)
     password_hash = db.StringField()
     email_address = db.EmailField(required=True)
+    how_did_you_find_us = db.StringField(default="")
     emails_muted = db.BooleanField(default=False)
     is_allowed_during_construction = db.BooleanField(default=False)
     

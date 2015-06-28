@@ -210,5 +210,5 @@ class ForumPostParser(object):
             if end_strike_re.search(html):
                 html = html.replace("[s]", """<span style="text-decoration: line-through;"><span> <!-- strike span -->""", 1)
                 html = html.replace("[/s]", """</span></span> <!-- /strike span -->""", 1)
-
+            
         return html
