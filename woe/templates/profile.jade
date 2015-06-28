@@ -63,7 +63,11 @@
           span.glyphicon.glyphicon-cog.float-right#about-me-cog-icon
         {% endif %}
       .panel-body
-        #user-profile-about-me.post-content-area!= profile.about_me
+        if profile.about_me == "<br>" or profile.about_me == "<div></div>"
+          #user-profile-about-me.post-content-area
+            p {{profile.display_name|e}} doesn't have an about me...
+        else
+          #user-profile-about-me.post-content-area!= profile.about_me
     {% endblock %}
 {% endblock %}
 
