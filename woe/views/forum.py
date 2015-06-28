@@ -1,5 +1,6 @@
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate, ForumPostParser
+from woe.models.core import User, DisplayNameHistory, StatusUpdate
+from woe.parsers import ForumPostParser
 from woe.models.forum import Category, Post, Topic, Prefix, get_topic_slug, PostHistory
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm

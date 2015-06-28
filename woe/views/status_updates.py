@@ -1,5 +1,6 @@
 from woe import app
-from woe.models.core import User, StatusUpdate, StatusComment, StatusViewer, ForumPostParser
+from woe.models.core import User, StatusUpdate, StatusComment, StatusViewer
+from woe.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_required, current_user
 from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q

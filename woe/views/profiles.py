@@ -1,4 +1,5 @@
-from woe.models.core import User, DisplayNameHistory, ForumPostParser, IPAddress, Fingerprint
+from woe.models.core import User, DisplayNameHistory, IPAddress, Fingerprint
+from woe.parsers import ForumPostParser
 from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
