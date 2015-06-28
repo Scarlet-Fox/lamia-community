@@ -143,7 +143,7 @@ def dashboard_notifications():
             parsed_["member_pk"] = unicode(notification.author.pk)
             parsed_notifications.append(parsed_)
         except AttributeError:
-            notification.remove()
+            notification.delete()
         
     return app.jsonify(notifications=parsed_notifications)
 
