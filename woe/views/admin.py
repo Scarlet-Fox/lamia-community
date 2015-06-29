@@ -16,6 +16,14 @@ class AuthAdminIndexView(admin.AdminIndexView):
 
 admin = admin.Admin(app, index_view=AuthAdminIndexView())
 
+class RoleView(ModelView):
+    can_create = True
+    can_delete = True
+    column_list = ("role", "pre_html", "post_html")
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 class UserView(ModelView):
     can_create = False
     can_delete = False
@@ -134,6 +142,7 @@ admin.add_view(ReportView(Report))
 admin.add_view(FingerprintView(Fingerprint, category='Logging'))
 admin.add_view(IPAddressView(IPAddress, category='Logging'))
 admin.add_view(LogView(Log, category='Logging'))
+admin.add_view(RoleView(Role, category='Core'))
 admin.add_view(UserView(User, category='Core'))
 admin.add_view(StatusView(StatusUpdate, category='Core'))
 admin.add_view(NotificationView(Notification, category='Core'))

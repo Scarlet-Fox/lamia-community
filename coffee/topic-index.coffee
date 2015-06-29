@@ -126,6 +126,9 @@ $ ->
               current_position = topic.inline_editor.quill.getLength()
           topic.inline_editor.quill.insertText current_position, my_content 
       
+      $("#post-container").delegate ".toggle-show-roles-button", "click", (e) ->
+        $(this).parent().children(".roles-div").toggle()
+      
       $("#post-container").delegate ".mention-button", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -260,11 +263,20 @@ $ ->
                   {{else}}
                   <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <a class="hover_user" href="/member/{{author_login_name}}" class="inherit_colors">{{author_name}}</a></b>
                   {{/if}}
-                  {{#unless author_group_name}}
-                  <span style="color:#F88379;"><strong>Members</strong></span><br>
+                  <span class="hidden-md hidden-sm hidden-lg">
+                  {{#unless roles}}
+                  <span style="color:#F88379;"><strong>Members</strong></span>
                   {{else}}
-                  {{group_pre_html}}{{author_group_name}}{{group_post_html}}
+                  {{#if roles}}
+                  {{#each roles}}
+                  {{#if @first}}
+                  <strong>{{{this}}}</strong>
+                  {{/if}}
+                  {{/each}}
+                  {{/if}}
                   {{/unless}}
+                  </span>
+                  <span style="color:#F88379;" class="hidden-xs"><strong>Members</strong></span><br>
                   <span class="hidden-md hidden-lg">Posted {{created}}</span>
                 </div>
                 <div class="col-md-9 hidden-xs hidden-sm">
@@ -279,6 +291,14 @@ $ ->
                   <a href="/member/{{author_login_name}}"><img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm"></a>
                   <span class="hidden-xs hidden-sm"><br><br>
                   <div class="post-member-self-title">{{user_title}}</div>
+                    {{#if roles}}
+                    <a class="btn btn-default toggle-show-roles-button btn-xs" style="margin-top: 5px;">Community Roles</a>
+                    <div class="roles-div" style="display: none;">
+                    {{#each roles}}
+                    <b>{{{this}}}</b><br>
+                    {{/each}}
+                    </div>
+                    {{/if}}
                     <hr></span>
                   <div class="post-meta">
                   </div>

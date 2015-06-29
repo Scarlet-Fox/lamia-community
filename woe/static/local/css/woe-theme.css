@@ -709,7 +709,7 @@ a.inherit_colors {
 }
 .popover {
   max-width: 100% !important;
-  width: 400px !important;
+  width: 500px !important;
 }
 .popover-title {
   padding: 8px 14px !important;
@@ -745,4 +745,24 @@ a.inherit_colors {
 
 .navbar-default .mini-notification-button {
   border-color: #ddd;
+}
+
+.toggle-show-roles-button {
+  background-color: black;
+  background: url("/static/local/img/luna-background.jpg");
+  color: white;
+  background-attachment: fixed;
+  text-shadow: #000 0px 1px 2px !important;
+  font-weight: bold;
+  font-size: 12px !important;
+  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
+}
+.toggle-show-roles-button:hover {
+  color: white !important;
+}
+.toggle-show-roles-button:active {
+  color: white !important;
+}
+.toggle-show-roles-button:visited {
+  color: white !important;
 }

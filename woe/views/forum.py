@@ -269,6 +269,7 @@ def topic_posts(slug):
         parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
         parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
         parsed_post["html"] = clean_html_parser.parse(post.html)
+        parsed_post["roles"] = post.author.get_roles()
         parsed_post["user_avatar"] = post.author.get_avatar_url()
         parsed_post["user_avatar_x"] = post.author.avatar_full_x
         parsed_post["user_avatar_y"] = post.author.avatar_full_y

@@ -6,6 +6,14 @@ from urllib import quote
 import arrow, re, os, math
 from flask.ext.login import current_user
 
+class Role(db.DynamicDocument):
+    pre_html = db.StringField(required=True)
+    role = db.StringField(required=True)
+    post_html = db.StringField(required=True)
+    
+    def __unicode__(self):
+        return unicode(self.role)
+        
 class UserActivity(db.DynamicEmbeddedDocument):
     content = db.GenericReferenceField()
     category = db.StringField(required=True)
@@ -42,6 +50,7 @@ class User(db.DynamicDocument):
     how_did_you_find_us = db.StringField(default="")
     emails_muted = db.BooleanField(default=False)
     is_allowed_during_construction = db.BooleanField(default=False)
+    roles = db.ListField(db.ReferenceField(Role, reverse_delete_rule=db.PULL))
     
     # Forgot password stuff
     password_forgot_token = db.StringField()
@@ -183,6 +192,12 @@ class User(db.DynamicDocument):
         if not self.validated:
             return False
         return True
+        
+    def get_roles(self):
+        my_roles = []
+        for role in self.roles:
+            my_roles.append(role.pre_html+role.role+role.post_html)
+        return my_roles
         
     def get_id(self):
         return self.login_name

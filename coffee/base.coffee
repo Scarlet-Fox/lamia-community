@@ -205,7 +205,7 @@ $ ->
       <table class="table">
         <tbody>
         <tr>
-          <th>Group</th>
+          <th style="width: 130px;">Group</th>
           <td><span style="color:#F88379;"><strong>Members</strong></span><br></td>
         </tr>
         <tr>
@@ -224,6 +224,15 @@ $ ->
         <tr>
           <th>Last Seen At</th>
           <td><a href="{{last_seen_url}}">{{last_seen_at}}</a></td>
+        </tr>
+        {{/if}}
+        {{#if roles}}
+        <tr>
+          <th>Roles</th>
+          <td>
+          {{#each roles}}
+            <b>{{{this}}}</b>{{#unless @last}}, {{/unless}}
+          {{/each}}
         </tr>
         {{/if}}
         </tbody>

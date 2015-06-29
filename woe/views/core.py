@@ -207,7 +207,8 @@ def get_user_info_api():
         last_seen=humanize_time(user.last_seen),
         last_seen_at=last_at,
         last_seen_url=last_url,
-        joined=humanize_time(user.joined)
+        joined=humanize_time(user.joined),
+        roles=user.get_roles()
     )
 
 @app.route('/make-report', methods=['POST'])
@@ -740,3 +741,13 @@ def user_list_api_variant():
             
     results_starting_.extend(results_other_)
     return app.jsonify(results=results_starting_)
+
+@app.route('/members', methods=["GET",])
+@login_required
+def show_memeber_listing():
+    return render_template("members.jade", page_title="Members - World of Equestria")
+    
+@app.route('/member-list-api', methods=["POST",])
+@login_required
+def member_list_api():
+    print request.args

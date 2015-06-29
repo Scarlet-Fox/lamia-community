@@ -51,7 +51,7 @@
           li(role="presentation")
             a(href="/member/{{profile.login_name}}/change-account") Account
           {% endif %}
-          if current_user == profile
+          if current_user == profile or current_user.is_admin
             li(role="presentation")
               a(href="/member/{{profile.login_name}}/change-settings") Settings
   .col-sm-8
@@ -79,6 +79,7 @@ script(type="text/javascript", src="{{ASSET_URL}}")
 {% endassets %}
 script(type="text/javascript")
   $(document).ready(function(){
+    {% if current_user.is_authenticated() %}
     $("#about-me-cog-icon").click(function(e) {
       e.preventDefault();
       var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.login_name}}/edit-profile", true);
@@ -95,5 +96,6 @@ script(type="text/javascript")
       });
     });
     window.setupContent()
+    {% endif %}
   });
 {% endblock %}
