@@ -14,6 +14,7 @@ from woe.models.forum import Post
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\]')
 end_spoiler_re = re.compile(r'\[\/spoiler\]')
+plain_quote_re = re.compile(r'\[quote\]')
 quote_re = re.compile(r'\[quote=(.*?)\]')
 end_quote_re = re.compile(r'\[\/quote\]')
 bold_re = re.compile(r'\[b\]')
@@ -190,7 +191,12 @@ class ForumPostParser(object):
             img_html = """<img src="%s" />""" % (os.path.join("/static/emoticons",emoticon_codes[smiley]),)
             html = html.replace(smiley, img_html)
 
-        # parse lame-ass quotes
+        quote_bbcode_in_post = plain_quote_re.findall(html)
+        for quote_bbcode in quote_bbcode_in_post:
+            if end_quote_re.search(html):
+                html = html.replace("[quote]","""<blockquote class="blockquote-reply"><div>""", 1)
+                html = html.replace("[/quote]", "</div></blockquote>", 1)
+        
         quote_bbcode_in_post = quote_re.findall(html)
         for quote_bbcode in quote_bbcode_in_post:
             if end_quote_re.search(html):
