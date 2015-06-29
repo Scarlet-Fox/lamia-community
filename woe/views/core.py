@@ -747,7 +747,73 @@ def user_list_api_variant():
 def show_memeber_listing():
     return render_template("members.jade", page_title="Members - World of Equestria")
     
-@app.route('/member-list-api', methods=["POST",])
+@app.route('/member-list-api', methods=["GET",])
 @login_required
-def member_list_api():
-    print request.args
+def member_list_api():    
+    try:
+        current = int(request.args.get("start"))
+    except:
+        current = 0
+        
+    try:
+        length = int(request.args.get("length"))
+    except:
+        length = 10
+    
+    try:
+        order = int(request.args.get("order[0][column]"))
+    except:
+        order = 4
+        
+    if order == 4:
+        order = "joined"
+    elif order == 5:
+        order = "last_seen"
+    elif order == 3:
+        order = "roles"
+    elif order == 1:
+        order = "user.display_name"
+    else:
+        order = "joined"
+    
+    try:
+        direction = request.args.get("order[0][dir]")
+    except:
+        direction = "desc"
+        
+    if direction == "asc":
+        order = "-"+order
+    
+    query = request.args.get("search[value]", "")[0:100]
+    
+    member_count = User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query), banned=False).count()
+    users = User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query), banned=False).order_by(order)[current:current+length]
+    table_data = []
+    for user in users:
+        my_roles = [" <b>"+role+"</b>" for role in user.get_roles()]
+        roles_template = """"""
+        if len(my_roles) > 0:
+            roles_template += """<a class="btn btn-default toggle-show-roles-button btn-xs" style="margin-top: 5px;">Community Roles</a>
+            <div class="roles-div" style="display: none;">
+            """
+            for r in my_roles:
+                roles_template += r + "<br>"
+            roles_template += """</div>"""
+        
+        table_data.append(
+            [
+                user.display_name,
+                humanize_time(user.joined),
+                humanize_time(user.last_seen),
+                roles_template,
+                arrow.get(user.joined).timestamp,
+                arrow.get(user.last_seen).timestamp
+            ]
+        )
+    data = {
+        "draw": current,
+        "recordsTotal": member_count,
+        "recordsFiltered": member_count,
+        "data": table_data
+    }
+    return app.jsonify(data)
