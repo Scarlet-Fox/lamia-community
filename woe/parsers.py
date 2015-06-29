@@ -25,7 +25,7 @@ strike_re = re.compile(r'\[s\]')
 end_strike_re = re.compile(r'\[\/s\]')
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
-reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+)?\]')
+reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -148,9 +148,9 @@ class ForumPostParser(object):
             if reply[1] == "post":
                 _replying_to = Post.objects(pk=reply[0])[0]
                 html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
-                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
+                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
                 %s
-                </blockquote> 
+                </div></blockquote> 
                 """ % (
                     arrow.get(_replying_to.created).timestamp,
                     "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.pk),
