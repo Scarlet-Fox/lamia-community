@@ -12,7 +12,7 @@ from woe.views.dashboard import broadcast
 import re
 
 mention_re = re.compile("\[@(.*?)\]")
-reply_re = re.compile(r'\[reply=(.+?):(post)\]')
+reply_re = re.compile(r'\[reply=(.+?):(post)(:.+)?\]')
 
 @app.route('/category-list-api', methods=['GET'])
 @login_required
