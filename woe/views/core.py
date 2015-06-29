@@ -176,9 +176,9 @@ def log_request():
         if current_user.is_authenticated():
             l.user = current_user._get_current_object()
             l.user_name = current_user.login_name
+        l.save()
     except:
         pass
-    l.save()
 
 @app.route('/get-user-info-api', methods=['POST',])
 def get_user_info_api():
