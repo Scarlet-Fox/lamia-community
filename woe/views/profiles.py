@@ -54,6 +54,7 @@ def user_moderation_panel(login_name):
         top_fingerprint_matches=fingerprints_with_top_matches)
 
 @app.route('/member/<login_name>')
+@login_required
 def view_profile(login_name):
     try:
         user = User.objects(login_name=login_name.strip().lower())[0]
