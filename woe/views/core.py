@@ -756,6 +756,11 @@ def member_list_api():
         current = 0
         
     try:
+        draw = int(request.args.get("draw"))
+    except:
+        draw = 0
+        
+    try:
         length = int(request.args.get("length"))
     except:
         length = 10
@@ -822,7 +827,7 @@ def member_list_api():
             ]
         )
     data = {
-        "draw": current,
+        "draw": draw,
         "recordsTotal": member_count,
         "recordsFiltered": member_count,
         "data": table_data
