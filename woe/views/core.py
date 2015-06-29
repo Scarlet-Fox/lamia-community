@@ -771,8 +771,8 @@ def member_list_api():
         order = "last_seen"
     elif order == 3:
         order = "roles"
-    elif order == 1:
-        order = "user.display_name"
+    elif order == 0:
+        order = "display_name"
     else:
         order = "joined"
     

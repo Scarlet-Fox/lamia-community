@@ -7,6 +7,8 @@ $ ->
     processing: true
     serverSide: true
     order: [[ 2, "desc" ]]
+    lengthMenu: [[25, 50, 75, 100], [25, 50, 75, 100]]
+    pageLength: 25
     columnDefs: [
       {
         targets: [1]
