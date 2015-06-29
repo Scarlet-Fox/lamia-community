@@ -80,8 +80,8 @@ $ ->
         $("#img-click-modal").data("full_url", element.data("url"))
         $("#img-click-modal-size").html(element.data("size"))
         $("#img-click-modal").data("original_element", element)
-        $("#img-click-modal").data("biggif", false)
         $("#img-click-modal").modal('show')
+        $("#img-click-modal").data("biggif", false)
       
     $("#img-click-modal").delegate "#show-full-image", "click", (e) ->
       e.preventDefault()
