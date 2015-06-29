@@ -427,7 +427,7 @@ def load_user(login_name):
         elif request.path.startswith("/t/"):
             try:
                 topic = Topic.objects(slug=request.path.split("/")[2])[0]
-                user.update(last_seen_at=topic.title)
+                user.update(last_seen_at=unicode(topic.title))
                 user.update(last_at_url="/t/"+unicode(topic.slug))
             except:
                 pass
@@ -437,7 +437,7 @@ def load_user(login_name):
         elif request.path.startswith("/status/"):
             try:
                 status = StatusUpdate.objects(pk=request.path.split("/")[2])[0]
-                user.update(last_seen_at=unicode(status.author)+"\'s status update")
+                user.update(last_seen_at=unicode(status.author.display_name)+"\'s status update")
                 user.update(last_at_url="/status/"+unicode(status.pk))
             except:
                 pass
