@@ -781,7 +781,7 @@ def member_list_api():
     except:
         direction = "desc"
         
-    if direction == "asc":
+    if direction == "desc":
         order = "-"+order
     
     query = request.args.get("search[value]", "")[0:100]
@@ -789,7 +789,7 @@ def member_list_api():
     member_count = User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query), banned=False).count()
     users = User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query), banned=False).order_by(order)[current:current+length]
     table_data = []
-    for user in users:
+    for i, user in enumerate(users):
         my_roles = [" <b>"+role+"</b>" for role in user.get_roles()]
         roles_template = """"""
         if len(my_roles) > 0:
@@ -800,9 +800,20 @@ def member_list_api():
                 roles_template += r + "<br>"
             roles_template += """</div>"""
         
+        extra = ""
+        if i > 7:
+            extra = """data-hplacement=\"top\""""
+        
         table_data.append(
             [
-                user.display_name,
+                """<a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a>
+                <a class="hover_user" %s href="/member/%s">%s</a>""" % (unicode(user.login_name), 
+                                                                        user.get_avatar_url("60"), 
+                                                                        user.avatar_60_x, 
+                                                                        user.avatar_60_y, 
+                                                                        extra,
+                                                                        unicode(user.login_name), 
+                                                                        unicode(user.display_name)),
                 humanize_time(user.joined),
                 humanize_time(user.last_seen),
                 roles_template,

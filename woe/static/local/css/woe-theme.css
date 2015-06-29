@@ -766,3 +766,6 @@ a.inherit_colors {
 .toggle-show-roles-button:visited {
   color: white !important;
 }
+td {
+  vertical-align: middle !important;
+}

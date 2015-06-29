@@ -1,23 +1,24 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.breadcrumb#topic-breadcrumb
+.breadcrumb#topic-breadcrumb(style="margin-bottom: 0px;")
   li
     a(href="/") Home
   li.active 
     b
       a(href="/members") Members
-.row
-  .col-md-12
-    table.table#member-table
-      thead
-        tr
-          th Name
-          th Registration Date
-          th Last Seen
-          th(style="max-width: 200px;") Roles
-          th.never(style="display: none;") Last Seen (HIDDEN)
-          th.never(style="display: none;") Registration Date (HIDDEN)
+.member-page(style="background: #fff; padding: 20px;")
+  .row
+    .col-md-12
+      table.table#member-table
+        thead
+          tr
+            th Name
+            th Registration Date
+            th Last Seen
+            th(style="max-width: 200px;") Roles
+            th.never(style="display: none;") Last Seen (HIDDEN)
+            th.never(style="display: none;") Registration Date (HIDDEN)
 {% endblock %}
 
 {% block script %}
