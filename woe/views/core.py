@@ -21,6 +21,10 @@ from werkzeug.exceptions import default_exceptions, HTTPException
 from  werkzeug.debug import get_current_traceback
 login_manager.login_view = "sign_in"
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+
 @app.errorhandler(500)
 def server_error(e):
     traceback = get_current_traceback()
