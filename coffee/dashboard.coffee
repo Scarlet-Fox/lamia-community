@@ -118,7 +118,7 @@ $ ->
         existing_notification.data("count", count)
         existing_notification.data("stamp", notification.stamp)
         existing_notification.children(".media-left").children(".badge").text(count)
-        existing_notification.find(".m-name").attr("href", "/members/#{notification.member_name}")
+        existing_notification.find(".m-name").attr("href", "/member/#{notification.member_name}")
         existing_notification.find(".m-name").text(notification.member_disp_name)
         existing_notification.find(".m-time").text(notification.time)
         existing_notification.find(".m-title").text(notification.text)
@@ -145,7 +145,7 @@ $ ->
         <div class="media-left" style="display: none;"><span class="badge"></span></div>
         <div class="media-body">
           <a href="{{url}}" data-notification="{{_id}}" class="m-title ack_single_href">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
-          <p class="text-muted"> by <a href="/members/{{member_name}}" class="m-name hover_user">{{member_disp_name}}</a> - <span class="m-time">{{time}}</span></p>
+          <p class="text-muted"> by <a href="/member/{{member_name}}" class="m-name hover_user">{{member_disp_name}}</a> - <span class="m-time">{{time}}</span></p>
         </div>
       </li>
       """

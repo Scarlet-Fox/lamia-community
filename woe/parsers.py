@@ -176,7 +176,7 @@ class ForumPostParser(object):
         for mention in mentions:
             try:
                 user = User.objects(login_name=mention)[0]
-                html = html.replace("[@%s]" % unicode(mention), """<a href="/members/%s" class="hover_user">@%s</a>""" % (user.login_name, user.display_name), 1)
+                html = html.replace("[@%s]" % unicode(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.login_name, user.display_name), 1)
             except:
                 html = html.replace("[@%s]" % unicode(mention), "", 1) 
         
