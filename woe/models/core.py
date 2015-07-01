@@ -222,6 +222,7 @@ class User(db.DynamicDocument):
     def set_password(self, password, rounds=12):
         self.legacy_password = None
         self.password_hash = bcrypt.generate_password_hash(password.strip().encode('utf-8'),rounds).encode('utf-8')
+        self.save()
         
     def check_password(self, password):
         if self.legacy_password:

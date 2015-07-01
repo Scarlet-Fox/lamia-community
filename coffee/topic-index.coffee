@@ -309,7 +309,7 @@ $ ->
                   </div>
                   <br>
                   <div class="row post-edit-likes-info" id="post-buttons-{{_id}}">
-                      <div class="col-md-8">
+                      <div class="col-xs-8">
                         {{#if _is_logged_in}}
                         <div class="btn-group" role="group" aria-label="...">
                           <div class="btn-group">

@@ -134,6 +134,14 @@ def new_post_in_topic(slug):
     parsed_post["group_pre_html"] = new_post.author.group_pre_html
     parsed_post["author_group_name"] = new_post.author.group_name
     parsed_post["group_post_html"] = new_post.author.group_post_html
+        
+    if current_user.is_authenticated():
+        if new_post.author.pk == current_user.pk:
+            parsed_post["is_author"] = True
+        else:
+            parsed_post["is_author"] = False   
+    else:
+        parsed_post["is_author"] = False   
     
     post_count = Post.objects(hidden=False, topic=topic).count()
 
