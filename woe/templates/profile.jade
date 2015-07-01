@@ -64,10 +64,10 @@
         {% endif %}
       .panel-body
         if profile.about_me == "<br>" or profile.about_me == "<div></div>"
-          #user-profile-about-me.post-content-area
+          #user-profile-about-me.post-content
             p {{profile.display_name|e}} doesn't have an about me...
         else
-          #user-profile-about-me.post-content-area!= profile.about_me
+          #user-profile-about-me.post-content!= profile.about_me
     {% endblock %}
 {% endblock %}
 
