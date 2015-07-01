@@ -212,7 +212,7 @@ $ ->
                   </div>
                 </div>
                 <div class="col-lg-9 col-md-8 post-right">
-                  <div class=".post-content" id="post-{{_id}}">
+                  <div class="post-content" id="post-{{_id}}">
                     {{{html}}}
                   </div>
                   <br>

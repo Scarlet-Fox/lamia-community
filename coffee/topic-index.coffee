@@ -304,7 +304,7 @@ $ ->
                   </div>
                 </div>
                 <div class="col-md-9 post-right">
-                  <div class=".post-content" id="post-{{_id}}">
+                  <div class="post-content" id="post-{{_id}}">
                     {{{html}}}
                   </div>
                   <br>
