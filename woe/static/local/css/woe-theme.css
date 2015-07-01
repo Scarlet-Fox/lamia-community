@@ -204,8 +204,7 @@ body {
 }
 
 a {
-    /* color: #02005A; */
-    color: #0670BB;
+    color: #02005A;
     -ms-word-break: break-all;
     /* Be VERY careful with this, breaks normal words wh_erever */
     word-break: break-all;
@@ -214,6 +213,10 @@ a {
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
     hyphens: auto;
+}
+
+.post-content a {
+    color: #0670BB;
 }
 
 .btn-group, .btn-group-vertical
