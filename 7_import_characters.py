@@ -60,3 +60,7 @@ for character in c.fetchall():
     
     c.save()
     
+    for post in posts:            
+        post.data["character"] = str(c.pk)
+        post.save()
+    

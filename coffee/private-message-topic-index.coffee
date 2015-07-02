@@ -222,7 +222,7 @@ $ ->
                         <div class="btn-group" role="group" aria-label="...">
                           <div class="btn-group">
                             <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
-                            <button type="button" class="btn btn-default" report-button" data-pk="{{_id}}" data-type="pm">Report</button>
+                            <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="pm">Report</button>
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>
@@ -257,7 +257,7 @@ $ ->
                           </div>
                         </div>
                     </div>
-                    <div class="col-md-4 post-likes">
+                    <div class="col-xs-4 post-likes">
                     </div>
                   </div>
                   <hr>

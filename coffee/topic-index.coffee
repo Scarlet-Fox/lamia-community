@@ -362,7 +362,7 @@ $ ->
                           </div>
                         </div>
                     </div>
-                    <div class="col-md-4 post-likes">
+                    <div class="col-xs-4 post-likes">
                       {{#if show_boop}}
                       {{#if can_boop}}
                       {{#if has_booped}}
