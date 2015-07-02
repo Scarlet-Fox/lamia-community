@@ -73,6 +73,7 @@ app.jsonify = jsonify
 # import tasks
 import models.core
 import models.forum
+import models.roleplay
 import views.core
 import views.forum
 import views.dashboard

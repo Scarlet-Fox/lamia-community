@@ -311,13 +311,13 @@ def create_attachment():
         filename = secure_filename(file.filename)
         image = Image(file=file)
         img_bin = image.make_blob()
-        img_hash = hashlib.sha256(img_bin).hexdigest()
+        img_hash = hashlib.sha512(img_bin).hexdigest()
         
         try:
             attach = Attachment.objects(file_hash=img_hash)[0]
             return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
         except:
-            pass                
+            pass
         
         attach = Attachment()
         attach.extension = filename.split(".")[-1]
@@ -370,7 +370,7 @@ def grab_image():
     destination_filename = os.path.join(os.getcwd(),"woe/static/uploads/linked/",hashlib.md5(image_domain).hexdigest(),filename)
     extension = filename.split(".")[-1]
     
-    image_hash = hashlib.sha256(image_response).hexdigest()
+    image_hash = hashlib.sha512(image_response).hexdigest()
     # try:
     #     attach = Attachment.objects(file_hash=image_hash)[0]
     #     return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)

@@ -573,6 +573,10 @@ class Attachment(db.DynamicDocument):
     origin_url = db.StringField()
     origin_domain = db.StringField()
     
+    # RP Specific
+    character = db.ReferenceField("Character")
+    character_name = db.StringField()
+    
     meta = {
         'indexes': [
             'file_hash',
