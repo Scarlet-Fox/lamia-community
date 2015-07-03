@@ -8,7 +8,12 @@ $ ->
   other_editor = new InlineEditor("#character-other")
   other_editor.noSaveButton()
   
+  window.onbeforeunload = () ->
+    if not window.save
+      return "Are you sure you want to leave the character edit page? Entered data will not be saved if you don't click save."
+  
   $("form").submit (e) ->
+    window.save = true
     $("#appearance").val(appearance_editor.quill.getHTML())
     $("#personality").val(personality_editor.quill.getHTML())
     $("#backstory").val(backstory_editor.quill.getHTML())
