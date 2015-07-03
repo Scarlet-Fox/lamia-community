@@ -388,7 +388,10 @@ def grab_image():
     attach = Attachment()
     attach.x_size = image.width
     attach.y_size = image.height
-    attach.mimetype = mimetypes.guess_type(filename)[0]
+    try:
+        attach.mimetype = mimetypes.guess_type(filename)[0]
+    except:
+        attach.mimetype = "unknown"
     attach.extension = extension
     attach.size_in_bytes = len(image_response)
     attach.owner_name = current_user._get_current_object().login_name

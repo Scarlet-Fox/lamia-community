@@ -210,7 +210,7 @@ class User(db.DynamicDocument):
         
     def get_recent_notifications(self, count=15):
         notifications = Notification.objects(user=self, acknowledged=False)[:15]
-        content_already_in = {}        
+        content_already_in = {}
         return notifications
         
     def is_authenticated(self):
@@ -222,7 +222,6 @@ class User(db.DynamicDocument):
     def set_password(self, password, rounds=12):
         self.legacy_password = None
         self.password_hash = bcrypt.generate_password_hash(password.strip().encode('utf-8'),rounds).encode('utf-8')
-        self.save()
         
     def check_password(self, password):
         if self.legacy_password:
