@@ -36,6 +36,7 @@ for character in c.fetchall():
     c.old_character_id = character["primary_id_field"]
     c.creator = User.objects(old_member_id=character["member_id"])[0]
     c.creator_name = c.creator.login_name
+    c.creator_display_name = c.creator.display_name
     if c.creator.banned:
         continue
     c.created = arrow.get(character["record_saved"]).datetime

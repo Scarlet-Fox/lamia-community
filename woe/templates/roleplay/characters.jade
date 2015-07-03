@@ -1,0 +1,30 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.breadcrumb#topic-breadcrumb(style="margin-bottom: 0px;")
+  li
+    a(href="/") Home
+  li.active 
+    b
+      a(href="/characters") Character Database
+.member-page(style="background: #fff; padding: 20px;")
+  .row
+    .col-md-12
+      table.table#character-table
+        thead
+          tr
+            th Name
+            th Age
+            th Species
+            th Created
+            th Author
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/editor.js",
+"assets/datatables/js/jquery.dataTables.js", "assets/datatables/dataTables.bootstrap.js", 
+"assets/datatables/dataTables.responsive.js",
+"local/js/character-listing.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}")
+{% endassets %}
+{% endblock %}

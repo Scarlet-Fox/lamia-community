@@ -22,6 +22,7 @@ class Character(db.DynamicDocument):
     old_character_id = db.IntField()
     creator = db.ReferenceField("User", reverse_delete_rule=db.NULLIFY)
     creator_name = db.StringField(required=True)
+    creator_display_name = db.StringField(required=True)
 
     name = db.StringField(required=True)
     age = db.StringField(required=True)
@@ -31,6 +32,7 @@ class Character(db.DynamicDocument):
     backstory = db.StringField()
     other = db.StringField()
     created = db.DateTimeField(required=True)
+    hidden = db.BooleanField(default=False)
     modified = db.DateTimeField()
     
     avatars = db.ListField(db.ReferenceField("Attachment", reverse_delete_rule=db.PULL))

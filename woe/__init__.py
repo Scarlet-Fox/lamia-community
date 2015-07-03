@@ -75,6 +75,7 @@ import models.core
 import models.forum
 import models.roleplay
 import views.core
+import views.roleplay
 import views.forum
 import views.dashboard
 import views.profiles
