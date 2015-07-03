@@ -14,6 +14,10 @@ $ ->
       
       socket = io.connect('http://' + document.domain + ':3000' + '');
       
+      window.onbeforeunload = () ->
+        if topic.inline_editor.quill.getText().trim() != ""
+          return "It looks like you were typing up a post."
+      
       socket.on "connect", () =>
         socket.emit 'join', "pm--#{topic.pk}"
       

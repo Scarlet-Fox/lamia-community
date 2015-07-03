@@ -16,6 +16,51 @@ from woe.models.roleplay import Character
 def character_database():
     return render_template("roleplay/characters.jade", page_title="Characters - World of Equestria")
 
+@app.route('/characters/<slug>/view-posts/character-post-list-api', methods=["GET",])
+@login_required
+def character_recent_activity_api(slug):
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        abort(404) 
+        
+    try:
+        draw = int(request.args.get("draw"))
+    except:
+        draw = 0
+    
+    table_data = []
+    for i, post in enumerate(character.posts):
+        table_data.append(
+            [
+                """<a href="/t/%s/page/1/post/%s">%s</a>""" % (
+                        post.topic.slug,
+                        post.pk,
+                        post.topic.title
+                    ),
+                post.author.display_name,
+                humanize_time(post.created),
+                arrow.get(post.created).timestamp
+            ]
+        )
+    data = {
+        "draw": draw,
+        "recordsTotal": len(table_data),
+        "recordsFiltered": len(table_data),
+        "data": table_data
+    }
+    return app.jsonify(data)
+
+@app.route('/characters/<slug>/view-posts', methods=["GET",])
+@login_required
+def character_recent_activity(slug):
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        abort(404)
+        
+    return render_template("roleplay/character_posts.jade", character=character, page_title="%s - Character Database - World of Equestria" % (unicode(character.name),))  
+
 @app.route('/character-list-api', methods=["GET",])
 @login_required
 def character_list_api():    

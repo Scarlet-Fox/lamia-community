@@ -3,7 +3,7 @@ import MySQLdb.cursors
 from woe.models.roleplay import Character
 from woe.models.core import User, Attachment
 from woe.models.forum import Post
-import json, os
+import json, os, re
 from slugify import slugify
 from wand.image import Image
 from mongoengine.queryset import Q
@@ -26,6 +26,8 @@ def get_character_slug(name):
             return try_slug(slug, count+1)
     
     return try_slug(slug)
+
+blockquote_re = re.compile("<blockquote.*?</blockquote>", re.DOTALL)
 
 c=db.cursor()
 c.execute("select * from ipsccs_custom_database_4;")
@@ -52,13 +54,22 @@ for character in c.fetchall():
     #c.save()
     
     posts = Post.objects(Q(html__contains="[postcharacter=%s|" % (c.old_character_id,)) | Q(html__contains="[postcharacter=%s]" % (c.old_character_id,)) | Q(html__contains="[character=%s]" % (c.old_character_id,)) | Q(html__contains="[character=%s|" % (c.old_character_id,)))
-    c.posts = posts
-    c.post_count = len(posts)
     
     for post in posts:
-        if post.topic not in c.roleplays:
-            c.roleplays.append(post.topic)
-    
+        post_html = blockquote_re.sub("", post.html)
+        
+        if post.author != c.creator:
+            continue
+        
+        try:
+            post_html.index("character=")
+            if post.topic not in c.roleplays:
+                c.roleplays.append(post.topic)
+            c.posts.append(post)
+        except:
+            pass
+            
+    c.post_count = len(c.posts)
     c.save()
     
     for post in posts:            
