@@ -40,6 +40,7 @@ class Character(db.DynamicDocument):
     default_avatar = db.ReferenceField("Attachment", reverse_delete_rule=db.NULLIFY)
     legacy_avatar_field = db.StringField()
     gallery = db.ListField(db.ReferenceField("Attachment", reverse_delete_rule=db.PULL))
+    default_gallery_image = db.ReferenceField("Attachment", reverse_delete_rule=db.NULLIFY)
     legacy_gallery_field = db.StringField()
     
     posts = db.ListField(db.ReferenceField("Post", reverse_delete_rule=db.PULL))
@@ -56,3 +57,12 @@ class Character(db.DynamicDocument):
             return self.legacy_avatar_field
         else:
             return ""
+            
+    def get_portrait(self):
+        if self.default_gallery_image:
+            return self.default_gallery_image.path
+        elif self.legacy_gallery_field:
+            return self.legacy_gallery_field
+        else:
+            return ""
+        

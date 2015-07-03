@@ -88,6 +88,21 @@ def character_list_api():
     }
     return app.jsonify(data)
 
+@app.route('/characters/<slug>/toggle-hide', methods=["POST",])
+@login_required
+def toggle_hide_character(slug):
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        abort(404)
+        
+    if current_user._get_current_object().is_admin != True:
+        return abort(404)
+    
+    character.update(hidden=not character.hidden)
+    
+    return app.jsonify(url="/characters/"+unicode(character.slug))
+
 @app.route('/characters/<slug>', methods=["GET",])
 @login_required
 def character_basic_profile(slug):
@@ -109,4 +124,4 @@ def character_basic_profile(slug):
     if character.other:
         character.other = parser.parse(character.other)
         
-    return render_template("roleplay/character_profile.jade", character=character, page_title="%s - World of Equestria" % (unicode(character.name),))
+    return render_template("roleplay/character_profile.jade", character=character, page_title="%s - Character Database - World of Equestria" % (unicode(character.name),))
