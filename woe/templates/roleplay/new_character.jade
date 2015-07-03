@@ -1,11 +1,11 @@
-{% extends "roleplay/character_profile.jade" %}
+{% extends "base.jade" %}
 
-{% block profile_content %}
+{% block content %}
 .panel.panel-default
-  .panel-heading Edit {{character.name|e}}'s Profile
+  .panel-heading Create a New Character (with love)
   .panel-body
     .edit-fields(style="padding: 10px;")
-      form.form-horizontal(action="/characters/{{character.slug}}/edit-profile", method="post")
+      form.form-horizontal(action="/characters/new-character", method="post")
         {{ form_errors(form) }}
         .form-group
           .col-sm-3
@@ -59,7 +59,7 @@
         button#commit-edit(type="submit").btn.btn-default Submit
         &nbsp;
         &nbsp;
-        a#cancel-edit(href="/characters/{{character.slug}}").btn.btn-default Cancel
+        a#cancel-edit(href="/characters").btn.btn-default Cancel
         
 {% endblock %}
 

@@ -9,12 +9,58 @@ import os
 import arrow
 from woe.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q
 from mongoengine.queryset import Q
-from woe.models.roleplay import Character, CharacterHistory
+from woe.models.roleplay import Character, CharacterHistory, get_character_slug
 
 @app.route('/characters')
 @login_required
 def character_database():
     return render_template("roleplay/characters.jade", page_title="Characters - World of Equestria")
+
+@app.route('/characters/new-character', methods=["GET","POST"])
+@login_required
+def create_character():
+    form = CharacterForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        cleaner = ForumHTMLCleaner()
+        try:
+            name = cleaner.escape(form.name.data)
+        except:
+            return abort(500)
+        try:
+            species = cleaner.escape(form.species.data)
+        except:
+            return abort(500)
+        try:
+            motto = cleaner.escape(form.motto.data)
+        except:
+            return abort(500)
+        try:
+            age = cleaner.escape(form.age.data)
+        except:
+            return abort(500)
+
+        character = Character()
+        character.age = form.age.data
+        character.species =form.species.data
+        character.name = form.name.data
+        character.motto = form.motto.data
+        character.appearance = form.appearance.data
+        character.personality = form.personality.data
+        character.backstory = form.backstory.data
+        character.other = form.other.data
+        character.created = arrow.utcnow().datetime
+        character.post_count = 0
+        character.slug = get_character_slug(character.name)
+        character.creator = current_user._get_current_object()
+        character.creator_name = current_user._get_current_object().login_name
+        character.creator_display_name = current_user._get_current_object().display_name
+        character.save()
+        return redirect("/characters/"+unicode(character.slug))
+    else:
+        pass
+    
+    return render_template("roleplay/new_character.jade", form=form, page_title="Create a Character - World of Equestria")    
+
 
 @app.route('/characters/<slug>/edit-profile', methods=["GET","POST"])
 @login_required

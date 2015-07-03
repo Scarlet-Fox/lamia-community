@@ -7,10 +7,10 @@ import shutil, pytz, arrow
 
 class CharacterForm(Form):
     name = StringField('Name', [validators.InputRequired(),])
-    age = StringField('Age')
-    species = StringField('Species')
-    motto = StringField('Motto')
-    appearance = HiddenField('Appearance')
-    personality = HiddenField('Personality')
-    backstory = HiddenField('Backstory')
-    other = HiddenField('Other')
+    age = StringField('Age', default="")
+    species = StringField('Species', default="")
+    motto = StringField('Motto', default="")
+    appearance = HiddenField('Appearance', default="")
+    personality = HiddenField('Personality', default="")
+    backstory = HiddenField('Backstory', default="")
+    other = HiddenField('Other', default="")

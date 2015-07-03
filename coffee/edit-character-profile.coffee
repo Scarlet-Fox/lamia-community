@@ -10,7 +10,7 @@ $ ->
   
   window.onbeforeunload = () ->
     if not window.save
-      return "Are you sure you want to leave the character edit page? Entered data will not be saved if you don't click save."
+      return "You haven't saved your changes."
   
   $("form").submit (e) ->
     window.save = true
