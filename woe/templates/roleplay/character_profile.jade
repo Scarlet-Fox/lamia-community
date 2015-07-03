@@ -1,0 +1,77 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row 
+  .col-sm-4
+    .panel.panel-default
+      .panel-heading {{character.name}}
+      .panel-body.text-center
+      {% if character.get_avatar() != "" %}
+      img.center-block.profile-page-avatar#profile-avatar(src="/static/uploads/{{character.get_avatar()}}", style="max-width: 200px;")
+      {% endif %}
+      {% if character.motto != "" %}
+      span.text-muted= character.motto
+      {% endif %}
+      if current_user.is_authenticated() and current_user.is_admin
+        center
+          if character.hidden
+            a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Unhide Character
+          else
+            a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Hide Character
+      br
+    .panel.panel-default
+      .panel-heading More Information
+      .panel-body.text-center
+        ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+          li(role="presentation")
+            a(href="/characters/{{character.slug}}/roleplay-posts") Roleplay Posts
+            li(role="presentation")
+              a(href="/characters/{{character.slug}}/sheets") Other Character Sheets
+              
+    .panel.panel-default
+      .panel-heading Edit
+      .panel-body.text-center
+        ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+          if current_user == character.author or current_user.is_admin
+            li(role="presentation")
+              a(href="/characters/{{character.slug}}/edit-basic") Change Basic Profile
+            li(role="presentation")
+              a(href="/characters/{{character.slug}}/manage-sheets") Manage Character Sheets
+  .col-sm-8
+    {% block profile_content %}
+    .panel.panel-default
+      .panel-heading Basic Profile
+      .panel-body
+        center
+          h3!= character.name
+        hr(style="margin-bottom: 0px !important;")
+        if character.appearance
+          center
+            br
+            h4 Appearance
+          span!= character.appearance
+          br
+        if character.personality
+          center
+            br
+            h4 Personality
+          span!= character.personality
+          br
+        if character.backstory
+          center
+            br
+            h4 Backstory
+          span!= character.backstory
+          br
+        if character.other
+          center
+            br
+            h4 Other
+          span!= character.other
+          br
+        br
+        hr
+        i - <a href="/member/{{character.creator.login_name}}">{{character.creator.display_name|e}}</a>
+    {% endblock %}
+{% endblock %}
+

@@ -87,3 +87,26 @@ def character_list_api():
         "data": table_data
     }
     return app.jsonify(data)
+
+@app.route('/characters/<slug>', methods=["GET",])
+@login_required
+def character_basic_profile(slug):
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        abort(404)
+    parser = ForumPostParser()
+    
+    if character.appearance:
+        character.appearance = parser.parse(character.appearance)
+        
+    if character.personality:
+        character.personality = parser.parse(character.personality)
+        
+    if character.backstory:
+        character.backstory = parser.parse(character.backstory)
+        
+    if character.other:
+        character.other = parser.parse(character.other)
+        
+    return render_template("roleplay/character_profile.jade", character=character, page_title="%s - World of Equestria" % (unicode(character.name),))

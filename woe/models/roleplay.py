@@ -25,17 +25,19 @@ class Character(db.DynamicDocument):
     creator_display_name = db.StringField(required=True)
 
     name = db.StringField(required=True)
-    age = db.StringField(required=True)
-    species = db.StringField(required=True)
+    age = db.StringField()
+    species = db.StringField()
     appearance = db.StringField()
     personality = db.StringField()
     backstory = db.StringField()
     other = db.StringField()
+    motto = db.StringField(default="")
     created = db.DateTimeField(required=True)
     hidden = db.BooleanField(default=False)
     modified = db.DateTimeField()
     
     avatars = db.ListField(db.ReferenceField("Attachment", reverse_delete_rule=db.PULL))
+    default_avatar = db.ReferenceField("Attachment", reverse_delete_rule=db.NULLIFY)
     legacy_avatar_field = db.StringField()
     gallery = db.ListField(db.ReferenceField("Attachment", reverse_delete_rule=db.PULL))
     legacy_gallery_field = db.StringField()
@@ -46,3 +48,11 @@ class Character(db.DynamicDocument):
      
     def __unicode__(self):
         return self.name
+        
+    def get_avatar(self):
+        if self.default_avatar:
+            return self.default_avatar.path
+        elif self.legacy_avatar_field:
+            return self.legacy_avatar_field
+        else:
+            return ""
