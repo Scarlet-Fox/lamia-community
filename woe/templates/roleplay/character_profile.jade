@@ -10,10 +10,12 @@
       img.center-block.profile-page-avatar#profile-avatar(src="/static/uploads/{{character.get_avatar()}}", style="max-width: 200px;")
       {% endif %}
       {% if character.motto != "" %}
-      span.text-muted= character.motto
+      center
+        span.text-muted(style="max-width: 200px;")= character.motto
       {% endif %}
       if current_user.is_authenticated() and current_user.is_admin
         center
+          br
           if character.hidden
             a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Unhide Character
           else
@@ -34,6 +36,8 @@
           hr
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
           li(role="presentation")
+            a(href="/characters/{{character.slug}}") Basic Profile
+          li(role="presentation")
             a(href="/characters/{{character.slug}}/view-posts") Roleplay Posts
             li(role="presentation")
               a(href="/characters/{{character.slug}}/sheets") Character Sheets
@@ -44,7 +48,7 @@
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
           if current_user == character.author or current_user.is_admin
             li(role="presentation")
-              a(href="/characters/{{character.slug}}/edit-basic") Edit Profile
+              a(href="/characters/{{character.slug}}/edit-profile") Edit Profile
             li(role="presentation")
               a(href="/characters/{{character.slug}}/manage-sheets") Manage Sheets
   .col-sm-8

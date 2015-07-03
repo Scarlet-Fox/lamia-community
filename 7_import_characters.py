@@ -3,7 +3,7 @@ import MySQLdb.cursors
 from woe.models.roleplay import Character
 from woe.models.core import User, Attachment
 from woe.models.forum import Post
-import json, os, re
+import json, os, re, HTMLParser
 from slugify import slugify
 from wand.image import Image
 from mongoengine.queryset import Q
@@ -33,8 +33,8 @@ c=db.cursor()
 c.execute("select * from ipsccs_custom_database_4;")
 for character in c.fetchall():
     c = Character()
-    c.name = character["field_23"].encode("latin1")
-    c.age = character["field_25"].encode("latin1")
+    c.name = HTMLParser.HTMLParser().unescape(character["field_23"].encode("latin1"))
+    c.age = HTMLParser.HTMLParser().unescape(character["field_25"].encode("latin1"))
     c.old_character_id = character["primary_id_field"]
     c.creator = User.objects(old_member_id=character["member_id"])[0]
     c.creator_name = c.creator.login_name
@@ -44,7 +44,7 @@ for character in c.fetchall():
     c.created = arrow.get(character["record_saved"]).datetime
     c.modified = arrow.get(character["record_updated"]).datetime
     c.slug = get_character_slug(c.name)
-    c.species = character["field_24"].encode("latin1")
+    c.species = HTMLParser.HTMLParser().unescape(character["field_24"].encode("latin1"))
     c.appearance = character["field_34"].encode("latin1")
     c.personality = character["field_21"].encode("latin1")
     c.backstory = character["field_22"].encode("latin1")

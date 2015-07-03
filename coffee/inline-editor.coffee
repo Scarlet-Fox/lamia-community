@@ -267,6 +267,9 @@ $ ->
     onFullPage: (fullPageFunction) ->
       @fullPageFunction = fullPageFunction
       
+    noSaveButton: () ->
+      do $("#save-text-#{@quillID}").remove
+      
     flashError: (message) ->
       @element.parent().children(".alert").remove()
       @element.parent().prepend """<div class="alert alert-danger alert-dismissible fade in" role="alert">

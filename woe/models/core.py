@@ -5,6 +5,7 @@ from woe.utilities import ipb_password_check
 from urllib import quote
 import arrow, re, os, math
 from flask.ext.login import current_user
+from wand.image import Image
 
 class Role(db.DynamicDocument):
     pre_html = db.StringField(required=True)
@@ -583,4 +584,34 @@ class Attachment(db.DynamicDocument):
             'origin_domain',
         ]
     }
+    
+    def get_specific_size(self, width=200):
+        network_path = os.path.join("/static/uploads", self.path)
+        file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path)
+        size_network_path = os.path.join("/static/uploads", self.path+".attachment_resized."+self.extension)
+        size_file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path+".attachment_resized."+self.extension)
+        
+        if os.path.exists(size_file_path):
+            return size_network_path
+        
+        try:
+            source_image = Image(filename=file_path)
+        except:
+            return network_path
+    
+        original_x = source_image.width
+        original_y = source_image.height
+    
+        if original_x != width:
+            resize_measure = float(width)/float(original_x)
+            try:
+                source_image.resize(int(round(original_x*resize_measure)),int(round(original_y*resize_measure)))
+            except:
+                return network_path
+    
+        try:
+            source_image.save(filename=size_file_path)
+            return size_network_path
+        except:
+            return network_path
 

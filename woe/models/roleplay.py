@@ -17,12 +17,18 @@ def get_character_slug(name):
     
     return try_slug(slug)
 
+class CharacterHistory(db.DynamicEmbeddedDocument):
+    creator = db.ReferenceField("User", required=True)
+    created = db.DateTimeField(required=True)
+    data = db.DictField()
+    
 class Character(db.DynamicDocument):
     slug = db.StringField(required=True)
     old_character_id = db.IntField()
     creator = db.ReferenceField("User", reverse_delete_rule=db.NULLIFY)
     creator_name = db.StringField(required=True)
     creator_display_name = db.StringField(required=True)
+    history = db.ListField(db.EmbeddedDocumentField(CharacterHistory))
 
     name = db.StringField(required=True)
     age = db.StringField()
