@@ -245,7 +245,10 @@ $ ->
         e.preventDefault()
         if @cancelFunction?
           @cancelFunction @element.data("editor").getHTML(), @element.data("editor").getText()
-    
+      
+      if @readyFunction?
+        do @readyFunction
+      
     getQuillID: () ->
       return Quill.editors.length+1
     
@@ -260,6 +263,9 @@ $ ->
     
     onSave: (saveFunction) ->
       @saveFunction = saveFunction
+      
+    onReady: (readyFunction) ->
+      @readyFunction = readyFunction
     
     onCancel: (cancelFunction) ->
       @cancelFunction = cancelFunction

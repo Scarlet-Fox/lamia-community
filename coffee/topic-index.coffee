@@ -158,12 +158,105 @@ $ ->
         element = $(this)
         post_content = $("#post-"+element.data("pk"))
         post_buttons = $("#post-buttons-"+element.data("pk"))
+        post_character = element.data("character")
+        if element.data("author")?
+          post_author = element.data("author")
+        else
+          post_author = window.woe_is_me
         post_buttons.hide()
         
         inline_editor = new InlineEditor "#post-"+element.data("pk"), "/t/#{topic.slug}/edit-post/#{element.data("pk")}", true, true
+        inline_editor.onReady () ->
+          if topic.characters.length > 0 and window.woe_is_me == post_author
+            quill_id = inline_editor.quillID
+            # $("#upload-files-#{quill_id}").after """
+            #   <button type="button" class="btn btn-default post-post" style="margin-left: 3px;" id="character-picker-#{quill_id}">Characters</button>
+            #   """
+            characterPickerTemplate = """
+            <!-- <label style="margin-left: 10px;">Character Picker: </label> -->
+            <select id="character-picker-{{quill_id}}" style="margin-left: 5px; width: 300px;">
+              <option value="" selected></option>
+              {{#each characters}}
+              <option value="{{slug}}" data-image="{{default_avvie}}" {{#if default}}selected{{/if}}>
+                  {{name}}
+              </option>
+              {{/each}}
+            </select>
+            """
+            characterPickerHTML = Handlebars.compile(characterPickerTemplate)
+            avatarPickerTemplate = """
+            <!-- <label style="margin-left: 10px;">Character Picker: </label> -->
+            <select id="avatar-picker-{{quill_id}}" style="margin-left: 5px; width: 80px;">
+              <option value="" selected></option>
+              {{#each avatars}}
+              <option value="{{@index}}" data-count="{{@index}}" data-image="{{url}}" {{#if @first}}selected{{/if}}>
+              </option>
+              {{/each}}
+            </select>
+            """
+            avatarPickerHTML = Handlebars.compile(avatarPickerTemplate)
+            for character in topic.characters
+              if character.slug == post_character
+                character.default = true
+            $("#inline-editor-buttons-#{quill_id}").append(characterPickerHTML({characters: topic.characters, quill_id: quill_id}))
+            $("#character-picker-#{quill_id}").select2
+              templateResult: (result) ->
+                __element = $(result.element)
+                image = __element.data("image")
+                if image?
+                  return """
+                  <div class="media-left">
+                    <img src="#{image}" style="max-width: 50px;" />
+                  </div>
+                  <div class="media-body">
+                    #{__element.text()}
+                  </div>
+                  """
+                else
+                  return "Clear Character"
+              escapeMarkup: (text) ->
+                return text
+              
+            $("#character-picker-#{quill_id}").on "select2:select", (e) =>
+              topic["selected_character_#{quill_id}"] = $("#character-picker-#{quill_id}").val()
+              try
+                $("#avatar-picker-#{quill_id}").select2("destroy")
+                $("#avatar-picker-#{quill_id}").remove()
+              catch
+              
+              selected = {}
+              for character in topic.characters
+                if character.slug == $("#character-picker-#{quill_id}").val()
+                  selected = character
+                  break
+              if selected.alternate_avvies.length > 0
+                $("#inline-editor-buttons-#{quill_id}").append(avatarPickerHTML({avatars: selected.alternate_avvies, quill_id: quill_id}))
+                $("#avatar-picker-#{quill_id}").select2
+                  templateResult: (result) ->
+                    __element = $(result.element)
+                    image = __element.data("image")
+                    if image?
+                      return """
+                      <img src="#{image}" style="max-width: 50px;" />
+                      """
+                  templateSelection: (result) ->
+                    __element = $(result.element)
+                    alt = __element.data("count")+1
+                    return """
+                      #{alt}
+                      """                    
+                  escapeMarkup: (text) ->
+                    return text
+              
+                $("#avatar-picker-#{quill_id}").on "select2:select", (e) =>
+                  topic["selected_avatar_#{quill_id}"] = $("#avatar-picker-#{quill_id}").val()
         
         inline_editor.onSave (html, text, edit_reason) ->
-          $.post "/t/#{topic.slug}/edit-post", JSON.stringify({pk: element.data("pk"), post: html, text: text, edit_reason: edit_reason}), (data) =>
+          quill_id = inline_editor.quillID
+          character = $("#character-picker-#{quill_id}").val()
+          avatar = $("#avatar-picker-#{quill_id}").val()
+          
+          $.post "/t/#{topic.slug}/edit-post", JSON.stringify({pk: element.data("pk"), post: html, text: text, edit_reason: edit_reason, character: character, avatar: avatar}), (data) =>
             if data.error?
               inline_editor.flashError data.error
             
@@ -443,7 +536,7 @@ $ ->
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                              <li><a href="" class="post-edit" data-pk="{{_id}}">Edit Post</a></li>
+                              <li><a href="" class="post-edit" data-pk="{{_id}}" {{#if character_name}}data-character="{{character_slug}}" data-author="{{author_login_name}}"{{/if}}>Edit Post</a></li>
                               {{#if topic_leader}}
                                <li><a href="{{topic_leader}}">Edit Topic</a></li>
                               {{/if}}
@@ -459,7 +552,7 @@ $ ->
                                   <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                  <li><a href="" class="post-edit" data-pk="{{_id}}">Edit Post</a></li>
+                                  <li><a href="" class="post-edit" data-pk="{{_id}}" {{#if character_name}}data-character="{{character_slug}}" data-author="{{author_login_name}}"{{/if}}>Edit Post</a></li>
                                   {{#if topic_leader}}
                                    <li><a href="{{topic_leader}}">Edit Topic</a></li>
                                   {{/if}}

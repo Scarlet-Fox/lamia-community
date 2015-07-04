@@ -401,6 +401,21 @@ def edit_topic_post_html(slug):
         post_html = cleaner.clean(request_json.get("post", ""))
     except:
         return abort(500)
+        
+    try:
+        character = Character.objects(slug=request_json.get("character"), creator=current_user._get_current_object(), hidden=False)[0]
+    except:
+        character = False
+        
+    try:
+        avatar_index = request_json.get("avatar")
+        if avatar_index == "":
+            avatar_index = 0
+        else:
+            avatar_index = int(avatar_index)
+        avatar = Attachment.objects(character=character, character_emote=True, character_gallery=True).order_by("created_date")[avatar_index]
+    except:
+        avatar = False
     
     history = PostHistory()
     history.creator = current_user._get_current_object()
@@ -415,6 +430,10 @@ def edit_topic_post_html(slug):
     post.history.append(history)
     post.html = post_html
     post.modified = arrow.utcnow().datetime
+    if character:
+        post.data["character"] = str(character.pk)
+    if avatar:
+        post.data["avatar"] = str(avatar.pk)
     post.save()
         
     clean_html_parser = ForumPostParser()    
