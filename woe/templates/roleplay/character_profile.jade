@@ -7,7 +7,7 @@
       .panel-heading {{character.name}}
       .panel-body.text-center
       {% if character.get_avatar() != "" %}
-      img.center-block.profile-page-avatar#profile-avatar(src="/static/uploads/{{character.get_avatar()}}", style="max-width: 200px;")
+      img.center-block.profile-page-avatar#profile-avatar(src="{{character.get_avatar(200)}}", style="max-width: 200px;")
       {% endif %}
       {% if character.motto != "" %}
       center
@@ -57,7 +57,7 @@
       .panel-body
         center
           {% if character.get_portrait() != "" %}
-          img.center-block.profile-page-avatar#profile-avatar(src="/static/uploads/{{character.get_portrait()}}", style="max-width: 250px;")
+          img.center-block.profile-page-avatar#profile-avatar(src="{{character.get_portrait(250)}}", style="max-width: 250px;")
           {% endif %}
           h3!= character.name
         hr(style="margin-bottom: 0px !important;")

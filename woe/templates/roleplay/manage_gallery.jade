@@ -34,7 +34,7 @@ if images
       for image in images
         .media(data-image="{{image.pk}}")
           .media-left
-            img.image-box(src="/static/uploads/{{image.path}}", style="max-width: 100px;")
+            img.image-box(src="{{image.get_specific_size(100)}}", style="max-width: 100px;")
           .media-body(style="padding-left: 20px;")
             form.form-horizontal
               .form-group

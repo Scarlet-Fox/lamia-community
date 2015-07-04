@@ -56,19 +56,19 @@ class Character(db.DynamicDocument):
     def __unicode__(self):
         return self.name
         
-    def get_avatar(self):
+    def get_avatar(self, size=200):
         if self.default_avatar:
-            return self.default_avatar.path
+            return self.default_avatar.get_specific_size(size)
         elif self.legacy_avatar_field:
-            return self.legacy_avatar_field
+            return "/static/uploads/"+self.legacy_avatar_field
         else:
             return ""
             
-    def get_portrait(self):
+    def get_portrait(self, size=250):
         if self.default_gallery_image:
-            return self.default_gallery_image.path
+            return self.default_gallery_image.get_specific_size(size)
         elif self.legacy_gallery_field:
-            return self.legacy_gallery_field
+            return "/static/uploads/"+self.legacy_gallery_field
         else:
             return ""
         

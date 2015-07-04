@@ -477,10 +477,10 @@ def create_attachment_for_character(slug):
         attach.save()
         image.save(filename=upload_path)
         
-        if character.default_avatar == None:
+        if character.default_avatar == None and character.legacy_avatar_field == None:
             character.update(default_avatar=attach)
             
-        if character.default_gallery_image == None:
+        if character.default_gallery_image == None and character.legacy_gallery_field == None:
             character.update(default_gallery_image=attach)
         
         return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
