@@ -430,7 +430,7 @@ def edit_topic_post_html(slug):
     
     try:
         if post.data.has_key("character"):
-            old_character = Character.objects(pk=post.data["character"])
+            old_character = Character.objects(pk=post.data["character"])[0]
             old_character.posts.remove(post)
             old_character.save()
     except:
