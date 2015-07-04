@@ -15,6 +15,9 @@
       .form-group
         {{ form.password.label }}
         {{ form.password(class="form-control") }}
+      .form-group
+        label
+          {{ form.anonymouse() }}&nbsp;&nbsp;Anonymous login?
       {{ form.redirect_to(class="form-control") }}
       button(type="submit").btn.btn-default Submit
       &nbsp;&nbsp;&nbsp;

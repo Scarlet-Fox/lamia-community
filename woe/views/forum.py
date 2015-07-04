@@ -328,7 +328,7 @@ def topic_posts(slug):
             parsed_post["is_author"] = False   
         
         if post.author.last_seen != None:
-            if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime:
+            if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime and post.author.hide_login != True:
                 parsed_post["author_online"] = True
             else:
                 parsed_post["author_online"] = False
@@ -841,7 +841,8 @@ def index():
         user_already_posted.append(status.author_name)
         cleaned_statuses.append(status)
     
-    online_users = User.objects(last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
+    online_users = User.objects(last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime, hide_login=False)
+    all_online_users = User.objects(last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
     post_count = Post.objects().count()
     member_count = User.objects(banned=False).count()
     newest_member = User.objects(banned=False).order_by("-joined")[0]
@@ -849,6 +850,6 @@ def index():
     recently_created_topics = Topic.objects(post_count__gt=0, hidden=False).order_by("-created")[:5]
     
     return render_template("index.jade", page_title="World of Equestria!",
-        categories=categories, status_updates=cleaned_statuses[:5], online_users=online_users,
+        categories=categories, status_updates=cleaned_statuses[:5], online_users=all_online_users,
         post_count=post_count, member_count=member_count, newest_member=newest_member, 
         online_user_count=online_users.count(), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)

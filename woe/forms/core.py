@@ -77,6 +77,7 @@ class RegistrationForm(Form):
 class LoginForm(Form):
     username = StringField('Username', [validators.InputRequired()])
     password = PasswordField('Password', [validators.InputRequired()])
+    anonymouse = BooleanField('Anonymous login?')
     redirect_to = HiddenField('Next')
     
     def __get_user__(self, login_name):
