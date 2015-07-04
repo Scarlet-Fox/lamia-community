@@ -1,4 +1,4 @@
-from woe.models.core import User
+from woe.models.core import User, Attachment
 from woe.parsers import ForumPostParser
 from woe.forms.roleplay import CharacterForm
 from woe import app
@@ -6,15 +6,31 @@ from flask import abort, redirect, url_for, request, render_template, make_respo
 from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
 import os
-import arrow
+import arrow, hashlib, mimetypes, time
 from woe.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q
 from mongoengine.queryset import Q
 from woe.models.roleplay import Character, CharacterHistory, get_character_slug
+from wand.image import Image
 
 @app.route('/characters')
 @login_required
 def character_database():
     return render_template("roleplay/characters.jade", page_title="Characters - World of Equestria")
+
+@app.route('/characters/<slug>/manage-gallery', methods=["GET",])
+@login_required
+def manage_gallery(slug):
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        abort(404) 
+        
+    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+        return abort(404)
+        
+    images = Attachment.objects(character=character)
+        
+    return render_template("roleplay/manage_gallery.jade", character=character, images=images, page_title="Edit %s's Gallery - Character Database - World of Equestria" % unicode(character.name))
 
 @app.route('/characters/new-character', methods=["GET","POST"])
 @login_required
@@ -59,8 +75,7 @@ def create_character():
     else:
         pass
     
-    return render_template("roleplay/new_character.jade", form=form, page_title="Create a Character - World of Equestria")    
-
+    return render_template("roleplay/new_character.jade", form=form, page_title="Create a Character - World of Equestria")
 
 @app.route('/characters/<slug>/edit-profile', methods=["GET","POST"])
 @login_required
@@ -68,7 +83,10 @@ def character_edit_profile(slug):
     try:
         character = Character.objects(slug=slug.strip().lower())[0]
     except IndexError:
-        abort(404)
+        return abort(404)
+        
+    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+        return abort(404)
     
     form = CharacterForm(csrf_enabled=False)
     if form.validate_on_submit():
@@ -287,3 +305,123 @@ def character_basic_profile(slug):
         character.other = parser.parse(character.other)
         
     return render_template("roleplay/character_profile.jade", character=character, page_title="%s - Character Database - World of Equestria" % (unicode(character.name),))
+
+@app.route('/characters/<slug>/manage-gallery/make-default-profile', methods=["POST",])
+@login_required
+def set_default_character_profile_image(slug):
+    request_json = request.get_json(force=True)
+    
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        return abort(404) 
+        
+    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+        return abort(404)
+        
+    try:
+        attachment = Attachment.objects(pk=request_json["pk"])[0]
+    except IndexError:
+        return abort(404)
+        
+    if attachment.character != character:
+        return abort(404)
+        
+    character.update(legacy_gallery_field=None)
+    character.update(default_gallery_image=attachment)
+    return app.jsonify(success=True)
+
+@app.route('/characters/<slug>/manage-gallery/make-default-avatar', methods=["POST",])
+@login_required
+def set_default_character_avatar(slug):
+    request_json = request.get_json(force=True)
+    
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        return abort(404) 
+        
+    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+        return abort(404)
+        
+    try:
+        attachment = Attachment.objects(pk=request_json["pk"])[0]
+    except IndexError:
+        return abort(404)
+        
+    if attachment.character != character:
+        return abort(404)
+        
+    character.update(legacy_avatar_field=None)
+    character.update(default_avatar=attachment)
+    return app.jsonify(success=True)
+
+@app.route('/characters/<slug>/manage-gallery/edit-image', methods=["POST",])
+@login_required
+def edit_gallery_image(slug):
+    request_json = request.get_json(force=True)
+    
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        return abort(404) 
+        
+    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+        return abort(404)
+        
+    try:
+        attachment = Attachment.objects(pk=request_json["pk"])[0]
+    except IndexError:
+        return abort(404)
+        
+    if attachment.character != character:
+        return abort(404)
+        
+    attachment.update(caption=request_json.get("author", ""))
+    attachment.update(alt=request_json.get("caption", ""))
+    attachment.update(origin_url=request_json.get("source", ""))
+    
+    return app.jsonify(success=True)
+
+@app.route('/characters/<slug>/manage-gallery/attach', methods=['POST',])
+@login_required
+def create_attachment_for_character(slug):
+    file = request.files['file']
+    if file:
+        filename = secure_filename(file.filename)
+        image = Image(file=file)
+        img_bin = image.make_blob()
+        img_hash = hashlib.sha512(img_bin).hexdigest()
+            
+        try:
+            character = Character.objects(slug=slug.strip().lower())[0]
+        except IndexError:
+            abort(404) 
+        
+        if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+            return abort(404)
+        
+        attach = Attachment()
+        attach.character = character
+        attach.character_name = character.name
+        attach.character_gallery = True
+        attach.character_emote = False
+        attach.extension = filename.split(".")[-1]
+        attach.x_size = image.width
+        attach.y_size = image.height
+        attach.mimetype = mimetypes.guess_type(filename)[0]
+        attach.size_in_bytes = len(img_bin)
+        attach.owner_name = current_user._get_current_object().login_name
+        attach.owner = current_user._get_current_object()
+        attach.alt = filename
+        attach.used_in = 0
+        attach.created_date = arrow.utcnow().datetime
+        attach.file_hash = img_hash
+        attach.linked = False
+        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time.time())+"_"+str(current_user.pk)+filename)
+        attach.path = str(time.time())+"_"+str(current_user.pk)+filename
+        attach.save()
+        image.save(filename=upload_path)
+        return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
+    else:
+        return abort(404)

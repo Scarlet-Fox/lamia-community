@@ -572,10 +572,13 @@ class Attachment(db.DynamicDocument):
     linked = db.BooleanField(default=False)
     origin_url = db.StringField()
     origin_domain = db.StringField()
+    caption = db.StringField(default="")
     
     # RP Specific
     character = db.ReferenceField("Character")
     character_name = db.StringField()
+    character_gallery = db.BooleanField(default=False)
+    character_emote = db.BooleanField(default=False)
     
     meta = {
         'indexes': [
