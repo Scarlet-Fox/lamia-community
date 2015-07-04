@@ -32,6 +32,9 @@
           strong Species : 
           {{character.species|e}}
           br
+        strong Creator : 
+        a.hover_user(href="/member/{{character.creator.login_name}}") {{character.creator.display_name|e}}
+        br
         if character.age or character.species
           hr
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
