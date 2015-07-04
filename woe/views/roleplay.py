@@ -28,7 +28,7 @@ def manage_gallery(slug):
     if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
         return abort(404)
         
-    images = Attachment.objects(character=character)
+    images = Attachment.objects(character=character, character_gallery=True)
         
     return render_template("roleplay/manage_gallery.jade", character=character, images=images, page_title="Edit %s's Gallery - Character Database - World of Equestria" % unicode(character.name))
 
@@ -306,6 +306,60 @@ def character_basic_profile(slug):
         
     return render_template("roleplay/character_profile.jade", character=character, page_title="%s - Character Database - World of Equestria" % (unicode(character.name),))
 
+@app.route('/characters/<slug>/manage-gallery/toggle-emote', methods=["POST",])
+@login_required
+def toggle_character_gallery_image_emote(slug):
+    request_json = request.get_json(force=True)
+    
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        return abort(404) 
+        
+    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+        return abort(404)
+        
+    try:
+        attachment = Attachment.objects(pk=request_json["pk"])[0]
+    except IndexError:
+        return abort(404)
+        
+    if attachment.character != character:
+        return abort(404)
+    
+    attachment.update(character_emote=not attachment.character_emote)    
+    return app.jsonify(success=True)
+
+@app.route('/characters/<slug>/manage-gallery/remove-image', methods=["POST",])
+@login_required
+def remove_image_from_character_gallery(slug):
+    request_json = request.get_json(force=True)
+    
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        return abort(404) 
+        
+    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+        return abort(404)
+        
+    try:
+        attachment = Attachment.objects(pk=request_json["pk"])[0]
+    except IndexError:
+        return abort(404)
+        
+    if attachment.character != character:
+        return abort(404)
+        
+    if attachment == character.default_avatar:
+        character.update(default_avatar=None)
+        
+    if attachment == character.default_gallery_image:
+        character.update(default_gallery_image=None)
+    
+    attachment.update(character_gallery=False)    
+    return app.jsonify(success=True)
+
 @app.route('/characters/<slug>/manage-gallery/make-default-profile', methods=["POST",])
 @login_required
 def set_default_character_profile_image(slug):
@@ -422,6 +476,13 @@ def create_attachment_for_character(slug):
         attach.path = str(time.time())+"_"+str(current_user.pk)+filename
         attach.save()
         image.save(filename=upload_path)
+        
+        if character.default_avatar == None:
+            character.update(default_avatar=attach)
+            
+        if character.default_gallery_image == None:
+            character.update(default_gallery_image=attach)
+        
         return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
     else:
         return abort(404)

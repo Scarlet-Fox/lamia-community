@@ -32,7 +32,35 @@ $ ->
     data = 
       pk: element.parent().parent().data("image")
     $.post window.location+"/make-default-avatar", JSON.stringify(data), (data) ->
-      
+  
+  $(".toggle-emote-button").click (e) ->
+    element = $(this)
+    if element.data("status") == "yes"
+      element.text("Add to Avatars")
+      element.removeClass("btn-success")
+      element.addClass("btn-default")
+      element.data("status", "no")
+    else
+      element.text("Remove from Avatars")
+      element.removeClass("btn-default")
+      element.addClass("btn-success")
+      element.data("status", "yes")
+    data = 
+      pk: element.parent().parent().data("image")
+    $.post window.location+"/toggle-emote", JSON.stringify(data), (data) ->
+  
+  $(".delete-button").click (e) ->
+    element = $(this)
+    element.addClass("disabled")
+    element.next(".confirm-delete").show()
+    
+  $(".confirm-delete").click (e) ->
+    element = $(this)
+    data = 
+      pk: element.parent().parent().data("image")
+    $.post window.location+"/remove-image", JSON.stringify(data), (data) ->
+      window.location = window.location
+  
   $(".toggle-default-profile-button").click (e) ->
     element = $(this)
     $(".toggle-default-profile-button").removeClass("btn-success")
