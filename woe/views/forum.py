@@ -116,12 +116,15 @@ def new_post_in_topic(slug):
     new_post.topic = topic
     new_post.topic_name = topic.title
     new_post.created = arrow.utcnow().datetime
-    if character:
-        new_post.data["character"] = str(character.pk)
-    if avatar:
-        new_post.data["avatar"] = str(avatar.pk)
-    new_post.save()
-    character.update(add_to_set__posts=new_post)
+    try:
+        if character:
+            new_post.data["character"] = str(character.pk)
+        if avatar:
+            new_post.data["avatar"] = str(avatar.pk)
+        new_post.save()
+        character.update(add_to_set__posts=new_post)
+    except:
+        pass
     
     topic.last_post_by = current_user._get_current_object()
     topic.last_post_date = new_post.created
