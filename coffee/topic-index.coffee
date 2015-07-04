@@ -451,7 +451,11 @@ $ ->
                   {{/if}}
                   <span class="hidden-md hidden-sm hidden-lg">
                   {{#unless roles}}
-                  <span style="color:#F88379;"><strong>Members</strong></span>
+                  {{#unless character_name}}
+                    <span style="color:#F88379;"><strong>Members</strong></span><br>
+                  {{else}}
+                    <span style="color:#B00E0E;"><strong>Characters</strong></span><br>
+                  {{/unless}}
                   {{else}}
                   {{#if roles}}
                   {{#each roles}}
@@ -462,7 +466,7 @@ $ ->
                   {{/if}}
                   {{/unless}}
                   </span>
-                  {{#unless character_avatar}}
+                  {{#unless character_name}}
                     <span style="color:#F88379;" class="hidden-xs"><strong>Members</strong></span><br>
                   {{else}}
                     <span style="color:#B00E0E;" class="hidden-xs"><strong>Characters</strong></span><br>
