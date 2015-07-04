@@ -158,7 +158,32 @@ def new_post_in_topic(slug):
     parsed_post["group_pre_html"] = new_post.author.group_pre_html
     parsed_post["author_group_name"] = new_post.author.group_name
     parsed_post["group_post_html"] = new_post.author.group_post_html
-        
+    if new_post.data.has_key("character"):
+        try:
+            character = Character.objects(pk=new_post.data["character"], creator=new_post.author)[0]
+            parsed_post["character_name"] = character.name
+            parsed_post["character_slug"] = character.slug
+        except:
+            pass
+    else:
+        character = None
+    
+    if new_post.data.has_key("avatar"):
+        try:
+            a = Attachment.objects(pk=new_post.data["avatar"], owner=new_post.author)[0]
+            parsed_post["character_avatar_small"] = a.get_specific_size(60)
+            parsed_post["character_avatar_large"] = a.get_specific_size(200)
+            parsed_post["character_avatar"] = True
+        except:
+            pass
+    else:
+        try:
+            parsed_post["character_avatar_small"] = character.default_avatar.get_specific_size(60)
+            parsed_post["character_avatar_large"] = character.default_avatar.get_specific_size(200)
+            parsed_post["character_avatar"] = True
+        except:
+            pass
+
     if current_user.is_authenticated():
         if new_post.author.pk == current_user.pk:
             parsed_post["is_author"] = True

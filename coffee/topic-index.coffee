@@ -36,6 +36,7 @@ $ ->
               data.post.can_boop = false
             else
               data.post.can_boop = true
+            data.post._show_character_badge = not window.roleplay_area
             $("#post-container").append topic.postHTML data.post
             window.addExtraHTML $("#post-"+data.post._id)
             if topic.inline_editor?
@@ -79,6 +80,7 @@ $ ->
                 data.newest_post._is_topic_mod = topic.is_mod
                 data.newest_post._is_logged_in = topic.is_logged_in
                 data.newest_post.author_login_name = window.woe_is_me
+                data.newest_post._show_character_badge = not window.roleplay_area
                 $("#post-container").append topic.postHTML data.newest_post
                 window.addExtraHTML $("#post-"+data.newest_post._id)
               else
