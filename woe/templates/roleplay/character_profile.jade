@@ -57,7 +57,7 @@
     {% block profile_content %}
     .panel.panel-default
       .panel-heading Basic Profile
-      .panel-body
+      .panel-body.character-profile
         center
           {% if character.get_portrait() != "" %}
           img.center-block.profile-page-avatar#profile-avatar(src="{{character.get_portrait(250)}}", style="max-width: 250px;")
@@ -97,6 +97,6 @@
 {% block script %}
 script(type="text/javascript")
   $(document).ready(function(){
-    window.addExtraHTML()
+    window.addExtraHTML(".character-profile")
   });
 {% endblock %}
