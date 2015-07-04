@@ -209,6 +209,34 @@ def character_recent_activity(slug):
         
     return render_template("roleplay/character_posts.jade", character=character, page_title="%s - Character Database - World of Equestria" % (unicode(character.name),))  
 
+@app.route('/user-characters-api', methods=["POST",])
+@login_required
+def send_user_characters():
+    characters = Character.objects(creator=current_user._get_current_object()).order_by("name")
+    character_data = []
+    for character in characters:
+        parsed_character = {}
+        parsed_character["name"] = character.name
+        parsed_character["slug"] = character.slug
+        try:
+            parsed_character["default_avvie"] = character.default_avatar.get_specific_size(50)
+        except:
+            parsed_character["default_avvie"] = ""
+        parsed_character["alternate_avvies"] = []
+        
+        if parsed_character["default_avvie"] != "":
+            parsed_character["alternate_avvies"].append({"url": character.default_avatar.get_specific_size(50), "alt": character.default_avatar.alt})
+            
+        for attachment in Attachment.objects(character=character, character_emote=True, character_gallery=True).order_by("created_date"):
+            if attachment == character.default_avatar:
+                continue
+            parsed_attachment = {}
+            parsed_attachment["url"] = attachment.get_specific_size(50)
+            parsed_attachment["alt"] = attachment.alt
+            parsed_character["alternate_avvies"].append(parsed_attachment)
+        character_data.append(parsed_character)
+    return app.jsonify(characters=character_data)
+
 @app.route('/character-list-api', methods=["GET",])
 @login_required
 def character_list_api():    
@@ -421,6 +449,7 @@ def set_default_character_avatar(slug):
         
     character.update(legacy_avatar_field=None)
     character.update(default_avatar=attachment)
+    attachment.update(character_emote=True)
     return app.jsonify(success=True)
 
 @app.route('/characters/<slug>/manage-gallery/edit-image', methods=["POST",])

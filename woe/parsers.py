@@ -10,6 +10,7 @@ from flask.ext.login import current_user
 from threading import Thread
 from woe.models.core import Attachment, User, PrivateMessage
 from woe.models.forum import Post
+from woe.models.roleplay import Character
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\]')
@@ -147,6 +148,12 @@ class ForumPostParser(object):
         for reply in replies:
             if reply[1] == "post":
                 _replying_to = Post.objects(pk=reply[0])[0]
+                if _replying_to.data.has_key("character"):
+                    try:
+                        character = Character.objects(pk=_replying_to.data["character"], creator=_replying_to.author)[0]
+                        _replying_to.author.display_name = character.name
+                    except:
+                        pass
                 html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
                 %s

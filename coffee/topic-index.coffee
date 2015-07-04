@@ -11,8 +11,10 @@ $ ->
       @paginationHTML = Handlebars.compile(@paginationHTMLTemplate())
       @is_mod = window._is_topic_mod
       @is_logged_in = window._is_logged_in
+      @selected_character = ""
+      @selected_avatar = ""
       
-      socket = io.connect('http://' + document.domain + ':3000' + '');
+      socket = io.connect('http://' + document.domain + ':3000' + '')
       
       window.onbeforeunload = () ->
         if topic.inline_editor.quill.getText().trim() != ""
@@ -52,7 +54,7 @@ $ ->
       
         @inline_editor.onSave (html, text) ->
           topic.inline_editor.disableSaveButton()
-          $.post "/t/#{topic.slug}/new-post", JSON.stringify({post: html, text: text}), (data) =>
+          $.post "/t/#{topic.slug}/new-post", JSON.stringify({post: html, text: text, character: topic.selected_character, avatar: topic.selected_avatar}), (data) =>
             topic.inline_editor.enableSaveButton()
             if data.closed_topic?
               topic.inline_editor.flashError "Topic Closed: #{data.closed_message}"
@@ -224,7 +226,90 @@ $ ->
         , 200)
         
       window.RegisterAttachmentContainer "#post-container"
+      
+      $.post "/user-characters-api", {}, (data) =>
+        @characters = data.characters
+        if @characters.length > 0
+          quill_id = @inline_editor.quillID
+          # $("#upload-files-#{quill_id}").after """
+          #   <button type="button" class="btn btn-default post-post" style="margin-left: 3px;" id="character-picker-#{quill_id}">Characters</button>
+          #   """
+          characterPickerTemplate = """
+          <!-- <label style="margin-left: 10px;">Character Picker: </label> -->
+          <select id="character-picker-{{quill_id}}" style="margin-left: 5px; width: 300px;">
+            <option value="" selected></option>
+            {{#each characters}}
+            <option value="{{slug}}" data-image="{{default_avvie}}">
+                {{name}}
+            </option>
+            {{/each}}
+          </select>
+          """
+          characterPickerHTML = Handlebars.compile(characterPickerTemplate)
+          avatarPickerTemplate = """
+          <!-- <label style="margin-left: 10px;">Character Picker: </label> -->
+          <select id="avatar-picker-{{quill_id}}" style="margin-left: 5px; width: 80px;">
+            <option value="" selected></option>
+            {{#each avatars}}
+            <option value="{{@index}}" data-count="{{@index}}" data-image="{{url}}" {{#if @first}}selected{{/if}}>
+            </option>
+            {{/each}}
+          </select>
+          """
+          avatarPickerHTML = Handlebars.compile(avatarPickerTemplate)
+          $("#upload-files-#{quill_id}").after(characterPickerHTML({characters: @characters, quill_id: quill_id}))
+          $("#character-picker-#{quill_id}").select2
+            templateResult: (result) ->
+              element = $(result.element)
+              image = element.data("image")
+              if image?
+                return """
+                <div class="media-left">
+                  <img src="#{image}" style="max-width: 50px;" />
+                </div>
+                <div class="media-body">
+                  #{element.text()}
+                </div>
+                """
+              else
+                return "Clear Character"
+            escapeMarkup: (text) ->
+              return text
               
+          $("#character-picker-#{quill_id}").on "select2:select", (e) =>
+            @selected_character = $("#character-picker-#{quill_id}").val()
+            try
+              $("#avatar-picker-#{quill_id}").select2("destroy")
+              $("#avatar-picker-#{quill_id}").remove()
+            catch
+              
+            selected = {}
+            for character in @characters
+              if character.slug == $("#character-picker-#{quill_id}").val()
+                selected = character
+                break
+            if selected.alternate_avvies.length > 0
+              $("#inline-editor-buttons-#{quill_id}").append(avatarPickerHTML({avatars: selected.alternate_avvies, quill_id: quill_id}))
+              $("#avatar-picker-#{quill_id}").select2
+                templateResult: (result) ->
+                  element = $(result.element)
+                  image = element.data("image")
+                  if image?
+                    return """
+                    <img src="#{image}" style="max-width: 50px;" />
+                    """
+                templateSelection: (result) ->
+                  element = $(result.element)
+                  alt = element.data("count")+1
+                  return """
+                    #{alt}
+                    """                    
+                escapeMarkup: (text) ->
+                  return text
+              
+              $("#avatar-picker-#{quill_id}").on "select2:select", (e) =>
+                @selected_avatar = $("#avatar-picker-#{quill_id}").val()
+                  
     paginationHTMLTemplate: () ->
       return """
           <ul class="pagination">
@@ -259,13 +344,17 @@ $ ->
             <li class="list-group-item post-listing-info">
               <div class="row">
                 <div class="col-xs-4 hidden-md hidden-lg">
-                  <a href="/member/{{author_login_name}}"><img src="{{user_avatar_60}}" width="{{user_avatar_x_60}}" height="{{user_avatar_y_60}}" class="avatar-mini"></a>
+                  {{#unless character_avatar}}
+                    <a href="/member/{{author_login_name}}"><img src="{{user_avatar_60}}" width="{{user_avatar_x_60}}" height="{{user_avatar_y_60}}" class="avatar-mini"></a>
+                  {{else}}
+                    <a href={{#unless _show_character_badge}}"/characters/{{character_slug}}" target="_blank"{{else}}"/member/{{author_login_name}}"{{/unless}}><img src="{{character_avatar_small}}" style="max-width: 60px;" class="avatar-mini"></a>
+                  {{/unless}}
                 </div>
                 <div class="col-md-3 col-xs-8">
                   {{#if author_online}}
-                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> <a class="hover_user" href="/member/{{author_login_name}}">{{author_name}}</a></b>
+                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> <a class="hover_user" href="/member/{{author_login_name}}">{{#unless character_name}}{{author_name}}{{else}}{{character_name}}{{/unless}}</a></b>
                   {{else}}
-                  <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <a class="hover_user" href="/member/{{author_login_name}}" class="inherit_colors">{{author_name}}</a></b>
+                  <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <a class="hover_user" href="/member/{{author_login_name}}" class="inherit_colors">{{#unless character_name}}{{author_name}}{{else}}{{character_name}}{{/unless}}</a></b>
                   {{/if}}
                   <span class="hidden-md hidden-sm hidden-lg">
                   {{#unless roles}}
@@ -280,7 +369,11 @@ $ ->
                   {{/if}}
                   {{/unless}}
                   </span>
-                  <span style="color:#F88379;" class="hidden-xs"><strong>Members</strong></span><br>
+                  {{#unless character_avatar}}
+                    <span style="color:#F88379;" class="hidden-xs"><strong>Members</strong></span><br>
+                  {{else}}
+                    <span style="color:#B00E0E;" class="hidden-xs"><strong>Characters</strong></span><br>
+                  {{/unless}}
                   <span class="hidden-md hidden-lg">Posted {{created}}</span>
                 </div>
                 <div class="col-md-9 hidden-xs hidden-sm">
@@ -292,9 +385,21 @@ $ ->
             <li class="list-group-item post-listing-post">
               <div class="row">
                 <div class="col-md-3" style="text-align: center;">
-                  <a href="/member/{{author_login_name}}"><img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm"></a>
+                  {{#unless character_avatar}}
+                    <a href="/member/{{author_login_name}}"><img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm"></a>
+                  {{else}}
+                    <a href={{#unless _show_character_badge}}"/characters/{{character_slug}}" target="_blank"{{else}}"/member/{{author_login_name}}"{{/unless}}><img src="{{character_avatar_large}}" style="max-width: 200px;" class="post-member-avatar hidden-xs hidden-sm"></a>
+                  {{/unless}}
                   <span class="hidden-xs hidden-sm"><br><br>
                   <div class="post-member-self-title">{{user_title}}</div>
+                    {{#if _show_character_badge}}
+                    {{#if character_name}}
+                    <a href="/characters/{{character_slug}}" target="_blank"><img src="/static/emoticons/button_character_by_angelishi-d6wlo5k.gif"></a>
+                    {{#if roles}}
+                    <br>
+                    {{/if}}
+                    {{/if}}
+                    {{/if}}
                     {{#if roles}}
                     <a class="btn btn-default toggle-show-roles-button btn-xs" style="margin-top: 5px;">Community Roles</a>
                     <div class="roles-div" style="display: none;">
@@ -398,6 +503,7 @@ $ ->
           post.count = first_post+i
           post._is_topic_mod = @is_mod
           post._is_logged_in = @is_logged_in
+          post._show_character_badge = not window.roleplay_area
           if @is_logged_in
             post.show_boop = true
           post.direct_url = "/t/#{@slug}/page/#{@page}/post/#{post._id}"

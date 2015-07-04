@@ -3,7 +3,7 @@ import MySQLdb.cursors
 from woe.models.roleplay import Character
 from woe.models.core import User, Attachment
 from woe.models.forum import Post
-import json, os, re, HTMLParser
+import json, os, re, HTMLParser, mimetypes
 from slugify import slugify
 from wand.image import Image
 from mongoengine.queryset import Q
@@ -14,6 +14,8 @@ db = MySQLdb.connect(user=settings_file["woe_old_user"], db=settings_file["woe_o
 
 def get_character_slug(name):
     slug = slugify(name, max_length=100, word_boundary=True, save_order=True)
+    if slug.strip() == "":
+        slug="_"
     
     def try_slug(slug, count=0):
         new_slug = slug
@@ -49,9 +51,68 @@ for character in c.fetchall():
     c.personality = character["field_21"].encode("latin1")
     c.backstory = character["field_22"].encode("latin1")
     c.other = character["field_26"].encode("latin1")
-    c.legacy_avatar_field = character["field_43"].encode("latin1")
-    c.legacy_gallery_field = character["field_27"].encode("latin1")
-    #c.save()
+    c.save()
+    
+    #Create avatar attachment
+    legacy_avatar = character["field_43"].encode("latin1").strip()
+    if legacy_avatar != "":
+        attach = Attachment()
+        attach.path = legacy_avatar
+        attach.mimetype = mimetypes.guess_type(legacy_avatar)[0]
+        if attach.mimetype == None:
+            attach.mimetype = "Unknown."
+        attach.extension = attach.path.split(".")[-1]
+        if attach.extension not in ["png", "gif", "jpg", "jpeg"]:
+            continue
+        filesystem_path = os.path.join(os.getcwd(), "woe/static/uploads", legacy_avatar)
+        try:
+            image = Image(filename=filesystem_path)
+            image_blob = image.make_blob()
+        except:
+            continue
+        attach.size_in_bytes = len(image_blob)
+        attach.created_date = c.created
+        attach.owner = c.creator
+        attach.owner_name = c.creator.login_name
+        attach.alt = legacy_avatar
+        attach.x_size = image.width
+        attach.y_size = image.height
+        attach.character = c
+        attach.character_emote = True
+        attach.character_gallery = True
+        attach.character_name = c.name
+        attach.save()
+        c.default_avatar = attach
+
+    legacy_gallery_field = character["field_27"].encode("latin1").strip()
+    if legacy_gallery_field != "":
+        attach = Attachment()
+        attach.path = legacy_gallery_field
+        attach.mimetype = mimetypes.guess_type(legacy_gallery_field)[0]
+        if attach.mimetype == None:
+            attach.mimetype = "Unknown."
+        attach.extension = attach.path.split(".")[-1]
+        if attach.extension not in ["png", "gif", "jpg", "jpeg"]:
+            continue
+        filesystem_path = os.path.join(os.getcwd(), "woe/static/uploads", legacy_gallery_field)
+        try:
+            image = Image(filename=filesystem_path)
+            image_blob = image.make_blob()
+        except:
+            continue
+        attach.size_in_bytes = len(image_blob)
+        attach.created_date = c.created
+        attach.owner = c.creator
+        attach.owner_name = c.creator.login_name
+        attach.alt = legacy_gallery_field
+        attach.x_size = image.width
+        attach.y_size = image.height
+        attach.character = c
+        attach.character_emote = False
+        attach.character_gallery = True
+        attach.character_name = c.name
+        attach.save()
+        c.default_gallery_image = attach
     
     posts = Post.objects(Q(html__contains="[postcharacter=%s|" % (c.old_character_id,)) | Q(html__contains="[postcharacter=%s]" % (c.old_character_id,)) | Q(html__contains="[character=%s]" % (c.old_character_id,)) | Q(html__contains="[character=%s|" % (c.old_character_id,)))
     

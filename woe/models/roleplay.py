@@ -4,6 +4,8 @@ from woe.models.core import User
 
 def get_character_slug(name):
     slug = slugify(name, max_length=100, word_boundary=True, save_order=True)
+    if slug.strip() == "":
+        slug="_"
     
     def try_slug(slug, count=0):
         new_slug = slug
@@ -23,7 +25,7 @@ class CharacterHistory(db.DynamicEmbeddedDocument):
     data = db.DictField()
     
 class Character(db.DynamicDocument):
-    slug = db.StringField(required=True)
+    slug = db.StringField(required=True, unique=True)
     old_character_id = db.IntField()
     creator = db.ReferenceField("User", reverse_delete_rule=db.NULLIFY)
     creator_name = db.StringField(required=True)

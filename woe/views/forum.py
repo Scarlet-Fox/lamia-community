@@ -1,7 +1,8 @@
 from woe import app
-from woe.models.core import User, DisplayNameHistory, StatusUpdate
+from woe.models.core import User, DisplayNameHistory, StatusUpdate, Attachment
 from woe.parsers import ForumPostParser
 from woe.models.forum import Category, Post, Topic, Prefix, get_topic_slug, PostHistory
+from woe.models.roleplay import Character
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
@@ -93,6 +94,21 @@ def new_post_in_topic(slug):
     except:
         pass
         
+    try:
+        character = Character.objects(slug=request_json.get("character"), creator=current_user._get_current_object(), hidden=False)[0]
+    except:
+        character = False
+        
+    try:
+        avatar_index = request_json.get("avatar")
+        if avatar_index == "":
+            avatar_index = 0
+        else:
+            avatar_index = int(avatar_index)
+        avatar = Attachment.objects(character=character, character_emote=True, character_gallery=True).order_by("created_date")[avatar_index]
+    except:
+        avatar = False
+    
     new_post = Post()
     new_post.html = post_html
     new_post.author = current_user._get_current_object()
@@ -100,6 +116,10 @@ def new_post_in_topic(slug):
     new_post.topic = topic
     new_post.topic_name = topic.title
     new_post.created = arrow.utcnow().datetime
+    if character:
+        new_post.data["character"] = str(character.pk)
+    if avatar:
+        new_post.data["avatar"] = str(avatar.pk)
     new_post.save()
     
     topic.last_post_by = current_user._get_current_object()
@@ -314,7 +334,33 @@ def topic_posts(slug):
                 parsed_post["author_online"] = False
         else:
             parsed_post["author_online"] = False
-
+            
+        if post.data.has_key("character"):
+            try:
+                character = Character.objects(pk=post.data["character"], creator=post.author)[0]
+                parsed_post["character_name"] = character.name
+                parsed_post["character_slug"] = character.slug
+            except:
+                pass
+        else:
+            character = None
+        
+        if post.data.has_key("avatar"):
+            try:
+                a = Attachment.objects(pk=post.data["avatar"], owner=post.author)[0]
+                parsed_post["character_avatar_small"] = a.get_specific_size(60)
+                parsed_post["character_avatar_large"] = a.get_specific_size(200)
+                parsed_post["character_avatar"] = True
+            except:
+                pass
+        else:
+            try:
+                parsed_post["character_avatar_small"] = character.default_avatar.get_specific_size(60)
+                parsed_post["character_avatar_large"] = character.default_avatar.get_specific_size(200)
+                parsed_post["character_avatar"] = True
+            except:
+                pass
+        
         parsed_posts.append(parsed_post)
         
     return app.jsonify(posts=parsed_posts, count=post_count)    
@@ -444,7 +490,11 @@ def topic_index(slug, page, post):
         target_date = post.created
         posts_before_target = Post.objects(hidden=False, topic=topic, created__lt=target_date).count()
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
-        return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, initial_post=str(post.pk))
+
+        rp_topic = "false"
+        if topic.category.slug in ["roleplays", "scenarios"]:
+            rp_topic = "true"
+        return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, initial_post=str(post.pk), rp_area=rp_topic)
     
     topic.update(inc__view_count=1)
     try:
@@ -452,7 +502,12 @@ def topic_index(slug, page, post):
         topic.save()
     except:
         pass
-    return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page)
+
+    rp_topic = "false"
+    if topic.category.slug in ["roleplays", "scenarios"]:
+        rp_topic = "true"
+    
+    return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):

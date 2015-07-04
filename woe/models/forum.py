@@ -47,6 +47,8 @@ class Category(db.DynamicDocument):
 
 def get_topic_slug(title):
     slug = slugify(title, max_length=100, word_boundary=True, save_order=True)
+    if slug.strip() == "":
+        slug="_"
     
     def try_slug(slug, count=0):
         new_slug = slug
