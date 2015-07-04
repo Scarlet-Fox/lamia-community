@@ -41,7 +41,7 @@
             a(href="/characters/{{character.slug}}/view-posts") Roleplay Posts
             li(role="presentation")
               a(href="/characters/{{character.slug}}/gallery") Character Gallery
-    if current_user == character.author or current_user.is_admin
+    if current_user == character.creator or current_user.is_admin
       .panel.panel-default
         .panel-heading Edit
         .panel-body.text-center

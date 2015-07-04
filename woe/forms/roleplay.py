@@ -6,7 +6,7 @@ from wand.image import Image
 import shutil, pytz, arrow
 
 class CharacterForm(Form):
-    name = StringField('Name', [validators.InputRequired(),])
+    name = StringField('Name*', [validators.InputRequired(),])
     age = StringField('Age', default="")
     species = StringField('Species', default="")
     motto = StringField('Motto', default="")
