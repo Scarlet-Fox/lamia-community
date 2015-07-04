@@ -27,6 +27,7 @@ end_strike_re = re.compile(r'\[\/s\]')
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
+legacy_postcharacter_re = re.compile(r'\[(post)?character=.*?\]')
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -143,7 +144,10 @@ class ForumPostParser(object):
                 """ % (quote(url), size, "no", attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html)
                 continue
-                    
+        
+        #clean up old char tags
+        html = legacy_postcharacter_re.sub("", html)
+        
         replies = reply_re.findall(html)
         for reply in replies:
             if reply[1] == "post":

@@ -121,6 +121,7 @@ def new_post_in_topic(slug):
     if avatar:
         new_post.data["avatar"] = str(avatar.pk)
     new_post.save()
+    character.update(add_to_set__posts=new_post)
     
     topic.last_post_by = current_user._get_current_object()
     topic.last_post_date = new_post.created
@@ -427,13 +428,32 @@ def edit_topic_post_html(slug):
     if request_json.get("edit_reason", "").strip() == "":
         return app.jsonify(error="Please include an edit reason.")
     
+    try:
+        if post.data.has_key("character"):
+            old_character = Character.objects(pk=post.data["character"])
+            old_character.posts.remove(post)
+            old_character.save()
+    except:
+        pass
+    
     post.history.append(history)
     post.html = post_html
     post.modified = arrow.utcnow().datetime
-    if character:
-        post.data["character"] = str(character.pk)
-    if avatar:
-        post.data["avatar"] = str(avatar.pk)
+    if current_user._get_current_object() == post.author:
+        if character:
+            post.data["character"] = str(character.pk)
+        else:
+            try:
+                del post.data["character"]
+            except:
+                pass
+        if avatar:
+            post.data["avatar"] = str(avatar.pk)
+        else:
+            try:
+                del post.data["avatar"]
+            except:
+                pass
     post.save()
         
     clean_html_parser = ForumPostParser()    
