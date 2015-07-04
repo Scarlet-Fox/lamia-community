@@ -17,6 +17,19 @@ from wand.image import Image
 def character_database():
     return render_template("roleplay/characters.jade", page_title="Characters - World of Equestria")
 
+@app.route('/characters/<slug>/gallery', methods=["GET",])
+@login_required
+def character_gallery(slug):
+    try:
+        character = Character.objects(slug=slug.strip().lower())[0]
+    except IndexError:
+        abort(404) 
+    
+    images = Attachment.objects(character=character, character_gallery=True, character_emote=False)
+    emotes = Attachment.objects(character=character, character_gallery=True, character_emote=True)
+        
+    return render_template("roleplay/character_gallery.jade", character=character, images=images, emotes=emotes, page_title="%s's Gallery - Character Database - World of Equestria" % unicode(character.name))
+
 @app.route('/characters/<slug>/manage-gallery', methods=["GET",])
 @login_required
 def manage_gallery(slug):
@@ -39,19 +52,19 @@ def create_character():
     if form.validate_on_submit():
         cleaner = ForumHTMLCleaner()
         try:
-            name = cleaner.escape(form.name.data)
+            name = cleaner.basic_escape(form.name.data)
         except:
             return abort(500)
         try:
-            species = cleaner.escape(form.species.data)
+            species = cleaner.basic_escape(form.species.data)
         except:
             return abort(500)
         try:
-            motto = cleaner.escape(form.motto.data)
+            motto = cleaner.basic_escape(form.motto.data)
         except:
             return abort(500)
         try:
-            age = cleaner.escape(form.age.data)
+            age = cleaner.basic_escape(form.age.data)
         except:
             return abort(500)
 
@@ -92,19 +105,19 @@ def character_edit_profile(slug):
     if form.validate_on_submit():
         cleaner = ForumHTMLCleaner()
         try:
-            name = cleaner.escape(form.name.data)
+            name = cleaner.basic_escape(form.name.data)
         except:
             return abort(500)
         try:
-            species = cleaner.escape(form.species.data)
+            species = cleaner.basic_escape(form.species.data)
         except:
             return abort(500)
         try:
-            motto = cleaner.escape(form.motto.data)
+            motto = cleaner.basic_escape(form.motto.data)
         except:
             return abort(500)
         try:
-            age = cleaner.escape(form.age.data)
+            age = cleaner.basic_escape(form.age.data)
         except:
             return abort(500)
             
@@ -431,9 +444,11 @@ def edit_gallery_image(slug):
     if attachment.character != character:
         return abort(404)
         
-    attachment.update(caption=request_json.get("author", ""))
-    attachment.update(alt=request_json.get("caption", ""))
-    attachment.update(origin_url=request_json.get("source", ""))
+    cleaner = ForumHTMLCleaner()
+    
+    attachment.update(caption=cleaner.basic_escape(request_json.get("author", "")))
+    attachment.update(alt=cleaner.basic_escape(request_json.get("caption", "")))
+    attachment.update(origin_url=cleaner.basic_escape(request_json.get("source", "")))
     
     return app.jsonify(success=True)
 

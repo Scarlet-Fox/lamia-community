@@ -19,7 +19,8 @@ $ ->
       source: element.parent().parent().find(".source-of").val()
       author: element.parent().parent().find(".created-by").val()
     $.post window.location+"/edit-image", JSON.stringify(data), (data) ->
-      element.removeClass "disabled"
+      element.addClass "btn-success"
+      element.text "Saved!"
       
   $(".toggle-default-avatar-button").click (e) ->
     element = $(this)

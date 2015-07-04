@@ -41,15 +41,15 @@
             a(href="/characters/{{character.slug}}/view-posts") Roleplay Posts
             li(role="presentation")
               a(href="/characters/{{character.slug}}/gallery") Character Gallery
-    .panel.panel-default
-      .panel-heading Edit
-      .panel-body.text-center
-        ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
-          if current_user == character.author or current_user.is_admin
-            li(role="presentation")
-              a(href="/characters/{{character.slug}}/edit-profile") Edit Profile
-            li(role="presentation")
-              a(href="/characters/{{character.slug}}/manage-gallery") Manage Gallery
+    if current_user == character.author or current_user.is_admin
+      .panel.panel-default
+        .panel-heading Edit
+        .panel-body.text-center
+          ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+              li(role="presentation")
+                a(href="/characters/{{character.slug}}/edit-profile") Edit Profile
+              li(role="presentation")
+                a(href="/characters/{{character.slug}}/manage-gallery") Manage Gallery
   .col-sm-8
     {% block profile_content %}
     .panel.panel-default

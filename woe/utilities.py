@@ -150,6 +150,10 @@ class ForumHTMLCleaner(object):
             safe_attrs_only=False
         )
         
+    def basic_escape(self, dirty_text):
+        text = cgi.escape(dirty_text)
+        return text    
+        
     def escape(self, dirty_text):
         text = cgi.escape(dirty_text)
             

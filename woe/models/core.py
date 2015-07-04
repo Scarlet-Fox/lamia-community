@@ -595,7 +595,7 @@ class Attachment(db.DynamicDocument):
         size_network_path = os.path.join("/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
         size_file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
         
-        if self.do_not_convert:
+        if self.do_not_convert or width > self.x_size:
             return network_path
         
         if os.path.exists(size_file_path):

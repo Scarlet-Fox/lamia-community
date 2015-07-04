@@ -779,3 +779,39 @@ a.inherit_colors {
 td {
   vertical-align: middle !important;
 }
+
+/* JSSOR ugly css */
+
+.jssorb05 {
+    position: absolute;
+}
+.jssorb05 div, .jssorb05 div:hover, .jssorb05 .av {
+    position: absolute;
+    /* size of bullet elment */
+    width: 16px;
+    height: 16px;
+    background: url(/static/assets/b05.png) no-repeat;
+    overflow: hidden;
+    cursor: pointer;
+}
+.jssorb05 div { background-position: -7px -7px; }
+.jssorb05 div:hover, .jssorb05 .av:hover { background-position: -37px -7px; }
+.jssorb05 .av { background-position: -67px -7px; }
+.jssorb05 .dn, .jssorb05 .dn:hover { background-position: -97px -7px; }
+
+.jssora11l, .jssora11r {
+    display: block;
+    position: absolute;
+    /* size of arrow element */
+    width: 37px;
+    height: 37px;
+    cursor: pointer;
+    background: url(/static/assets/a11.png) no-repeat;
+    overflow: hidden;
+}
+.jssora11l { background-position: -11px -41px; }
+.jssora11r { background-position: -71px -41px; }
+.jssora11l:hover { background-position: -131px -41px; }
+.jssora11r:hover { background-position: -191px -41px; }
+.jssora11l.jssora11ldn { background-position: -251px -41px; }
+.jssora11r.jssora11rdn { background-position: -311px -41px; }
