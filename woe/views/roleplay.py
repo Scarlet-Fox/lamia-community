@@ -224,12 +224,12 @@ def send_user_characters():
             parsed_character["default_avvie"] = ""
         parsed_character["alternate_avvies"] = []
         
-        if parsed_character["default_avvie"] != "":
-            parsed_character["alternate_avvies"].append({"url": character.default_avatar.get_specific_size(50), "alt": character.default_avatar.alt})
+        # if parsed_character["default_avvie"] != "":
+        #     parsed_character["alternate_avvies"].append({"url": character.default_avatar.get_specific_size(50), "alt": character.default_avatar.alt})
             
         for attachment in Attachment.objects(character=character, character_emote=True, character_gallery=True).order_by("created_date"):
-            if attachment == character.default_avatar:
-                continue
+            # if attachment == character.default_avatar:
+            #     continue
             parsed_attachment = {}
             parsed_attachment["url"] = attachment.get_specific_size(50)
             parsed_attachment["alt"] = attachment.alt
