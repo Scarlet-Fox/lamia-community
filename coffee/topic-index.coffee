@@ -10,6 +10,10 @@ $ ->
       @postHTML = Handlebars.compile(@postHTMLTemplate())
       @paginationHTML = Handlebars.compile(@paginationHTMLTemplate())
       @is_mod = window._is_topic_mod
+      if @is_mod == 0
+        @is_mod = false
+      else
+        @is_mod = true
       @is_logged_in = window._is_logged_in
       @selected_character = ""
       @selected_avatar = ""
@@ -37,6 +41,7 @@ $ ->
             else
               data.post.can_boop = true
             data.post._show_character_badge = not window.roleplay_area
+            data.post.is_author = false
             $("#post-container").append topic.postHTML data.post
             window.addExtraHTML $("#post-"+data.post._id)
             if topic.inline_editor?
