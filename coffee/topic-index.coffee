@@ -539,6 +539,7 @@ $ ->
                             </ul> -->
                           </div>
                         {{/if}}
+                          {{#if _is_logged_in}}
                           <div class="btn-group" style="">
                             {{#if _is_topic_mod}}
                             <button type="button" class="btn btn-default">Options</button>
@@ -572,6 +573,7 @@ $ ->
                                 </ul>
                               {{/if}}
                             {{/if}}
+                          {{/if}}
                           </div>
                         </div>
                     </div>
