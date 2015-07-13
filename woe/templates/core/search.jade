@@ -65,10 +65,22 @@ script(type="text/javascript")
     window.search_for = '{{query}}';
     window.start_date = '{{start_date}}';
     window.end_date = '{{end_date}}';
-    window.topics = JSON.parse('{{topics}}');
+    try {
+      window.topics = JSON.parse('{{topics}}');
+    } catch {
+      window.topics = [];
+    }
     window.content_type = '{{content_type}}';
-    window.categories = JSON.parse('{{categories}}');
-    window.authors = JSON.parse('{{authors}}');
+    try {
+      window.categories = JSON.parse('{{categories}}');
+    } catch {
+      window.categories = [];
+    }
+    try {
+      window.authors = JSON.parse('{{authors}}');
+    } catch {
+      window.authors = [];
+    }
   });
 
 {% assets filters="rjsmin", output="generated/search.js",
