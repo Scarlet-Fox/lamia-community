@@ -67,18 +67,18 @@ script(type="text/javascript")
     window.end_date = '{{end_date}}';
     try {
       window.topics = JSON.parse('{{topics}}');
-    } catch {
+    } catch (e) {
       window.topics = [];
     }
     window.content_type = '{{content_type}}';
     try {
       window.categories = JSON.parse('{{categories}}');
-    } catch {
+    } catch (e) {
       window.categories = [];
     }
     try {
       window.authors = JSON.parse('{{authors}}');
-    } catch {
+    } catch (e) {
       window.authors = [];
     }
   });
