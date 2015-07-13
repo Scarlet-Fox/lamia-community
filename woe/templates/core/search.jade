@@ -66,18 +66,18 @@ script(type="text/javascript")
     window.start_date = '{{start_date}}';
     window.end_date = '{{end_date}}';
     try {
-      window.topics = JSON.parse('{{topics}}');
+      window.topics = JSON.parse('{{topics.replace("\'", "")}}');
     } catch (e) {
       window.topics = [];
     }
     window.content_type = '{{content_type}}';
     try {
-      window.categories = JSON.parse('{{categories}}');
+      window.categories = JSON.parse('{{categories.replace("\'", "")}}');
     } catch (e) {
       window.categories = [];
     }
     try {
-      window.authors = JSON.parse('{{authors}}');
+      window.authors = JSON.parse('{{authors.replace("\'", "")}}');
     } catch (e) {
       window.authors = [];
     }
