@@ -141,7 +141,7 @@ $ ->
             </a>
             {{/if}}
         </div>
-        <p class="text-muted">by <a href="{{author_profile_link}}">{{author_name}}</a> - {{time}}
+        <p class="text-muted">by <a href="{{author_profile_link}}">{{author_name}}</a> - <a href="{{url}}">{{time}}</a>
         </p>
       </li>
     </ul>

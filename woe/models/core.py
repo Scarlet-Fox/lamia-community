@@ -537,6 +537,7 @@ class StatusUpdate(db.DynamicDocument):
         'indexes': [
             'old_ipb_id',
             '-created',
+            'last_replied',
             'author',
             'attached_to_user',
             {

@@ -138,9 +138,9 @@ def search_lookup():
             parsed_result["readmore"] = False
             parsed_results.append(parsed_result)
     elif content_type == "status":
-        _q_objects = _q_objects &  parse_search_string_return_q(query, ["message",])
+        _q_objects = _q_objects & (parse_search_string_return_q(query, ["comments__text",]) | parse_search_string_return_q(query, ["message",]))
         count = StatusUpdate.objects(_q_objects).count()
-        results = StatusUpdate.objects(_q_objects, hidden=False).order_by("-created")[(page-1)*pagination:pagination*page]
+        results = StatusUpdate.objects(_q_objects, hidden=False).order_by("-last_replied")[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
