@@ -72,9 +72,9 @@ def new_post_in_topic(slug):
     if current_user._get_current_object() in topic.banned_from_topic:
         return abort(404)
     
-    if topic.closed:
+    if topic.closed or topic.hidden:
         return app.jsonify(closed_topic=True, closed_message=topic.close_message)
-
+        
     request_json = request.get_json(force=True)
     
     if request_json.get("text", "").strip() == "":
@@ -302,6 +302,9 @@ def topic_posts(slug):
     
     if current_user._get_current_object() in topic.banned_from_topic:
         return abort(404)
+    
+    if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
+        return abort(404)
 
     request_json = request.get_json(force=True)
     
@@ -517,6 +520,11 @@ def topic_index(slug, page, post):
     
     if current_user._get_current_object() in topic.banned_from_topic:
         return abort(404)
+        
+    if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
+        return abort(404)
+        
+    print topic.hidden
         
     try:
         page = int(page)
