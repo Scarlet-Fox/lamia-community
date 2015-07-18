@@ -95,13 +95,13 @@ class ForumPostParser(object):
             if int(size) > 700:
                 size = "700"
                 
-            if (int(size) == attachment.x_size and attachment.size_in_bytes < 1024*1024) or attachment.size_in_bytes < 256*1024 or attachment.do_not_convert:
+            if attachment.size_in_bytes < 1024*1024 or attachment.do_not_convert:
                 url = os.path.join("/static/uploads", attachment.path)
                 show_box = "no"
             
                 image_html = """
                 <img class="attachment-image" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                """ % (quote(url), attachment.x_size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                """ % (quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
                 continue
                 
@@ -114,13 +114,17 @@ class ForumPostParser(object):
             if os.path.exists(sizepath):
                 url = os.path.join("/static/uploads",
                     ".".join(attachment.path.split(".")[:-1])+".custom_size."+size+"."+attachment.path.split(".")[-1])
+                try:
+                    new_size = os.path.getsize(sizepath.replace(".gif", ".animated.gif"))
+                except:
+                    new_size = attachment.size_in_bytes
                 if attachment.extension == "gif":
                     image_html = """
                     <div class="click-to-play">
-                        <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
+                        <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s" data-resized-size="%s">
                         <p class="text-warning">This file is %sKB large, click to play.</p>
                     </div>
-                    """ % (quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024), int(float(attachment.size_in_bytes)/1024))
+                    """ % (quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(new_size)/1024), int(float(new_size)/1024), int(float(new_size)/1024))
                     html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html)
                     continue
                 elif attachment.extension != "gif":
