@@ -55,7 +55,7 @@ $ ->
       
       do @refreshPosts
       
-      if window._can_edit?
+      if window._can_edit? and $("#new-post-box").length > 0
         @inline_editor = new InlineEditor "#new-post-box", "", false
       
         @inline_editor.onSave (html, text) ->
