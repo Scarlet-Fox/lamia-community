@@ -375,6 +375,7 @@ def topic_posts(slug):
                 character = Character.objects(pk=post.data["character"], creator=post.author)[0]
                 parsed_post["character_name"] = character.name
                 parsed_post["character_slug"] = character.slug
+                parsed_post["character_motto"] = character.motto
             except:
                 pass
         else:

@@ -330,7 +330,10 @@ $ ->
       $.post "/user-characters-api", {}, (data) =>
         @characters = data.characters
         if @characters.length > 0
-          quill_id = @inline_editor.quillID
+          try
+            quill_id = @inline_editor.quillID
+          catch
+            return false
           # $("#upload-files-#{quill_id}").after """
           #   <button type="button" class="btn btn-default post-post" style="margin-left: 3px;" id="character-picker-#{quill_id}">Characters</button>
           #   """
@@ -495,7 +498,11 @@ $ ->
                     <a href={{#unless _show_character_badge}}"/characters/{{character_slug}}" target="_blank"{{else}}"/member/{{author_login_name}}"{{/unless}}><img src="{{character_avatar_large}}" style="max-width: 200px;" class="post-member-avatar hidden-xs hidden-sm"></a>
                   {{/unless}}
                   <span class="hidden-xs hidden-sm"><br><br>
-                  <div class="post-member-self-title">{{user_title}}</div>
+                    {{#if character_motto}}
+                    <div class="post-member-self-title">{{character_motto}}</div>
+                    {{else}}
+                    <div class="post-member-self-title">{{user_title}}</div>
+                    {{/if}}
                     {{#if _show_character_badge}}
                     {{#if character_name}}
                     <a href="/characters/{{character_slug}}" target="_blank"><img src="/static/emoticons/button_character_by_angelishi-d6wlo5k.gif"></a>
