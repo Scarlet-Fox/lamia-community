@@ -524,9 +524,7 @@ def topic_index(slug, page, post):
         
     if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
         return abort(404)
-        
-    print topic.hidden
-        
+                
     try:
         page = int(page)
     except:
@@ -536,7 +534,8 @@ def topic_index(slug, page, post):
         try:
             post = Post.objects(topic=topic, hidden=False).order_by("-created")[0]
         except:
-            return abort(404)
+            return redirect("/t/"+unicode(topic.slug))
+            
     elif post == "last_seen":
         try:
             last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().pk), arrow.utcnow().timestamp)).datetime
@@ -549,13 +548,13 @@ def topic_index(slug, page, post):
             try:
                 post = Post.objects(topic=topic, pk=post, hidden=False)[0]
             except:
-                return abort(404)
+                return redirect("/t/"+unicode(topic.slug))
     else:
         if post != "":
             try:
                 post = Post.objects(topic=topic, pk=post, hidden=False)[0]
             except:
-                return abort(404)
+                return redirect("/t/"+unicode(topic.slug))
         else:
             post = ""
     
