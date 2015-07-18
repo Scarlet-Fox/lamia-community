@@ -400,6 +400,9 @@ def messages_topics():
     request_json = request.get_json(force=True)
     page = request_json.get("page", 1)
     pagination = request_json.get("pagination", 20)
+    
+    if page < 1:
+        page = 1
 
     try:
         minimum = (int(page)-1)*int(pagination)

@@ -311,6 +311,9 @@ def topic_posts(slug):
     except:
         pagination = 20
         page = 1
+    
+    if page < 1:
+        page = 1
 
     post_count = Post.objects(hidden=False, topic=topic).count()
     max_page = math.ceil(float(topic.post_count)/float(pagination))
