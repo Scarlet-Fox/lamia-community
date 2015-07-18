@@ -11,11 +11,11 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
 from mongoengine.queryset import Q
 from wand.image import Image
-from werkzeug import secure_filename
+from werkzeug import secure_filename, urls
 import arrow, mimetypes, json, os, hashlib, time, StringIO
 from woe.views.dashboard import broadcast
 from ipwhois import IPWhois
-import urllib
+import urllib, urllib2
 import mechanize
 import HTMLParser
 from werkzeug.exceptions import default_exceptions, HTTPException
@@ -188,8 +188,9 @@ def log_request():
 @app.route('/get-user-info-api', methods=['POST',])
 def get_user_info_api():
     request_json = request.get_json(force=True)
-    user_name = unicode(request_json.get("user"))
-    user_name = urllib.unquote(user_name)
+    user_name = urls.url_decode(request_json.get("user"))
+    user_name = user_name.keys()[0]
+    user_name = urllib2.unquote(user_name)
     
     try:
         user = User.objects(login_name=user_name)[0]
