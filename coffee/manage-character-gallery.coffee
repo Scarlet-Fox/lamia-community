@@ -21,6 +21,11 @@ $ ->
     $.post window.location+"/edit-image", JSON.stringify(data), (data) ->
       element.addClass "btn-success"
       element.text "Saved!"
+      setTimeout () ->
+        element.removeClass "btn-success"
+        element.removeClass "disabled"
+        element.text "Save"
+      , 1000
       
   $(".toggle-default-avatar-button").click (e) ->
     element = $(this)
