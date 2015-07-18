@@ -429,59 +429,59 @@ def load_user(login_name):
         user.update(hidden_last_seen=arrow.utcnow().datetime)
         if not user.hide_login:
             user.update(last_seen=arrow.utcnow().datetime)
-            if request.path.startswith("/message"):
-                user.update(last_seen_at="Private messages")
-                user.update(last_at_url="/messages")
-            elif request.path == "/":
-                user.update(last_seen_at="Forum index")
-                user.update(last_at_url="/")
-            elif request.path.startswith("/admin"):
-                user.update(last_seen_at="Forum index")
-                user.update(last_at_url="/")
-            elif request.path.startswith("/t/"):
-                try:
-                    topic = Topic.objects(slug=request.path.split("/")[2])[0]
-                    user.update(last_seen_at=unicode(topic.title))
-                    user.update(last_at_url="/t/"+unicode(topic.slug))
-                except:
-                    pass
-            elif request.path.startswith("/status-updates"):
-                user.update(last_seen_at="Viewing status updates")
-                user.update(last_at_url="/status-updates")            
-            elif request.path.startswith("/status/"):
-                try:
-                    status = StatusUpdate.objects(pk=request.path.split("/")[2])[0]
-                    user.update(last_seen_at=unicode(status.author.display_name)+"\'s status update")
-                    user.update(last_at_url="/status/"+unicode(status.pk))
-                except:
-                    pass
-            elif request.path.startswith("/category/"):
-                try:
-                    category = Category.objects(slug=request.path.split("/")[2])[0]
-                    user.update(last_seen_at=category.name)
-                    user.update(last_at_url="/category/"+unicode(category.slug))
-                except:
-                    pass
-            elif request.path.startswith("/search"):
-                user.update(last_seen_at="Searching...")
-                user.update(last_at_url="/search")
-            elif request.path.startswith("/characters/"):
-                try:
-                    character = Character.objects(slug=request.path.split("/")[2])[0]
-                    user.update(last_seen_at="Viewing character %s" % unicode(character.name))
-                    user.update(last_at_url="/characters/"+unicode(character.slug))
-                except:
-                    pass
-            elif request.path.startswith("/member/"):
-                try:
-                    profile = User.objects(login_name=request.path.split("/")[2])[0]
-                    user.update(last_seen_at="Viewing user %s" % unicode(profile.display_name))
-                    user.update(last_at_url="/member/"+unicode(profile.login_name))
-                except:
-                    pass
-            elif request.path == ("/characters"):
-                user.update(last_seen_at="Browsing character database")
-                user.update(last_at_url="/characters")
+        if request.path.startswith("/message"):
+            user.update(last_seen_at="Private messages")
+            user.update(last_at_url="/messages")
+        elif request.path == "/":
+            user.update(last_seen_at="Forum index")
+            user.update(last_at_url="/")
+        elif request.path.startswith("/admin"):
+            user.update(last_seen_at="Forum index")
+            user.update(last_at_url="/")
+        elif request.path.startswith("/t/"):
+            try:
+                topic = Topic.objects(slug=request.path.split("/")[2])[0]
+                user.update(last_seen_at=unicode(topic.title))
+                user.update(last_at_url="/t/"+unicode(topic.slug))
+            except:
+                pass
+        elif request.path.startswith("/status-updates"):
+            user.update(last_seen_at="Viewing status updates")
+            user.update(last_at_url="/status-updates")            
+        elif request.path.startswith("/status/"):
+            try:
+                status = StatusUpdate.objects(pk=request.path.split("/")[2])[0]
+                user.update(last_seen_at=unicode(status.author.display_name)+"\'s status update")
+                user.update(last_at_url="/status/"+unicode(status.pk))
+            except:
+                pass
+        elif request.path.startswith("/category/"):
+            try:
+                category = Category.objects(slug=request.path.split("/")[2])[0]
+                user.update(last_seen_at=category.name)
+                user.update(last_at_url="/category/"+unicode(category.slug))
+            except:
+                pass
+        elif request.path.startswith("/search"):
+            user.update(last_seen_at="Searching...")
+            user.update(last_at_url="/search")
+        elif request.path.startswith("/characters/"):
+            try:
+                character = Character.objects(slug=request.path.split("/")[2])[0]
+                user.update(last_seen_at="Viewing character %s" % unicode(character.name))
+                user.update(last_at_url="/characters/"+unicode(character.slug))
+            except:
+                pass
+        elif request.path.startswith("/member/"):
+            try:
+                profile = User.objects(login_name=request.path.split("/")[2])[0]
+                user.update(last_seen_at="Viewing user %s" % unicode(profile.display_name))
+                user.update(last_at_url="/member/"+unicode(profile.login_name))
+            except:
+                pass
+        elif request.path == ("/characters"):
+            user.update(last_seen_at="Browsing character database")
+            user.update(last_at_url="/characters")
             
         try:
             ip_address = IPAddress.objects(ip_address=request.remote_addr, user=user)[0]
