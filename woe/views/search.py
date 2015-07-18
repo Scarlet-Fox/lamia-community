@@ -5,7 +5,7 @@ from flask import request, render_template, session
 from flask.ext.login import current_user, login_required
 from woe.utilities import humanize_time, parse_search_string_return_q
 from mongoengine.queryset import Q
-import arrow, json
+import arrow, json, pytz
 import HTMLParser
 
 @app.route('/search', methods=['GET',])
@@ -38,16 +38,25 @@ def search_lookup():
     request_json = request.get_json(force=True)
     content_type = request_json.get("content_type", "topics")
     session["content_type"] = content_type
+        
+    try:
+        timezone = pytz.timezone(current_user._get_current_object().time_zone)
+    except:
+        timezone = pytz.timezone("US/Pacific")
     
     try:
-        start_date = arrow.get(request_json.get("start_date",""), ["M/D/YY",]).datetime
+        start_date = arrow.get(request_json.get("start_date",""), ["M/D/YY",])
+        offset = timezone.utcoffset(start_date.naive).total_seconds()
+        start_date = start_date.replace(seconds=-offset).datetime
         session["start_date"] = request_json.get("start_date","")
     except:
         start_date = False
         session["start_date"] = ""
-        
+
     try: # created
-        end_date = arrow.get(request_json.get("end_date",""), ["M/D/YY",]).datetime
+        end_date = arrow.get(request_json.get("end_date",""), ["M/D/YY",])
+        offset = timezone.utcoffset(end_date.naive).total_seconds()
+        end_date = end_date.replace(seconds=-offset).replace(hours=24).datetime
         session["end_date"] = request_json.get("end_date","")
     except:
         end_date = False

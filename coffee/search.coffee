@@ -130,7 +130,7 @@ $ ->
       <li class="list-group-item">
         <p>
           <b>
-            <a href="{{url}}" class="search-result-title">{{{title}}}</a>
+            <a href="{{url}}" class="search-result-title">{{title}}</a>
           </b>
         </p>
         <div class="search-result-content">
