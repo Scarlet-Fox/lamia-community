@@ -2,6 +2,7 @@ from woe import login_manager
 from woe import app, bcrypt
 from woe.models.core import User, DisplayNameHistory, StatusUpdate, StatusComment, StatusViewer, PrivateMessage, PrivateMessageTopic, Attachment, IPAddress, Log, Fingerprint, Report
 from woe.models.forum import Category, Post, Topic
+from woe.models.roleplay import Character
 from woe.parsers import ForumPostParser
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
@@ -462,6 +463,23 @@ def load_user(login_name):
             elif request.path.startswith("/search"):
                 user.update(last_seen_at="Searching...")
                 user.update(last_at_url="/search")
+            elif request.path.startswith("/characters/"):
+                try:
+                    character = Character.objects(slug=request.path.split("/")[2])[0]
+                    user.update(last_seen_at="Viewing character %s" % unicode(character.name))
+                    user.update(last_at_url="/characters/"+unicode(character.slug))
+                except:
+                    pass
+            elif request.path.startswith("/member/"):
+                try:
+                    profile = User.objects(login_name=request.path.split("/")[2])[0]
+                    user.update(last_seen_at="Viewing user %s" % unicode(profile.display_name))
+                    user.update(last_at_url="/member/"+unicode(profile.login_name))
+                except:
+                    pass
+            elif request.path == ("/characters"):
+                user.update(last_seen_at="Browsing character database")
+                user.update(last_at_url="/characters")
             
         try:
             ip_address = IPAddress.objects(ip_address=request.remote_addr, user=user)[0]
