@@ -459,8 +459,9 @@ def edit_topic_post_html(slug):
     history.data = post.data
     history.reason = request_json.get("edit_reason", "")
     
-    if request_json.get("edit_reason", "").strip() == "":
-        return app.jsonify(error="Please include an edit reason.")
+    if current_user._get_current_object() != post.author:
+        if request_json.get("edit_reason", "").strip() == "":
+            return app.jsonify(error="Please include an edit reason for editing someone else's post.")
     
     try:
         if post.data.has_key("character"):
@@ -660,9 +661,10 @@ def edit_topic(slug):
         history.html = topic.first_post.html
         history.data = topic.first_post.data
         history.reason = request_json.get("edit_reason", "")
-    
-        if request_json.get("edit_reason", "").strip() == "":
-            return app.jsonify(error="Please include an edit reason.")
+        
+        if current_user._get_current_object() != post.author:
+            if request_json.get("edit_reason", "").strip() == "":
+                return app.jsonify(error="Please include an edit reason for editing someone else's topic.")
     
         topic.title = request_json.get("title")
         if prefix != "":
