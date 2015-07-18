@@ -64,7 +64,7 @@ def display_status_update(status):
         
     status.save()
             
-    return render_template("status_update.jade", page_title="%s - World of Equestria" % unicode(status.message), status=status, mod=mod)
+    return render_template("status_update.jade", page_title="%s's Status Update - %s - World of Equestria" % (unicode(status.author.display_name), humanize_time(status.created)), status=status, mod=mod)
 
 @app.route('/status-updates', methods=['GET', 'POST'])
 @login_required
