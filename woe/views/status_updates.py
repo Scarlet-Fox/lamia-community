@@ -66,6 +66,15 @@ def display_status_update(status):
             
     return render_template("status_update.jade", page_title="%s's Status Update - %s - World of Equestria" % (unicode(status.author.display_name), humanize_time(status.created)), status=status, mod=mod)
 
+@app.route('/clear-status-updates', methods=['POST',])
+@login_required
+def clear_status_update_parameters():
+    session["count"] = 40
+    session["authors"] = []
+    session["search"] = ""
+    
+    return app.jsonify(url="/status-updates")    
+
 @app.route('/status-updates', methods=['GET', 'POST'])
 @login_required
 def status_update_index():

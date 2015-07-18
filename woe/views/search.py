@@ -1,7 +1,7 @@
 from woe import app
 from woe.models.core import User, PrivateMessage, PrivateMessageTopic, StatusUpdate
 from woe.models.forum import Category, Post, Topic
-from flask import request, render_template, session
+from flask import request, render_template, session, redirect
 from flask.ext.login import current_user, login_required
 from woe.utilities import humanize_time, parse_search_string_return_q
 from mongoengine.queryset import Q
@@ -32,6 +32,19 @@ def search_display():
         page_title="Search - World of Equestria"
         )
 
+@app.route('/clear-search', methods=['POST',])
+@login_required
+def clear_search_lookup():
+    session["start_date"] = ""
+    session["end_date"] = ""
+    session["categories"] = []
+    session["topics"] = []
+    session["content_type"] = "topics"
+    session["search_authors"] = []
+    session["query"] = ""
+    
+    return app.jsonify(url="/search")
+    
 @app.route('/search', methods=['POST',])
 @login_required
 def search_lookup():
