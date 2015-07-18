@@ -156,6 +156,7 @@ class User(db.DynamicDocument):
     status_count = db.IntField(default=0)
     status_comment_count = db.IntField(default=0)
     last_seen = db.DateTimeField()
+    hidden_last_seen = db.DateTimeField()
     last_at = db.StringField(default="Watching forum index.")
     last_at_url = db.StringField(default="/")
     smile_usage = db.DictField()

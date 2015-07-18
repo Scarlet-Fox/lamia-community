@@ -426,6 +426,7 @@ def static_from_root():
 def load_user(login_name):
     try:
         user = User.objects(login_name=login_name)[0]
+        user.update(hidden_last_seen=arrow.utcnow().datetime)
         if not user.hide_login:
             user.update(last_seen=arrow.utcnow().datetime)
             if request.path.startswith("/message"):

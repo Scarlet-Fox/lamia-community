@@ -905,8 +905,8 @@ def index():
         user_already_posted.append(status.author_name)
         cleaned_statuses.append(status)
     
-    online_users = User.objects(last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime, hide_login=False)
-    all_online_users = User.objects(last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
+    online_users = User.objects(hidden_last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
+    all_online_users = User.objects(hidden_last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
     post_count = Post.objects().count()
     member_count = User.objects(banned=False).count()
     newest_member = User.objects(banned=False).order_by("-joined")[0]
