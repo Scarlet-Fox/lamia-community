@@ -29,8 +29,11 @@ $ ->
       @socket.on "event", (data) ->
         if data.reply?
           status.updateReplyCount data.count
-          $("#status-replies").append status.replyHTML(data.reply)
-          $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
+          if ($("#status-replies").scrollTop() + $("#status-replies").innerHeight()) == $("#status-replies")[0].scrollHeight
+            $("#status-replies").append status.replyHTML(data.reply)
+            $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
+          else
+            $("#status-replies").append status.replyHTML(data.reply)
     
       $("#submit-reply").click (e) ->
         e.preventDefault()
