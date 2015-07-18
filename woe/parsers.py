@@ -13,17 +13,11 @@ from woe.models.forum import Post
 from woe.models.roleplay import Character
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
-spoiler_re = re.compile(r'\[spoiler\]')
-end_spoiler_re = re.compile(r'\[\/spoiler\]')
-plain_quote_re = re.compile(r'\[quote\]')
-quote_re = re.compile(r'\[quote=(.*?)\]')
-end_quote_re = re.compile(r'\[\/quote\]')
-bold_re = re.compile(r'\[b\]')
-end_bold_re = re.compile(r'\[\/b\]')
-italic_re = re.compile(r'\[i\]')
-end_italic_re = re.compile(r'\[\/i\]')
-strike_re = re.compile(r'\[s\]')
-end_strike_re = re.compile(r'\[\/s\]')
+spoiler_re = re.compile(r'\[spoiler\](.*?)\[\/spoiler\]', re.DOTALL)
+quote_re = re.compile(r'\[quote=?(.*?)\](.*?)\[\/quote\]', re.DOTALL)
+bold_re = re.compile(r'\[b\](.*?)\[\/b\]', re.DOTALL)
+italic_re = re.compile(r'\[i\](.*?)\[\/i\]', re.DOTALL)
+strike_re = re.compile(r'\[s\](.*?)\[\/s\]', re.DOTALL)
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
@@ -201,40 +195,32 @@ class ForumPostParser(object):
         for smiley in emoticon_codes.keys():
             img_html = """<img src="%s" />""" % (os.path.join("/static/emoticons",emoticon_codes[smiley]),)
             html = html.replace(smiley, img_html)
-
-        quote_bbcode_in_post = plain_quote_re.findall(html)
-        for quote_bbcode in quote_bbcode_in_post:
-            if end_quote_re.search(html):
-                html = html.replace("[quote]","""<blockquote class="blockquote-reply"><div>""", 1)
-                html = html.replace("[/quote]", "</div></blockquote>", 1)
         
         quote_bbcode_in_post = quote_re.findall(html)
         for quote_bbcode in quote_bbcode_in_post:
-            if end_quote_re.search(html):
-                html = html.replace("[quote="+unicode(quote_bbcode)+"]","""<blockquote data-author="%s" class="blockquote-reply"><div>""" % unicode(quote_bbcode), 1)
-                html = html.replace("[/quote]", "</div></blockquote>", 1)
-
+            if quote_bbcode[0] == "":
+                to_replace = "[quote]"
+            else:
+                to_replace = "[quote=%s]" % quote_bbcode[0]
+            to_replace = to_replace + quote_bbcode[1]
+            to_replace = to_replace + "[/quote]"
+            html = html.replace(to_replace, """<blockquote data-author="%s" class="blockquote-reply"><div>%s</div></blockquote>""" % (unicode(quote_bbcode[0]), unicode(quote_bbcode[1])), 1)
+                
         # parse spoilers
         spoiler_bbcode_in_post = spoiler_re.findall(html)
         for spoiler_bbcode in spoiler_bbcode_in_post:
-            if end_spoiler_re.search(html):
-                html = html.replace("[spoiler]", """<div class="content-spoiler"><div> <!-- spoiler div -->""", 1)
-                html = html.replace("[/spoiler]", """</div></div> <!-- /spoiler div -->""", 1)
+            html = html.replace("[spoiler]%s[/spoiler]" % spoiler_bbcode, """<div class="content-spoiler"><div> <!-- spoiler div -->%s</div></div>""" % spoiler_bbcode, 1)
 
         strong_bbcode_in_post = bold_re.findall(html)
         for strong_bbcode in strong_bbcode_in_post:
-            if end_bold_re.search(html):
-                html = html.replace("[b]", """<strong>""", 1)
-                html = html.replace("[/b]", """</strong>""", 1)
+            html = html.replace("[b]%s[/b]" % strong_bbcode, """<strong>%s</strong>""" % strong_bbcode, 1)
+
         italic_bbcode_in_post = italic_re.findall(html)
         for italic_bbcode in italic_bbcode_in_post:
-            if end_italic_re.search(html):
-                html = html.replace("[i]", """<em>""", 1)
-                html = html.replace("[/i]", """</em>""", 1)
+            html = html.replace("[i]%s[/i]" % italic_bbcode, """<em>%s</em>""" % italic_bbcode, 1)
+
         strike_bbcode_in_post = strike_re.findall(html)
         for strike_bbcode in strike_bbcode_in_post:
-            if end_strike_re.search(html):
-                html = html.replace("[s]", """<span style="text-decoration: line-through;"><span> <!-- strike span -->""", 1)
-                html = html.replace("[/s]", """</span></span> <!-- /strike span -->""", 1)
-            
+            html = html.replace("[s]%s[/s]" % strike_bbcode, """<div style="text-decoration: line-through; display: inline !important;"><div style="display: inline !important;"><!-- strike span -->%s</div></div> <!-- /strike span -->""" % strike_bbcode, 1)
+        
         return html

@@ -455,7 +455,7 @@ def edit_topic_post_html(slug):
     history = PostHistory()
     history.creator = current_user._get_current_object()
     history.created = arrow.utcnow().datetime
-    history.html = post.html
+    history.html = post.html+""
     history.data = post.data
     history.reason = request_json.get("edit_reason", "")
     
@@ -657,7 +657,7 @@ def edit_topic(slug):
         history = PostHistory()
         history.creator = current_user._get_current_object()
         history.created = arrow.utcnow().datetime
-        history.html = topic.first_post.html
+        history.html = topic.first_post.html+""
         history.data = topic.first_post.data
         history.reason = request_json.get("edit_reason", "")
         

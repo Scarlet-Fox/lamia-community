@@ -124,14 +124,14 @@ def character_edit_profile(slug):
         c = CharacterHistory(creator=current_user._get_current_object(),
                 created=arrow.utcnow().datetime,
                 data={
-                    "age": character.age,
-                    "species": character.species,
-                    "name": character.name,
-                    "motto": character.motto,
-                    "appearance": character.appearance,
-                    "personality": character.personality,
-                    "backstory": character.backstory,
-                    "other": character.other
+                    "age": character.age+"",
+                    "species": character.species+"",
+                    "name": character.name+"",
+                    "motto": character.motto+"",
+                    "appearance": character.appearance+"",
+                    "personality": character.personality+"",
+                    "backstory": character.backstory+"",
+                    "other": character.other+""
                 }
             )
         character.history.append(c)
