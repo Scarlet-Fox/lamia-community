@@ -849,9 +849,12 @@ def category_topics(slug):
                     parsed_topic["updated"] = True
         
         if topic.prefix != None:
-            parsed_topic["pre_html"] = topic.prefix_reference.pre_html
-            parsed_topic["post_html"] = topic.prefix_reference.post_html
-            parsed_topic["prefix"] = topic.prefix_reference.prefix
+            try:
+                parsed_topic["pre_html"] = topic.prefix_reference.pre_html
+                parsed_topic["post_html"] = topic.prefix_reference.post_html
+                parsed_topic["prefix"] = topic.prefix_reference.prefix
+            except:
+                pass
         if topic.last_post_date:
             parsed_topic["last_post_date"] = humanize_time(topic.last_post_date)
             parsed_topic["last_post_by"] = topic.last_post_by.display_name
@@ -865,6 +868,7 @@ def category_topics(slug):
         except:
             parsed_topic["last_page"] = 1
         parsed_topic["last_pages"] = parsed_topic["last_page"] > 1
+        parsed_topic["closed"] = topic.closed
             
         parsed_topics.append(parsed_topic)
     
