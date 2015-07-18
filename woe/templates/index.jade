@@ -51,7 +51,7 @@
               .media-left
                 span.subcategory-listing-recent-image
                   a(href="{{url_for('view_profile', login_name=category.last_post_by.login_name)}}")
-                    img(src="{{category.last_post_author_avatar}}", width="{{category.last_post_by.avatar_40_x}}", height="{{category.last_post_by.avatar_40_y}}", class="avatar-mini")
+                    img(src="{{category.last_post_by.get_avatar_url("40")}}", width="{{category.last_post_by.avatar_40_x}}", height="{{category.last_post_by.avatar_40_y}}", class="avatar-mini")
               .media-body
                 span.subcategory-listing-recent
                   a(href="/t/{{category.last_topic.slug}}")= category.last_topic.title
@@ -87,7 +87,7 @@
                 .media-left
                   span.subcategory-listing-recent-image
                     a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
-                      img(src="{{t.last_post_author_avatar}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
+                      img(src="{{t.last_post_by.get_avatar_url("40")}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
                 .media-body
                   a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title
                   br

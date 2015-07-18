@@ -245,7 +245,7 @@ class User(db.DynamicDocument):
             size = "_"+size
         
         if not self.avatar_extension:
-            return ""
+            return "/static/no_profile_avatar"+size+".png"
         else:
             return "/static/avatars/"+str(self.avatar_timestamp)+str(self.pk)+size+self.avatar_extension
 
