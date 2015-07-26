@@ -186,13 +186,20 @@ def humanize(time):
     except:
         timezone = "US/Pacific"
     
-    try:        
-        a = arrow.get(time)
-        b = arrow.utcnow().replace(hours=-1)
-        if a > b:
+    try:
+        a = arrow.get(time).to(timezone)
+        now = arrow.utcnow().to(timezone)
+        b = arrow.utcnow().replace(hours=-48).to(timezone)
+        c = arrow.utcnow().replace(hours=-24).to(timezone)
+        d = arrow.utcnow().replace(hours=-4).to(timezone)
+        if a > d:
             return a.humanize()
+        elif a > c and now.day == a.day:
+            return "Today " + a.format("hh:mm a")
+        elif a > b and (now.day-1) == a.day:
+            return "Yesterday " + a.format("hh:mm a")
         else:
-            return a.to(timezone).format("MMM D YYYY, hh:mm a")
+            return a.format("MMM D YYYY, hh:mm a")
     except:
         return ""
         
@@ -206,11 +213,18 @@ def humanize_time(time, format_str="MMM D YYYY, hh:mm a"):
         timezone = "US/Pacific"
         
     try:
-        a = arrow.get(time)
-        b = arrow.utcnow().replace(hours=-1)
-        if a > b:
+        a = arrow.get(time).to(timezone)
+        now = arrow.utcnow().to(timezone)
+        b = arrow.utcnow().replace(hours=-48).to(timezone)
+        c = arrow.utcnow().replace(hours=-24).to(timezone)
+        d = arrow.utcnow().replace(hours=-4).to(timezone)
+        if a > d:
             return a.humanize()
+        elif a > c and now.day == a.day:
+            return "Today " + a.format("hh:mm a")
+        elif a > b and (now.day-1) == a.day:
+            return "Yesterday " + a.format("hh:mm a")
         else:
-            return a.to(timezone).format(format_str)
+            return a.format(format_str)
     except:
         return ""
