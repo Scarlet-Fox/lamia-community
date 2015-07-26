@@ -26,7 +26,7 @@
             .col-sm-6.hidden-xs.hidden-sm
               .subcategory-listing-recent-image
                 a(href="{{url_for('view_profile', login_name=subcategory.last_post_by.login_name)}}")
-                  img(src="{{subcategory.last_post_author_avatar}}", width="{{ status.author.avatar_40_x }}", height="{{ status.author.avatar_40_y }}")
+                  img(src="{{subcategory.last_post_author_avatar}}", width="{{ subcategory.last_post_by.avatar_40_x }}", height="{{ subcategory.last_post_by.avatar_40_y }}")
               .subcategory-listing-recent
                 a(href="/t/{{subcategory.last_topic.slug}}")= subcategory.last_topic.title
                 br
