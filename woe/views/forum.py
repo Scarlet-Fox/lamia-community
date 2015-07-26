@@ -662,7 +662,7 @@ def edit_topic(slug):
         history.data = topic.first_post.data
         history.reason = request_json.get("edit_reason", "")
         
-        if current_user._get_current_object() != post.author:
+        if current_user._get_current_object() != topic.creator:
             if request_json.get("edit_reason", "").strip() == "":
                 return app.jsonify(error="Please include an edit reason for editing someone else's topic.")
     
