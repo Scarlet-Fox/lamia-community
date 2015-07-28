@@ -8,6 +8,7 @@ from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time, math
+from threading import Thread
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
 from woe.views.dashboard import broadcast
 import re
@@ -109,6 +110,7 @@ def new_post_in_topic(slug):
     except:
         avatar = False
     
+    most_recent_post = Post.objects(topic=topic).order_by("-created")[0]
     new_post = Post()
     new_post.html = post_html
     new_post.author = current_user._get_current_object()
@@ -116,6 +118,7 @@ def new_post_in_topic(slug):
     new_post.topic = topic
     new_post.topic_name = topic.title
     new_post.created = arrow.utcnow().datetime
+    new_post.position_in_topic = most_recent_post.position_in_topic+1
     try:
         if character:
             new_post.data["character"] = str(character.pk)
@@ -125,6 +128,7 @@ def new_post_in_topic(slug):
         character.update(add_to_set__posts=new_post)
     except:
         pass
+    
     
     topic.last_post_by = current_user._get_current_object()
     topic.last_post_date = new_post.created
@@ -293,6 +297,19 @@ def toggle_post_boop():
     
     return app.jsonify(success=True)
 
+def count_topic_posts(slug):
+    try:
+        topic = Topic.objects(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+    
+    posts = list(Post.objects(topic=topic, hidden=False).order_by("created"))
+    topic.update(hidden_posts=Post.objects(hidden=True, topic=topic).count())
+    Post.objects(hidden=True, topic=topic).update(position_in_topic=-1)
+    
+    for i, post in enumerate(posts):
+        post.update(position_in_topic=i)
+
 @app.route('/t/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
     try:
@@ -322,7 +339,17 @@ def topic_posts(slug):
     max_page = math.ceil(float(topic.post_count)/float(pagination))
     if page > max_page:
         page = max_page
-    posts = list(Post.objects(hidden=False, topic=topic, created__gte=arrow.get(topic.created).replace(hours=-24).datetime).order_by("created")[(page-1)*pagination:page*pagination])
+        
+    hidden_posts = Post.objects(hidden=True, topic=topic).count()
+    unmarked_posts = Post.objects(position_in_topic=None, topic=topic).count()
+    
+    if unmarked_posts > 0 or hidden_posts != topic.hidden_posts:
+        posts = list(Post.objects(hidden=False, topic=topic, created__gte=arrow.get(topic.created).replace(hours=-24).datetime).order_by("created")[(page-1)*pagination:page*pagination])
+        thread = Thread(target=count_topic_posts, args=(slug, ))
+        thread.start()
+    else:
+        posts = list(Post.objects(hidden=False, topic=topic, position_in_topic__gte=(page-1)*pagination, position_in_topic__lte=page*pagination))
+        
     topic.update(post_count=post_count)
     parsed_posts = []
     

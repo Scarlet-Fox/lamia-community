@@ -96,6 +96,9 @@ class Topic(db.DynamicDocument):
     polls = db.ListField(db.EmbeddedDocumentField(Poll))
     poll_show_voters = db.BooleanField(default=False)
     
+    # Hidden posts
+    hidden_posts = db.IntField(default=0)
+    
     # Prefixes
     pre_html = db.StringField()
     post_html = db.StringField()
@@ -179,6 +182,7 @@ class Post(db.DynamicDocument):
     flags = db.ListField(db.EmbeddedDocumentField(Flag))
     boops = db.ListField(db.ReferenceField("User", reverse_delete_rule=db.PULL))
     boop_count = db.IntField(default=0)
+    position_in_topic = db.IntField()
     
     old_ipb_id = db.IntField()
 
@@ -189,6 +193,7 @@ class Post(db.DynamicDocument):
             'created',
             'topic',
             'hidden',
+            'position_in_topic',
             {
                 'fields': ['$html',],
                 'default_language': 'english'
