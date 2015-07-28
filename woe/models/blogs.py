@@ -1,0 +1,86 @@
+from woe import db
+from slugify import slugify
+from woe.models.core import User
+
+class Blog(db.DynamicDocument):
+    name = db.StringField(required=True)
+    slug = db.StringField(required=True, unique=True)
+    creator = db.ReferenceField("User", required=True, reverse_delete_rule=db.CASCADE)
+    creator_name = db.StringField(required=True)
+    
+    description = db.StringField()
+    blog_editors = db.ListField(db.ReferenceField("User", reverse_delete_rule=db.PULL))  
+    blog_categories = db.ListField(db.StringField())  
+    
+    entry_count = db.IntField(default=0)
+    comment_count = db.IntField(default=0)
+    view_count = db.IntField(default=0)
+    
+    last_entry_date = db.DateTimeField()
+    last_comment_date = db.DateTimeField()
+    blog_subscribers = db.ListField(db.ReferenceField("User", reverse_delete_rule=db.PULL))  
+    
+    last_entry = db.ReferenceField("BlogEntry")
+    last_comment = db.ReferenceField("BlogComment")
+
+    PRIVACY_LEVELS = (
+        ("all", "Everyone"),
+        ("members", "Only Members"),
+        ("friends", "Only Friends"),
+        ("editors", "Only Editors"),
+        ("you", "Only You")
+    )
+    privacy_settings = db.StringField(choices=PRIVACY_LEVELS, required=True)
+    
+class BlogEntry(db.DynamicDocument):
+    title = db.StringField(required=True)
+    html = db.StringField(required=True)
+    author = db.ReferenceField("User", required=True, reverse_delete_rule=db.CASCADE)
+    author_name = db.StringField(required=True)
+    blog = db.ReferenceField("Blog", required=True, reverse_delete_rule=db.CASCADE)
+    blog_name = db.StringField(required=True)
+    category = db.StringField()
+
+    created = db.DateTimeField(required=True)
+    modified = db.DateTimeField()
+    published = db.DateTimeField()
+    data = db.DictField()
+    history = db.ListField(db.EmbeddedDocumentField(PostHistory))
+    entry_subscribers = db.ListField(db.ReferenceField("User", reverse_delete_rule=db.PULL))  
+
+    edited = db.DateTimeField()
+    editor = db.ReferenceField("User", reverse_delete_rule=db.CASCADE)
+    
+    boops = db.ListField(db.ReferenceField("User", reverse_delete_rule=db.PULL))
+    boop_count = db.IntField(default=0)
+    comment_count = db.IntField(default=0)
+    view_count = db.IntField(default=0)
+    
+    draft = db.BooleanField(default=True)
+    hidden = db.BooleanField(default=False)
+    hide_message = db.StringField()
+
+class BlogComment(db.DynamicDocument):
+    html = db.StringField(required=True)
+    author = db.ReferenceField("User", required=True, reverse_delete_rule=db.CASCADE)
+    author_name = db.StringField(required=True)
+    blog_entry = db.ReferenceField("BlogEntry", required=True, reverse_delete_rule=db.CASCADE)
+    blog_entry_name = db.StringField(required=True)
+
+    created = db.DateTimeField(required=True)
+    modified = db.DateTimeField()
+    published = db.DateTimeField()
+    data = db.DictField()
+    history = db.ListField(db.EmbeddedDocumentField(PostHistory))
+
+    edited = db.DateTimeField()
+    editor = db.ReferenceField("User", reverse_delete_rule=db.CASCADE)
+    
+    boops = db.ListField(db.ReferenceField("User", reverse_delete_rule=db.PULL))
+    boop_count = db.IntField(default=0)
+    
+    hidden = db.BooleanField(default=False)
+    hide_message = db.StringField()
+    
+    
+    
