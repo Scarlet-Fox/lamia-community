@@ -348,7 +348,7 @@ def topic_posts(slug):
         thread = Thread(target=count_topic_posts, args=(slug, ))
         thread.start()
     else:
-        posts = list(Post.objects(hidden=False, topic=topic, position_in_topic__gte=(page-1)*pagination, position_in_topic__lte=page*pagination))
+        posts = list(Post.objects(hidden=False, topic=topic, position_in_topic__gte=(page-1)*pagination, position_in_topic__lt=page*pagination))
         
     topic.update(post_count=post_count)
     parsed_posts = []
