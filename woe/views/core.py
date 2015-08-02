@@ -370,7 +370,7 @@ def grab_image():
         return app.jsonify(error="The server hosting this image seems to be down. Try again later?")
     
     image_domain = image_source.split("/")[2]
-    filename = image_source.split("/")[-1].split("?")[0]
+    filename = str(time.time())+image_source.split("/")[-1].split("?")[0]
     destination_path = os.path.join(os.getcwd(),"woe/static/uploads/linked/",hashlib.md5(image_domain).hexdigest())
     destination_filename = os.path.join(os.getcwd(),"woe/static/uploads/linked/",hashlib.md5(image_domain).hexdigest(),filename)
     extension = filename.split(".")[-1]
