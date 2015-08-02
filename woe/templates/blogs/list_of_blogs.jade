@@ -1,0 +1,90 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  #temporary-buffer(style="display: none;")
+  .col-sm-12
+    .panel.panel-default
+      .panel-heading
+        span My Blogs
+      .panel-body.body-background
+        a.btn.btn-primary(style="margin: 2px;", href="/blogs/new") New Blog
+        if my_blogs
+          for blog in my_blogs
+            a.btn.btn-default(style="margin: 2px;", href="/blogs/{{blog.slug}}") {{blog.name}}
+      
+  .col-sm-12
+    .panel.panel-default
+      .panel-heading
+        span Latest Blogs
+      .panel-body.body-background#msg-container
+      .panel-body.body-background#blog-container
+  .col-sm-12
+    .panel.panel-default
+      .panel-heading#filtering-header
+        span Filtering
+      .panel-body.hidden-md.hidden-lg.hidden-sm
+        form.display-form
+          .form-group.form-group-sm
+            label.control-label Display 
+            select.form-control.how-many
+              option(value="10", selected) 10
+              option(value="20") 20
+              option(value="30") 30
+              option(value="40") 40
+        form.author-form
+          .form-group.form-group-sm
+            label.control-label Author
+            select.form-control.by-who.author(multiple="multiple")
+        form.search-form
+          .form-group.form-group-sm
+            label.control-label Search
+            input.form-control.search-for
+          button.btn.btn-default.update-blogs(type="submit") Update
+      .panel-body.hidden-xs
+        form.form-inline.float-left.display-form
+          .form-group.form-group-sm
+            label.control-label Display 
+            select.form-control.how-many
+              option(value="10", selected) 10
+              option(value="20") 20
+              option(value="30") 30
+              option(value="40") 40
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+        form.form-inline.float-left.author-form
+          .form-group.form-group-sm
+            label.control-label Author
+            select.form-control.by-who-two.author(multiple="multiple", style="width: 200px")
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+        form.form-inline.float-left.search-form
+          .form-group.form-group-sm
+            label.control-label Search
+            input.form-control.search-for 
+          button.btn.btn-default.update-blogs-two(type="submit") Update
+          &nbsp;
+          a.btn.btn-default.post-link(href="/clear-listing-of-blogs") Clear
+
+{% endblock %}
+
+{% block script %}
+script(type="text/javascript")
+  $(document).ready(function(){ 
+    window.count = {{count}};
+    window.authors = JSON.parse('{{authors}}');
+    window.search = '{{search}}';
+  });
+
+{% assets filters="rjsmin", output="generated/listing-of-blogs.js",
+"assets/jquery.shuffle.modernizr.js", "local/js/listing-of-blogs.js", 
+"assets/select2/select2.full.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}")
+{% endassets %}
+{% endblock %}

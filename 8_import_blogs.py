@@ -15,6 +15,14 @@ blog_cursor = db.cursor()
 blog_cursor.execute("select * from ipsblog_blogs;")
 blogs = blog_cursor.fetchall()
 
+import htmllib
+
+def unescape(s):
+    p = htmllib.HTMLParser(None)
+    p.save_bgn()
+    p.feed(s)
+    return p.save_end()
+
 def get_blog_slug(title):
     slug = slugify(title, max_length=100, word_boundary=True, save_order=True)
     
@@ -42,10 +50,7 @@ for b in blogs:
         new_blog.disabled = True
     
     new_blog.old_ipb_id = b["blog_id"]
-    try:
-        new_blog.name = HTMLParser.HTMLParser().unescape(b["blog_name"].encode("latin1"))
-    except:
-        new_blog.name = b["blog_name"].encode("latin1")
+    new_blog.name = unescape(b["blog_name"].encode("latin1"))
     new_blog.description = b["blog_desc"].encode("latin1")
     new_blog.views = b["blog_num_views"]
     
@@ -83,7 +88,7 @@ def get_blog_entry_slug(title, blog):
 for e in blog_entries:
     new_entry = BlogEntry()
     new_entry.blog = Blog.objects(old_ipb_id=e["blog_id"])[0]
-    new_entry.title = e["entry_name"].encode("latin1")
+    new_entry.title = unescape(e["entry_name"].encode("latin1"))
     new_entry.slug = get_blog_entry_slug(new_entry.title, new_entry.blog)
     new_entry.html = e["entry"].encode("latin1")
     new_entry.author = User.objects(old_member_id=e["entry_author_id"])[0]
@@ -91,12 +96,12 @@ for e in blog_entries:
     new_entry.old_ipb_id = e["entry_id"]
     new_entry.blog_name = new_entry.blog.name
     new_entry.created = arrow.get(e["entry_date"]).replace(hours=-12).datetime
-    new_entry.published = new_entry.created
     new_entry.edited = arrow.get(e["entry_edit_time"]).replace(hours=-12).datetime
     new_entry.view_count = e["entry_views"]
     
     if e["entry_status"] == "published":
         new_entry.draft = False
+        new_entry.published = new_entry.created
     
     if e["entry_locked"] == 1:
         new_entry.locked = True
@@ -124,7 +129,7 @@ for c in blog_comments:
     
 for blog in Blog.objects():
     try:
-        blog.last_entry = BlogEntry.objects(blog=blog).order_by("-created")[0]
+        blog.last_entry = BlogEntry.objects(blog=blog, draft=False, published__ne=None).order_by("-created")[0]
         blog.last_entry_date = blog.last_entry.created
     except:
         pass
