@@ -67,7 +67,7 @@ def list_of_blogs():
         parsed_blogs = []
         for blog in blogs:
             parsed_blog = blog.to_mongo().to_dict()
-            parsed_blog["recent_entry_content"] = clean_html_parser.parse(blog.last_entry.html)
+            parsed_blog["recent_entry_content"] = clean_html_parser.parse(blog.last_entry.html, strip_images=True)
             parsed_blog["recent_entry_title"] = blog.last_entry.title
             parsed_blog["recent_entry_slug"] = blog.last_entry.slug
             parsed_blog["recent_entry_time"] = humanize_time(blog.last_entry.created)

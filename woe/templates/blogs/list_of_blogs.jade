@@ -11,7 +11,7 @@
         a.btn.btn-primary(style="margin: 2px;", href="/blogs/new") New Blog
         if my_blogs
           for blog in my_blogs
-            a.btn.btn-default(style="margin: 2px;", href="/blogs/{{blog.slug}}") {{blog.name}}
+            a.btn.btn-default(style="margin: 2px;", href="/blog/{{blog.slug}}") {{blog.name}}
       
   .col-sm-12
     .panel.panel-default

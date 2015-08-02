@@ -10,14 +10,15 @@ $ ->
     <div class="panel panel-default">
       <div class="panel-body">
         <center>
-          <div class="media-left"><img src="{{recent_entry_avatar}}" width="{{recent_entry_avatar_x}}" height="{{recent_entry_avatar_y}}" /></div>
+          <div class="media-left"><img src="{{recent_entry_avatar}}" class="avatar-mini" width="{{recent_entry_avatar_x}}" height="{{recent_entry_avatar_y}}" /></div>
           <div class="media-body">
-            <a href="/blogs/{{slug}}">{{name}}</a>
+            <a href="/blog/{{slug}}">{{name}}</a>
             <br>
-            <a href="/blogs/{{slug}}/{{recent_entry_slug}}">{{recent_entry_title}}</a>
+            <a href="/blog/{{slug}}/{{recent_entry_slug}}">{{recent_entry_title}}</a>
             <br>
             <span class="text-muted">{{recent_entry_time}}</span>
           </div>
+          <hr>
           <br>
           <p class="blog-preview-text">{{{recent_entry_content}}}</p>
         </center>

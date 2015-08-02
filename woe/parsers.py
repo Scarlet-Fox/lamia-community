@@ -14,7 +14,13 @@ from woe.models.roleplay import Character
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\](.*?)\[\/spoiler\]', re.DOTALL)
+center_re = re.compile(r'\[center\](.*?)\[\/center\]', re.DOTALL)
+image_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL)
 quote_re = re.compile(r'\[quote=?(.*?)\](.*?)\[\/quote\]', re.DOTALL)
+font_re = re.compile(r'\[font=?(.*?)\](.*?)\[\/font\]', re.DOTALL)
+color_re = re.compile(r'\[color=?(.*?)\](.*?)\[\/color\]', re.DOTALL)
+size_re = re.compile(r'\[size=?(.*?)\](.*?)\[\/size\]', re.DOTALL)
+url_re = re.compile(r'\[url=?("?)(.*?)("?)\](.*?)\[\/url\]', re.DOTALL)
 bold_re = re.compile(r'\[b\](.*?)\[\/b\]', re.DOTALL)
 italic_re = re.compile(r'\[i\](.*?)\[\/i\]', re.DOTALL)
 strike_re = re.compile(r'\[s\](.*?)\[\/s\]', re.DOTALL)
@@ -79,7 +85,7 @@ class ForumPostParser(object):
     def __init__(self):
         pass
         
-    def parse(self, html):
+    def parse(self, html, strip_images=False):
         # parse attachment tags
         attachment_bbcode_in_post = attachment_re.findall(html)
         
@@ -194,7 +200,30 @@ class ForumPostParser(object):
         prefix_bbcode_in_post = prefix_re.findall(html)
         for prefix_bbcode in prefix_bbcode_in_post:
             html = html.replace(prefix_bbcode[0], """<span class="badge prefix" style="background:%s; font-size: 10px; font-weight: normal; vertical-align: top; margin-top: 2px;">%s</span>""" % (prefix_bbcode[1], prefix_bbcode[2],))
-        
+
+        size_bbcode_in_post = size_re.findall(html)
+        for size_bbcode in size_bbcode_in_post:
+            replace_ = "[size="+size_bbcode[0]+"]"+size_bbcode[1]+"[/size]"
+            try:
+                html = html.replace(replace_, """<span style="font-size: %spx;">%s</span>""" % (str(14+int(size_bbcode[0])), size_bbcode[1],))
+            except:
+                continue
+
+        color_bbcode_in_post = color_re.findall(html)
+        for color_bbcode in color_bbcode_in_post:
+            replace_ = "[color="+color_bbcode[0]+"]"+color_bbcode[1]+"[/color]"
+            html = html.replace(replace_, """<span style="color: %s;">%s</span>""" % (color_bbcode[0], color_bbcode[1],))
+
+        font_bbcode_in_post = font_re.findall(html)
+        for font_bbcode in font_bbcode_in_post:
+            replace_ = "[font="+font_bbcode[0]+"]"+font_bbcode[1]+"[/font]"
+            html = html.replace(replace_, """%s""" % (font_bbcode[1],))
+
+        font_bbcode_in_post = font_re.findall(html)
+        for font_bbcode in font_bbcode_in_post:
+            replace_ = "[font="+font_bbcode[0]+"]"+font_bbcode[1]+"[/font]"
+            html = html.replace(replace_, """%s""" % (font_bbcode[1],))
+
         # parse smileys
         for smiley in emoticon_codes.keys():
             img_html = """<img src="%s" />""" % (os.path.join("/static/emoticons",emoticon_codes[smiley]),)
@@ -209,11 +238,37 @@ class ForumPostParser(object):
             to_replace = to_replace + quote_bbcode[1]
             to_replace = to_replace + "[/quote]"
             html = html.replace(to_replace, """<blockquote data-author="%s" class="blockquote-reply"><div>%s</div></blockquote>""" % (unicode(quote_bbcode[0]), unicode(quote_bbcode[1])), 1)
-                
+        
+        url_bbcode_in_post = url_re.findall(html)
+        for url_bbcode in url_bbcode_in_post:
+            if url_bbcode[1] == "":
+                to_replace = "[url]"
+            else:
+                to_replace = "[url=%s]" % (url_bbcode[0]+url_bbcode[1]+url_bbcode[2])
+            to_replace = to_replace + url_bbcode[3]
+            to_replace = to_replace + "[/url]"
+            if url_bbcode[0] == "":
+                html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[3])), 1)
+            else:
+                html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[1])), 1)
+        
         # parse spoilers
         spoiler_bbcode_in_post = spoiler_re.findall(html)
         for spoiler_bbcode in spoiler_bbcode_in_post:
             html = html.replace("[spoiler]%s[/spoiler]" % spoiler_bbcode, """<div class="content-spoiler"><div> <!-- spoiler div -->%s</div></div>""" % spoiler_bbcode, 1)
+
+        center_bbcode_in_post = center_re.findall(html)
+        for center_bbcode in center_bbcode_in_post:
+            html = html.replace("[center]%s[/center]" % center_bbcode, """<center><div> <!-- center div -->%s</div></center>""" % center_bbcode, 1)
+        
+        if strip_images:
+            image_bbcode_in_post = image_re.findall(html)
+            for image_bbcode in image_bbcode_in_post:
+                html = html.replace("[img]%s[/img]" % image_bbcode, """<disabledimg src="%s" style="max-width: 100%%;" />""" % image_bbcode, 1)
+        else:
+            image_bbcode_in_post = image_re.findall(html)
+            for image_bbcode in image_bbcode_in_post:
+                html = html.replace("[img]%s[/img]" % image_bbcode, """<img src="%s" style="max-width: 100%%;" />""" % image_bbcode, 1)
 
         strong_bbcode_in_post = bold_re.findall(html)
         for strong_bbcode in strong_bbcode_in_post:
