@@ -102,21 +102,6 @@ body(role='document')
                 li
                   a(href='/members')
                     | Members
-            //- li.dropdown
-            //-   a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-            //-     | Community
-            //-     span.caret
-            //-   |
-            //-   ul.dropdown-menu(role='menu')
-            //-     //- li
-            //-     //-   a(href='#') Blogs
-            //-     //- li
-            //-     //-   a(href='#') Streaming
-            //-     li
-            //-       a(href='#') Minecraft
-            //-     li.divider
-            //-     li
-            //-       a(href='#') Members
             li.dropdown
               a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                 | Roleplay 
@@ -143,12 +128,6 @@ body(role='document')
                 li.divider
                 li
                   a(href='/t/how-can-i-be-a-nice-person-online') How to be Nice
-                  
-                //- li.divider
-                //- li
-                //-   a(href='#') Lore
-                //- li
-                //-   a(href='#') Characters
             li
               a(href='/search')
                 | Search
@@ -205,9 +184,6 @@ body(role='document')
                     li.notification-li
                       a.notification-link(href='{{notification.url}}', data-notification="{{notification.pk}}")= notification.text
                       
-        // /.nav-collapse
-      // /.container-fluid
-    
     #content-border
       {% block content %}
       {% endblock %}
