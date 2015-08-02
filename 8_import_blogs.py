@@ -60,3 +60,28 @@ for b in blogs:
     new_blog.slug = get_blog_slug(new_blog.name)
         
     new_blog.save()
+    
+blog_entry_cursor = db.cursor()
+blog_entry_cursor.execute("select * from ipsblog_entries;")
+blog_entries = blog_entry_cursor.fetchall()
+
+for e in blog_entries:
+    new_entry = BlogEntry()
+    new_entry.title = e["entry_name"].encode("latin1")
+    new_entry.slug = get_blog_slug(new_entry.title)
+    new_entry.html = e["entry"].encode("latin1")
+    new_entry.author = User.objects(old_member_id=e["entry_author_id"])[0]
+    new_entry.author_name = new_entry.author.login_name
+    new_entry.blog = Blog.objects(old_ipb_id=e["blog_id"])[0]
+    new_entry.old_ipb_id = e["entry_id"]
+    new_entry.blog_name = new_entry.blog.name
+    new_entry.created = arrow.get(e["entry_date"]).replace(hours=-12).datetime
+    new_entry.published = new_entry.created
+    new_entry.edited = arrow.get(e["entry_edit_time"]).replace(hours=-12).datetime
+    new_entry.view_count = e["entry_views"]
+    
+    if e["entry_loocked"] == 1:
+        new_entry.locked = True
+    
+    new_entry.save()
+    

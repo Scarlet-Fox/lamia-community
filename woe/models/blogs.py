@@ -44,6 +44,7 @@ class BlogHistory(db.DynamicEmbeddedDocument):
 
 class BlogEntry(db.DynamicDocument):
     title = db.StringField(required=True)
+    slug = db.StringField(required=True)
     html = db.StringField(required=True)
     author = db.ReferenceField("User", required=True, reverse_delete_rule=db.CASCADE)
     author_name = db.StringField(required=True)
@@ -52,7 +53,6 @@ class BlogEntry(db.DynamicDocument):
     category = db.StringField()
 
     created = db.DateTimeField(required=True)
-    modified = db.DateTimeField()
     published = db.DateTimeField()
     data = db.DictField()
     history = db.ListField(db.EmbeddedDocumentField(BlogHistory))
@@ -60,6 +60,7 @@ class BlogEntry(db.DynamicDocument):
 
     edited = db.DateTimeField()
     editor = db.ReferenceField("User", reverse_delete_rule=db.CASCADE)
+    locked = db.BooleanField(default=False)
     
     boops = db.ListField(db.ReferenceField("User", reverse_delete_rule=db.PULL))
     boop_count = db.IntField(default=0)
@@ -69,6 +70,8 @@ class BlogEntry(db.DynamicDocument):
     draft = db.BooleanField(default=True)
     hidden = db.BooleanField(default=False)
     hide_message = db.StringField()
+    
+    old_ipb_id = db.IntField()
 
 class BlogComment(db.DynamicDocument):
     html = db.StringField(required=True)

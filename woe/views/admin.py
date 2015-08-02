@@ -157,7 +157,14 @@ class BlogView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
-admin.add_view(BlogView(Blog))
+class BlogEntryView(ModelView):
+    column_list = ("author_name", "title", "blog_name", "created")
+    column_filters = ("author_name", "blog_name", "title", "created")
+    column_searchable_list = ("title", "html")
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 admin.add_view(ReportView(Report))
 admin.add_view(FingerprintView(Fingerprint, category='Logging'))
 admin.add_view(IPAddressView(IPAddress, category='Logging'))
@@ -173,4 +180,6 @@ admin.add_view(CategoryView(Category, category='Forum'))
 admin.add_view(TopicView(Topic, category='Forum'))
 admin.add_view(PostView(Post, category='Forum'))
 admin.add_view(PrefixView(Prefix, category='Forum'))
+admin.add_view(BlogView(Blog, category='Blogs'))
+admin.add_view(BlogEntryView(BlogEntry, category='Blogs'))
 admin.add_view(CharacterView(Character, category='Roleplay'))
