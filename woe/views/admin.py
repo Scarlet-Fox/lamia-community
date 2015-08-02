@@ -7,6 +7,7 @@ from flask_admin.contrib.mongoengine import ModelView
 from woe.models.core import *
 from woe.models.forum import *
 from woe.models.roleplay import *
+from woe.models.blogs import *
 
 class AuthAdminIndexView(admin.AdminIndexView):
     @expose('/')
@@ -148,6 +149,15 @@ class CharacterView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class BlogView(ModelView):
+    column_list = ("creator_name", "name", "created")
+    column_filters = ("name", "description")
+    column_searchable_list = ("name", "description")
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+admin.add_view(BlogView(Blog))
 admin.add_view(ReportView(Report))
 admin.add_view(FingerprintView(Fingerprint, category='Logging'))
 admin.add_view(IPAddressView(IPAddress, category='Logging'))

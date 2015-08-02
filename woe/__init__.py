@@ -74,6 +74,7 @@ app.jsonify = jsonify
 import models.core
 import models.forum
 import models.roleplay
+import models.blogs
 import views.core
 import views.roleplay
 import views.forum

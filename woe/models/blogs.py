@@ -31,7 +31,17 @@ class Blog(db.DynamicDocument):
         ("you", "Only You")
     )
     privacy_settings = db.StringField(choices=PRIVACY_LEVELS, required=True)
+    disabled = db.BooleanField(default=False)
     
+    old_ipb_id = db.IntField()
+
+class BlogHistory(db.DynamicEmbeddedDocument):
+    creator = db.ReferenceField("User", required=True)
+    created = db.DateTimeField(required=True)
+    html = db.StringField(required=True)
+    reason = db.StringField()
+    data = db.DictField()
+
 class BlogEntry(db.DynamicDocument):
     title = db.StringField(required=True)
     html = db.StringField(required=True)
@@ -45,7 +55,7 @@ class BlogEntry(db.DynamicDocument):
     modified = db.DateTimeField()
     published = db.DateTimeField()
     data = db.DictField()
-    history = db.ListField(db.EmbeddedDocumentField(PostHistory))
+    history = db.ListField(db.EmbeddedDocumentField(BlogHistory))
     entry_subscribers = db.ListField(db.ReferenceField("User", reverse_delete_rule=db.PULL))  
 
     edited = db.DateTimeField()
@@ -71,7 +81,7 @@ class BlogComment(db.DynamicDocument):
     modified = db.DateTimeField()
     published = db.DateTimeField()
     data = db.DictField()
-    history = db.ListField(db.EmbeddedDocumentField(PostHistory))
+    history = db.ListField(db.EmbeddedDocumentField(BlogHistory))
 
     edited = db.DateTimeField()
     editor = db.ReferenceField("User", reverse_delete_rule=db.CASCADE)
