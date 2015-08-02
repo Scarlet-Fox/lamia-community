@@ -6,7 +6,7 @@ $ ->
     speed: 0
 
   blogHTMLTemplate = """
-  <div class="col-xs-6 blog-index-panel">
+  <div class="col-xs-12 col-sm-6 blog-index-panel">
     <div class="panel panel-default">
       <div class="panel-body">
         <center>

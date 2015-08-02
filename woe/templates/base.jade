@@ -89,8 +89,19 @@ body(role='document')
                 hr
             li#forum-li
               a(href='/') Forum
-              li
-                a(href='/status-updates') Status Updates
+            li.dropdown
+              a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                | Community 
+                span.caret
+              ul.dropdown-menu(role='menu')
+                li
+                  a(href='/blogs') Blogs
+                li
+                  a(href='/status-updates') Status Updates
+                li.divider
+                li
+                  a(href='/members')
+                    | Members
             //- li.dropdown
             //-   a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
             //-     | Community
@@ -138,9 +149,6 @@ body(role='document')
                 //-   a(href='#') Lore
                 //- li
                 //-   a(href='#') Characters
-            li
-              a(href='/members')
-                | Members
             li
               a(href='/search')
                 | Search
