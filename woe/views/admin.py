@@ -150,17 +150,25 @@ class CharacterView(ModelView):
         return (current_user.is_authenticated() and current_user.is_admin)
 
 class BlogView(ModelView):
-    column_list = ("creator_name", "name", "created")
-    column_filters = ("name", "description")
+    column_list = ("creator_name", "name", "created", "disabled")
+    column_filters = ("name", "description", "disabled")
     column_searchable_list = ("name", "description")
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
 class BlogEntryView(ModelView):
-    column_list = ("author_name", "title", "blog_name", "created")
-    column_filters = ("author_name", "blog_name", "title", "created")
+    column_list = ("author_name", "title", "blog_name", "created", "draft", "locked", "hidden")
+    column_filters = ("author_name", "blog_name", "title", "created", "draft", "locked", "hidden")
     column_searchable_list = ("title", "html")
+    
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+class BlogCommentView(ModelView):
+    column_list = ("author_name", "blog_entry_name", "blog_name", "created", "hidden")
+    column_filters = ("author_name", "blog_entry_name", "blog_name", "created", "hidden")
+    column_searchable_list = ("html",)
     
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
@@ -182,4 +190,5 @@ admin.add_view(PostView(Post, category='Forum'))
 admin.add_view(PrefixView(Prefix, category='Forum'))
 admin.add_view(BlogView(Blog, category='Blogs'))
 admin.add_view(BlogEntryView(BlogEntry, category='Blogs'))
+admin.add_view(BlogCommentView(BlogComment, category='Blogs'))
 admin.add_view(CharacterView(Character, category='Roleplay'))

@@ -61,10 +61,13 @@ class BlogEntry(db.DynamicDocument):
     edited = db.DateTimeField()
     editor = db.ReferenceField("User", reverse_delete_rule=db.CASCADE)
     locked = db.BooleanField(default=False)
+    hidden = db.BooleanField(default=False)    
     
     boops = db.ListField(db.ReferenceField("User", reverse_delete_rule=db.PULL))
     boop_count = db.IntField(default=0)
     comment_count = db.IntField(default=0)
+    last_comment = db.ReferenceField("BlogComment")
+    last_comment_date = db.DateTimeField()
     view_count = db.IntField(default=0)
     
     draft = db.BooleanField(default=True)
@@ -79,10 +82,11 @@ class BlogComment(db.DynamicDocument):
     author_name = db.StringField(required=True)
     blog_entry = db.ReferenceField("BlogEntry", required=True, reverse_delete_rule=db.CASCADE)
     blog_entry_name = db.StringField(required=True)
+    blog = db.ReferenceField("Blog", required=True, reverse_delete_rule=db.CASCADE)
+    blog_name = db.StringField(required=True)
 
     created = db.DateTimeField(required=True)
     modified = db.DateTimeField()
-    published = db.DateTimeField()
     data = db.DictField()
     history = db.ListField(db.EmbeddedDocumentField(BlogHistory))
 
@@ -95,5 +99,5 @@ class BlogComment(db.DynamicDocument):
     hidden = db.BooleanField(default=False)
     hide_message = db.StringField()
     
-    
-    
+    def __unicode__(self):
+        return unicode(self.html)
