@@ -1,5 +1,6 @@
 from woe import app
 from woe.models.core import User
+from woe.forms.blogs import BlogSettingsForm
 from woe.parsers import ForumPostParser
 from woe.models.blogs import *
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
@@ -79,3 +80,20 @@ def list_of_blogs():
         return app.jsonify(blogs=parsed_blogs)
     else:
         return render_template("blogs/list_of_blogs.jade", page_title="Blogs - World of Equestria", my_blogs=my_blogs, count=count, search=search, authors=json.dumps(authors))
+
+@app.route('/blogs/new-blog', methods=['GET', 'POST'])
+@login_required
+def new_blog():
+    form = BlogSettingsForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        b = Blog()
+        b.name = form.title.data
+        b.description = form.description.data
+        b.privacy_setting = form.privacy_setting.data
+        b.slug = get_blog_slug(b.name)
+        b.creator = current_user._get_current_object()
+        b.creator_name = current_user._get_current_object().login_name
+        b.save()
+        return redirect("/blog/"+unicode(b.slug))
+    
+    return render_template("blogs/create_new_blog.jade", form=form, page_title="New Blog - World of Equestria")

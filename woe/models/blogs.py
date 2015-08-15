@@ -2,6 +2,21 @@ from woe import db
 from slugify import slugify
 from woe.models.core import User
 
+def get_blog_slug(title):
+    slug = slugify(title, max_length=100, word_boundary=True, save_order=True)
+    
+    def try_slug(slug, count=0):
+        new_slug = slug
+        if count > 0:
+            new_slug = slug+"-"+str(count)
+            
+        if len(Blog.objects(slug=new_slug)) == 0:
+            return new_slug
+        else:
+            return try_slug(slug, count+1)
+    
+    return try_slug(slug)
+
 class Blog(db.DynamicDocument):
     name = db.StringField(required=True)
     slug = db.StringField(required=True, unique=True)
@@ -30,7 +45,7 @@ class Blog(db.DynamicDocument):
         ("editors", "Only Editors"),
         ("you", "Only You")
     )
-    privacy_settings = db.StringField(choices=PRIVACY_LEVELS, required=True)
+    privacy_setting = db.StringField(choices=PRIVACY_LEVELS, required=True)
     disabled = db.BooleanField(default=False)
     
     old_ipb_id = db.IntField()

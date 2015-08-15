@@ -8,7 +8,7 @@
       .panel-heading
         span My Blogs
       .panel-body.body-background
-        a.btn.btn-primary(style="margin: 2px;", href="/blogs/new") New Blog
+        a.btn.btn-primary(style="margin: 2px;", href="/blogs/new-blog") New Blog
         if my_blogs
           for blog in my_blogs
             a.btn.btn-default(style="margin: 2px;", href="/blog/{{blog.slug}}") {{blog.name}}
