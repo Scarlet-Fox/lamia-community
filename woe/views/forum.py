@@ -11,7 +11,7 @@ import arrow, time, math
 from threading import Thread
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
 from woe.views.dashboard import broadcast
-import re
+import re, json
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
@@ -354,78 +354,83 @@ def topic_posts(slug):
     parsed_posts = []
     
     for post in posts:
-        clean_html_parser = ForumPostParser()
-        parsed_post = post.to_mongo().to_dict()
-        parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
-        parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
-        parsed_post["html"] = clean_html_parser.parse(post.html)
-        parsed_post["roles"] = post.author.get_roles()
-        parsed_post["user_avatar"] = post.author.get_avatar_url()
-        parsed_post["user_avatar_x"] = post.author.avatar_full_x
-        parsed_post["user_avatar_y"] = post.author.avatar_full_y
-        parsed_post["user_avatar_60"] = post.author.get_avatar_url("60")
-        parsed_post["user_avatar_x_60"] = post.author.avatar_60_x
-        parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
-        parsed_post["user_title"] = post.author.title
-        parsed_post["author_name"] = post.author.display_name
-        if post == topic.first_post:
-            parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"
-        parsed_post["author_login_name"] = post.author.login_name
-        parsed_post["group_pre_html"] = post.author.group_pre_html
-        parsed_post["author_group_name"] = post.author.group_name
-        parsed_post["group_post_html"] = post.author.group_post_html
-        parsed_post["has_booped"] = current_user._get_current_object() in post.boops
-        parsed_post["boop_count"] = len(post.boops)
-        if current_user.is_authenticated():
-            parsed_post["can_boop"] = current_user._get_current_object() != post.author
+        cached_post = app.redis_store.get('post-'+str(post.pk)) 
+        if cached_post != None:
+            parsed_posts.append(json.loads(cached_post))
         else:
-            parsed_post["can_boop"] = False
+            clean_html_parser = ForumPostParser()
+            parsed_post = post.to_mongo().to_dict()
+            parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
+            parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
+            parsed_post["html"] = clean_html_parser.parse(post.html)
+            parsed_post["roles"] = post.author.get_roles()
+            parsed_post["user_avatar"] = post.author.get_avatar_url()
+            parsed_post["user_avatar_x"] = post.author.avatar_full_x
+            parsed_post["user_avatar_y"] = post.author.avatar_full_y
+            parsed_post["user_avatar_60"] = post.author.get_avatar_url("60")
+            parsed_post["user_avatar_x_60"] = post.author.avatar_60_x
+            parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
+            parsed_post["user_title"] = post.author.title
+            parsed_post["author_name"] = post.author.display_name
+            if post == topic.first_post:
+                parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"
+            parsed_post["author_login_name"] = post.author.login_name
+            parsed_post["group_pre_html"] = post.author.group_pre_html
+            parsed_post["author_group_name"] = post.author.group_name
+            parsed_post["group_post_html"] = post.author.group_post_html
+            parsed_post["has_booped"] = current_user._get_current_object() in post.boops
+            parsed_post["boop_count"] = len(post.boops)
+            if current_user.is_authenticated():
+                parsed_post["can_boop"] = current_user._get_current_object() != post.author
+            else:
+                parsed_post["can_boop"] = False
         
-        if current_user.is_authenticated():
-            if post.author.pk == current_user.pk:
-                parsed_post["is_author"] = True
+            if current_user.is_authenticated():
+                if post.author.pk == current_user.pk:
+                    parsed_post["is_author"] = True
+                else:
+                    parsed_post["is_author"] = False   
             else:
                 parsed_post["is_author"] = False   
-        else:
-            parsed_post["is_author"] = False   
         
-        if post.author.last_seen != None:
-            if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime and post.author.hide_login != True:
-                parsed_post["author_online"] = True
+            if post.author.last_seen != None:
+                if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime and post.author.hide_login != True:
+                    parsed_post["author_online"] = True
+                else:
+                    parsed_post["author_online"] = False
             else:
                 parsed_post["author_online"] = False
-        else:
-            parsed_post["author_online"] = False
             
-        if post.data.has_key("character"):
-            try:
-                character = Character.objects(pk=post.data["character"], creator=post.author)[0]
-                parsed_post["character_name"] = character.name
-                parsed_post["character_slug"] = character.slug
-                parsed_post["character_motto"] = character.motto
-            except:
-                pass
-        else:
-            character = None
+            if post.data.has_key("character"):
+                try:
+                    character = Character.objects(pk=post.data["character"], creator=post.author)[0]
+                    parsed_post["character_name"] = character.name
+                    parsed_post["character_slug"] = character.slug
+                    parsed_post["character_motto"] = character.motto
+                except:
+                    pass
+            else:
+                character = None
         
-        if post.data.has_key("avatar"):
-            try:
-                a = Attachment.objects(pk=post.data["avatar"], owner=post.author)[0]
-                parsed_post["character_avatar_small"] = a.get_specific_size(60)
-                parsed_post["character_avatar_large"] = a.get_specific_size(200)
-                parsed_post["character_avatar"] = True
-            except:
-                pass
-        else:
-            try:
-                parsed_post["character_avatar_small"] = character.default_avatar.get_specific_size(60)
-                parsed_post["character_avatar_large"] = character.default_avatar.get_specific_size(200)
-                parsed_post["character_avatar"] = True
-            except:
-                pass
-        
-        parsed_posts.append(parsed_post)
-        
+            if post.data.has_key("avatar"):
+                try:
+                    a = Attachment.objects(pk=post.data["avatar"], owner=post.author)[0]
+                    parsed_post["character_avatar_small"] = a.get_specific_size(60)
+                    parsed_post["character_avatar_large"] = a.get_specific_size(200)
+                    parsed_post["character_avatar"] = True
+                except:
+                    pass
+            else:
+                try:
+                    parsed_post["character_avatar_small"] = character.default_avatar.get_specific_size(60)
+                    parsed_post["character_avatar_large"] = character.default_avatar.get_specific_size(200)
+                    parsed_post["character_avatar"] = True
+                except:
+                    pass
+            
+            app.redis_store.set('post-'+str(post.pk), json.dumps(parsed_post, cls=app.MongoJsonEncoder), 60*60*24) 
+            parsed_posts.append(parsed_post)
+    
     return app.jsonify(posts=parsed_posts, count=post_count)    
 
 @app.route('/topic/<slug>/', methods=['GET'],)
@@ -452,6 +457,8 @@ def edit_topic_post_html(slug):
         post = Post.objects(topic=topic, pk=request_json.get("pk"), hidden=False)[0]
     except:
         return abort(404)
+        
+    app.redis_store.delete('post-'+str(post.pk))
         
     if current_user._get_current_object() != post.author and (current_user._get_current_object().is_admin != True and current_user._get_current_object().is_mod != True):
         return abort(404)
@@ -703,6 +710,7 @@ def edit_topic(slug):
         topic.save()
         
         first_post = topic.first_post
+        app.redis_store.delete('post-'+str(first_post.pk))
         first_post.history.append(history)
         first_post.modified = arrow.utcnow().datetime
         first_post.html = post_html
