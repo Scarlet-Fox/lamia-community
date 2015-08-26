@@ -1,0 +1,60 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.breadcrumb#topic-breadcrumb
+  li
+    a(href="/") Home
+  li 
+    a(href="/blogs") Blogs
+  li.active
+    a(href="/blog/{{blog.slug}}")= blog.name
+.row
+  .col-sm-8
+    for entry in entries
+      .panel.panel-default
+        .panel-heading
+          span(style="font-size: 115%; font-weight: normal;")= entry.title
+        .panel-body
+          .media-left
+            img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
+          .media-body
+            | by 
+            a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
+            br
+            span.text-muted {{ entry.published|humanize_time }}
+          hr
+          .blog-entry!= entry.parsed_truncated
+          hr
+          a(href="/blog/{{blog.slug}}/{{entry.slug}}") 
+            h4 Read More
+    if entry_count > 10
+      center
+        ul.pagination
+          for page_link in pages
+            if page_link == page
+              li.active
+                a(href="/blog/{{blog.slug}}/page/{{page_link}}")= page_link
+            else
+              li
+                a(href="/blog/{{blog.slug}}/page/{{page_link}}")= page_link
+  .col-sm-4
+    if blog.description
+      .panel.panel-default
+        .panel-heading.panel-title Description
+        .panel-body
+          p= blog.description
+    if comments
+      .panel.panel-default
+        .panel-heading.panel-title Recent Comments
+        .panel-body
+          for comment in comments
+            .media-left
+              img.avatar-mini(src="{{comment.author.get_avatar_url("40")}}", width="{{comment.author.avatar_40_x}}", height="{{comment.author.avatar_40_y}}")
+            .media-body
+              a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")= comment.author.display_name
+              |  commented on 
+              a(href="/blog/{{blog.slug}}/{{comment.blog_entry.slug}}")= comment.blog_entry.title
+              br
+              span.text-muted {{ comment.created|humanize_time }}
+            | {% if not loop.last %}<hr>{% else %}<br>{% endif %}
+{% endblock %}

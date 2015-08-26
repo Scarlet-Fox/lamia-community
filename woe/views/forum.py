@@ -354,6 +354,7 @@ def topic_posts(slug):
     parsed_posts = []
     
     for post in posts:
+        app.redis_store.delete('post-'+str(post.pk)) 
         cached_post = app.redis_store.get('post-'+str(post.pk)) 
         if cached_post != None:
             parsed_posts.append(json.loads(cached_post))
@@ -542,7 +543,7 @@ def get_post_html_in_topic(slug, post):
     except:
         return abort(404)
         
-    return json.jsonify(content=post.html, author=post.author.display_name)
+    return app.jsonify(content=post.html, author=post.author.display_name)
 
 @app.route('/t/<slug>', methods=['GET'], defaults={'page': 1, 'post': ""})
 @app.route('/t/<slug>/page/<page>', methods=['GET'], defaults={'post': ""})
@@ -629,7 +630,7 @@ def category_filter_preferences(slug):
     except IndexError:
         return abort(404)
     if not current_user.is_authenticated():
-        return json.jsonify(preferences={})
+        return app.jsonify(preferences={})
             
     if request.method == 'POST':
         
@@ -638,14 +639,14 @@ def category_filter_preferences(slug):
             if len(request_json.get("preferences")) < 10:
                 current_user.data["category_filter_preference_"+str(category.pk)] = request_json.get("preferences")
         except:
-            return json.jsonify(preferences={})
+            return app.jsonify(preferences={})
         
         current_user.update(data=current_user.data)
         preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
-        return json.jsonify(preferences=preferences)
+        return app.jsonify(preferences=preferences)
     else:        
         preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
-        return json.jsonify(preferences=preferences)
+        return app.jsonify(preferences=preferences)
 
 @app.route('/t/<slug>/edit-topic', methods=['GET', 'POST'])
 @login_required

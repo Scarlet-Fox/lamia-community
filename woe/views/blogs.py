@@ -9,6 +9,7 @@ from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_sea
 from mongoengine.queryset import Q
 import arrow, json
 from woe.views.dashboard import broadcast
+from BeautifulSoup import BeautifulSoup
 
 @app.route('/blogs', methods=['GET', 'POST'])
 @login_required
@@ -97,3 +98,30 @@ def new_blog():
         return redirect("/blog/"+unicode(b.slug))
     
     return render_template("blogs/create_new_blog.jade", form=form, page_title="New Blog - World of Equestria")
+    
+@app.route('/blog/<slug>', methods=['GET'], defaults={'page': 1})
+@app.route('/blog/<slug>/page/<page>', methods=['GET'])
+def blog_index(slug, page):
+    try:
+        blog = Blog.objects(slug=slug)[0]
+    except:
+        return abort(404)
+    
+    try:
+        page = int(page)
+    except:
+        return abort(500)
+    
+    entries = BlogEntry.objects(hidden=False, draft=False, blog=blog).order_by("-created")[(page-1)*10:page*10]
+    clean_html_parser = ForumPostParser()
+    
+    for entry in entries:
+        entry.parsed = clean_html_parser.parse(entry.html)
+        entry.parsed_truncated = unicode(BeautifulSoup(entry.parsed[:1000]))+"..."
+        
+    comments = BlogComment.objects(hidden=False, blog=blog).order_by("-created")[0:10]
+    
+    entry_count = BlogEntry.objects(hidden=False, draft=False, blog=blog).count()
+    pages = range(1,int(entry_count / 10)+1)
+        
+    return render_template("blogs/blog_entry_listing.jade", blog=blog, entries=entries, comments=comments, page=page, pages=pages, entry_count=entry_count)

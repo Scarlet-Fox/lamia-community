@@ -49,6 +49,22 @@ class Blog(db.DynamicDocument):
     disabled = db.BooleanField(default=False)
     
     old_ipb_id = db.IntField()
+    
+    meta = {
+        'indexes': [
+            'old_ipb_id',
+            '-last_entry_date',
+            '-last_comment_date',
+            {
+                'fields': ['$name',],
+                'default_language': 'english'
+            },
+            'disabled',
+            'creator',
+            'last_entry'
+        ],
+        'ordering': ['-last_entry_date']
+    }
 
 class BlogHistory(db.DynamicEmbeddedDocument):
     creator = db.ReferenceField("User", required=True)
@@ -90,6 +106,17 @@ class BlogEntry(db.DynamicDocument):
     hide_message = db.StringField()
     
     old_ipb_id = db.IntField()
+    
+    meta = {
+        'indexes': [
+            'old_ipb_id',
+            'slug',
+            'hidden',
+            'blog',
+            '-published'
+        ],
+        'ordering': ['-published']
+    }
 
 class BlogComment(db.DynamicDocument):
     html = db.StringField(required=True)
