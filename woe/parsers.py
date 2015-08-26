@@ -11,7 +11,6 @@ from threading import Thread
 from woe.models.core import Attachment, User, PrivateMessage
 from woe.models.forum import Post
 from woe.models.roleplay import Character
-import bbcode
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\](.*?)\[\/spoiler\]', re.DOTALL)
