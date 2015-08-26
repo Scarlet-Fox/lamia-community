@@ -534,8 +534,8 @@ $ ->
                         <div class="btn-group" role="group" aria-label="...">
                           <div class="btn-group">
                             <button type="button" class="btn btn-default mention-button" data-author="{{author_login_name}}">@</button>
-                            <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
-                            <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="post">Report</button>
+                            <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}"><span class="glyphicon glyphicon-comment"></span></button>
+                            <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="post"><span class="glyphicon glyphicon-exclamation-sign"></span></button>
                             <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>
@@ -549,7 +549,6 @@ $ ->
                           {{#if _is_logged_in}}
                           <div class="btn-group" style="">
                             {{#if _is_topic_mod}}
-                            <button type="button" class="btn btn-default">Options</button>
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>
@@ -565,7 +564,6 @@ $ ->
                             </ul>
                             {{else}}
                               {{#if is_author}}
-                                <button type="button" class="btn btn-default">Options</button>
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                   <span class="caret"></span>
                                   <span class="sr-only">Toggle Dropdown</span>
