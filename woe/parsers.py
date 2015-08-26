@@ -11,6 +11,7 @@ from threading import Thread
 from woe.models.core import Attachment, User, PrivateMessage
 from woe.models.forum import Post
 from woe.models.roleplay import Character
+import bbcode
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
 spoiler_re = re.compile(r'\[spoiler\](.*?)\[\/spoiler\]', re.DOTALL)
@@ -28,6 +29,7 @@ prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
 legacy_postcharacter_re = re.compile(r'\[(post)?character=.*?\]')
+list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL)
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -281,5 +283,15 @@ class ForumPostParser(object):
         strike_bbcode_in_post = strike_re.findall(html)
         for strike_bbcode in strike_bbcode_in_post:
             html = html.replace("[s]%s[/s]" % strike_bbcode, """<div style="text-decoration: line-through; display: inline !important;"><div style="display: inline !important;"><!-- strike span -->%s</div></div> <!-- /strike span -->""" % strike_bbcode, 1)
+        
+        list_bbcode_in_post = list_re.findall(html)
+        for list_bbcode in list_bbcode_in_post:
+            list_contents = ""
+            for list_item in list_bbcode.replace("<div>", "").replace("</div>", "").split("[*]"):
+                list_item = list_item.strip()
+                if list_item == "":
+                    continue
+                list_contents += """<li>%s</li>""" % list_item
+            html = html.replace("[list]%s[/list]" % list_bbcode, """<ul> <!-- list -->%s</ul>""" % list_contents, 1)
         
         return html

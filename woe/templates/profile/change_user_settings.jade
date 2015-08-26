@@ -17,9 +17,9 @@
 {% block script %}
 {% assets filters="rjsmin", output="generated/change_user_settings.js",
 "assets/select2/select2.full.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
-script(type="text/javascript")
+script(type="text/javascript").
   $(document).ready(function(){
     $("#time_zone").select2({});
   });

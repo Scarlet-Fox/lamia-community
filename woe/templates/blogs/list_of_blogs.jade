@@ -75,7 +75,7 @@
 {% endblock %}
 
 {% block script %}
-script(type="text/javascript")
+script(type="text/javascript").
   $(document).ready(function(){ 
     window.count = {{count}};
     window.authors = JSON.parse('{{authors}}');
@@ -85,6 +85,6 @@ script(type="text/javascript")
 {% assets filters="rjsmin", output="generated/listing-of-blogs.js",
 "assets/jquery.shuffle.modernizr.js", "local/js/listing-of-blogs.js", 
 "assets/select2/select2.full.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
 {% endblock %}

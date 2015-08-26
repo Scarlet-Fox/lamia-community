@@ -39,36 +39,37 @@ nav.pagination-listing
 {% assets filters="rjsmin", output="generated/editor.js",
 "assets/quill/quill.js", "assets/dropzone/dropzone.js", 
 "assets/select2/select2.full.js", "local/js/inline-editor.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
-script(type="text/javascript")
+
+script(type="text/javascript").
   $(document).ready(function(){  
-    {% if current_user.is_authenticated() == True %}
-    window._pagination={{current_user.post_pagination}};
-    window._is_topic_mod={{topic.is_topic_mod(current_user)}};
-    window._is_logged_in=true;
-    {% else %}
-    window._pagination=20;
-    window._is_topic_mod=false;
-    window._is_logged_in=false;
-    {% endif %}
-    
-    window._initial_page={{initial_page}};
-    window.roleplay_area={{rp_area}};
-    
-    {% if initial_post == "" %}
-    window._initial_post="";
-    {% else %}
-    window._initial_post="{{initial_post}}";
-    {% endif %}
-    
-    {% if current_user.is_authenticated() == True %}
-    window._can_edit = true;
-    window._current_user = "{{current_user.display_name}}";
-    {% endif %}
+  {% if current_user.is_authenticated() == True %}
+  window._pagination={{current_user.post_pagination}};
+  window._is_topic_mod={{topic.is_topic_mod(current_user)}};
+  window._is_logged_in=true;
+  {% else %}
+  window._pagination=20;
+  window._is_topic_mod=false;
+  window._is_logged_in=false;
+  {% endif %}
+  
+  window._initial_page={{initial_page}};
+  window.roleplay_area={{rp_area}};
+  
+  {% if initial_post == "" %}
+  window._initial_post="";
+  {% else %}
+  window._initial_post="{{initial_post}}";
+  {% endif %}
+  
+  {% if current_user.is_authenticated() == True %}
+  window._can_edit = true;
+  window._current_user = "{{current_user.display_name}}";
+  {% endif %}
   });
 {% assets filters="rjsmin", output="generated/topic-index.js",
 "local/js/topic-index.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
 {% endblock %}

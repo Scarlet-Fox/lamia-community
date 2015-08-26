@@ -48,10 +48,10 @@ nav.pagination-listing
 {% assets filters="rjsmin", output="generated/editor.js",
 "assets/quill/quill.js", "assets/dropzone/dropzone.js", 
 "assets/select2/select2.full.js", "local/js/inline-editor.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
 
-script(type="text/javascript")
+script(type="text/javascript").
   $(document).ready(function(){  
     {% if current_user.is_authenticated() == True %}
     window._pagination={{current_user.post_pagination}};
@@ -83,6 +83,6 @@ script(type="text/javascript")
   
 {% assets filters="rjsmin", output="generated/message-topic.js",
 "local/js/private-message-topic-index.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
 {% endblock %}

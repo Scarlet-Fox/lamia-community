@@ -85,6 +85,6 @@
 
 {% assets filters="rjsmin", output="generated/single-status-update.js",
 "local/js/status-updates.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
 {% endblock %}

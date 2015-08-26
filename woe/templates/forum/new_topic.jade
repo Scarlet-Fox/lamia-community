@@ -40,14 +40,14 @@ nav.pagination-listing
 {% assets filters="rjsmin", output="generated/editor.js",
 "assets/quill/quill.js", "assets/dropzone/dropzone.js", 
 "assets/select2/select2.full.js", "local/js/inline-editor.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
-script(type="text/javascript")
+script(type="text/javascript").
   $(document).ready(function(){  
   
   });
 {% assets filters="rjsmin", output="generated/new-topic.js",
 "local/js/new-topic.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
 {% endblock %}

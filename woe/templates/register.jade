@@ -51,9 +51,9 @@
 {% block script %}
 {% assets filters="rjsmin", output="generated/sign-in.js",
 "local/js/sign-in.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
-script(type="text/javascript")
+script(type="text/javascript").
   $(document).ready(function(){
     $("#register-li").addClass("active");
   });

@@ -203,11 +203,11 @@ body(role='document')
           br
   #img-click-modal.modal.fade
   #report-click-modal.modal.fade
-  script(src="/static/assets/handlebars.min.js")
+  script(src="/static/assets/handlebars.min.js").
   
-  script(type="text/javascript")
+  script(type="text/javascript").
   if current_user.is_authenticated()
-    script(type="text/javascript")
+    script(type="text/javascript").
       window.woe_is_me = "{{current_user.login_name}}";
       window.my_tz = "{{current_user.time_zone}}";
       {% if current_user.is_authenticated() %}
@@ -220,7 +220,7 @@ body(role='document')
   "assets/moment.js", "assets/socket.io.js", "assets/ie10-viewport-bug-workaround.js",
   "local/js/base.js", "assets/dotdotdot/jquery.dotdotdot.js", "assets/moment-timezone-with-data-2010-2020.js",
   "assets/ie-emulation-modes-warning.js" %}
-  script(type="text/javascript", src="{{ASSET_URL}}")
+  script(type="text/javascript", src="{{ASSET_URL}}").
   {% endassets %}
   {% block script %}
   {% endblock %}

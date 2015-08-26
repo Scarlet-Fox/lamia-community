@@ -355,8 +355,8 @@ def topic_posts(slug):
     parsed_posts = []
     
     for post in posts:
-        if app.config['DEBUG']:
-            app.redis_store.delete('post-'+str(post.pk)) 
+        # if app.config['DEBUG']:
+        app.redis_store.delete('post-'+str(post.pk)) 
         cached_post = app.redis_store.get('post-'+str(post.pk)) 
         if cached_post != None:
             parsed_posts.append(json.loads(cached_post))

@@ -41,9 +41,9 @@ nav.pagination-listing
 
 {% assets filters="rjsmin", output="generated/message-index.js",
 "local/js/private-message-index.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
-script(type="text/javascript")
+script(type="text/javascript").
   $(document).ready(function(){
     $('#forum-li').addClass('active');
   });

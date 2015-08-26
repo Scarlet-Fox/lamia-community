@@ -80,9 +80,9 @@
 {% assets filters="rjsmin", output="generated/editor.js",
 "assets/quill/quill.js", "assets/dropzone/dropzone.js", 
 "assets/select2/select2.full.js", "local/js/inline-editor.js" %}
-script(type="text/javascript", src="{{ASSET_URL}}")
+script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
-script(type="text/javascript")
+script(type="text/javascript").
   $(document).ready(function(){
     {% if current_user.is_authenticated() %}
     $("#about-me-cog-icon").click(function(e) {
