@@ -809,7 +809,7 @@ def member_list_api():
     if order == 4:
         order = "joined"
     elif order == 5:
-        order = "last_seen"
+        order = "hidden_last_seen"
     elif order == 3:
         order = "roles"
     elif order == 0:
@@ -856,10 +856,10 @@ def member_list_api():
                                                                         unicode(user.login_name), 
                                                                         unicode(user.display_name)),
                 humanize_time(user.joined),
-                humanize_time(user.last_seen),
+                humanize_time(user.hidden_last_seen),
                 roles_template,
                 arrow.get(user.joined).timestamp,
-                arrow.get(user.last_seen).timestamp
+                arrow.get(user.hidden_last_seen).timestamp
             ]
         )
     data = {
