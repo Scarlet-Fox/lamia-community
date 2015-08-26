@@ -12,7 +12,7 @@ from woe.models.core import Attachment, User, PrivateMessage
 from woe.models.forum import Post
 from woe.models.roleplay import Character
 
-attachment_re = re.compile(r'\[attachment=(.+?):(\d+)\]')
+attachment_re = re.compile(r'\[attachment=(.+?):(\d+)(:wrap)?\]')
 spoiler_re = re.compile(r'\[spoiler\](.*?)\[\/spoiler\]', re.DOTALL)
 center_re = re.compile(r'\[center\](.*?)\[\/center\]', re.DOTALL)
 image_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL)
@@ -101,15 +101,20 @@ class ForumPostParser(object):
                 size = "5"
             if int(size) > 700:
                 size = "700"
-                
+            
+            if attachment_bbcode[2] == ":wrap":
+                image_formatting_class = " image-wrap"
+            else:
+                image_formatting_class = ""
+            
             if attachment.size_in_bytes < 1024*1024 or attachment.do_not_convert:
                 url = os.path.join("/static/uploads", attachment.path)
                 show_box = "no"
             
                 image_html = """
-                <img class="attachment-image" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                """ % (quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
-                html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html, 1)
+                <img class="attachment-image%s" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                """ % (image_formatting_class, quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html, 1)
                 continue
                 
             filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
@@ -128,26 +133,26 @@ class ForumPostParser(object):
                 if attachment.extension == "gif":
                     image_html = """
                     <div class="click-to-play">
-                        <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s" data-resized-size="%s">
+                        <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s" data-resized-size="%s">
                         <p class="text-warning">This file is %sKB large, click to play.</p>
                     </div>
-                    """ % (quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(new_size)/1024), int(float(new_size)/1024), int(float(new_size)/1024))
-                    html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html)
+                    """ % (image_formatting_class, quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(new_size)/1024), int(float(new_size)/1024), int(float(new_size)/1024))
+                    html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1]), attachment_bbcode[2], image_html)
                     continue
                 elif attachment.extension != "gif":
                     image_html = """
-                    <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
-                    """ % (quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
-                    html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html)
+                    <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
+                    """ % (image_formatting_class, quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                    html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
                     continue
             else:
                 thread = Thread(target=resize_image_save_custom, args=(filepath, sizepath, size, attachment, ))
                 thread.start()
                 url = os.path.join("/static/uploads", attachment.path)
                 image_html = """
-                <img class="attachment-image" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
-                """ % (quote(url), size, "no", attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
-                html = html.replace("[attachment=%s:%s]" % (attachment_bbcode[0], attachment_bbcode[1]), image_html)
+                <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
+                """ % (image_formatting_class, quote(url), size, "no", attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
                 continue
         
         #clean up old char tags

@@ -817,3 +817,8 @@ td {
 .jssora11r:hover { background-position: -191px -41px; }
 .jssora11l.jssora11ldn { background-position: -251px -41px; }
 .jssora11r.jssora11rdn { background-position: -311px -41px; }
+
+.image-wrap {
+  float: left;
+  margin: 0px 20px 20px 0px;
+}
