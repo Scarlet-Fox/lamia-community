@@ -343,9 +343,10 @@ def topic_posts(slug):
     hidden_posts = Post.objects(hidden=True, topic=topic).count()
     unmarked_posts = Post.objects(position_in_topic=None, topic=topic).count()
     
-    if unmarked_posts > 0 or hidden_posts != topic.hidden_posts:
+    if unmarked_posts > 0 or hidden_posts != topic.hidden_posts or topic.last_swept == None or (arrow.get() - arrow.get(topic.last_swept)).total_seconds() > 60.0*60.0:
         posts = list(Post.objects(hidden=False, topic=topic, created__gte=arrow.get(topic.created).replace(hours=-24).datetime).order_by("created")[(page-1)*pagination:page*pagination])
         thread = Thread(target=count_topic_posts, args=(slug, ))
+        topic.update(last_swept=arrow.utcnow().datetime)
         thread.start()
     else:
         posts = list(Post.objects(hidden=False, topic=topic, position_in_topic__gte=(page-1)*pagination, position_in_topic__lt=page*pagination))
@@ -354,7 +355,8 @@ def topic_posts(slug):
     parsed_posts = []
     
     for post in posts:
-        app.redis_store.delete('post-'+str(post.pk)) 
+        if app.config['DEBUG']:
+            app.redis_store.delete('post-'+str(post.pk)) 
         cached_post = app.redis_store.get('post-'+str(post.pk)) 
         if cached_post != None:
             parsed_posts.append(json.loads(cached_post))

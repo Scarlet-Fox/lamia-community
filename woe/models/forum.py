@@ -112,6 +112,7 @@ class Topic(db.DynamicDocument):
     user_post_counts = db.DictField()
     data = db.DictField()
     last_seen_by = db.DictField() # User : last_seen_utc
+    last_swept = db.DateTimeField()
     
     # Tracking
     first_post = db.ReferenceField("Post")
