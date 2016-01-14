@@ -18,6 +18,19 @@ class PublicContent(models.Model):
         abstract = True
 
 ############################################################
+# Site Preference Models
+############################################################
+
+class SiteTheme(models.Model):
+    css = models.TextField(default="", blank=True)
+    theme_name = models.CharField(max_length=255)
+    weight = models.IntegerField(default=0)
+    created_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['weight']
+
+############################################################
 # Core User Models
 ############################################################
 
@@ -45,12 +58,12 @@ class Friendship(models.Model):
 
 class UserProfile(models.Model):
     profile_user = models.ForeignKey("UserProfile", related_name="profile")
-    user_role = models.ForeignKey("UserRole")
+    user_role = models.ManyToManyField("UserRole", blank=True)
     display_name = models.CharField(max_length=255, blank=True, unique=True)
     how_did_you_find_us = models.TextField(blank=True)
     is_allowed_during_construction = models.BooleanField(default=False)
 #    roles =
-    data = JSONField()
+    data = JSONField(blank=True, null=True)
     time_zone = models.CharField(max_length=255, default="US/Pacific")
 
     banned = models.BooleanField(default=False)
@@ -58,29 +71,29 @@ class UserProfile(models.Model):
     over_thirteen = models.BooleanField(default=False)
 
     emails_muted = models.BooleanField(default=False)
-    last_sent_notification_email = models.DateTimeField()
+    last_sent_notification_email = models.DateTimeField(blank=True)
 
     title = models.CharField(max_length=255, blank=True)
     minecraft = models.CharField(max_length=255, blank=True)
     location = models.CharField(max_length=255, blank=True)
-    about_me = models.TextField()
+    about_me = models.TextField(blank=True)
     anonymous_login = models.BooleanField(default=False)
 
     avatar_extension = models.CharField(max_length=255, blank=True)
-    avatar_full_x = models.IntegerField()
-    avatar_full_y = models.IntegerField()
-    avatar_60_x = models.IntegerField()
-    avatar_60_y = models.IntegerField()
-    avatar_40_x = models.IntegerField()
-    avatar_40_y = models.IntegerField()
-    avatar_timestamp = models.IntegerField()
+    avatar_full_x = models.IntegerField(blank=True)
+    avatar_full_y = models.IntegerField(blank=True)
+    avatar_60_x = models.IntegerField(blank=True)
+    avatar_60_y = models.IntegerField(blank=True)
+    avatar_40_x = models.IntegerField(blank=True)
+    avatar_40_y = models.IntegerField(blank=True)
+    avatar_timestamp = models.IntegerField(blank=True)
 
     password_forgot_token = models.CharField(max_length=255, blank=True)
-    password_forgot_token_date = models.DateTimeField()
+    password_forgot_token_date = models.DateTimeField(blank=True)
 
-    ignoring_users = models.ManyToManyField("UserProfile", through="IgnoredUser", related_name="ignored_by")
-    following_users = models.ManyToManyField("UserProfile", related_name="followed_by")
-    profile_friends = models.ManyToManyField("UserProfile", through="Friendship", related_name="friended_by")
+    ignoring_users = models.ManyToManyField("UserProfile", through="IgnoredUser", related_name="ignored_by", blank=True)
+    following_users = models.ManyToManyField("UserProfile", related_name="followed_by", blank=True)
+    profile_friends = models.ManyToManyField("UserProfile", through="Friendship", related_name="friended_by", blank=True)
 
     joined = models.DateTimeField()
     posts_count = models.IntegerField(default=0)
@@ -88,8 +101,8 @@ class UserProfile(models.Model):
     status_count = models.IntegerField(default=0)
     status_comment_count = models.IntegerField(default=0)
 
-    last_seen = models.DateTimeField()
-    hidden_last_seen = models.DateTimeField()
+    last_seen = models.DateTimeField(blank=True)
+    hidden_last_seen = models.DateTimeField(auto_now=True)
     last_at = models.CharField(max_length=255, blank=True, default="Lurking forum index.")
     last_at_url = models.CharField(max_length=255, blank=True, default="/")
 
@@ -97,7 +110,7 @@ class UserProfile(models.Model):
     is_mod = models.BooleanField(default=False)
 
     # Migration related
-    old_ipb_id = models.IntegerField(default=0)
+    old_ipb_id = models.IntegerField(default=0, blank=True)
     old_mongo_hash = models.CharField(max_length=255, blank=True)
 
 class DisplayNameHistory(models.Model):
@@ -194,7 +207,8 @@ class Attachment(models.Model):
     # RP Specific Stuff
     character = models.ForeignKey("Character", blank=True, null=True)
     character_gallery = models.BooleanField(default=False)
-    character_emote = models.BooleanField(default=False)
+    character_gallery_weight = models.BooleanField(default=False)
+    character_avatar = models.BooleanField(default=False)
 
 ############################################################
 # Notification Model
@@ -308,6 +322,11 @@ class Report(models.Model):
     created = models.DateTimeField()
     handler = models.ForeignKey("UserProfile", related_name="handled_reports")
 
+class ReportComment(models.Model):
+    author = models.ForeignKey("UserProfile")
+    created = models.DateTimeField(auto_now=True)
+    text = models.TextField()
+
 ############################################################
 # Category Model
 ############################################################
@@ -354,7 +373,6 @@ class Topic(PublicContent):
     moderators = models.ManyToManyField("UserProfile", related_name="moderated_topics")
     banned = models.ManyToManyField("UserProfile", related_name="banned_from_topics")
 
-    topic_count = models.IntegerField(default=0)
     post_count = models.IntegerField(default=0)
     first_post = models.ForeignKey("Post", related_name="topics_where_first")
     most_recent_post = models.ForeignKey("Post", blank=True, null=True, related_name="most_recent_post_in")
@@ -366,6 +384,7 @@ class Post(PublicContent):
     html = models.TextField()
     topic = models.ForeignKey("Topic")
     history = models.ManyToManyField("PostHistory")
+    report = models.ForeignKey("Report", blank=True, null=True)
 
     edited = models.DateTimeField()
     editor = models.ForeignKey("UserProfile", related_name="edited_posts")
@@ -393,3 +412,69 @@ class Character(PublicContent):
     other = models.TextField(blank=True)
     motto = models.CharField(max_length=255, blank=True)
     modified = models.DateTimeField(max_length=255, blank=True)
+
+    character_history = JSONField()
+
+############################################################
+# Blog Models
+############################################################
+
+class BlogCategory(models.Model):
+    name = models.CharField(max_length=255)
+
+class Blog(PublicContent):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
+
+    description = models.TextField()
+    editors = models.ManyToManyField("UserProfile", related_name="blog_editors")
+    categories = models.ManyToManyField("BlogCategory")
+
+    entries = models.IntegerField(default=0)
+    comments = models.IntegerField(default=0)
+    views = models.IntegerField(default=0)
+    last_entry_date = models.DateTimeField()
+    last_comment_date = models.DateTimeField()
+
+    PRIVACY_LEVELS = (
+        ("all", "Everyone"),
+        ("members", "Only Members"),
+        ("friends", "Only Friends"),
+        ("editors", "Only Editors"),
+        ("you", "Only You")
+    )
+    privacy_setting = models.CharField(choices=PRIVACY_LEVELS, default="all", max_length=255)
+    mod_locked = models.BooleanField(default=False)
+
+class BlogEntry(PublicContent):
+    html = models.TextField()
+    blog = models.ForeignKey("Blog")
+    history = models.ManyToManyField("PostHistory")
+    report = models.ForeignKey("Report", blank=True, null=True)
+
+    edited = models.DateTimeField()
+    editor = models.ForeignKey("UserProfile", related_name="edited_blog_entries")
+
+    boops = models.ManyToManyField("UserProfile", related_name="booped_blog_entries")
+
+    old_ipb_id = models.IntegerField(blank=True)
+    old_mongo_hash = models.CharField(max_length=255, blank=True)
+    character = models.ForeignKey("Character", blank=True, null=True)
+    data = JSONField()
+
+class BlogComment(PublicContent):
+    html = models.TextField()
+    blog = models.ForeignKey("Blog")
+    blog_entry = models.ForeignKey("BlogEntry")
+    history = models.ManyToManyField("PostHistory")
+    report = models.ForeignKey("Report", blank=True, null=True)
+
+    edited = models.DateTimeField()
+    editor = models.ForeignKey("UserProfile", related_name="edited_blog_comments")
+
+    boops = models.ManyToManyField("UserProfile", related_name="booped_blog_comments")
+
+    old_ipb_id = models.IntegerField(blank=True)
+    old_mongo_hash = models.CharField(max_length=255, blank=True)
+    character = models.ForeignKey("Character", blank=True, null=True)
+    data = JSONField()
