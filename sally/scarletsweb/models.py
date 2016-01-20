@@ -57,7 +57,7 @@ class Friendship(models.Model):
     blocked = models.BooleanField(default=False)
 
 class UserProfile(models.Model):
-    profile_user = models.ForeignKey("UserProfile", related_name="profile")
+    profile_user = models.ForeignKey(User, related_name="user_profile")
     user_role = models.ManyToManyField("UserRole", blank=True)
     display_name = models.CharField(max_length=255, blank=True, unique=True)
     how_did_you_find_us = models.TextField(blank=True)
@@ -71,7 +71,7 @@ class UserProfile(models.Model):
     over_thirteen = models.BooleanField(default=False)
 
     emails_muted = models.BooleanField(default=False)
-    last_sent_notification_email = models.DateTimeField(blank=True)
+    last_sent_notification_email = models.DateTimeField(blank=True, null=True)
 
     title = models.CharField(max_length=255, blank=True)
     minecraft = models.CharField(max_length=255, blank=True)
@@ -79,29 +79,28 @@ class UserProfile(models.Model):
     about_me = models.TextField(blank=True)
     anonymous_login = models.BooleanField(default=False)
 
-    avatar_extension = models.CharField(max_length=255, blank=True)
-    avatar_full_x = models.IntegerField(blank=True)
-    avatar_full_y = models.IntegerField(blank=True)
-    avatar_60_x = models.IntegerField(blank=True)
-    avatar_60_y = models.IntegerField(blank=True)
-    avatar_40_x = models.IntegerField(blank=True)
-    avatar_40_y = models.IntegerField(blank=True)
-    avatar_timestamp = models.IntegerField(blank=True)
+    avatar_extension = models.CharField(max_length=255, blank=True, null=True)
+    avatar_full_x = models.IntegerField(blank=True, null=True)
+    avatar_full_y = models.IntegerField(blank=True, null=True)
+    avatar_60_x = models.IntegerField(blank=True, null=True)
+    avatar_60_y = models.IntegerField(blank=True, null=True)
+    avatar_40_x = models.IntegerField(blank=True, null=True)
+    avatar_40_y = models.IntegerField(blank=True, null=True)
+    avatar_timestamp = models.IntegerField(blank=True, null=True)
 
     password_forgot_token = models.CharField(max_length=255, blank=True)
-    password_forgot_token_date = models.DateTimeField(blank=True)
+    password_forgot_token_date = models.DateTimeField(blank=True, null=True)
 
     ignoring_users = models.ManyToManyField("UserProfile", through="IgnoredUser", related_name="ignored_by", blank=True)
     following_users = models.ManyToManyField("UserProfile", related_name="followed_by", blank=True)
     profile_friends = models.ManyToManyField("UserProfile", through="Friendship", related_name="friended_by", blank=True)
 
-    joined = models.DateTimeField()
-    posts_count = models.IntegerField(default=0)
-    topic_count = models.IntegerField(default=0)
-    status_count = models.IntegerField(default=0)
-    status_comment_count = models.IntegerField(default=0)
+    posts_count = models.IntegerField(default=0, null=True)
+    topic_count = models.IntegerField(default=0, null=True)
+    status_count = models.IntegerField(default=0, null=True)
+    status_comment_count = models.IntegerField(default=0, null=True)
 
-    last_seen = models.DateTimeField(blank=True)
+    last_seen = models.DateTimeField(blank=True, null=True)
     hidden_last_seen = models.DateTimeField(auto_now=True)
     last_at = models.CharField(max_length=255, blank=True, default="Lurking forum index.")
     last_at_url = models.CharField(max_length=255, blank=True, default="/")
@@ -112,6 +111,9 @@ class UserProfile(models.Model):
     # Migration related
     old_ipb_id = models.IntegerField(default=0, blank=True)
     old_mongo_hash = models.CharField(max_length=255, blank=True)
+
+    def __unicode__(self):
+        return self.display_name
 
 class DisplayNameHistory(models.Model):
     user_profile = models.ForeignKey("UserProfile")
