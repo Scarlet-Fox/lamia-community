@@ -121,7 +121,7 @@ class DisplayNameHistory(models.Model):
 class Fingerprint(models.Model):
     fingerprint_user = models.ForeignKey("UserProfile")
     fingerprint_last_seen = models.IntegerField(default=0)
-    fingerprint_json = JSONField()
+    fingerprint_json = JSONField(blank=True, null=True)
     fingerprint_hash = models.TextField()
     factor_count = models.IntegerField()
 
@@ -167,7 +167,7 @@ class StatusUpdate(PublicContent):
     attached_to_profile = models.ForeignKey("UserProfile", blank=True, null=True, related_name="profile_status")
     message = models.CharField(max_length=255)
 
-    last_replied = models.DateTimeField()
+    last_replied = models.DateTimeField(blank=True, null=True)
     last_viewed = models.DateTimeField()
     replies = models.IntegerField(default=0)
     participants = models.ManyToManyField("UserProfile", through="StatusUpdateUser", related_name="participating_in_statuses")
