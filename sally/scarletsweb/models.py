@@ -43,18 +43,22 @@ class IgnoredUser(models.Model):
     is_ignoring = models.ForeignKey("UserProfile", related_name="ignoring")
     is_ignored = models.ForeignKey("UserProfile", related_name="ignored")
 
-    distort_posts = models.BooleanField(default=False)
-    block_sigs = models.BooleanField(default=False)
-    block_pms = models.BooleanField(default=False)
-    block_blogs = models.BooleanField(default=False)
-    block_status = models.BooleanField(default=False)
+    distort_posts = models.BooleanField(default=True)
+    block_sigs = models.BooleanField(default=True)
+    block_pms = models.BooleanField(default=True)
+    block_blogs = models.BooleanField(default=True)
+    block_status = models.BooleanField(default=True)
 
 class Friendship(models.Model):
     requester = models.ForeignKey("UserProfile", related_name="requested")
     target = models.ForeignKey("UserProfile", related_name="target")
 
-    pending = models.BooleanField(default=True)
+    pending = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
+
+class FollowPreferences(models.Model):
+    following = models.ForeignKey("UserProfile", related_name="following")
+    followed = models.ForeignKey("UserProfile", related_name="followed")
 
 class UserProfile(models.Model):
     profile_user = models.ForeignKey(User, related_name="user_profile")
@@ -86,13 +90,13 @@ class UserProfile(models.Model):
     avatar_60_y = models.IntegerField(blank=True, null=True)
     avatar_40_x = models.IntegerField(blank=True, null=True)
     avatar_40_y = models.IntegerField(blank=True, null=True)
-    avatar_timestamp = models.IntegerField(blank=True, null=True)
+    avatar_timestamp = models.CharField(max_length=255, blank=True) # TODO - should be charfield
 
     password_forgot_token = models.CharField(max_length=255, blank=True)
     password_forgot_token_date = models.DateTimeField(blank=True, null=True)
 
     ignoring_users = models.ManyToManyField("UserProfile", through="IgnoredUser", related_name="ignored_by", blank=True)
-    following_users = models.ManyToManyField("UserProfile", related_name="followed_by", blank=True)
+    following_users = models.ManyToManyField("UserProfile", through="FollowPreferences", related_name="followed_by", blank=True)
     profile_friends = models.ManyToManyField("UserProfile", through="Friendship", related_name="friended_by", blank=True)
 
     posts_count = models.IntegerField(default=0, null=True)
@@ -160,22 +164,21 @@ class StatusUpdateUser(models.Model):
     ignoring = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
     viewed = models.IntegerField(default=0)
-    last_viewed = models.DateTimeField()
+    last_viewed = models.DateTimeField(null=True, blank=True)
 
 class StatusComment(PublicContent):
-    message = models.CharField(max_length=255)
+    message = models.TextField()
+    status_update = models.ForeignKey("StatusUpdate")
 
 class StatusUpdate(PublicContent):
     attached_to_profile = models.ForeignKey("UserProfile", blank=True, null=True, related_name="profile_status")
-    message = models.CharField(max_length=255)
+    message = models.TextField()
 
     last_replied = models.DateTimeField(blank=True, null=True)
-    last_viewed = models.DateTimeField()
+    last_viewed = models.DateTimeField(blank=True, null=True)
     replies = models.IntegerField(default=0)
     participants = models.ManyToManyField("UserProfile", through="StatusUpdateUser", related_name="participating_in_statuses")
 
-    # Migration related
-    old_ipb_id = models.IntegerField(default=0)
     old_mongo_hash = models.CharField(max_length=255, blank=True)
 
 ############################################################
@@ -333,10 +336,10 @@ class ReportComment(models.Model):
 # Category Model
 ############################################################
 
-class Prefix(models.Model):
+class Label(models.Model):
     pre_html = models.CharField(max_length=255, blank=True)
     post_html = models.CharField(max_length=255, blank=True)
-    prefix = models.CharField(max_length=255)
+    label = models.CharField(max_length=255)
 
 class PostHistory(models.Model):
     creator = models.ForeignKey("UserProfile")
@@ -353,7 +356,7 @@ class Category(models.Model):
     weight = models.IntegerField(default=0)
     restricted = models.BooleanField(default=False)
     allowed_users = models.ManyToManyField("UserProfile")
-    allowed_prefixes = models.ManyToManyField("Prefix")
+    allowed_labels = models.ManyToManyField("Label")
 
     topic_count = models.IntegerField(default=0)
     post_count = models.IntegerField(default=0)
@@ -369,7 +372,7 @@ class Topic(PublicContent):
     category = models.ForeignKey("Category")
     sticky = models.BooleanField(default=True)
     announcement = models.BooleanField(default=True)
-    prefix = models.ForeignKey("Prefix", blank=True, null=True)
+    label = models.ForeignKey("Label", blank=True, null=True)
 
     watchers = models.ManyToManyField("UserProfile", related_name="watched_content")
     moderators = models.ManyToManyField("UserProfile", related_name="moderated_topics")
@@ -413,9 +416,9 @@ class Character(PublicContent):
     backstory = models.TextField(blank=True)
     other = models.TextField(blank=True)
     motto = models.CharField(max_length=255, blank=True)
-    modified = models.DateTimeField(max_length=255, blank=True)
+    modified = models.DateTimeField(max_length=255, blank=True, null=True)
 
-    character_history = JSONField()
+    character_history = JSONField(blank=True, null=True)
 
 ############################################################
 # Blog Models

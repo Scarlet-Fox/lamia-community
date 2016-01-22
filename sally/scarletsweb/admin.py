@@ -77,8 +77,8 @@ class ReportAdmin(admin.ModelAdmin):
 class ReportCommentAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Prefix)
-class PrefixAdmin(admin.ModelAdmin):
+@admin.register(Label)
+class LabelAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(PostHistory)

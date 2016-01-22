@@ -814,6 +814,55 @@ class Post(db.DynamicDocument):
         'ordering': ['created']
     }
 
+class Character(db.DynamicDocument):
+    slug = db.StringField(required=True, unique=True)
+    old_character_id = db.IntField()
+    creator = db.ReferenceField("User", reverse_delete_rule=db.NULLIFY)
+    creator_name = db.StringField(required=True)
+    creator_display_name = db.StringField(required=True)
+
+    name = db.StringField(required=True)
+    age = db.StringField()
+    species = db.StringField()
+    appearance = db.StringField()
+    personality = db.StringField()
+    backstory = db.StringField()
+    other = db.StringField()
+    motto = db.StringField(default="")
+    created = db.DateTimeField(required=True)
+    hidden = db.BooleanField(default=False)
+    modified = db.DateTimeField()
+
+    avatars = db.ListField(db.ReferenceField("Attachment", reverse_delete_rule=db.PULL))
+    default_avatar = db.ReferenceField("Attachment", reverse_delete_rule=db.NULLIFY)
+    legacy_avatar_field = db.StringField()
+    gallery = db.ListField(db.ReferenceField("Attachment", reverse_delete_rule=db.PULL))
+    default_gallery_image = db.ReferenceField("Attachment", reverse_delete_rule=db.NULLIFY)
+    legacy_gallery_field = db.StringField()
+
+    posts = db.ListField(db.ReferenceField("Post", reverse_delete_rule=db.PULL))
+    post_count = db.IntField()
+    roleplays = db.ListField(db.ReferenceField("Topic", reverse_delete_rule=db.PULL))
+
+    def __unicode__(self):
+        return self.name
+
+    def get_avatar(self, size=200):
+        if self.default_avatar:
+            return self.default_avatar.get_specific_size(size)
+        elif self.legacy_avatar_field:
+            return "/static/uploads/"+self.legacy_avatar_field
+        else:
+            return ""
+
+    def get_portrait(self, size=250):
+        if self.default_gallery_image:
+            return self.default_gallery_image.get_specific_size(size)
+        elif self.legacy_gallery_field:
+            return "/static/uploads/"+self.legacy_gallery_field
+        else:
+            return ""
+
 ###############################################################
 # Import Users
 ###############################################################
@@ -850,16 +899,86 @@ for mongo_user in User.objects():
     profile.anonymous_login = False
 
     profile.avatar_extension = mongo_user.avatar_extension
-    # profile.avatar_full_x = mongo_user.avatar_full_x
-    # profile.avatar_full_y = mongo_user.avatar_full_y
-    # profile.avatar_60_x = mongo_user.avatar_60_x
-    # profile.avatar_60_y = mongo_user.avatar_60_y
-    # profile.avatar_40_x = mongo_user.avatar_40_x
-    # profile.avatar_40_y = mongo_user.avatar_40_y
-    # profile.avatar_timestamp = mongo_user.avatar_timestamp
+    profile.avatar_full_x = mongo_user.avatar_full_x
+    profile.avatar_full_y = mongo_user.avatar_full_y
+    profile.avatar_60_x = mongo_user.avatar_60_x
+    profile.avatar_60_y = mongo_user.avatar_60_y
+    profile.avatar_40_x = mongo_user.avatar_40_x
+    profile.avatar_40_y = mongo_user.avatar_40_y
+    profile.avatar_timestamp = mongo_user.avatar_timestamp
 
     profile.posts_count = mongo_user.posts_count
     profile.topic_count = mongo_user.topic_count
     profile.status_count = mongo_user.status_count
     profile.status_comment_count = mongo_user.status_comment_count
     profile.save()
+
+for mongo_user in User.objects():
+    for ig_user in mongo_user.ignored_users:
+        source = psql.UserProfile.objects.get(old_mongo_hash=str(mongo_user.id))
+        target = psql.UserProfile.objects.get(old_mongo_hash=str(ig_user.id))
+
+        new_ignore = psql.IgnoredUser(is_ignoring=source, is_ignored=target)
+        new_ignore.save()
+
+        source.save()
+
+# for status_update in StatusUpdate.objects():
+#     new_status_update = psql.StatusUpdate()
+#
+#     try:
+#         profile_user = psql.UserProfile.objects.get(old_mongo_hash=str(status_update.attached_to_user.id))
+#         new_status_update.attached_to_profile = profile_user
+#     except:
+#         pass
+#
+#     new_status_update.message = status_update.message
+#     new_status_update.last_replied = status_update.last_replied
+#     new_status_update.last_viewed = status_update.last_viewed
+#     new_status_update.replies = status_update.replies
+#
+#     status_author = psql.UserProfile.objects.get(old_mongo_hash=str(status_update.author.id))
+#     new_status_update.author = status_author
+#     new_status_update.created = status_update.created
+#     new_status_update.save()
+#
+#     for participant in status_update.participants:
+#         sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(participant.id))
+#         status_update_user_cls = psql.StatusUpdateUser()
+#         status_update_user_cls.user = sql_user
+#         status_update_user_cls.status_update = new_status_update
+#
+#         if participant in status_update.blocked:
+#             status_update_user_cls.blocked = True
+#         if participant in status_update.ignoring:
+#             status_update_user_cls.ignoring = True
+#
+#         status_update_user_cls.save()
+#
+#     for comment in status_update.comments:
+#         sql_comment_author = psql.UserProfile.objects.get(old_mongo_hash=str(comment.author.id))
+#         sql_comment = psql.StatusComment()
+#         sql_comment.author = sql_comment_author
+#         sql_comment.created = comment.created
+#         sql_comment.message = comment.text
+#         sql_comment.hidden = comment.hidden
+#         sql_comment.status_update = new_status_update
+#         sql_comment.save()
+
+for character in Character.objects():
+    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(character.creator.id))
+    sql_character = psql.Character()
+
+    sql_character.author = sql_user
+    sql_character.created = character.created
+    sql_character.modified = character.modified
+
+    sql_character.name = character.name
+    sql_character.slug = character.slug
+    sql_character.age = character.age
+    sql_character.species = character.species
+    sql_character.appearance = character.appearance
+    sql_character.backstory = character.backstory
+    sql_character.other = character.other
+    sql_character.motto = character.motto
+    sql_character.save()
