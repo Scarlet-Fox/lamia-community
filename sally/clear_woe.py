@@ -8,3 +8,5 @@ from django.contrib.auth.models import User as SQLUser
 
 SQLUser.objects.exclude(username="sallymin").delete()
 psql.UserProfile.objects.all().delete()
+psql.Section.objects.all().delete()
+psql.Label.objects.all().delete()

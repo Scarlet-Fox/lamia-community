@@ -66,7 +66,7 @@ class UserProfile(models.Model):
     display_name = models.CharField(max_length=255, blank=True, unique=True)
     how_did_you_find_us = models.TextField(blank=True)
     is_allowed_during_construction = models.BooleanField(default=False)
-#    roles =
+    my_url = models.CharField(max_length=255, blank=True, unique=True)
     data = JSONField(blank=True, null=True)
     time_zone = models.CharField(max_length=255, default="US/Pacific")
 
@@ -113,7 +113,6 @@ class UserProfile(models.Model):
     is_mod = models.BooleanField(default=False)
 
     # Migration related
-    old_ipb_id = models.IntegerField(default=0, blank=True)
     old_mongo_hash = models.CharField(max_length=255, blank=True)
 
     def __unicode__(self):
@@ -197,7 +196,6 @@ class Attachment(models.Model):
     do_not_convert = models.BooleanField(default=False)
     alt = models.TextField()
 
-    old_ipb_id = models.IntegerField(default=0)
     old_mongo_hash = models.CharField(max_length=255, blank=True)
 
     x_size = models.IntegerField()
@@ -281,27 +279,27 @@ class PrivateMessageUser(models.Model):
     exited = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
     viewed = models.IntegerField(default=0)
-    last_viewed = models.DateTimeField()
+    last_viewed = models.DateTimeField(null=True, blank=True)
 
 class PrivateMessage(models.Model):
     title = models.CharField(max_length=255, blank=True)
     author = models.ForeignKey("UserProfile")
-    last_reply = models.ForeignKey("PrivateMessageReply")
+    last_reply = models.ForeignKey("PrivateMessageReply", null=True, blank=True)
+    message_count = models.IntegerField(default=0)
 
     created = models.DateTimeField()
-    participants = models.ManyToManyField("UserProfile", through="PrivateMessageUser", related_name="participating_in_pms")
+    participants = models.ManyToManyField("UserProfile", through="PrivateMessageUser", related_name="participating_in_pms", null=True, blank=True)
 
-    # Migration related
-    old_ipb_id = models.IntegerField(default=0)
     old_mongo_hash = models.CharField(max_length=255, blank=True)
 
 class PrivateMessageReply(models.Model):
     author = models.ForeignKey("UserProfile")
-    message = models.CharField(max_length=255)
+    message = models.TextField()
     private_message = models.ForeignKey("PrivateMessage")
+    old_mongo_hash = models.CharField(max_length=255, blank=True)
 
     created = models.DateTimeField()
-    modified = models.DateTimeField()
+    modified = models.DateTimeField(null=True, blank=True)
 
 ############################################################
 # Report Model
@@ -339,7 +337,7 @@ class ReportComment(models.Model):
 class Label(models.Model):
     pre_html = models.CharField(max_length=255, blank=True)
     post_html = models.CharField(max_length=255, blank=True)
-    label = models.CharField(max_length=255)
+    label = models.CharField(max_length=255, unique=True)
 
 class PostHistory(models.Model):
     creator = models.ForeignKey("UserProfile")
@@ -347,11 +345,15 @@ class PostHistory(models.Model):
     reason = models.CharField(max_length=255, blank=True)
     data = JSONField()
 
+class Section(models.Model):
+    name = models.CharField(max_length=255, blank=True, unique=True)
+    weight = models.IntegerField(default=0)
+
 class Category(models.Model):
-    name = models.CharField(max_length=255, blank=True)
-    slug = models.CharField(max_length=255, blank=True)
-    parent = models.ForeignKey("Category", blank=True, null=True)
-    root_category = models.BooleanField(default=False)
+    name = models.CharField(max_length=255, blank=True, unique=True)
+    slug = models.CharField(max_length=255, blank=True, unique=True)
+    parent = models.ForeignKey("Category", blank=True, null=True, related_name="category_children")
+    section = models.ForeignKey("Section", blank=True, null=True, related_name="section_children")
 
     weight = models.IntegerField(default=0)
     restricted = models.BooleanField(default=False)
@@ -364,11 +366,9 @@ class Category(models.Model):
     most_recent_topic = models.ForeignKey("Topic", blank=True, null=True, related_name="recent_topic_in")
     most_recent_post = models.ForeignKey("Post", blank=True, null=True, related_name="recent_post_in")
 
-    old_ipb_id = models.IntegerField(blank=True)
-
 class Topic(PublicContent):
     name = models.CharField(max_length=255, blank=True)
-    slug = models.CharField(max_length=255, blank=True)
+    slug = models.CharField(max_length=255, blank=True, unique=True)
     category = models.ForeignKey("Category")
     sticky = models.BooleanField(default=True)
     announcement = models.BooleanField(default=True)
@@ -379,27 +379,24 @@ class Topic(PublicContent):
     banned = models.ManyToManyField("UserProfile", related_name="banned_from_topics")
 
     post_count = models.IntegerField(default=0)
-    first_post = models.ForeignKey("Post", related_name="topics_where_first")
+    first_post = models.ForeignKey("Post", related_name="topics_where_first", blank=True, null=True)
     most_recent_post = models.ForeignKey("Post", blank=True, null=True, related_name="most_recent_post_in")
-
-    old_ipb_id = models.IntegerField(blank=True)
-    old_mongo_hash = models.CharField(max_length=255, blank=True)
 
 class Post(PublicContent):
     html = models.TextField()
     topic = models.ForeignKey("Topic")
     history = models.ManyToManyField("PostHistory")
-    report = models.ForeignKey("Report", blank=True, null=True)
+    report = models.ManyToManyField("Report", blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
 
-    edited = models.DateTimeField()
-    editor = models.ForeignKey("UserProfile", related_name="edited_posts")
+    editor = models.ForeignKey("UserProfile", related_name="edited_posts", blank=True, null=True)
 
-    boops = models.ManyToManyField("UserProfile", related_name="booped_posts")
+    boops = models.ManyToManyField("UserProfile", related_name="booped_posts", blank=True, null=True)
 
-    old_ipb_id = models.IntegerField(blank=True)
     old_mongo_hash = models.CharField(max_length=255, blank=True)
     character = models.ForeignKey("Character", blank=True, null=True)
-    data = JSONField()
+    avatar = models.ForeignKey("Attachment", blank=True, null=True)
+    data = JSONField(null=True, blank=True)
 
 ############################################################
 # Characters Model
@@ -451,6 +448,7 @@ class Blog(PublicContent):
     )
     privacy_setting = models.CharField(choices=PRIVACY_LEVELS, default="all", max_length=255)
     mod_locked = models.BooleanField(default=False)
+    old_ipb_id = models.IntegerField(blank=True)
 
 class BlogEntry(PublicContent):
     html = models.TextField()
@@ -464,7 +462,6 @@ class BlogEntry(PublicContent):
     boops = models.ManyToManyField("UserProfile", related_name="booped_blog_entries")
 
     old_ipb_id = models.IntegerField(blank=True)
-    old_mongo_hash = models.CharField(max_length=255, blank=True)
     character = models.ForeignKey("Character", blank=True, null=True)
     data = JSONField()
 
@@ -481,6 +478,5 @@ class BlogComment(PublicContent):
     boops = models.ManyToManyField("UserProfile", related_name="booped_blog_comments")
 
     old_ipb_id = models.IntegerField(blank=True)
-    old_mongo_hash = models.CharField(max_length=255, blank=True)
     character = models.ForeignKey("Character", blank=True, null=True)
     data = JSONField()

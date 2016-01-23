@@ -885,6 +885,7 @@ for mongo_user in User.objects():
         new_user.save()
 
     profile.profile_user = new_user
+    profile.my_url = new_user.username
     profile.display_name = mongo_user.display_name
     profile.how_did_you_find_us = mongo_user.how_did_you_find_us
     profile.is_allowed_during_construction = mongo_user.is_allowed_during_construction
@@ -940,6 +941,7 @@ for mongo_user in User.objects():
 #     status_author = psql.UserProfile.objects.get(old_mongo_hash=str(status_update.author.id))
 #     new_status_update.author = status_author
 #     new_status_update.created = status_update.created
+#     new_status_update.old_mongo_hash = str(status_update.id)
 #     new_status_update.save()
 #
 #     for participant in status_update.participants:
@@ -965,80 +967,229 @@ for mongo_user in User.objects():
 #         sql_comment.status_update = new_status_update
 #         sql_comment.save()
 
-# for character in Character.objects():
-#     sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(character.creator.id))
-#     sql_character = psql.Character()
-#
-#     sql_character.author = sql_user
-#     sql_character.created = character.created
-#     sql_character.modified = character.modified
-#
-#     sql_character.name = character.name
-#     sql_character.slug = character.slug
-#     sql_character.age = character.age
-#     sql_character.species = character.species
-#     sql_character.appearance = character.appearance
-#     sql_character.backstory = character.backstory
-#     sql_character.other = character.other
-#     sql_character.motto = character.motto
-#     sql_character.old_mongo_hash = str(character.id)
-#     sql_character.save()
-#
-# for attachment in Attachment.objects():
-#     sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(attachment.owner.id))
-#     sql_attachment = psql.Attachment()
-#
-#     sql_attachment.path = attachment.path
-#     sql_attachment.mimetype = attachment.mimetype
-#     sql_attachment.extension = attachment.extension
-#     sql_attachment.size_in_bytes = attachment.size_in_bytes
-#     sql_attachment.created_date = attachment.created_date
-#     sql_attachment.do_not_convert = attachment.do_not_convert
-#     sql_attachment.user = sql_user
-#     sql_attachment.old_mongo_hash = str(attachment.id)
-#     sql_attachment.alt = attachment.alt
-#     sql_attachment.x_size = attachment.x_size
-#     sql_attachment.y_size = attachment.y_size
-#     if attachment.file_hash is None:
-#         sql_attachment.file_hash = ""
-#     else:
-#         sql_attachment.file_hash = attachment.file_hash
-#     sql_attachment.linked = attachment.linked
-#     if attachment.origin_url is None:
-#         sql_attachment.origin_url = ""
-#     else:
-#         sql_attachment.origin_url = attachment.origin_url
-#
-#     if attachment.origin_domain is None:
-#         sql_attachment.origin_domain = ""
-#     else:
-#         sql_attachment.origin_domain = attachment.origin_domain
-#
-#     sql_attachment.caption = attachment.caption
-#
-#     if attachment.character is not None:
-#         sql_character = psql.Character.objects.get(old_mongo_hash=str(attachment.character.id))
-#
-#         sql_attachment.character = sql_character
-#         sql_attachment.character_gallery = True
-#         sql_attachment.character_avatar = attachment.character_emote
-#
-#     sql_attachment.save()
+for character in Character.objects():
+    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(character.creator.id))
+    sql_character = psql.Character()
 
-for notification in Notification.objects():
-    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(notification.user.id))
-    sql_author = psql.UserProfile.objects.get(old_mongo_hash=str(notification.author.id))
+    sql_character.author = sql_user
+    sql_character.created = character.created
+    sql_character.modified = character.modified
 
-    sql_notification = psql.Notification()
-    sql_notification.user = sql_user
-    sql_notification.originating_user = sql_author
-    sql_notification.message = notification.text
-    sql_notification.description = notification.description
-    sql_notification.category = notification.category
-    sql_notification.created = notification.created
-    sql_notification.url = notification.url
-    sql_notification.acknowledged = notification.acknowledged
-    sql_notification.seen = notification.seen
-    sql_notification.emailed = notification.emailed
-    sql_notification.priority = notification.priority
-    sql_notification.save()
+    sql_character.name = character.name
+    sql_character.slug = character.slug
+    sql_character.age = character.age
+    sql_character.species = character.species
+    sql_character.appearance = character.appearance
+    sql_character.backstory = character.backstory
+    sql_character.other = character.other
+    sql_character.motto = character.motto
+    sql_character.old_mongo_hash = str(character.id)
+    sql_character.save()
+
+for attachment in Attachment.objects():
+    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(attachment.owner.id))
+    sql_attachment = psql.Attachment()
+
+    sql_attachment.path = attachment.path
+    sql_attachment.mimetype = attachment.mimetype
+    sql_attachment.extension = attachment.extension
+    sql_attachment.size_in_bytes = attachment.size_in_bytes
+    sql_attachment.created_date = attachment.created_date
+    sql_attachment.do_not_convert = attachment.do_not_convert
+    sql_attachment.user = sql_user
+    sql_attachment.old_mongo_hash = str(attachment.id)
+    sql_attachment.alt = attachment.alt
+    sql_attachment.x_size = attachment.x_size
+    sql_attachment.y_size = attachment.y_size
+    if attachment.file_hash is None:
+        sql_attachment.file_hash = ""
+    else:
+        sql_attachment.file_hash = attachment.file_hash
+    sql_attachment.linked = attachment.linked
+    if attachment.origin_url is None:
+        sql_attachment.origin_url = ""
+    else:
+        sql_attachment.origin_url = attachment.origin_url
+
+    if attachment.origin_domain is None:
+        sql_attachment.origin_domain = ""
+    else:
+        sql_attachment.origin_domain = attachment.origin_domain
+
+    sql_attachment.caption = attachment.caption
+
+    if attachment.character is not None:
+        sql_character = psql.Character.objects.get(old_mongo_hash=str(attachment.character.id))
+
+        sql_attachment.character = sql_character
+        sql_attachment.character_gallery = True
+        sql_attachment.character_avatar = attachment.character_emote
+
+    sql_attachment.save()
+
+# for notification in Notification.objects():
+#     sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(notification.user.id))
+#     sql_author = psql.UserProfile.objects.get(old_mongo_hash=str(notification.author.id))
+#
+#     sql_notification = psql.Notification()
+#     sql_notification.user = sql_user
+#     sql_notification.originating_user = sql_author
+#     sql_notification.message = notification.text
+#     sql_notification.description = notification.description
+#     sql_notification.category = notification.category
+#     sql_notification.created = notification.created
+#     sql_notification.url = notification.url
+#     sql_notification.acknowledged = notification.acknowledged
+#     sql_notification.seen = notification.seen
+#     sql_notification.emailed = notification.emailed
+#     sql_notification.priority = notification.priority
+#     sql_notification.save()
+
+# for message_topic in PrivateMessageTopic.objects():
+#     sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(message_topic.creator.id))
+#     sql_message_topic = psql.PrivateMessage()
+#     sql_message_topic.created = message_topic.created
+#     sql_message_topic.author = sql_user
+#     sql_message_topic.title = message_topic.title
+#     sql_message_topic.message_count = message_topic.message_count
+#     sql_message_topic.old_mongo_hash = message_topic.id
+#     sql_message_topic.save()
+#
+#     for message_reply in PrivateMessage.objects(topic=message_topic):
+#         sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(message_reply.author.id))
+#         sql_message_reply = psql.PrivateMessageReply()
+#         sql_message_reply.author = sql_user
+#         sql_message_reply.message = message_reply.message
+#         sql_message_reply.private_message = sql_message_topic
+#         sql_message_reply.created = message_reply.created
+#         sql_message_reply.modified = message_reply.modified
+#         sql_message_reply.old_mongo_hash = str(message_reply.id)
+#
+#         sql_message_reply.save()
+#
+#     sql_message_topic.last_reply = psql.PrivateMessageReply.objects.filter(private_message=sql_message_topic).order_by("-created")[0]
+#     sql_message_topic.save()
+#
+#     for message_user in message_topic.participating_users:
+#         sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(message_user.id))
+#         sql_participant = psql.PrivateMessageUser()
+#         sql_participant.user = sql_user
+#         sql_participant.private_message = sql_message_topic
+#         if message_user in message_topic.blocked_users:
+#             sql_participant.blocked = True
+#         if message_user in message_topic.users_left_pm:
+#             sql_participant.exited = True
+#         sql_participant.save()
+
+celly_hub = psql.Section.objects.create(
+    name="Celestial Hub",
+    weight=0
+)
+
+moony_hub = psql.Section.objects.create(
+    name="Moonlight Symposium",
+    weight=10
+)
+
+sunny_home = psql.Section.objects.create(
+    name="Sunlight Homestead",
+    weight=20
+)
+
+celestial_hub_categories = ["Latest News","Welcome Mat","Help Lab","Frequently Asked Questions"]
+moonlight_symposium = ["Discussion", "Interrogations", "Anime", "Games", "Nintendo", "Art Show"]
+sunlight_homestead = ["Roleplays", "Out of Character", "Meta Lounge", "Super Party Palace", "Minecraft"]
+
+for i, category in enumerate(celestial_hub_categories):
+    psql.Category.objects.create(
+        name = category,
+        slug = django.utils.text.slugify(category),
+        section = celly_hub,
+        weight = i*10
+    )
+
+for i, category in enumerate(moonlight_symposium):
+    psql.Category.objects.create(
+        name = category,
+        slug = django.utils.text.slugify(category),
+        section = moony_hub,
+        weight = i*10
+    )
+
+for i, category in enumerate(sunlight_homestead):
+    psql.Category.objects.create(
+        name = category,
+        slug = django.utils.text.slugify(category),
+        section = sunny_home,
+        weight = i*10
+    )
+
+for topic in Topic.objects():
+    try:
+        if topic.prefix is not None:
+            psql.Label.objects.get_or_create(
+                pre_html = topic.pre_html,
+                post_html = topic.post_html,
+                label = topic.prefix
+            )
+    except:
+        continue
+
+for topic in Topic.objects():
+    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(topic.creator.id))
+    sql_topic = psql.Topic()
+    sql_topic.author = sql_user
+    sql_topic.created = topic.created
+    sql_topic.hidden = topic.hidden
+    sql_topic.locked = topic.closed
+    sql_topic.name = topic.title
+    sql_topic.slug = topic.slug
+
+    if topic.category.name in ["Commissions", "Requests"]:
+        sql_topic.category = psql.Category.objects.get(name="Art Show")
+    elif topic.category.name == "Scenarios":
+        sql_topic.category = psql.Category.objects.get(name="Roleplays")
+    elif topic.category.name == "Minecraft Discussion":
+        sql_topic.category = psql.Category.objects.get(name="Minecraft")
+    elif topic.category.name == "Out of Character Discussion":
+        sql_topic.category = psql.Category.objects.get(name="Out of Character")
+    elif topic.prefix == "Anime":
+        sql_topic.category = psql.Category.objects.get(name="Anime")
+        topic.prefix = None
+    elif topic.prefix == "Games":
+        sql_topic.category = psql.Category.objects.get(name="Games")
+        topic.prefix = None
+    else:
+        sql_topic.category = psql.Category.objects.get(name=topic.category.name)
+
+    if topic.prefix is not None:
+        sql_prefix = psql.Label.objects.get(label=topic.prefix)
+        sql_topic.label = sql_prefix
+
+    sql_topic.save()
+
+    for post in Post.objects(topic=topic):
+        sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(post.author.id))
+        sql_post = psql.Post()
+
+        sql_post.created = post.created
+        sql_post.modified = post.modified
+        sql_post.author = sql_user
+        sql_post.html = post.html
+        sql_post.topic = sql_topic
+        sql_post.old_mongo_hash = str(post.id)
+        sql_post.hidden = post.hidden
+
+        if post.data.has_key("character"):
+            sql_post.character = psql.Character.objects.get(old_mongo_hash=str(post.data["character"]))
+
+        if post.data.has_key("avatar"):
+            sql_post.avatar = psql.Attachment.objects.get(old_mongo_hash=str(post.data["avatar"]))
+
+        sql_post.save()
+
+        for user in post.boops:
+            sql_booper = psql.UserProfile.objects.get(old_mongo_hash=str(user.id))
+            sql_post.boops.add(sql_booper)
+
+        sql_post.save()

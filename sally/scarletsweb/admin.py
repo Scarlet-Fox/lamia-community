@@ -85,6 +85,10 @@ class LabelAdmin(admin.ModelAdmin):
 class PostHistoryAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(Section)
+class SectionAdmin(admin.ModelAdmin):
+    pass
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     pass
