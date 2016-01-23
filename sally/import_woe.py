@@ -965,20 +965,80 @@ for mongo_user in User.objects():
 #         sql_comment.status_update = new_status_update
 #         sql_comment.save()
 
-for character in Character.objects():
-    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(character.creator.id))
-    sql_character = psql.Character()
+# for character in Character.objects():
+#     sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(character.creator.id))
+#     sql_character = psql.Character()
+#
+#     sql_character.author = sql_user
+#     sql_character.created = character.created
+#     sql_character.modified = character.modified
+#
+#     sql_character.name = character.name
+#     sql_character.slug = character.slug
+#     sql_character.age = character.age
+#     sql_character.species = character.species
+#     sql_character.appearance = character.appearance
+#     sql_character.backstory = character.backstory
+#     sql_character.other = character.other
+#     sql_character.motto = character.motto
+#     sql_character.old_mongo_hash = str(character.id)
+#     sql_character.save()
+#
+# for attachment in Attachment.objects():
+#     sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(attachment.owner.id))
+#     sql_attachment = psql.Attachment()
+#
+#     sql_attachment.path = attachment.path
+#     sql_attachment.mimetype = attachment.mimetype
+#     sql_attachment.extension = attachment.extension
+#     sql_attachment.size_in_bytes = attachment.size_in_bytes
+#     sql_attachment.created_date = attachment.created_date
+#     sql_attachment.do_not_convert = attachment.do_not_convert
+#     sql_attachment.user = sql_user
+#     sql_attachment.old_mongo_hash = str(attachment.id)
+#     sql_attachment.alt = attachment.alt
+#     sql_attachment.x_size = attachment.x_size
+#     sql_attachment.y_size = attachment.y_size
+#     if attachment.file_hash is None:
+#         sql_attachment.file_hash = ""
+#     else:
+#         sql_attachment.file_hash = attachment.file_hash
+#     sql_attachment.linked = attachment.linked
+#     if attachment.origin_url is None:
+#         sql_attachment.origin_url = ""
+#     else:
+#         sql_attachment.origin_url = attachment.origin_url
+#
+#     if attachment.origin_domain is None:
+#         sql_attachment.origin_domain = ""
+#     else:
+#         sql_attachment.origin_domain = attachment.origin_domain
+#
+#     sql_attachment.caption = attachment.caption
+#
+#     if attachment.character is not None:
+#         sql_character = psql.Character.objects.get(old_mongo_hash=str(attachment.character.id))
+#
+#         sql_attachment.character = sql_character
+#         sql_attachment.character_gallery = True
+#         sql_attachment.character_avatar = attachment.character_emote
+#
+#     sql_attachment.save()
 
-    sql_character.author = sql_user
-    sql_character.created = character.created
-    sql_character.modified = character.modified
+for notification in Notification.objects():
+    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(notification.user.id))
+    sql_author = psql.UserProfile.objects.get(old_mongo_hash=str(notification.author.id))
 
-    sql_character.name = character.name
-    sql_character.slug = character.slug
-    sql_character.age = character.age
-    sql_character.species = character.species
-    sql_character.appearance = character.appearance
-    sql_character.backstory = character.backstory
-    sql_character.other = character.other
-    sql_character.motto = character.motto
-    sql_character.save()
+    sql_notification = psql.Notification()
+    sql_notification.user = sql_user
+    sql_notification.originating_user = sql_author
+    sql_notification.message = notification.text
+    sql_notification.description = notification.description
+    sql_notification.category = notification.category
+    sql_notification.created = notification.created
+    sql_notification.url = notification.url
+    sql_notification.acknowledged = notification.acknowledged
+    sql_notification.seen = notification.seen
+    sql_notification.emailed = notification.emailed
+    sql_notification.priority = notification.priority
+    sql_notification.save()

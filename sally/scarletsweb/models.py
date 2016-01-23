@@ -188,14 +188,14 @@ class StatusUpdate(PublicContent):
 class Attachment(models.Model):
     user = models.ForeignKey("UserProfile")
 
-    path = models.CharField(max_length=255)
+    path = models.TextField()
     mimetype = models.CharField(max_length=255)
     extension = models.CharField(max_length=255)
 
     size_in_bytes = models.IntegerField(default=0)
     created_date = models.DateTimeField()
     do_not_convert = models.BooleanField(default=False)
-    alt = models.CharField(max_length=255, blank=True)
+    alt = models.TextField()
 
     old_ipb_id = models.IntegerField(default=0)
     old_mongo_hash = models.CharField(max_length=255, blank=True)
@@ -203,16 +203,16 @@ class Attachment(models.Model):
     x_size = models.IntegerField()
     y_size = models.IntegerField()
 
-    file_hash = models.CharField(max_length=255, blank=True)
+    file_hash = models.TextField()
     linked = models.BooleanField(default=False)
-    origin_url = models.CharField(max_length=255, blank=True)
-    origin_domain = models.CharField(max_length=255, blank=True)
-    caption = models.CharField(max_length=255, blank=True)
+    origin_url = models.TextField()
+    origin_domain = models.TextField()
+    caption = models.TextField()
 
     # RP Specific Stuff
     character = models.ForeignKey("Character", blank=True, null=True)
     character_gallery = models.BooleanField(default=False)
-    character_gallery_weight = models.BooleanField(default=False)
+    character_gallery_weight = models.IntegerField(default=0)
     character_avatar = models.BooleanField(default=False)
 
 ############################################################
@@ -221,7 +221,7 @@ class Attachment(models.Model):
 
 class Notification(models.Model):
     user = models.ForeignKey("UserProfile", related_name="user_notifications")
-    message = models.CharField(max_length=255)
+    message = models.TextField()
     description = models.TextField(blank=True)
 
     NOTIFICATION_CATEGORIES = (
@@ -244,7 +244,7 @@ class Notification(models.Model):
 
     category = models.CharField(choices=NOTIFICATION_CATEGORIES, max_length=55)
     created = models.DateTimeField()
-    url = models.CharField(max_length=255)
+    url = models.TextField(blank=True)
     originating_user = models.ForeignKey("UserProfile", blank=True, null=True)
     acknowledged = models.BooleanField(default=False)
     seen = models.BooleanField(default=False)
@@ -419,6 +419,7 @@ class Character(PublicContent):
     modified = models.DateTimeField(max_length=255, blank=True, null=True)
 
     character_history = JSONField(blank=True, null=True)
+    old_mongo_hash = models.CharField(max_length=255, blank=True)
 
 ############################################################
 # Blog Models
