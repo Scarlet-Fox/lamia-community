@@ -30,6 +30,9 @@ class SiteTheme(models.Model):
     class Meta:
         ordering = ['weight']
 
+    def __unicode__(self):
+        return self.theme_name
+
 ############################################################
 # Core User Models
 ############################################################
@@ -38,10 +41,15 @@ class UserRole(models.Model):
     pre_html = models.CharField(max_length=255, blank=True)
     role = models.CharField(max_length=255)
     post_html = models.CharField(max_length=255, blank=True)
+    created_date = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.role
 
 class IgnoredUser(models.Model):
     is_ignoring = models.ForeignKey("UserProfile", related_name="ignoring")
     is_ignored = models.ForeignKey("UserProfile", related_name="ignored")
+    created_date = models.DateTimeField(auto_now=True)
 
     distort_posts = models.BooleanField(default=True)
     block_sigs = models.BooleanField(default=True)
@@ -49,16 +57,32 @@ class IgnoredUser(models.Model):
     block_blogs = models.BooleanField(default=True)
     block_status = models.BooleanField(default=True)
 
+    def __unicode__(self):
+        return "%s ignoring %s" % (self.is_ignoring.display_name, self.is_ignored.display_name)
+
 class Friendship(models.Model):
     requester = models.ForeignKey("UserProfile", related_name="requested")
     target = models.ForeignKey("UserProfile", related_name="target")
+    created_date = models.DateTimeField(auto_now=True)
 
     pending = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        if self.pending == True:
+            return "%s friended %s" % (self.requester.display_name, self.target.display_name)
+        elif self.pending == False:
+            return "%s wants to friend %s" % (self.requester.display_name, self.target.display_name)
+        elif self.blocked == True:
+            return "%s failed to friend %s" % (self.requester.display_name, self.target.display_name)
+
 class FollowPreferences(models.Model):
     following = models.ForeignKey("UserProfile", related_name="following")
     followed = models.ForeignKey("UserProfile", related_name="followed")
+    created_date = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return "%s is following %s" % ()
 
 class UserProfile(models.Model):
     profile_user = models.ForeignKey(User, related_name="user_profile")
@@ -90,7 +114,7 @@ class UserProfile(models.Model):
     avatar_60_y = models.IntegerField(blank=True, null=True)
     avatar_40_x = models.IntegerField(blank=True, null=True)
     avatar_40_y = models.IntegerField(blank=True, null=True)
-    avatar_timestamp = models.CharField(max_length=255, blank=True) # TODO - should be charfield
+    avatar_timestamp = models.CharField(max_length=255, blank=True)
 
     password_forgot_token = models.CharField(max_length=255, blank=True)
     password_forgot_token_date = models.DateTimeField(blank=True, null=True)
@@ -116,12 +140,16 @@ class UserProfile(models.Model):
     old_mongo_hash = models.CharField(max_length=255, blank=True)
 
     def __unicode__(self):
-        return self.display_name
+        return "%s AKA %s" % (self.display_name, self.login_name)
 
 class DisplayNameHistory(models.Model):
     user_profile = models.ForeignKey("UserProfile")
     name = models.CharField(max_length=255, blank=True)
     date = models.DateTimeField()
+
+    def __unicode__(self):
+        return "%s AKA %s" % (self.name, self.user_profile.login_name)
+
 
 class Fingerprint(models.Model):
     fingerprint_user = models.ForeignKey("UserProfile")
@@ -129,6 +157,9 @@ class Fingerprint(models.Model):
     fingerprint_json = JSONField(blank=True, null=True)
     fingerprint_hash = models.TextField()
     factor_count = models.IntegerField()
+
+    def __unicode__(self):
+        return "%s's %s factor fingerprint" % (self.fingerprint_user.display_name, self.factor_count)
 
     def compute_similarity_score(self, stranger):
         score = 0.0
@@ -152,6 +183,9 @@ class IPAddress(models.Model):
     ip_address = models.CharField(max_length=255)
     last_seen = models.DateTimeField()
 
+    def __unicode__(self):
+        return "%s's %s IP" % (self.user.display_name, self.ip_address)
+
 ############################################################
 # Status Update Models
 ############################################################
@@ -165,9 +199,15 @@ class StatusUpdateUser(models.Model):
     viewed = models.IntegerField(default=0)
     last_viewed = models.DateTimeField(null=True, blank=True)
 
+    def __unicode__(self):
+        return "%s in %s's status update. \'%s...\'" % (self.user.display_name, self.status_update.author.display_name, self.status_update.message[0:50])
+
 class StatusComment(PublicContent):
     message = models.TextField()
     status_update = models.ForeignKey("StatusUpdate")
+
+    def __unicode__(self):
+        return "%s in %s's status update. \'%s...\'" % (self.author.display_name, self.status_update.author.display_name, self.message[0:50])
 
 class StatusUpdate(PublicContent):
     attached_to_profile = models.ForeignKey("UserProfile", blank=True, null=True, related_name="profile_status")
@@ -179,6 +219,10 @@ class StatusUpdate(PublicContent):
     participants = models.ManyToManyField("UserProfile", through="StatusUpdateUser", related_name="participating_in_statuses")
 
     old_mongo_hash = models.CharField(max_length=255, blank=True)
+
+    def __unicode__(self):
+        return "%s's status update. \'%s...\'" % (self.author.display_name, self.message[0:50])
+
 
 ############################################################
 # Attachment Model
@@ -212,6 +256,9 @@ class Attachment(models.Model):
     character_gallery = models.BooleanField(default=False)
     character_gallery_weight = models.IntegerField(default=0)
     character_avatar = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return "%s's attachment - %s" % (self.user.display_name, self.path)
 
 ############################################################
 # Notification Model
@@ -249,6 +296,9 @@ class Notification(models.Model):
     emailed = models.BooleanField(default=False)
     priority = models.IntegerField(default=0)
 
+    def __unicode__(self):
+        return "%s's notification \'%s...\'" % (self.user.display_name, self.description)
+
 ############################################################
 # Log Model
 ############################################################
@@ -267,6 +317,9 @@ class SiteLog(models.Model):
     error_code = models.CharField(max_length=255, blank=True)
     error_description = models.TextField(blank=True)
 
+    def __unicode__(self):
+        return "%s %s %s :: %s %s %s %s" % (self.time.isoformat(), self.method, self.ip_address, self.agent, self.agent_browser, self.agent_browser_version, self.agent_platform)
+
 ############################################################
 # Private Message Model
 ############################################################
@@ -281,6 +334,9 @@ class PrivateMessageUser(models.Model):
     viewed = models.IntegerField(default=0)
     last_viewed = models.DateTimeField(null=True, blank=True)
 
+    def __unicode__(self):
+        return "%s in \'%s...\'" % (self.user.display_name, self.private_message.title)
+
 class PrivateMessage(models.Model):
     title = models.CharField(max_length=255, blank=True)
     author = models.ForeignKey("UserProfile")
@@ -288,9 +344,12 @@ class PrivateMessage(models.Model):
     message_count = models.IntegerField(default=0)
 
     created = models.DateTimeField()
-    participants = models.ManyToManyField("UserProfile", through="PrivateMessageUser", related_name="participating_in_pms", null=True, blank=True)
+    participants = models.ManyToManyField("UserProfile", through="PrivateMessageUser", related_name="participating_in_pms", blank=True)
 
     old_mongo_hash = models.CharField(max_length=255, blank=True)
+
+    def __unicode__(self):
+        return "%s's message \'%s...\'" % (self.author.display_name, self.title)
 
 class PrivateMessageReply(models.Model):
     author = models.ForeignKey("UserProfile")
@@ -300,6 +359,9 @@ class PrivateMessageReply(models.Model):
 
     created = models.DateTimeField()
     modified = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s's reply to \'%s...\'" % (self.author.display_name, self.private_message.title)
 
 ############################################################
 # Report Model
@@ -325,10 +387,17 @@ class Report(models.Model):
     created = models.DateTimeField()
     handler = models.ForeignKey("UserProfile", related_name="handled_reports")
 
+    def __unicode__(self):
+        return "%s on %s - STATUS " % (self.created.isoformat(), self.content_author.display_name, self.report_status)
+
 class ReportComment(models.Model):
     author = models.ForeignKey("UserProfile")
     created = models.DateTimeField(auto_now=True)
     text = models.TextField()
+    report = models.ForeignKey("Report")
+
+    def __unicode__(self):
+        return "%s %s" % (self.created.isoformat(), self.author.display_name)
 
 ############################################################
 # Category Model
@@ -339,15 +408,26 @@ class Label(models.Model):
     post_html = models.CharField(max_length=255, blank=True)
     label = models.CharField(max_length=255, unique=True)
 
+    def __unicode__(self):
+        return self.label
+
 class PostHistory(models.Model):
     creator = models.ForeignKey("UserProfile")
+    post = models.ForeignKey("Post", related_name="past_versions")
+    created = models.DateTimeField(auto_now=True)
     html = models.TextField()
     reason = models.CharField(max_length=255, blank=True)
     data = JSONField()
 
+    def __unicode__(self):
+        return "%s %s" % (self.created.isoformat(), self.creator.display_name)
+
 class Section(models.Model):
     name = models.CharField(max_length=255, blank=True, unique=True)
     weight = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return self.name
 
 class Category(models.Model):
     name = models.CharField(max_length=255, blank=True, unique=True)
@@ -366,6 +446,9 @@ class Category(models.Model):
     most_recent_topic = models.ForeignKey("Topic", blank=True, null=True, related_name="recent_topic_in")
     most_recent_post = models.ForeignKey("Post", blank=True, null=True, related_name="recent_post_in")
 
+    def __unicode__(self):
+        return self.name
+
 class Topic(PublicContent):
     name = models.CharField(max_length=255, blank=True)
     slug = models.CharField(max_length=255, blank=True, unique=True)
@@ -382,21 +465,26 @@ class Topic(PublicContent):
     first_post = models.ForeignKey("Post", related_name="topics_where_first", blank=True, null=True)
     most_recent_post = models.ForeignKey("Post", blank=True, null=True, related_name="most_recent_post_in")
 
+    def __unicode__(self):
+        return self.name
+
 class Post(PublicContent):
     html = models.TextField()
     topic = models.ForeignKey("Topic")
-    history = models.ManyToManyField("PostHistory")
     report = models.ManyToManyField("Report", blank=True, null=True)
     modified = models.DateTimeField(blank=True, null=True)
 
-    editor = models.ForeignKey("UserProfile", related_name="edited_posts", blank=True, null=True)
+    editor = models.ForeignKey("UserProfile", related_name="edited_posts", blank=True)
 
-    boops = models.ManyToManyField("UserProfile", related_name="booped_posts", blank=True, null=True)
+    boops = models.ManyToManyField("UserProfile", related_name="booped_posts", blank=True)
 
     old_mongo_hash = models.CharField(max_length=255, blank=True)
     character = models.ForeignKey("Character", blank=True, null=True)
     avatar = models.ForeignKey("Attachment", blank=True, null=True)
     data = JSONField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s in %s" % (self.author.display_name, self.topic.name)
 
 ############################################################
 # Characters Model
@@ -418,8 +506,11 @@ class Character(PublicContent):
     character_history = JSONField(blank=True, null=True)
     old_mongo_hash = models.CharField(max_length=255, blank=True)
 
+    def __unicode__(self):
+        return "%s by %s" % (self.name, self.author.display_name)
+
 ############################################################
-# Blog Models
+# Blog Models TODO
 ############################################################
 
 class BlogCategory(models.Model):

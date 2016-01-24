@@ -924,48 +924,48 @@ for mongo_user in User.objects():
 
         source.save()
 
-# for status_update in StatusUpdate.objects():
-#     new_status_update = psql.StatusUpdate()
-#
-#     try:
-#         profile_user = psql.UserProfile.objects.get(old_mongo_hash=str(status_update.attached_to_user.id))
-#         new_status_update.attached_to_profile = profile_user
-#     except:
-#         pass
-#
-#     new_status_update.message = status_update.message
-#     new_status_update.last_replied = status_update.last_replied
-#     new_status_update.last_viewed = status_update.last_viewed
-#     new_status_update.replies = status_update.replies
-#
-#     status_author = psql.UserProfile.objects.get(old_mongo_hash=str(status_update.author.id))
-#     new_status_update.author = status_author
-#     new_status_update.created = status_update.created
-#     new_status_update.old_mongo_hash = str(status_update.id)
-#     new_status_update.save()
-#
-#     for participant in status_update.participants:
-#         sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(participant.id))
-#         status_update_user_cls = psql.StatusUpdateUser()
-#         status_update_user_cls.user = sql_user
-#         status_update_user_cls.status_update = new_status_update
-#
-#         if participant in status_update.blocked:
-#             status_update_user_cls.blocked = True
-#         if participant in status_update.ignoring:
-#             status_update_user_cls.ignoring = True
-#
-#         status_update_user_cls.save()
-#
-#     for comment in status_update.comments:
-#         sql_comment_author = psql.UserProfile.objects.get(old_mongo_hash=str(comment.author.id))
-#         sql_comment = psql.StatusComment()
-#         sql_comment.author = sql_comment_author
-#         sql_comment.created = comment.created
-#         sql_comment.message = comment.text
-#         sql_comment.hidden = comment.hidden
-#         sql_comment.status_update = new_status_update
-#         sql_comment.save()
+for status_update in StatusUpdate.objects():
+    new_status_update = psql.StatusUpdate()
+
+    try:
+        profile_user = psql.UserProfile.objects.get(old_mongo_hash=str(status_update.attached_to_user.id))
+        new_status_update.attached_to_profile = profile_user
+    except:
+        pass
+
+    new_status_update.message = status_update.message
+    new_status_update.last_replied = status_update.last_replied
+    new_status_update.last_viewed = status_update.last_viewed
+    new_status_update.replies = status_update.replies
+
+    status_author = psql.UserProfile.objects.get(old_mongo_hash=str(status_update.author.id))
+    new_status_update.author = status_author
+    new_status_update.created = status_update.created
+    new_status_update.old_mongo_hash = str(status_update.id)
+    new_status_update.save()
+
+    for participant in status_update.participants:
+        sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(participant.id))
+        status_update_user_cls = psql.StatusUpdateUser()
+        status_update_user_cls.user = sql_user
+        status_update_user_cls.status_update = new_status_update
+
+        if participant in status_update.blocked:
+            status_update_user_cls.blocked = True
+        if participant in status_update.ignoring:
+            status_update_user_cls.ignoring = True
+
+        status_update_user_cls.save()
+
+    for comment in status_update.comments:
+        sql_comment_author = psql.UserProfile.objects.get(old_mongo_hash=str(comment.author.id))
+        sql_comment = psql.StatusComment()
+        sql_comment.author = sql_comment_author
+        sql_comment.created = comment.created
+        sql_comment.message = comment.text
+        sql_comment.hidden = comment.hidden
+        sql_comment.status_update = new_status_update
+        sql_comment.save()
 
 for character in Character.objects():
     sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(character.creator.id))
@@ -1027,59 +1027,59 @@ for attachment in Attachment.objects():
 
     sql_attachment.save()
 
-# for notification in Notification.objects():
-#     sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(notification.user.id))
-#     sql_author = psql.UserProfile.objects.get(old_mongo_hash=str(notification.author.id))
-#
-#     sql_notification = psql.Notification()
-#     sql_notification.user = sql_user
-#     sql_notification.originating_user = sql_author
-#     sql_notification.message = notification.text
-#     sql_notification.description = notification.description
-#     sql_notification.category = notification.category
-#     sql_notification.created = notification.created
-#     sql_notification.url = notification.url
-#     sql_notification.acknowledged = notification.acknowledged
-#     sql_notification.seen = notification.seen
-#     sql_notification.emailed = notification.emailed
-#     sql_notification.priority = notification.priority
-#     sql_notification.save()
+for notification in Notification.objects():
+    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(notification.user.id))
+    sql_author = psql.UserProfile.objects.get(old_mongo_hash=str(notification.author.id))
 
-# for message_topic in PrivateMessageTopic.objects():
-#     sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(message_topic.creator.id))
-#     sql_message_topic = psql.PrivateMessage()
-#     sql_message_topic.created = message_topic.created
-#     sql_message_topic.author = sql_user
-#     sql_message_topic.title = message_topic.title
-#     sql_message_topic.message_count = message_topic.message_count
-#     sql_message_topic.old_mongo_hash = message_topic.id
-#     sql_message_topic.save()
-#
-#     for message_reply in PrivateMessage.objects(topic=message_topic):
-#         sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(message_reply.author.id))
-#         sql_message_reply = psql.PrivateMessageReply()
-#         sql_message_reply.author = sql_user
-#         sql_message_reply.message = message_reply.message
-#         sql_message_reply.private_message = sql_message_topic
-#         sql_message_reply.created = message_reply.created
-#         sql_message_reply.modified = message_reply.modified
-#         sql_message_reply.old_mongo_hash = str(message_reply.id)
-#
-#         sql_message_reply.save()
-#
-#     sql_message_topic.last_reply = psql.PrivateMessageReply.objects.filter(private_message=sql_message_topic).order_by("-created")[0]
-#     sql_message_topic.save()
-#
-#     for message_user in message_topic.participating_users:
-#         sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(message_user.id))
-#         sql_participant = psql.PrivateMessageUser()
-#         sql_participant.user = sql_user
-#         sql_participant.private_message = sql_message_topic
-#         if message_user in message_topic.blocked_users:
-#             sql_participant.blocked = True
-#         if message_user in message_topic.users_left_pm:
-#             sql_participant.exited = True
-#         sql_participant.save()
+    sql_notification = psql.Notification()
+    sql_notification.user = sql_user
+    sql_notification.originating_user = sql_author
+    sql_notification.message = notification.text
+    sql_notification.description = notification.description
+    sql_notification.category = notification.category
+    sql_notification.created = notification.created
+    sql_notification.url = notification.url
+    sql_notification.acknowledged = notification.acknowledged
+    sql_notification.seen = notification.seen
+    sql_notification.emailed = notification.emailed
+    sql_notification.priority = notification.priority
+    sql_notification.save()
+
+for message_topic in PrivateMessageTopic.objects():
+    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(message_topic.creator.id))
+    sql_message_topic = psql.PrivateMessage()
+    sql_message_topic.created = message_topic.created
+    sql_message_topic.author = sql_user
+    sql_message_topic.title = message_topic.title
+    sql_message_topic.message_count = message_topic.message_count
+    sql_message_topic.old_mongo_hash = message_topic.id
+    sql_message_topic.save()
+
+    for message_reply in PrivateMessage.objects(topic=message_topic):
+        sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(message_reply.author.id))
+        sql_message_reply = psql.PrivateMessageReply()
+        sql_message_reply.author = sql_user
+        sql_message_reply.message = message_reply.message
+        sql_message_reply.private_message = sql_message_topic
+        sql_message_reply.created = message_reply.created
+        sql_message_reply.modified = message_reply.modified
+        sql_message_reply.old_mongo_hash = str(message_reply.id)
+
+        sql_message_reply.save()
+
+    sql_message_topic.last_reply = psql.PrivateMessageReply.objects.filter(private_message=sql_message_topic).order_by("-created")[0]
+    sql_message_topic.save()
+
+    for message_user in message_topic.participating_users:
+        sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(message_user.id))
+        sql_participant = psql.PrivateMessageUser()
+        sql_participant.user = sql_user
+        sql_participant.private_message = sql_message_topic
+        if message_user in message_topic.blocked_users:
+            sql_participant.blocked = True
+        if message_user in message_topic.users_left_pm:
+            sql_participant.exited = True
+        sql_participant.save()
 
 celly_hub = psql.Section.objects.create(
     name="Celestial Hub",
