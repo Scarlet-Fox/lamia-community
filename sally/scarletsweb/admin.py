@@ -104,19 +104,3 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Character)
 class CharacterAdmin(admin.ModelAdmin):
     pass
-
-@admin.register(BlogCategory)
-class BlogCategoryAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(Blog)
-class BlogAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(BlogEntry)
-class BlogEntryAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(BlogComment)
-class BlogCommentAdmin(admin.ModelAdmin):
-    pass
