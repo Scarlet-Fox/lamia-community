@@ -61,60 +61,83 @@ class StatusUpdateAdmin(admin.ModelAdmin):
 
 @admin.register(Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("path", "user", "size_in_bytes", "created_date")
+    search_fields = ("path", "user__display_name", "user__profile_user__username")
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("user", "created", "message", "category")
+    search_fields = ("message", "user__display_name", "user__profile_user__username")
+    list_filter = ("category", "acknowledged", "seen")
 
 @admin.register(SiteLog)
 class SiteLogAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("user", "time", "ip_address", "method", "path", "error", "error_code")
+    search_fields = ("user__display_name", "user__profile_user__username", "path")
+    list_filter = ("error", "error_code")
 
-@admin.register(PrivateMessageUser)
-class PrivateMessageUserAdmin(admin.ModelAdmin):
-    pass
+class PrivateMessageUserInline(admin.TabularInline):
+    model = PrivateMessageUser
 
 @admin.register(PrivateMessage)
 class PrivateMessageAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("author", "title", "message_count", "last_reply", "created")
+    search_fields = ("author__display_name", "author__profile_user__username", "title")
+
+    inlines = [
+        PrivateMessageUserInline,
+    ]
 
 @admin.register(PrivateMessageReply)
 class PrivateMessageReplyAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("author", "snippet", "private_message", "created",)
+    search_fields = ("author__display_name", "author__profile_user__username", "private_message__title")
+
+class ReportCommentInline(admin.TabularInline):
+    model = ReportComment
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("created", "initiated", "snippet", "url", "report_status","content_author")
+    search_fields = ("content_author__display_name", "content_author__profile_user__username",
+        "initiated__display_name", "initiated__profile_user__username", )
+    list_filter = ("report_status", )
 
-@admin.register(ReportComment)
-class ReportCommentAdmin(admin.ModelAdmin):
-    pass
+    inlines = [
+        ReportCommentInline,
+    ]
 
 @admin.register(Label)
 class LabelAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(PostHistory)
-class PostHistoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("pre_html", "label", "post_html")
+    search_fields = ("label",)
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("weight", "name",)
+    search_fields = ("name",)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("weight", "name", "restricted", "section", "parent",
+        "topic_count", "post_count", "view_count", "most_recent_topic")
+    search_fields = ("name",)
+    list_filter = ("section", )
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("created", "author", "name", "category", "sticky", "announcement", "label")
+    search_fields = ("name","author__display_name", "author__profile_user__username")
+    list_filter = ("category", "sticky", "announcement", "hidden", "locked", "label")
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("created", "author", "topic", "snippet")
+    list_filter = ("hidden",)
+    search_fields = ("html","author__display_name", "author__profile_user__username")
 
 @admin.register(Character)
 class CharacterAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("created", "author", "name")
+    search_fields = ("name","author__display_name", "author__profile_user__username")
+    list_filter = ("hidden",)

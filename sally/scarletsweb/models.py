@@ -372,6 +372,9 @@ class PrivateMessageReply(models.Model):
     created = models.DateTimeField()
     modified = models.DateTimeField(null=True, blank=True)
 
+    def snippet(self):
+        return self.message[0:50]
+
     def __unicode__(self):
         return "%s's reply to \'%s...\'" % (self.author.display_name, self.private_message.title)
 
@@ -398,6 +401,9 @@ class Report(models.Model):
     report_status = models.CharField(choices=STATUS_CHOICES, max_length=60)
     created = models.DateTimeField()
     handler = models.ForeignKey("UserProfile", related_name="handled_reports")
+
+    def snippet(self):
+        return self.report[0:50]
 
     def __unicode__(self):
         return "%s on %s - STATUS " % (self.created.isoformat(), self.content_author.display_name, self.report_status)
@@ -483,7 +489,7 @@ class Topic(PublicContent):
 class Post(PublicContent):
     html = models.TextField()
     topic = models.ForeignKey("Topic")
-    report = models.ManyToManyField("Report", blank=True, null=True)
+    report = models.ManyToManyField("Report", blank=True)
     modified = models.DateTimeField(blank=True, null=True)
 
     editor = models.ForeignKey("UserProfile", related_name="edited_posts", blank=True)
@@ -494,6 +500,9 @@ class Post(PublicContent):
     character = models.ForeignKey("Character", blank=True, null=True)
     avatar = models.ForeignKey("Attachment", blank=True, null=True)
     data = JSONField(null=True, blank=True)
+
+    def snippet(self):
+        return self.html[0:50]+"..."
 
     def __unicode__(self):
         return "%s in %s" % (self.author.display_name, self.topic.name)
