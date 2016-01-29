@@ -57,6 +57,9 @@ class IgnoredUser(models.Model):
     block_blogs = models.BooleanField(default=True)
     block_status = models.BooleanField(default=True)
 
+    class Meta:
+        unique_together = (("is_ignoring","is_ignored"),)
+
     def __unicode__(self):
         return "%s ignoring %s" % (self.is_ignoring.display_name, self.is_ignored.display_name)
 
@@ -139,8 +142,11 @@ class UserProfile(models.Model):
     # Migration related
     old_mongo_hash = models.CharField(max_length=255, blank=True)
 
+    def joined(self):
+        return str(self.profile_user.date_joined)
+
     def __unicode__(self):
-        return "%s AKA %s" % (self.display_name, self.login_name)
+        return "%s" % (self.display_name)
 
 class DisplayNameHistory(models.Model):
     user_profile = models.ForeignKey("UserProfile")
@@ -206,6 +212,9 @@ class StatusComment(PublicContent):
     message = models.TextField()
     status_update = models.ForeignKey("StatusUpdate")
 
+    def snippet(self):
+        return self.message[0:50]+"..."
+
     def __unicode__(self):
         return "%s in %s's status update. \'%s...\'" % (self.author.display_name, self.status_update.author.display_name, self.message[0:50])
 
@@ -219,6 +228,9 @@ class StatusUpdate(PublicContent):
     participants = models.ManyToManyField("UserProfile", through="StatusUpdateUser", related_name="participating_in_statuses")
 
     old_mongo_hash = models.CharField(max_length=255, blank=True)
+
+    def snippet(self):
+        return self.message[0:50]+"..."
 
     def __unicode__(self):
         return "%s's status update. \'%s...\'" % (self.author.display_name, self.message[0:50])

@@ -916,13 +916,16 @@ for mongo_user in User.objects():
 
 for mongo_user in User.objects():
     for ig_user in mongo_user.ignored_users:
-        source = psql.UserProfile.objects.get(old_mongo_hash=str(mongo_user.id))
-        target = psql.UserProfile.objects.get(old_mongo_hash=str(ig_user.id))
+        try:
+            source = psql.UserProfile.objects.get(old_mongo_hash=str(mongo_user.id))
+            target = psql.UserProfile.objects.get(old_mongo_hash=str(ig_user.id))
 
-        new_ignore = psql.IgnoredUser(is_ignoring=source, is_ignored=target)
-        new_ignore.save()
+            new_ignore = psql.IgnoredUser(is_ignoring=source, is_ignored=target)
+            new_ignore.save()
 
-        source.save()
+            source.save()
+        except:
+            continue
 
 for status_update in StatusUpdate.objects():
     new_status_update = psql.StatusUpdate()
