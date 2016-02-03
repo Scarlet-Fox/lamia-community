@@ -8,7 +8,7 @@ class SiteThemeAdmin(admin.ModelAdmin):
 
 @admin.register(UserRole)
 class UserRoleAdmin(admin.ModelAdmin):
-    list_display = ("pre_html", "role", "post_html")
+    list_display = ("role",)
     search_fields = ("role",)
 
 @admin.register(IgnoredUser)
@@ -81,8 +81,9 @@ class PrivateMessageUserInline(admin.TabularInline):
 
 @admin.register(PrivateMessage)
 class PrivateMessageAdmin(admin.ModelAdmin):
-    list_display = ("author", "title", "message_count", "last_reply", "created")
+    list_display = ("author", "id", "title", "message_count", "last_reply", "created")
     search_fields = ("author__display_name", "author__profile_user__username", "title")
+    exclude = ("last_reply",)
 
     inlines = [
         PrivateMessageUserInline,
@@ -109,32 +110,35 @@ class ReportAdmin(admin.ModelAdmin):
 
 @admin.register(Label)
 class LabelAdmin(admin.ModelAdmin):
-    list_display = ("pre_html", "label", "post_html")
+    list_display = ("label",)
     search_fields = ("label",)
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ("weight", "name",)
+    list_display = ("name", "weight", )
     search_fields = ("name",)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("weight", "name", "restricted", "section", "parent",
+    list_display = ("name", "weight", "restricted", "section", "parent",
         "topic_count", "post_count", "view_count", "most_recent_topic")
     search_fields = ("name",)
     list_filter = ("section", )
+    exclude = ('most_recent_topic','most_recent_post',)
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ("created", "author", "name", "category", "sticky", "announcement", "label")
+    list_display = ("name", "created", "author", "category", "sticky", "announcement", "label", "hidden")
     search_fields = ("name","author__display_name", "author__profile_user__username")
     list_filter = ("category", "sticky", "announcement", "hidden", "locked", "label")
+    exclude = ('most_recent_post',)
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ("created", "author", "topic", "snippet")
+    list_display = ("created", "author", "topic",)
     list_filter = ("hidden",)
     search_fields = ("html","author__display_name", "author__profile_user__username")
+    exclude = ('topic','report','editor', 'avatar','character')
 
 @admin.register(Character)
 class CharacterAdmin(admin.ModelAdmin):

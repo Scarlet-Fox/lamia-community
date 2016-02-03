@@ -1,0 +1,824 @@
+@font-face {
+    font-family: 'pt_sansregular';
+    src: url('/static/assets/webfont/ptsans_regular/PTS55F-webfont.eot');
+    src: url('/static/assets/webfont/ptsans_regular/PTS55F-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/ptsans_regular/PTS55F-webfont.woff') format('woff'),
+         url('/static/assets/webfont/ptsans_regular/PTS55F-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/ptsans_regular/PTS55F-webfont.svg#pt_sansregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'pt_sansregular';
+    src: url('/static/assets/webfont/ptsans_bold/PTS75F-webfont.eot');
+    src: url('/static/assets/webfont/ptsans_bold/PTS75F-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/ptsans_bold/PTS75F-webfont.woff') format('woff'),
+         url('/static/assets/webfont/ptsans_bold/PTS75F-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/ptsans_bold/PTS75F-webfont.svg#pt_sansregular') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'pt_sansregular';
+    src: url('/static/assets/webfont/ptsans_italic/PTS56F-webfont.eot');
+    src: url('/static/assets/webfont/ptsans_italic/PTS56F-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/ptsans_italic/PTS56F-webfont.woff') format('woff'),
+         url('/static/assets/webfont/ptsans_italic/PTS56F-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/ptsans_italic/PTS56F-webfont.svg#pt_sansbold_italic') format('svg');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'pt_sansregular';
+    src: url('/static/assets/webfont/ptsans_bolditalic/PTS76F-webfont.eot');
+    src: url('/static/assets/webfont/ptsans_bolditalic/PTS76F-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/ptsans_bolditalic/PTS76F-webfont.woff') format('woff'),
+         url('/static/assets/webfont/ptsans_bolditalic/PTS76F-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/ptsans_bolditalic/PTS76F-webfont.svg#pt_sansbold_italic') format('svg');
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'pt_sanscaption';
+    src: url('/static/assets/webfont/ptsanscaption_regular/PTC55F-webfont.eot');
+    src: url('/static/assets/webfont/ptsanscaption_regular/PTC55F-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/ptsanscaption_regular/PTC55F-webfont.woff') format('woff'),
+         url('/static/assets/webfont/ptsanscaption_regular/PTC55F-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/ptsanscaption_regular/PTC55F-webfont.svg#pt_sansregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'pt_sanscaption';
+    src: url('/static/assets/webfont/ptsanscaption_bold/PTC75F-webfont.eot');
+    src: url('/static/assets/webfont/ptsanscaption_bold/PTC75F-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/ptsanscaption_bold/PTC75F-webfont.woff') format('woff'),
+         url('/static/assets/webfont/ptsanscaption_bold/PTC75F-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/ptsanscaption_bold/PTC75F-webfont.svg#pt_sansregular') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'pt_sanscaption';
+    src: url('/static/assets/webfont/ptsanscaption_italic/PTC56F-webfont.eot');
+    src: url('/static/assets/webfont/ptsanscaption_italic/PTC56F-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/ptsanscaption_italic/PTC56F-webfont.woff') format('woff'),
+         url('/static/assets/webfont/ptsanscaption_italic/PTC56F-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/ptsanscaption_italic/PTC56F-webfont.svg#pt_sansbold_italic') format('svg');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'pt_sanscaption';
+    src: url('/static/assets/webfont/ptsanscaption_bolditalic/PTC76F-webfont.eot');
+    src: url('/static/assets/webfont/ptsanscaption_bolditalic/PTC76F-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/ptsanscaption_bolditalic/PTC76F-webfont.woff') format('woff'),
+         url('/static/assets/webfont/ptsanscaption_bolditalic/PTC76F-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/ptsanscaption_bolditalic/PTC76F-webfont.svg#pt_sansbold_italic') format('svg');
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'caviar_dreams';
+    src: url('/static/assets/webfont/caviar/caviardreams_regular_macroman/CaviarDreams-webfont.eot');
+    src: url('/static/assets/webfont/caviar/caviardreams_regular_macroman/CaviarDreams-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/caviar/caviardreams_regular_macroman/CaviarDreams-webfont.woff') format('woff'),
+         url('/static/assets/webfont/caviar/caviardreams_regular_macroman/CaviarDreams-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/caviar/caviardreams_regular_macroman/CaviarDreams-webfont.svg#pt_sansregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'caviar_dreams';
+    src: url('/static/assets/webfont/caviar/caviardreams_bold_macroman/Caviar_Dreams_Bold-webfont.eot');
+    src: url('/static/assets/webfont/caviar/caviardreams_bold_macroman/Caviar_Dreams_Bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/caviar/caviardreams_bold_macroman/Caviar_Dreams_Bold-webfont.woff') format('woff'),
+         url('/static/assets/webfont/caviar/caviardreams_bold_macroman/Caviar_Dreams_Bold-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/caviar/caviardreams_bold_macroman/Caviar_Dreams_Bold-webfont.svg#pt_sansregular') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'caviar_dreams';
+    src: url('/static/assets/webfont/caviar/caviardreams_italic_macroman/CaviarDreams_Italic-webfont.eot');
+    src: url('/static/assets/webfont/caviar/caviardreams_italic_macroman/CaviarDreams_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/caviar/caviardreams_italic_macroman/CaviarDreams_Italic-webfont.woff') format('woff'),
+         url('/static/assets/webfont/caviar/caviardreams_italic_macroman/CaviarDreams_Italic-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/caviar/caviardreams_italic_macroman/CaviarDreams_Italic-webfont.svg#pt_sansbold_italic') format('svg');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'caviar_dreams';
+    src: url('/static/assets/webfont/caviar/caviardreams_bolditalic_macroman/CaviarDreams_BoldItalic-webfont.eot');
+    src: url('/static/assets/webfont/caviar/caviardreams_bolditalic_macroman/CaviarDreams_BoldItalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/caviar/caviardreams_bolditalic_macroman/CaviarDreams_BoldItalic-webfont.woff') format('woff'),
+         url('/static/assets/webfont/caviar/caviardreams_bolditalic_macroman/CaviarDreams_BoldItalic-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/caviar/caviardreams_bolditalic_macroman/CaviarDreams_BoldItalic-webfont.svg#pt_sansbold_italic') format('svg');
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'droid_sans_monoregular';
+    src: url('/static/assets/webfont/droidsansmono_regular_macroman/DroidSansMono-webfont.eot');
+    src: url('/static/assets/webfont/droidsansmono_regular_macroman/DroidSansMono-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/droidsansmono_regular_macroman/DroidSansMono-webfont.woff') format('woff'),
+         url('/static/assets/webfont/droidsansmono_regular_macroman/DroidSansMono-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/droidsansmono_regular_macroman/DroidSansMono-webfont.svg#droid_sans_monoregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'comic_reliefregular';
+    src: url('/static/assets/webfont/comicrelief_regular_macroman/ComicRelief-webfont.eot');
+    src: url('/static/assets/webfont/comicrelief_regular_macroman/ComicRelief-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/comicrelief_regular_macroman/ComicRelief-webfont.woff') format('woff'),
+         url('/static/assets/webfont/comicrelief_regular_macroman/ComicRelief-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/comicrelief_regular_macroman/ComicRelief-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'monterrey';
+    src: url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.eot');
+    src: url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.woff') format('woff'),
+         url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'opensans';
+    src: url('/static/assets/webfont/opensans/opensans-regular-webfont.eot');
+    src: url('/static/assets/webfont/opensans/opensans-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/opensans/opensans-regular-webfont.woff') format('woff'),
+         url('/static/assets/webfont/opensans/opensans-regular-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/opensans/opensans-regular-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'opensans';
+    src: url('/static/assets/webfont/opensans/opensans-bold-webfont.eot');
+    src: url('/static/assets/webfont/opensans/opensans-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/opensans/opensans-bold-webfont.woff') format('woff'),
+         url('/static/assets/webfont/opensans/opensans-bold-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/opensans/opensans-bold-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'opensans';
+    src: url('/static/assets/webfont/opensans/opensans-italic-webfont.eot');
+    src: url('/static/assets/webfont/opensans/opensans-italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/opensans/opensans-italic-webfont.woff') format('woff'),
+         url('/static/assets/webfont/opensans/opensans-italic-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/opensans/opensans-italic-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'opensans';
+    src: url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.eot');
+    src: url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.woff') format('woff'),
+         url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.ttf') format('truetype'),
+         url('/static/assets/webfont/opensans/opensans-bolditalic-webfont.svg#comic_reliefregular') format('svg');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@-webkit-viewport   { width: device-width; }
+@-moz-viewport      { width: device-width; }
+@-ms-viewport       { width: device-width; }
+@-o-viewport        { width: device-width; }
+@viewport           { width: device-width; }
+
+body {
+    font-family:'pt_sansregular',tahoma,helvetica,arial,sans-serif !important
+}
+
+.body-background {
+  background: #f8f8f8;
+}
+
+a {
+    color: #02005A;
+    -ms-word-break: break-all;
+    /* Be VERY careful with this, breaks normal words wh_erever */
+    word-break: break-all;
+    /* Non standard for webkit */
+    word-break: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+}
+
+.post-content a {
+    color: #0670BB;
+}
+
+.btn-group, .btn-group-vertical
+{
+text-shadow:none;
+}
+.dropdown-menu {
+    text-shadow: none; }
+
+.badge.prefix {
+    border-radius: 3px;
+    size: 9px;    
+    text-transform: uppercase;
+}
+
+.badge {
+  border-radius:3px;
+}
+
+
+.pagination-listing {
+    text-align: center !important;
+}
+.breadcrumb {
+    background: url("/static/local/img/luna-background.jpg");
+
+  
+    box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
+    background-attachment: fixed;
+}
+
+.breadcrumb a {
+color:white;
+}
+
+.post-number a {
+color:#777;
+}
+
+.topic-listing-time a {
+color:#a4a4a4;
+}
+
+
+.list-group-item:first-child {
+border-radius:0px;  
+}
+
+.panel-title {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.panel-heading {
+  background: url("/static/local/img/luna-background.jpg");
+  border-radius: 0px;
+  color: white !important;
+  text-shadow: #000 0px 1px 2px !important;
+  background-attachment: fixed;
+  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
+  font-weight: bold;
+}
+
+.bs-callout {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+}
+.bs-callout h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code {
+    border-radius: 3px;
+}
+.bs-callout+.bs-callout {
+    margin-top: -5px;
+}
+.bs-callout-default {
+    border-left-color: #777;
+}
+.bs-callout-default h4 {
+    color: #777;
+}
+.bs-callout-primary {
+    border-left-color: #428bca;
+}
+.bs-callout-primary h4 {
+    color: #428bca;
+}
+.bs-callout-success {
+    border-left-color: #5cb85c;
+}
+.bs-callout-success h4 {
+    color: #5cb85c;
+}
+.bs-callout-danger {
+    border-left-color: #d9534f;
+}
+.bs-callout-danger h4 {
+    color: #d9534f;
+}
+.bs-callout-warning {
+    border-left-color: #f0ad4e;
+}
+.bs-callout-warning h4 {
+    color: #f0ad4e;
+}
+.bs-callout-info {
+    border-left-color: #5bc0de;
+}
+.bs-callout-info h4 {
+    color: #5bc0de;
+}
+.section-header {
+  background-color: black;
+  background: url("/static/local/img/luna-background.jpg");
+  color: white;
+  background-attachment: fixed;
+  text-shadow: #000 0px 1px 2px !important;
+  font-weight: bold;
+  font-size: 14px !important;
+  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
+  height: 44px;
+}
+
+.ql-snow.ql-toolbar .ql-picker.ql-font .ql-picker-label, .ql-snow.ql-toolbar .ql-picker.ql-size .ql-picker-label {
+background-color: rgb(248, 248, 248);}
+.ql-snow.ql-toolbar .ql-picker.ql-font .ql-picker-label, .ql-snow.ql-toolbar .ql-picker.ql-size .ql-picker-label {
+background-color: rgb(248, 248, 248);}
+.ql-snow.ql-toolbar .ql-format-button.ql-left, .ql-snow.ql-toolbar .ql-picker.ql-left .ql-picker-label, .ql-snow.ql-toolbar .ql-picker .ql-picker-label[data-value=left], .ql-snow.ql-toolbar .ql-picker .ql-picker-item[data-value=left] {
+background-color: rgb(248, 248, 248);}
+.ql-snow.ql-toolbar .ql-format-button.ql-background, .ql-snow.ql-toolbar .ql-picker.ql-background .ql-picker-label, .ql-snow.ql-toolbar .ql-picker .ql-picker-label[data-value=background], .ql-snow.ql-toolbar .ql-picker .ql-picker-item[data-value=background] {
+background-color: rgb(248, 248, 248);}
+.ql-snow.ql-toolbar .ql-format-button.ql-color, .ql-snow.ql-toolbar .ql-picker.ql-color .ql-picker-label, .ql-snow.ql-toolbar .ql-picker .ql-picker-label[data-value=color], .ql-snow.ql-toolbar .ql-picker .ql-picker-item[data-value=color] {
+background-color: rgb(248, 248, 248);}
+
+/* Profile Pages */
+
+#profile-page-header {
+  overflow: hidden;
+}
+
+#profile-avatar {
+  margin-bottom: 10px;
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.1);
+  padding: 1px;
+  border: 1px solid #d5d5d5;
+}
+
+.image-box {
+  margin-bottom: 10px;
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.1);
+  padding: 1px;
+  border: 1px solid #d5d5d5;
+}
+
+.click-to-play p {
+  font-style: italic;
+}
+
+#profile-name {
+  font-size: 30px;
+  font-weight: 500;
+  vertical-align: top !important;
+}
+
+/*  Private Messages */
+
+
+/* Status Updates */
+.status-reply-box {
+    resize: horizontal;
+    width: 80% !important;
+}
+.status-mod-controls {
+    float: right;
+    font-style: italic;
+    font-size: 90%;
+}
+.status-reply-box input {
+    resize: horizontal;
+    width: 99% !important;
+}
+
+.status-reply-box input:active {
+    width: auto;   
+}
+
+.status-reply-box input:focus {
+    min-width: 99% !important;
+}
+
+.status-time {
+  font-style: italic;
+  float: right;
+}
+.front-page-status {
+  overflow: hidden;
+  font-size: 14px;
+}
+.front-page-status img {
+  margin-right: 10px;
+}
+.front-page-status p {
+  overflow: hidden;
+}
+.front-page-status p.status-text {
+  font-size: 90%;
+}
+.front-page-status .discuss {
+  float: right;
+}
+.status-reply {
+  margin-left: 30px;
+}
+.status-reply img {
+  margin-right: 10px;
+}
+.status-reply p {
+  overflow: hidden;
+}
+.status-reply-time {
+  font-style: italic;
+  font-size: 10px;
+}
+.status-replies {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 400px; 
+}
+
+/* Subcategories */
+
+.category .section-header {
+  font-size: 120%;
+}
+
+.subcategory .section-header {
+  font-size: 120%;
+}
+.subcategory-listing-name {
+  vertical-align: middle;
+  padding-top: 15px;
+  font-size: 15px;
+}
+.subcategory-listing-recent-image {
+  padding-right: 10px;
+  float: left;
+}
+.subcategory-listing-recent {
+  margin-top: 2px;
+  float: left;
+  font-size: 95%;
+}
+
+/* Post Listing */
+.content-spoiler {
+  border: 1px lightgray solid !important;
+  margin: 0px 0px 10px 0px;
+  padding: 10px;
+  display: none;
+}
+.toggle-spoiler {
+  margin-top: 10px;
+  color: #fff !important;
+}
+
+blockquote {
+  padding: 10px 20px;
+  margin: 0 0 20px;
+  font-size: inherit !important;
+  border: 1px solid #eee;
+  background-color: #FAFBFF;
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.1);
+}
+
+.attachment-image {
+  max-width: 100%;
+}
+
+.inline-editor-buttons {
+  margin-bottom: 10px;
+}
+.post-right img {
+  max-width: 100%;
+}
+.fast-post-area {
+  overflow: hidden;
+}
+.editor-box {
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  width: 100% !important;
+  height: 300px !important;
+  overflow: scroll !important;
+  border: 1px lightgray solid !important;
+}
+.post-left {
+  background-color: #FCFFE0;
+  width: 220px;
+  margin-left: 10px;
+  height: 100%;
+}
+.post-listing-info {
+  background-color: #eee;
+}
+.post-member-avatar {
+  margin-top: 5px;
+}
+.post-member-self-title {
+  color: #777;
+  font-size: 12px;
+}
+.post-meta {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.post-number {
+  float: right;
+  font-size: 13px;
+}
+.post-edit-likes-info {
+  margin-top: 20px;
+}
+.post-edited {
+  color: gray;
+  font-style: italic;
+}
+.post-edit-likes-info div {
+  vertical-align: middle;
+}
+.post-likes {
+  text-align: right;
+}
+.post-likes button {
+  margin-left: 10px;
+}
+.topic-header {
+  height: 44px;
+  background-color: black;
+  color: white;
+}
+
+
+/* Topic Listing */
+
+.topic-listing {
+}
+.topic-listing-jumps {
+  margin-left: 5px;
+}
+.topic-listing-jumps span.badge {
+  font-size: 70%;
+  border-radius: 3px !important;
+}
+.topic-listing-name {
+}
+.topic-listing-username {
+  font-size: 95%;
+  color: #444 !important;
+}
+.topic-listing-text {
+  font-size: 95%;
+  float: right;
+}
+.topic-listing-recent span.badge {
+  font-size: 70%;
+  vertical-align: top;
+  margin-top: 2px;
+  margin-right: 5px;
+}
+.topic-listing-time {
+  font-size: 12px;
+  color: #a4a4a4;
+}
+.topic-listing-recent-image {
+  padding-right: 10px;
+  float: left;
+}
+.topic-listing-recent {
+  float: left;
+}
+span.topic-listing-name span.prefix {
+  font-size: 10px;
+  font-weight: normal;
+  vertical-align: top;
+  margin-top: 2px;                
+}
+.topic-author {
+  font-size: 12px;
+  /* font-style: italic; */
+  color: #a4a4a4;
+}
+
+.front-page-stats {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.front-page-stats .label {
+  font-size: 100% !important;
+  font-weight: normal !important;
+  background: url("/static/local/img/luna-background.jpg");
+  text-shadow: #000 0px 1px 2px !important;
+  font-weight: bold !important;
+  font-size: 12px !important;
+  background-attachment: fixed;
+  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
+}
+
+.site-background {
+  height: 460px;
+  background: #f8f8f8 url("/static/local/img/luna-header.png") no-repeat scroll top; 
+}
+
+.search-box {
+    resize: horizontal;
+    width: 80% !important;
+}
+
+.search-box input {
+    resize: horizontal;
+    width: 99% !important;
+}
+
+.search-box input:active {
+    width: auto;   
+}
+
+.search-box input:focus {
+    min-width: 99% !important;
+}
+
+.hideme {
+    display: none;
+}
+
+/* Formatting */
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.force-muted {
+  color: #777 !important;
+}
+
+.dashboard-panel {
+  min-width: 320px;
+  max-width: 100%;
+}
+
+/* Hacks */
+
+.bbc_center {
+  text-align: center;
+}
+
+body {
+  background: #f8f8f8;
+}
+
+.post-content img {
+  max-width: 100%;
+}
+
+.href_span {
+  cursor: pointer;
+}
+
+.emoticon-listing {
+  cursor: pointer;
+}
+
+a.inherit_colors {
+  color: inherit;
+}
+
+.status-message {
+  font-size: 14px;
+}
+.post-member-avatar {
+  border: 1px solid #d5d5d5;
+  padding: 1px;
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.1);
+}
+.avatar-mini {
+  border: 1px solid #d5d5d5;
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.1);
+  padding: 1px;
+}
+.popover {
+  max-width: 100% !important;
+  width: 500px !important;
+}
+.popover-title {
+  padding: 8px 14px !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+  background-color: #f7f7f7 !important;
+  border-bottom: 1px solid #ebebeb !important;
+  border-radius: 5px 5px 0 0 !important;
+  background-image: url("/static/local/img/luna-background.jpg") !important;
+  color: white !important;
+  font-weight: bold !important;
+  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset !important;
+  text-shadow: #000 0px 1px 2px !important;
+  background-attachment: fixed !important;
+}
+
+.ql-custom-button:hover {
+  color: #06c !important;
+}
+
+.mini-notification-button {
+  position: relative;
+  float: left;
+  padding: 9px 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  background-color: transparent;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #777;
+}
+
+.navbar-default .mini-notification-button {
+  border-color: #ddd;
+}
+
+.toggle-show-roles-button {
+  background-color: black;
+  background: url("/static/local/img/luna-background.jpg");
+  color: white;
+  background-attachment: fixed;
+  text-shadow: #000 0px 1px 2px !important;
+  font-weight: bold;
+  font-size: 12px !important;
+  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
+}
+.toggle-show-roles-button:hover {
+  color: white !important;
+}
+.toggle-show-roles-button:active {
+  color: white !important;
+}
+.toggle-show-roles-button:visited {
+  color: white !important;
+}
+td {
+  vertical-align: middle !important;
+}
+
+/* JSSOR ugly css */
+
+.jssorb05 {
+    position: absolute;
+}
+.jssorb05 div, .jssorb05 div:hover, .jssorb05 .av {
+    position: absolute;
+    /* size of bullet elment */
+    width: 16px;
+    height: 16px;
+    background: url(/static/assets/b05.png) no-repeat;
+    overflow: hidden;
+    cursor: pointer;
+}
+.jssorb05 div { background-position: -7px -7px; }
+.jssorb05 div:hover, .jssorb05 .av:hover { background-position: -37px -7px; }
+.jssorb05 .av { background-position: -67px -7px; }
+.jssorb05 .dn, .jssorb05 .dn:hover { background-position: -97px -7px; }
+
+.jssora11l, .jssora11r {
+    display: block;
+    position: absolute;
+    /* size of arrow element */
+    width: 37px;
+    height: 37px;
+    cursor: pointer;
+    background: url(/static/assets/a11.png) no-repeat;
+    overflow: hidden;
+}
+.jssora11l { background-position: -11px -41px; }
+.jssora11r { background-position: -71px -41px; }
+.jssora11l:hover { background-position: -131px -41px; }
+.jssora11r:hover { background-position: -191px -41px; }
+.jssora11l.jssora11ldn { background-position: -251px -41px; }
+.jssora11r.jssora11rdn { background-position: -311px -41px; }
+
+.image-wrap {
+  float: left;
+  margin: 0px 20px 20px 0px;
+}

@@ -1031,8 +1031,11 @@ for attachment in Attachment.objects():
     sql_attachment.save()
 
 for notification in Notification.objects():
-    sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(notification.user.id))
-    sql_author = psql.UserProfile.objects.get(old_mongo_hash=str(notification.author.id))
+    try:
+        sql_user = psql.UserProfile.objects.get(old_mongo_hash=str(notification.user.id))
+        sql_author = psql.UserProfile.objects.get(old_mongo_hash=str(notification.author.id))
+    except:
+        continue
 
     sql_notification = psql.Notification()
     sql_notification.user = sql_user

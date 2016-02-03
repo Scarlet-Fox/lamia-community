@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.html import strip_tags
 
 ############################################################
 # Abstract Models
@@ -279,7 +280,6 @@ class Attachment(models.Model):
 class Notification(models.Model):
     user = models.ForeignKey("UserProfile", related_name="user_notifications")
     message = models.TextField()
-    description = models.TextField(blank=True)
 
     NOTIFICATION_CATEGORIES = (
         ("topic", "Topics"),
@@ -309,7 +309,7 @@ class Notification(models.Model):
     priority = models.IntegerField(default=0)
 
     def __unicode__(self):
-        return "%s's notification \'%s...\'" % (self.user.display_name, self.description)
+        return "%s's notification \'%s...\'" % (self.user.display_name, self.message)
 
 ############################################################
 # Log Model
@@ -373,7 +373,7 @@ class PrivateMessageReply(models.Model):
     modified = models.DateTimeField(null=True, blank=True)
 
     def snippet(self):
-        return self.message[0:50]
+        return strip_tags(self.message[0:50])
 
     def __unicode__(self):
         return "%s's reply to \'%s...\'" % (self.author.display_name, self.private_message.title)
@@ -492,7 +492,7 @@ class Post(PublicContent):
     report = models.ManyToManyField("Report", blank=True)
     modified = models.DateTimeField(blank=True, null=True)
 
-    editor = models.ForeignKey("UserProfile", related_name="edited_posts", blank=True)
+    editor = models.ForeignKey("UserProfile", related_name="edited_posts", blank=True, null=True)
 
     boops = models.ManyToManyField("UserProfile", related_name="booped_posts", blank=True)
 
@@ -500,9 +500,6 @@ class Post(PublicContent):
     character = models.ForeignKey("Character", blank=True, null=True)
     avatar = models.ForeignKey("Attachment", blank=True, null=True)
     data = JSONField(null=True, blank=True)
-
-    def snippet(self):
-        return self.html[0:50]+"..."
 
     def __unicode__(self):
         return "%s in %s" % (self.author.display_name, self.topic.name)
