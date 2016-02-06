@@ -84,6 +84,7 @@ import models.core
 import models.forum
 import models.roleplay
 import models.blogs
+import sqlmodels
 import views.core
 import views.blogs
 import views.roleplay
