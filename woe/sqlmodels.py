@@ -1,7 +1,5 @@
 from woe import sqla as db
 from sqlalchemy.dialects.postgresql import JSONB
-# TODO - Tie up relations
-# TODO - add author, created, and mod flags to public content models
 
 ############################################################
 # Private Message Models
@@ -9,8 +7,12 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 class PrivateMessageUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - user
-    # related - private message
+
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
+
+    pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id'))
+    pm = db.relationship("PrivateMessage")
 
     ignoring = db.Column(db.Boolean)
     exited = db.Column(db.Boolean)
@@ -25,7 +27,8 @@ class PrivateMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     count = db.Column(db.Integer)
-    # related - user
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
 
     created = db.Column(db.Integer)
     old_mongo_hash = db.Column(db.String, nullable=True)
@@ -35,8 +38,11 @@ class PrivateMessage(db.Model):
 
 class PrivateMessageReply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - user
-    # related - pm
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
+
+    pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id'))
+    pm = db.relationship("PrivateMessage")
 
     message = db.Column(db.Text)
     old_mongo_hash = db.Column(db.String, nullable=True)
@@ -53,8 +59,11 @@ class PrivateMessageReply(db.Model):
 
 class StatusUpdateUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - user
-    # related - status update
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
+
+    status_id = db.Column(db.Integer, db.ForeignKey('status_update.id'))
+    status = db.relationship("StatusUpdate")
 
     ignoring = db.Column(db.Boolean)
     blocked = db.Column(db.Boolean)
@@ -67,8 +76,11 @@ class StatusUpdateUser(db.Model):
 class StatusComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
-    # related - status update
-    # related - user
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
+
+    status_id = db.Column(db.Integer, db.ForeignKey('status_update.id'))
+    status = db.relationship("StatusUpdate")
 
     def __repr__(self):
         return "<StatusComment: (created='%s', user='%s', status='%s')>" % (self.created, self.user.display_name, self.status.message[0:50])
@@ -76,7 +88,8 @@ class StatusComment(db.Model):
 class StatusUpdate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
-    # related - user
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
 
     last_replied = db.Column(db.DateTime)
     last_viewed = db.Column(db.DateTime)
@@ -97,7 +110,6 @@ class SiteTheme(db.Model):
     name = db.Column(db.String, unique=True)
     weight = db.Column(db.Integer)
     created = db.Column(db.DateTime)
-    # related - user
 
     def __repr__(self):
         return "<SiteTheme: (name='%s')>" % (self.name,)
@@ -110,7 +122,10 @@ class IPAddress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip_address = db.Column(db.Text)
     last_seen = db.Column(db.DateTime)
-    # related - user
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User")
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'id', name='unique_user_ip_addy'),)
 
     def __repr__(self):
         return "<IPAddress: (ip_address='%s', user=)>" % (self.ip_address,)
@@ -120,7 +135,8 @@ class Fingerprint(db.Model):
     json = db.Column(JSONB)
     factors = db.Column(db.Integer)
     last_seen = db.Column(db.DateTime)
-    # related - user
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User")
 
     def __repr__(self):
         return "<Fingerprint: (factors='%s', user=)>" % (self.factors,)
@@ -156,6 +172,8 @@ class SiteLog(db.Model):
     error_name = db.Column(db.String)
     error_code = db.Column(db.String)
     error_description = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    user = db.relationship("User")
 
     def __repr__(self):
         return "%s %s %s :: %s %s %s %s" % (self.time.isoformat(), self.method, self.ip_address, self.agent, self.agent_browser, self.agent_browser_version, self.agent_platform)
@@ -170,7 +188,6 @@ class Role(db.Model):
     pre_html = db.Column(db.String)
     role = db.Column(db.String)
     post_html = db.Column(db.String)
-    # related - user
 
     def __repr__(self):
         return "<Role: (role='%s')>" % (self.role,)
@@ -178,8 +195,12 @@ class Role(db.Model):
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
-    # related - user
-    # related - user (originating)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User", backref="notifications")
+
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
 
     NOTIFICATION_CATEGORIES = (
         ("topic", "Topics"),
@@ -212,9 +233,11 @@ class Notification(db.Model):
 
 class IgnoringUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - user (ignoring other user)
-    # related - user (ignored by other user)
-    # ^ unique together
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User")
+    ignoring_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    ignoring = db.relationship("User")
+    __table_args__ = (db.UniqueConstraint('user_id', 'ignoring_id', name='unique_user_ignoring'),)
     created = db.Column(db.DateTime)
 
     distort_posts = db.Column(db.Boolean)
@@ -228,9 +251,11 @@ class IgnoringUser(db.Model):
 
 class FollowingUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - user (following other user)
-    # related - user (followed by other user)
-    # ^ unique together
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User")
+    following_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    following = db.relationship("User")
+    __table_args__ = (db.UniqueConstraint('user_id', 'following_id', name='unique_user_following'),)
     created = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -238,9 +263,11 @@ class FollowingUser(db.Model):
 
 class Friendship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - user (ignoring other user)
-    # related - user (ignored by other user)
-    # ^ unique together
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User")
+    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    friend = db.relationship("User")
+    __table_args__ = (db.UniqueConstraint('user_id', 'friend_id', name='unique_user_friend'),)
     created = db.Column(db.DateTime)
 
     pending = db.Column(db.Boolean)
@@ -249,13 +276,23 @@ class Friendship(db.Model):
     def __repr__(self):
         return "<Friendship: (user='%s', friend='%s', pending='%s', blocked='%s')>" % (self.user.display_name, self.friend.display_name, self.pending, self.blocked)
 
+user_role_table = db.Table('user_roles', db.metadata,
+    db.Column('role_id', db.Integer, db.ForeignKey('role.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - roles
+    roles = db.relationship("Role",
+                    secondary=user_role_table,
+                    backref="users")
 
     data = db.Column(JSONB)
 
     display_name = db.Column(db.String)
+    login_name = db.Column(db.String)
+    email_address = db.Column(db.String)
+    password_hash = db.Column(db.String)
+
     how_did_you_find_us = db.Column(db.Text)
     is_allowed_during_construction = db.Column(db.Boolean)
     my_url = db.Column(db.String)
@@ -307,12 +344,23 @@ class User(db.Model):
     def __repr__(self):
         return "<IgnoredUser: (name='%s')>" % (self.display_name)
 
+    def get_hash(self):
+        return self.password_hash[-40:]
+
+    def is_active(self):
+        if self.banned:
+            return False
+        if not self.validated:
+            return False
+        return True
+
 ############################################################
 # Roleplay Models
 ############################################################
 
 class Character(db.Model):
-    # related - user
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -342,7 +390,8 @@ class Report(db.Model):
     url = db.Column(db.String)
     content_type = db.Column(db.String)
     content_id = db.Column(db.Integer)
-    # related - user
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
 
     report = db.Column(db.Text)
 
@@ -364,8 +413,10 @@ class ReportComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime)
     comment = db.Column(db.Text)
-    # related - user
-    # related - report
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
+    report_id = db.Column(db.Integer, db.ForeignKey('report.id'))
+    report = db.relationship("Report")
 
     def __repr__(self):
         return "<ReportComment: (created='%s', comment='%s')>" % (self.created, self.comment[0:30])
@@ -396,8 +447,11 @@ class Attachment(db.Model):
     origin_domain = db.Column(db.String)
     caption = db.Column(db.String)
 
-    # related - user
-    # related - character
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    owner = db.relationship("User")
+
+    character_id = db.Column(db.Integer, db.ForeignKey('character.id'), nullable=True)
+    character = db.relationship("Character")
     character_gallery = db.Column(db.Boolean)
     character_gallery_weight = db.Column(db.Integer)
     character_avatar = db.Column(db.Boolean)
@@ -414,7 +468,6 @@ class Label(db.Model):
     pre_html = db.Column(db.String)
     label = db.Column(db.String)
     post_html = db.Column(db.String)
-    # related - user
 
     def __repr__(self):
         return "<Label: (label='%s')>" % (self.label,)
@@ -428,13 +481,30 @@ class Section(db.Model):
     def __repr__(self):
         return "<Section: (name='%s', weight='%s')>" % (self.name, self.weight)
 
+allowed_user_table = db.Table('category_allowed_users', db.metadata,
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+
+allowed_label_table = db.Table('category_allowed_labels', db.metadata,
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id')),
+    db.Column('label_id', db.Integer, db.ForeignKey('label.id')))
+
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - other category (optional)
-    # related - section
-    # association - allowed users
-    # association - allowed labels
-    # recent items
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category = db.relationship("Category")
+    section_id = db.Column(db.Integer, db.ForeignKey('section.id'))
+    section = db.relationship("Section")
+
+    allowed_users = db.relationship("User",
+                    secondary=allowed_user_table)
+    allowed_labels = db.relationship("Label",
+                    secondary=allowed_label_table)
+
+    recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    recent_post = db.relationship("Post")
+    recent_topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'))
+    recent_topic = db.relationship("Topic")
 
     name = db.Column(db.String)
     slug = db.Column(db.String, unique=True)
@@ -449,15 +519,39 @@ class Category(db.Model):
     def __repr__(self):
         return "<Category: (name='%s', weight='%s')>" % (self.name, self.weight)
 
+topic_watchers_table = db.Table('topic_watchers', db.metadata,
+    db.Column('topic_id', db.Integer, db.ForeignKey('topic.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+
+topic_mods_table = db.Table('topic_moderators', db.metadata,
+    db.Column('topic_id', db.Integer, db.ForeignKey('topic.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+
+topic_banned_table = db.Table('topic_banned_users', db.metadata,
+    db.Column('topic_id', db.Integer, db.ForeignKey('topic.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - category
-    # related - user
-    # related - user
-    # association - watchers
-    # association - moderators
-    # association - banned
-    # recent items
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category = db.relationship("Category")
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
+
+    editor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    editor = db.relationship("User")
+
+    label_id = db.Column(db.Integer, db.ForeignKey('label.id'), nullable=True)
+    label = db.relationship("Label")
+
+    watchers = db.relationship("User",
+                    secondary=topic_watchers_table)
+    moderators = db.relationship("User",
+                    secondary=topic_mods_table)
+    banned = db.relationship("User",
+                    secondary=topic_banned_table)
+    recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    recent_post = db.relationship("Post")
 
     title = db.Column(db.String)
     slug = db.Column(db.String, unique=True)
@@ -467,14 +561,30 @@ class Topic(db.Model):
     def __repr__(self):
         return "<Topic: (title='%s', created='%s')>" % (self.title, self.created)
 
+post_boop_table = db.Table('post_boops_from_users', db.metadata,
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # related - topic
-    # related - author
-    # related - editor
-    # association - boops
-    # related - custom avatar
-    # related - character
+    topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'))
+    topic = db.relationship("Topic")
+
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship("User")
+
+    editor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    editor = db.relationship("User")
+
+    boops = db.relationship("User",
+                    secondary=post_boop_table,
+                    backref="booped_posts")
+
+    character_id = db.Column(db.Integer, db.ForeignKey('character.id'), nullable=True)
+    character = db.relationship("Character")
+
+    avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id'), nullable=True)
+    avatar = db.relationship("Attachment")
 
     html = db.Column(db.Text)
     modified = db.Column(db.DateTime, nullable=True)
