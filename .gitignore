@@ -11,3 +11,4 @@ media
 .DS_Store
 .env
 generated/
+.webassets-cache/

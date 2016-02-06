@@ -8,6 +8,7 @@ from flask.ext.admin import Admin
 from flask.ext.cache import Cache
 from flask.ext.assets import Environment, Bundle
 from flask.ext.redis import FlaskRedis
+from flask_sqlalchemy import SQLAlchemy
 from bson.dbref import DBRef
 from os import path
 import json
@@ -28,6 +29,10 @@ app.config["SECRET_KEY"] = settings_file["secret_key"]
 app.config["AVATAR_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'avatars')
 app.config["MAX_CONTENT_LENGTH"] = 1000000000
 app.config['DEBUG'] = settings_file["debug"]
+app.config['SQLALCHEMY_DATABASE_URI'] = settings_file["alchemy_uri"]
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+sqla = SQLAlchemy(app)
+app.sqla = sqla
 app.settings_file = settings_file
 
 assets = Environment(app)
@@ -48,11 +53,11 @@ except ImportError:
         import json
     except ImportError:
         raise ImportError
-        
+
 import datetime
 from bson.objectid import ObjectId
 from werkzeug import Response
- 
+
 class MongoJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (datetime.datetime, datetime.date)):
@@ -61,7 +66,7 @@ class MongoJsonEncoder(json.JSONEncoder):
             return unicode(obj)
         elif isinstance(obj, DBRef):
             return unicode(obj.id)
-                
+
         try:
             return json.JSONEncoder.default(self, obj)
         except:

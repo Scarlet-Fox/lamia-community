@@ -1,5 +1,5 @@
 {
-  "debug": false,
+  "debug": true,
   "asset_debug": false,
   "database": "woe_main",
   "secret_key": "sdfjoil;fj2#$#@dsf!@#1697621!@349781ujm3iASy79233jJSKLd98324",
@@ -8,5 +8,6 @@
   "woe_old_db": "woe_old",
   "woe_ipb_avatar_dir": "/home/worldofequestria/ipb_legacy",
   "listener": "http://worldofequestria.com:3000",
-  "lockout_on": false
+  "lockout_on": false,
+  "alchemy_uri": "postgresql://sally:@localhost/sally"
 }
