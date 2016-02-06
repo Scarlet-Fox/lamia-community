@@ -8,11 +8,13 @@ from sqlalchemy.dialects.postgresql import JSONB
 class PrivateMessageUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author = db.relationship("User")
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_pm_u_author"))
+    author = db.relationship("User", foreign_keys="PrivateMessageUser.author_id")
 
-    pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id'))
-    pm = db.relationship("PrivateMessage")
+    pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id',
+        name="fk_pm_u_pm"))
+    pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageUser.pm_id")
 
     ignoring = db.Column(db.Boolean)
     exited = db.Column(db.Boolean)
@@ -27,8 +29,9 @@ class PrivateMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     count = db.Column(db.Integer)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author = db.relationship("User")
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_pm_author"))
+    author = db.relationship("User", foreign_keys="PrivateMessage.author_id")
 
     created = db.Column(db.Integer)
     old_mongo_hash = db.Column(db.String, nullable=True)
@@ -38,11 +41,13 @@ class PrivateMessage(db.Model):
 
 class PrivateMessageReply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author = db.relationship("User")
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_pm_r_author"))
+    author = db.relationship("User", foreign_keys="PrivateMessageReply.author_id")
 
-    pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id'))
-    pm = db.relationship("PrivateMessage")
+    pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id',
+        name="fk_pm_r_pm"))
+    pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageReply.pm_id")
 
     message = db.Column(db.Text)
     old_mongo_hash = db.Column(db.String, nullable=True)
@@ -59,11 +64,13 @@ class PrivateMessageReply(db.Model):
 
 class StatusUpdateUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author = db.relationship("User")
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_status_user_author"))
+    author = db.relationship("User", foreign_keys="StatusUpdateUser.author_id")
 
-    status_id = db.Column(db.Integer, db.ForeignKey('status_update.id'))
-    status = db.relationship("StatusUpdate")
+    status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
+        name="fk_status_user_status"))
+    status = db.relationship("StatusUpdate", foreign_keys="StatusUpdateUser.status_id")
 
     ignoring = db.Column(db.Boolean)
     blocked = db.Column(db.Boolean)
@@ -76,10 +83,12 @@ class StatusUpdateUser(db.Model):
 class StatusComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_status_comment_author"))
     author = db.relationship("User")
 
-    status_id = db.Column(db.Integer, db.ForeignKey('status_update.id'))
+    status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
+        name="fk_status_comment_status"))
     status = db.relationship("StatusUpdate")
 
     def __repr__(self):
@@ -88,7 +97,8 @@ class StatusComment(db.Model):
 class StatusUpdate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_status_update_author"))
     author = db.relationship("User")
 
     last_replied = db.Column(db.DateTime)
@@ -122,7 +132,8 @@ class IPAddress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip_address = db.Column(db.Text)
     last_seen = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_ipaddress_user"))
     user = db.relationship("User")
 
     __table_args__ = (db.UniqueConstraint('user_id', 'id', name='unique_user_ip_addy'),)
@@ -135,7 +146,8 @@ class Fingerprint(db.Model):
     json = db.Column(JSONB)
     factors = db.Column(db.Integer)
     last_seen = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_fingerprint_user"))
     user = db.relationship("User")
 
     def __repr__(self):
@@ -172,7 +184,8 @@ class SiteLog(db.Model):
     error_name = db.Column(db.String)
     error_code = db.Column(db.String)
     error_description = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_sitelog_user"), nullable=True)
     user = db.relationship("User")
 
     def __repr__(self):
@@ -196,11 +209,13 @@ class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User", backref="notifications")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_notification_user"))
+    user = db.relationship("User", backref="notifications", foreign_keys="Notification.user_id")
 
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author = db.relationship("User")
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_notification_author"))
+    author = db.relationship("User", foreign_keys="Notification.author_id")
 
     NOTIFICATION_CATEGORIES = (
         ("topic", "Topics"),
@@ -233,10 +248,12 @@ class Notification(db.Model):
 
 class IgnoringUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User")
-    ignoring_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    ignoring = db.relationship("User")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_ignoringuser_user"))
+    user = db.relationship("User", foreign_keys="IgnoringUser.user_id")
+    ignoring_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_ignoringuser_ignoring"))
+    ignoring = db.relationship("User", foreign_keys="IgnoringUser.ignoring_id")
     __table_args__ = (db.UniqueConstraint('user_id', 'ignoring_id', name='unique_user_ignoring'),)
     created = db.Column(db.DateTime)
 
@@ -251,10 +268,12 @@ class IgnoringUser(db.Model):
 
 class FollowingUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User")
-    following_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    following = db.relationship("User")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_followinguser_user"))
+    user = db.relationship("User", foreign_keys="FollowingUser.user_id")
+    following_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_followinguser_following"))
+    following = db.relationship("User", foreign_keys="FollowingUser.following_id")
     __table_args__ = (db.UniqueConstraint('user_id', 'following_id', name='unique_user_following'),)
     created = db.Column(db.DateTime)
 
@@ -263,10 +282,12 @@ class FollowingUser(db.Model):
 
 class Friendship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User")
-    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    friend = db.relationship("User")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_friendship_user"))
+    user = db.relationship("User", foreign_keys="Friendship.user_id")
+    friend_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_friendship_friend"))
+    friend = db.relationship("User", foreign_keys="Friendship.friend_id")
     __table_args__ = (db.UniqueConstraint('user_id', 'friend_id', name='unique_user_friend'),)
     created = db.Column(db.DateTime)
 
@@ -277,8 +298,10 @@ class Friendship(db.Model):
         return "<Friendship: (user='%s', friend='%s', pending='%s', blocked='%s')>" % (self.user.display_name, self.friend.display_name, self.pending, self.blocked)
 
 user_role_table = db.Table('user_roles', db.metadata,
-    db.Column('role_id', db.Integer, db.ForeignKey('role.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+    db.Column('role_id', db.Integer, db.ForeignKey('role.id',
+        name="fk_userrole_role")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_userrole_user")))
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -288,14 +311,15 @@ class User(db.Model):
 
     data = db.Column(JSONB)
 
-    display_name = db.Column(db.String)
-    login_name = db.Column(db.String)
-    email_address = db.Column(db.String)
+    display_name = db.Column(db.String, unique=True)
+    login_name = db.Column(db.String, unique=True)
+    email_address = db.Column(db.String, unique=True)
     password_hash = db.Column(db.String)
+    joined = db.Column(db.DateTime)
 
     how_did_you_find_us = db.Column(db.Text)
     is_allowed_during_construction = db.Column(db.Boolean)
-    my_url = db.Column(db.String)
+    my_url = db.Column(db.String, unique=True)
     time_zone = db.Column(db.String)
 
     banned = db.Column(db.Boolean)
@@ -359,7 +383,8 @@ class User(db.Model):
 ############################################################
 
 class Character(db.Model):
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_character_author"))
     author = db.relationship("User")
 
     id = db.Column(db.Integer, primary_key=True)
@@ -390,7 +415,8 @@ class Report(db.Model):
     url = db.Column(db.String)
     content_type = db.Column(db.String)
     content_id = db.Column(db.Integer)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_report_author"))
     author = db.relationship("User")
 
     report = db.Column(db.Text)
@@ -413,9 +439,11 @@ class ReportComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime)
     comment = db.Column(db.Text)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_reportcomment_author"))
     author = db.relationship("User")
-    report_id = db.Column(db.Integer, db.ForeignKey('report.id'))
+    report_id = db.Column(db.Integer, db.ForeignKey('report.id',
+        name="fk_reportcomment_report"))
     report = db.relationship("Report")
 
     def __repr__(self):
@@ -447,10 +475,12 @@ class Attachment(db.Model):
     origin_domain = db.Column(db.String)
     caption = db.Column(db.String)
 
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_attachment_owner"))
     owner = db.relationship("User")
 
-    character_id = db.Column(db.Integer, db.ForeignKey('character.id'), nullable=True)
+    character_id = db.Column(db.Integer, db.ForeignKey('character.id',
+        name="fk_attachment_character"), nullable=True)
     character = db.relationship("Character")
     character_gallery = db.Column(db.Boolean)
     character_gallery_weight = db.Column(db.Integer)
@@ -482,18 +512,24 @@ class Section(db.Model):
         return "<Section: (name='%s', weight='%s')>" % (self.name, self.weight)
 
 allowed_user_table = db.Table('category_allowed_users', db.metadata,
-    db.Column('category_id', db.Integer, db.ForeignKey('category.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id',
+        name="fk_allowedcategoryuser_category")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_allowedcategoryuser_user")))
 
 allowed_label_table = db.Table('category_allowed_labels', db.metadata,
-    db.Column('category_id', db.Integer, db.ForeignKey('category.id')),
-    db.Column('label_id', db.Integer, db.ForeignKey('label.id')))
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id',
+        name="fk_allowedcategorylabel_category")),
+    db.Column('label_id', db.Integer, db.ForeignKey('label.id',
+        name="fk_allowedcategorylabel_label")))
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id',
+        name="fk_category_categoryparent"))
     category = db.relationship("Category")
-    section_id = db.Column(db.Integer, db.ForeignKey('section.id'))
+    section_id = db.Column(db.Integer, db.ForeignKey('section.id',
+        name="fk_category_section"))
     section = db.relationship("Section")
 
     allowed_users = db.relationship("User",
@@ -501,10 +537,12 @@ class Category(db.Model):
     allowed_labels = db.relationship("Label",
                     secondary=allowed_label_table)
 
-    recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
-    recent_post = db.relationship("Post")
-    recent_topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'))
-    recent_topic = db.relationship("Topic")
+    recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
+        name="fk_category_recentpost"))
+    recent_post = db.relationship("Post", foreign_keys="Category.recent_post_id")
+    recent_topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
+        name="fk_category_recenttopic"))
+    recent_topic = db.relationship("Topic", foreign_keys="Category.recent_topic_id")
 
     name = db.Column(db.String)
     slug = db.Column(db.String, unique=True)
@@ -520,29 +558,39 @@ class Category(db.Model):
         return "<Category: (name='%s', weight='%s')>" % (self.name, self.weight)
 
 topic_watchers_table = db.Table('topic_watchers', db.metadata,
-    db.Column('topic_id', db.Integer, db.ForeignKey('topic.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+    db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
+        name="fk_topicwatchers_topic")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_topicwatchers_user")))
 
 topic_mods_table = db.Table('topic_moderators', db.metadata,
-    db.Column('topic_id', db.Integer, db.ForeignKey('topic.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+    db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
+        name="fk_topicmods_topic")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_topicmods_user")))
 
 topic_banned_table = db.Table('topic_banned_users', db.metadata,
-    db.Column('topic_id', db.Integer, db.ForeignKey('topic.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+    db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
+        name="fk_topicbanned_topic")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_topicbanned_user")))
 
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
-    category = db.relationship("Category")
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author = db.relationship("User")
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id',
+        name="fk_topic_category"))
+    category = db.relationship("Category", foreign_keys="Topic.category_id")
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_topic_author"))
+    author = db.relationship("User", foreign_keys="Topic.author_id")
 
-    editor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    editor = db.relationship("User")
+    editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_topic_editor"), nullable=True)
+    editor = db.relationship("User", foreign_keys="Topic.editor_id")
 
-    label_id = db.Column(db.Integer, db.ForeignKey('label.id'), nullable=True)
-    label = db.relationship("Label")
+    label_id = db.Column(db.Integer, db.ForeignKey('label.id',
+        name="fk_topic_label"), nullable=True)
+    label = db.relationship("Label", foreign_keys="Topic.label_id")
 
     watchers = db.relationship("User",
                     secondary=topic_watchers_table)
@@ -550,8 +598,9 @@ class Topic(db.Model):
                     secondary=topic_mods_table)
     banned = db.relationship("User",
                     secondary=topic_banned_table)
-    recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
-    recent_post = db.relationship("Post")
+    recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
+        name="fk_topic_recentpost"))
+    recent_post = db.relationship("Post", foreign_keys="Topic.recent_post_id")
 
     title = db.Column(db.String)
     slug = db.Column(db.String, unique=True)
@@ -562,29 +611,36 @@ class Topic(db.Model):
         return "<Topic: (title='%s', created='%s')>" % (self.title, self.created)
 
 post_boop_table = db.Table('post_boops_from_users', db.metadata,
-    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id',
+        name="fk_postboop_post")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_postboop_user")))
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'))
-    topic = db.relationship("Topic")
+    topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
+        name="fk_post_topic"))
+    topic = db.relationship("Topic", foreign_keys="Post.topic_id")
 
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author = db.relationship("User")
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_post_author"))
+    author = db.relationship("User", foreign_keys="Post.author_id")
 
-    editor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    editor = db.relationship("User")
+    editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_post_editor"), nullable=True)
+    editor = db.relationship("User", foreign_keys="Post.editor_id")
 
     boops = db.relationship("User",
                     secondary=post_boop_table,
                     backref="booped_posts")
 
-    character_id = db.Column(db.Integer, db.ForeignKey('character.id'), nullable=True)
-    character = db.relationship("Character")
+    character_id = db.Column(db.Integer, db.ForeignKey('character.id',
+        name="fk_post_character"), nullable=True)
+    character = db.relationship("Character", foreign_keys="Post.character_id")
 
-    avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id'), nullable=True)
-    avatar = db.relationship("Attachment")
+    avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id'),
+        name="fk_post_avatar", nullable=True)
+    avatar = db.relationship("Attachment", foreign_keys="Post.avatar_id")
 
     html = db.Column(db.Text)
     modified = db.Column(db.DateTime, nullable=True)
