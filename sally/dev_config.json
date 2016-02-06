@@ -1,9 +1,0 @@
-{
-  "debug": true,
-  "secret_key": "sdfjasdsad792197oil;fj2#$#@dsf!@#1697621!@349781ujm3iASy79233jJSKLd98324",
-  "db": "sally",
-  "db_user": "sally",
-  "db_pass": "",
-  "listener": "http://worldofequestria.com:3000",
-  "lockout_on": false
-}

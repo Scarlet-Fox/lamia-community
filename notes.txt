@@ -1,0 +1,22 @@
+For PyPy:
+
+* pip install git+git://github.com/surfly/gevent.git#egg=gevent
+
+* gunicorn --worker-class sync --workers 8 --error-logfile=- --access-logfile=- woe:app  -b 0.0.0.0:5000
+
+For fonts:
+
+* http://www.fontsquirrel.com/
+
+For Mongo:
+
+* Wired tiger is a little bitch
+* Remember to set option for setParameter=failIndexKeyTooLong=false -> in YAML is under setParameter
+
+CRON JOBS:
+
+* mongodump --db woe_main --out /home/worldofequestria/backups/mongo_`date "+%Y.%m.%d-%H.%M.%S"`;tar -zcvf /home/worldofequestria/backups/mongo-`date "+%Y.%m.%d-%H.%M.%S"`.tar.gz /home/worldofequestria/backups/mongo_*;rm -rf /home/worldofequestria/backups/mongo_* 
+* /home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload -s /home/worldofequestria/backups/ /;rm /home/worldofequestria/backups/mongo-*
+* /home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload -s /home/worldofequestria/woe/woe/static/ /
+* rm /home/worldofequestria/backups/*
+* tar -zcvf /home/worldofequestria/static-`date "+%Y.%m.%d-%H.%M.%S"`.tar.gz /home/worldofequestria/woe/woe/static/;/home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload /home/worldofequestria/static-* /;rm /home/worldofequestria/static-*

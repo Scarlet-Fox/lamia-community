@@ -1,0 +1,23 @@
+{% extends "roleplay/character_profile.jade" %}
+
+{% block profile_content %}
+.panel.panel-default
+  .panel-heading {{character.name|e}}'s Posts
+  .panel-body
+    table.table#post-table
+      thead
+        tr
+          th Roleplay / Topic
+          th Author
+          th Date
+          th Date HIDDEN
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/roleplay-posts-by-character.js",
+"assets/datatables/js/jquery.dataTables.js", "assets/datatables/dataTables.bootstrap.js", 
+"assets/datatables/dataTables.responsive.js",
+"local/js/roleplay-posts-by-character.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+{% endblock %}

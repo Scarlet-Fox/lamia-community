@@ -1,0 +1,40 @@
+{% extends "profile.jade" %}
+
+{% block profile_content %}
+.panel.panel-default
+  .panel-heading Change Your Profile
+  .panel-body
+    .panel-body.text-center
+      {% if profile.avatar_extension != "" %}
+      img.center-block.profile-page-avatar#profile-avatar(src="{{profile.get_avatar_url()}}", width="{{profile.avatar_full_x}}", height="{{profile.avatar_full_y}}")
+      {% else %}
+      img.center-block.profile-page-avatar#profile-avatar(src="")
+      {% endif %}
+      span.text-muted {{profile.title}}
+    h2 Change Avatar
+    form(action="/member/{{profile.login_name}}/change-avatar-title", method="post", enctype="multipart/form-data")
+      {{ form_errors(form) }}
+      .form-group
+        {{ form.avatar.label }}
+        {{ form.avatar(class="form-control") }}
+      .form-group
+        {{ form.title.label }}
+        {{ form.title(class="form-control") }}
+      button(type="submit").btn.btn-default Submit
+      &nbsp;
+      a.btn.btn-default#remove-avatar(href="") Remove Avatar
+      &nbsp;
+      a.btn.btn-default(href="/member/{{profile.login_name}}") Cancel
+{% endblock %}
+
+{% block script %}
+script(type="text/javascript").
+  $(document).ready(function(){
+    $("#remove-avatar").click(function(e) {
+      e.preventDefault();
+      $.post("/member/{{profile.login_name}}/remove-avatar", function(data) {
+        window.location = "/member/{{profile.login_name}}";
+      });
+    });
+  });
+{% endblock %}

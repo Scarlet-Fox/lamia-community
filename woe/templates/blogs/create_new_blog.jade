@@ -1,0 +1,42 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.breadcrumb#blog-breadcrumb
+  li
+    a(href="/") Home
+  li 
+    a(href="/blogs") Blogs
+  li.active
+    b
+      a(href="/blogs/new-blog") New Blogs
+.row
+  .col-md-8
+    h2 Create a Blog
+    form#new-blog-form(method="post", action="/blogs/new-blog")
+      {{ form_errors(form) }}
+      .form-group
+          {{ form.title.label(class="control-label") }}
+          {{ form.title(class="form-control") }}
+      .form-group
+          {{ form.privacy_setting.label(class="control-label") }}
+          {{ form.privacy_setting(class="form-control") }}
+      .form-group
+          {{ form.description.label(class="control-label") }}
+          {{ form.description(class="form-control") }}
+      button#commit-edit(type="submit").btn.btn-default Submit
+      &nbsp;
+      &nbsp;
+      a#cancel-edit(href="/blogs").btn.btn-default Cancel
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/editor.js",
+"assets/quill/quill.js", "assets/dropzone/dropzone.js", 
+"assets/select2/select2.full.js", "local/js/inline-editor.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+script(type="text/javascript").
+  $(document).ready(function(){  
+  
+  });
+{% endblock %}

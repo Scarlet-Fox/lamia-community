@@ -1,0 +1,83 @@
+{% extends "roleplay/character_profile.jade" %}
+
+{% block profile_content %}
+.panel.panel-default
+  .panel-heading {{character.name|e}}'s Gallery
+  .panel-body
+    .container(style="width: 100% !important; max-width: 100% !important;")
+      #slider-container(style="position: relative; margin: 0 auto; width: 600px; height: 442px; overflow: hidden;")
+        div(u="slides", style="cursor: move; position: absolute; left: 0px; top: 0px; width: 600px; height: 442px;
+            overflow: hidden;")
+          for image in images
+            div
+              img(u="image", src2="{{image.get_specific_size(600)}}")
+        .jssorb05(u="navigator", style="bottom: 16px; right: 6px;")
+          div(u="prototype")
+        span.jssora11l(u="arrowleft", style="top: 50%; left: 5px;")
+        span.jssora11r(u="arrowright", style="top: 50%; right: 5px;")
+if images
+  .panel.panel-default
+    .panel-heading Full Size Links
+    .panel-body
+      table.table
+        tr
+          th Image
+          th Caption
+          th Created by
+          th Source
+        for image in images
+          tr
+            td 
+              a(href="/static/uploads/{{image.path}}", target="_blank")
+                img(src="{{image.get_specific_size(100)}}", width="100px")
+            if image.alt
+              td {{image.alt}}
+            else
+              td
+            if image.caption
+              td {{image.caption}}
+            else
+              td
+            if image.origin_url
+              td 
+                a(href="{{image.origin_url}}") (Source)
+            else
+              td
+if emotes
+  .panel.panel-default
+    .panel-heading Avatars
+    .panel-body
+      table.table
+        tr
+          th Image
+          th Caption
+          th Created by
+          th Source
+        for image in emotes
+          tr
+            td 
+              a(href="/static/uploads/{{image.path}}", target="_blank")
+                img(src="{{image.get_specific_size(50)}}", width="50px")
+            if image.alt
+              td {{image.alt}}
+            else
+              td
+            if image.caption
+              td {{image.caption}}
+            else
+              td
+            if image.origin_url
+              td 
+                a(href="{{image.origin_url}}") (Source)
+            else
+              td
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/character_gallery.js",
+"assets/jssor.js",
+"assets/jssor.slider.js",
+"local/js/browse-character-gallery.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+{% endblock %}

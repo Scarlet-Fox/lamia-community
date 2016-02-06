@@ -1,0 +1,102 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row 
+  .col-sm-4
+    .panel.panel-default
+      .panel-heading {{character.name}}
+      .panel-body.text-center
+      {% if character.get_avatar() != "" %}
+      img.center-block.profile-page-avatar#profile-avatar(src="{{character.get_avatar(200)}}", style="max-width: 200px;")
+      {% endif %}
+      {% if character.motto != "" %}
+      center
+        span.text-muted(style="max-width: 200px;")= character.motto
+      {% endif %}
+      if current_user.is_authenticated() and current_user.is_admin
+        center
+          br
+          if character.hidden
+            a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Unhide Character
+          else
+            a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Hide Character
+      br
+    .panel.panel-default
+      .panel-heading More Information
+      .panel-body.text-center
+        if character.age
+          strong Age : 
+          {{character.age|e}}
+          br
+        if character.species
+          strong Species : 
+          {{character.species|e}}
+          br
+        strong Added by : 
+        a.hover_user(href="/member/{{character.creator.login_name}}") {{character.creator.display_name|e}}
+        br
+        if character.age or character.species
+          hr
+        ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+          li(role="presentation")
+            a(href="/characters/{{character.slug}}") Basic Profile
+          li(role="presentation")
+            a(href="/characters/{{character.slug}}/view-posts") Roleplay Posts
+            li(role="presentation")
+              a(href="/characters/{{character.slug}}/gallery") Character Gallery
+    if current_user == character.creator or current_user.is_admin
+      .panel.panel-default
+        .panel-heading Edit
+        .panel-body.text-center
+          ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+              li(role="presentation")
+                a(href="/characters/{{character.slug}}/edit-profile") Edit Profile
+              li(role="presentation")
+                a(href="/characters/{{character.slug}}/manage-gallery") Manage Gallery
+  .col-sm-8
+    {% block profile_content %}
+    .panel.panel-default
+      .panel-heading Basic Profile
+      .panel-body.character-profile
+        center
+          {% if character.get_portrait() != "" %}
+          img.center-block.profile-page-avatar#profile-avatar(src="{{character.get_portrait(250)}}", style="max-width: 250px;")
+          {% endif %}
+          h3!= character.name
+        hr(style="margin-bottom: 0px !important;")
+        if character.appearance and not character.appearance == "<div><br></div>"
+          center
+            br
+            h4 Appearance
+          span!= character.appearance
+          br
+        if character.personality and not character.personality == "<div><br></div>"
+          center
+            br
+            h4 Personality
+          span!= character.personality
+          br
+        if character.backstory and not character.backstory == "<div><br></div>"
+          center
+            br
+            h4 Backstory
+          span!= character.backstory
+          br
+        if character.other and not character.other == "<div><br></div>"
+          center
+            br
+            h4 Other
+          span!= character.other
+          br
+        br
+        hr
+        i - <a href="/member/{{character.creator.login_name}}">{{character.creator.display_name|e}}</a>
+    {% endblock %}
+{% endblock %}
+
+{% block script %}
+script(type="text/javascript").
+  $(document).ready(function(){
+    window.addExtraHTML(".character-profile")
+  });
+{% endblock %}

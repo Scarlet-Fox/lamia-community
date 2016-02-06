@@ -1,0 +1,106 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row 
+  .col-sm-4
+    .panel.panel-default
+      .panel-heading {{profile.display_name}}'s Profile
+        {% if current_user == profile or current_user.is_admin %}
+        a(href="/member/{{profile.login_name}}/change-avatar-title")
+          span.glyphicon.glyphicon-cog.float-right
+        {% endif %}
+      .panel-body.text-center
+        {% if profile.avatar_extension != "" %}
+        img.center-block.profile-page-avatar#profile-avatar(src="{{profile.get_avatar_url()}}", width="{{profile.avatar_full_x}}", height="{{profile.avatar_full_y}}")
+        {% else %}
+        img.center-block.profile-page-avatar#profile-avatar(src="", width="200px", height="200px")
+        {% endif %}
+        span.text-muted= profile.title
+        for role in profile.roles
+          br
+          span
+            strong
+              | {{role.pre_html+role.role+role.post_html}}
+      if current_user.is_authenticated() and current_user.is_admin and not profile.validated
+        center
+          a.btn.btn-warning.post-link(href="/member/{{profile.login_name}}/validate-user") Validate User
+          br
+          br
+      if current_user.is_authenticated() and current_user != profile and current_user not in profile.ignored_users
+        center
+          .btn-group
+            if current_user not in profile.followed_by
+              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Follow
+            else
+              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Unfollow
+            if not current_user in profile.rejected_friends
+              if current_user not in pending_friends and current_user not in friends
+                a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/request-friend") Friend Request
+              else
+                a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/un-friend") Unfriend
+            if profile not in current_user.ignored_users
+              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Ignore
+            else
+              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Unignore
+      br
+    .panel.panel-default
+      .panel-body.text-center
+        ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+          {% if current_user.is_mod or current_user.is_admin  %}
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}/mod-panel") Moderation
+          {% endif %}
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}") About Me
+          {% if current_user == profile or current_user.is_admin  %}
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}/change-account") Account
+          {% endif %}
+          if current_user == profile or current_user.is_admin
+            li(role="presentation")
+              a(href="/member/{{profile.login_name}}/change-settings") Settings
+  .col-sm-8
+    {% block profile_content %}
+    .panel.panel-default
+      .panel-heading About Me
+        {% if current_user == profile or current_user.is_admin %}
+        a(href="")
+          span.glyphicon.glyphicon-cog.float-right#about-me-cog-icon
+        {% endif %}
+      .panel-body
+        if profile.about_me == "<br>" or profile.about_me == "<div></div>"
+          #user-profile-about-me.post-content
+            p {{profile.display_name|e}} doesn't have an about me...
+        else
+          #user-profile-about-me.post-content!= profile.about_me
+    {% endblock %}
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/editor.js",
+"assets/quill/quill.js", "assets/dropzone/dropzone.js", 
+"assets/select2/select2.full.js", "local/js/inline-editor.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+script(type="text/javascript").
+  $(document).ready(function(){
+    {% if current_user.is_authenticated() %}
+    $("#about-me-cog-icon").click(function(e) {
+      e.preventDefault();
+      var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.login_name}}/edit-profile", true);
+      editor.setElementHtml($("#user-profile-about-me").html());
+      editor.onSave(function (html) {
+        $.post("/member/{{profile.login_name}}/edit-profile", {"about_me": html},function(data) {
+          $("#user-profile-about-me").html(data.about_me);
+          editor.destroyEditor();
+        });
+      });
+      editor.onCancel(function (html) {
+        editor.destroyEditor()
+        editor.resetElementHtml();
+      });
+    });
+    window.setupContent()
+    {% endif %}
+  });
+{% endblock %}

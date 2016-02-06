@@ -1,0 +1,12 @@
+{
+  "debug": false,
+  "asset_debug": false,
+  "database": "sally",
+  "secret_key": "sdfjoil;fj2#$#@dsf!@#1697621!@349781ujm3iASy79233jJSKLd98324",
+  "woe_db_user": "sally",
+  "woe_db_pass": "",
+  "woe_db": "sally",
+  "woe_ipb_avatar_dir": "/home/worldofequestria/ipb_legacy",
+  "listener": "http://worldofequestria.com:3000",
+  "lockout_on": false
+}

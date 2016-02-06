@@ -1,0 +1,13 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row#dashboard-container
+{% endblock %}
+
+{% block script %}
+
+{% assets filters="rjsmin", output="generated/dashboard.js",
+"assets/jquery.shuffle.modernizr.js", "local/js/dashboard.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+{% endblock %}

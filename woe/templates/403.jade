@@ -1,0 +1,16 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-lg-8.col-md-8.col-sm-10
+    .panel.panel-default
+      .panel-body
+        center
+          h2.text-warning Unauthorized Action
+          h3.text-warning You're not supposed to be here.
+          p
+            strong Please, <a href="/">go back to the front page and think about what you're doing</a>.
+          img(src="/static/secretary.png", alt="Ban page image.", style="width: 400px; max-width: 100%")
+          p
+          p
+{% endblock %}

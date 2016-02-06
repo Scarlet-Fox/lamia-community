@@ -1,0 +1,157 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row.hidden-sm.hidden-md.hidden-lg
+  .col-md-6
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title New Topics
+      ul.list-group.panel-body
+        for t in recently_created_topics
+          li.list-group-item
+            .media-left
+              span.subcategory-listing-recent-image
+                a(href="{{url_for('view_profile', login_name=t.creator.login_name)}}")
+                  img(src="{{t.creator.get_avatar_url("40")}}", width="{{t.creator.avatar_40_x}}", height="{{t.creator.avatar_40_y}}", class="avatar-mini")
+            .media-body
+              a(href="/t/{{t.slug}}")= t.title
+              br
+              a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
+  .col-md-6
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title Recently Replied to Topics
+      ul.list-group.panel-body
+        for t in recently_replied_topics
+          li.list-group-item
+            .media-left
+              span.subcategory-listing-recent-image
+                a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
+                  img(src="{{t.last_post_author_avatar}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
+            .media-body
+              a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title
+              br
+              a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.last_post_date|humanize_time}}
+.row
+  .col-md-8
+    {% for category_list in categories.values() if not category_list[0].restricted or current_user.is_admin or current_user in category_list[0].allowed_users %}
+    ul.list-group.category 
+      {% for category in category_list %}
+      {% if loop.first %}
+      li.list-group-item.section-header.category-section-header {{category.name}}
+      {% else %}
+      li.list-group-item.subcategory.category-subcategories
+        div
+          .row
+            .col-xs-4.col-sm-6
+              span.subcategory-listing-name 
+                a(href="/category/{{category.slug}}")= category.name
+            {% if category.post_count != 0 %}
+            .col-sm-6.col-xs-8
+              .media-left
+                span.subcategory-listing-recent-image
+                  a(href="{{url_for('view_profile', login_name=category.last_post_by.login_name)}}")
+                    img(src="{{category.last_post_by.get_avatar_url("40")}}", width="{{category.last_post_by.avatar_40_x}}", height="{{category.last_post_by.avatar_40_y}}", class="avatar-mini")
+              .media-body
+                span.subcategory-listing-recent
+                  a(href="/t/{{category.last_topic.slug}}")= category.last_topic.title
+                  br
+                  a(href="/t/{{category.last_topic.slug}}/page/1/post/last_seen") {{category.last_post_date|humanize_time}}
+            {% endif %}
+      {% endif %}
+      {% endfor %}
+    {% endfor %}
+    .row.hidden-xs
+      .col-md-6
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title New Topics
+          ul.list-group.panel-body
+            for t in recently_created_topics
+              li.list-group-item
+                .media-left
+                  span.subcategory-listing-recent-image
+                    a(href="{{url_for('view_profile', login_name=t.creator.login_name)}}")
+                      img(src="{{t.creator.get_avatar_url("40")}}", width="{{t.creator.avatar_40_x}}", height="{{t.creator.avatar_40_y}}", class="avatar-mini")
+                .media-body
+                  a(href="/t/{{t.slug}}")= t.title
+                  br
+                  a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
+      .col-md-6
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title Recently Replied to Topics
+          ul.list-group.panel-body
+            for t in recently_replied_topics
+              li.list-group-item
+                .media-left
+                  span.subcategory-listing-recent-image
+                    a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
+                      img(src="{{t.last_post_by.get_avatar_url("40")}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
+                .media-body
+                  a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title
+                  br
+                  a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.last_post_date|humanize_time}}
+  .col-md-4
+    if current_user.is_authenticated()
+      ul.list-group.category
+        li.list-group-item.section-header(style="font-size: 14px;") New Status Update
+        li.list-group-item
+          form.form-group.status-reply-box
+            input.form-control#status-new(type="text", maxlength="250")
+            br
+            button#new-status.btn.btn-default(type="submit") Create
+    ul.list-group
+      li.list-group-item.section-header.sidebar-section-header Status Updates
+      {% for status in status_updates %}
+      li.list-group-item.front-page-status.sidebar-status-section
+        .media-left
+          a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+            img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{ status.author.avatar_40_x }}", height="{{ status.author.avatar_40_y }}", class="avatar-mini")
+        .media-body
+          a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+          span &nbsp;says:
+          span.discuss 
+            a(href="/status/{{status.pk}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
+          br
+          p.status-message {{status.message}}
+          span.status-reply-time 
+            a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
+      {% endfor %}
+.row 
+  .col-md-12
+    center
+      p.front-page-stats
+        span.label.label-default {{post_count}}
+        span &nbsp;Posts &nbsp; &nbsp; &nbsp; &nbsp;
+        span.label.label-default {{member_count}}
+        span &nbsp;Members &nbsp; &nbsp; &nbsp; &nbsp;
+        span.label.label-default 
+          span.href_span(href="{{url_for('view_profile', login_name=newest_member.login_name)}}") {{newest_member.display_name}}
+        span &nbsp;Newest Member
+.row
+  .col-md-12
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title {{online_user_count}} Users Online
+      .panel-body
+        {% for u in online_users %}
+        {% if u.hide_login == False %}
+        a.hover_user(data-hplacement="top", href="{{url_for('view_profile', login_name=u.login_name)}}") {{u.display_name}}
+        span {% if not loop.last %},{% endif %} 
+        {% else %}
+        {% if current_user.is_admin %}
+        i
+          a.hover_user(data-hplacement="top", href="{{url_for('view_profile', login_name=u.login_name)}}") {{u.display_name}}
+        span {% if not loop.last %},{% endif %} 
+        {% endif %}
+        {% endif %} 
+        {% endfor %}
+{% endblock %}
+
+{% block script %}
+script(type="text/javascript").
+  $(document).ready(function(){
+  $('#forum-li').addClass('active');
+  });
+{% endblock %}

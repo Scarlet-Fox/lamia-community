@@ -1,0 +1,60 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-lg-6.col-md-6.col-sm-4
+    .panel.panel-default
+      .panel-heading Welcome to World of Equestria
+      .panel-body
+        center
+          h2 Join World of Equestria!
+          img(src="/static/site_images/star_dusk.png", style="max-width: 100%;")
+          p 
+            b We're extremely happy that you would like to join us!  
+          p Just remember to stay polite, stay courteous, and respect your fellow members. 
+          p Our community is a friendly and safe place, and our goal is to 
+            | keep it this way. If you share our goal, then WoE will be your
+            | home away from home!
+          p If not, then we will kick you out.
+  .col-lg-6.col-md-6.col-sm-8
+    .panel.panel-default
+      .panel-heading One of Us, One of Us, One of Us!
+      .panel-body
+        form(action="/register", method="post")
+          {{ form_errors(form) }}
+          .form-group
+            {{ form.username.label }}
+            {{ form.username(class="form-control") }}
+          .form-group
+            {{ form.password.label }}
+            {{ form.password(class="form-control") }}
+          .form-group
+            {{ form.confirm_password.label }}
+            {{ form.confirm_password(class="form-control") }}
+          .form-group
+            {{ form.email.label }}
+            {{ form.email(class="form-control") }}
+          .form-group
+            {{ form.question.label }}
+            {{ form.question(class="form-control") }}
+          .form-group
+            label
+              {{ form.over_thirteen() }} Are you at or over the age of 13?
+          .form-group
+            {{ form.how_did_you_find_us.label }}
+            {{ form.how_did_you_find_us(class="form-control") }}
+          button(type="submit").btn.btn-default Submit
+          br
+          br
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/sign-in.js",
+"local/js/sign-in.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+script(type="text/javascript").
+  $(document).ready(function(){
+    $("#register-li").addClass("active");
+  });
+{% endblock %}

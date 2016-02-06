@@ -1,0 +1,27 @@
+{% extends "profile.jade" %}
+
+{% block profile_content %}
+.panel.panel-default
+  .panel-heading Change Account Details
+  .panel-body
+    .row
+      .col-lg-6.col-md-6.col-sm-8
+        form(action="/member/{{profile.login_name}}/change-account", method="post")
+          {{ form_errors(form) }}
+          .form-group
+            {{ form.current_password.label }}*
+            {{ form.current_password(class="form-control") }}
+          hr
+          .form-group
+            {{ form.display_name.label }}
+            {{ form.display_name(class="form-control") }}
+          .form-group
+            {{ form.email.label }}
+            {{ form.email(class="form-control") }}
+          .form-group
+            {{ form.new_password.label }}
+            {{ form.new_password(class="form-control") }}
+            {{ form.confirm_new_password.label }}
+            {{ form.confirm_new_password(class="form-control") }}
+          button(type="submit").btn.btn-default Submit
+{% endblock %}

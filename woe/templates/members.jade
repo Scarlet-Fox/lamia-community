@@ -1,0 +1,31 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.breadcrumb#topic-breadcrumb(style="margin-bottom: 0px;")
+  li
+    a(href="/") Home
+  li.active 
+    b
+      a(href="/members") Members
+.member-page(style="background: #fff; padding: 20px;")
+  .row
+    .col-md-12
+      table.table#member-table
+        thead
+          tr
+            th Name
+            th Registration Date
+            th Last Seen
+            th(style="max-width: 200px;") Roles
+            th.never(style="display: none;") Last Seen (HIDDEN)
+            th.never(style="display: none;") Registration Date (HIDDEN)
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/member-listing.js",
+"assets/datatables/js/jquery.dataTables.js", "assets/datatables/dataTables.bootstrap.js", 
+"assets/datatables/dataTables.responsive.js",
+"local/js/member-listing.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+{% endblock %}

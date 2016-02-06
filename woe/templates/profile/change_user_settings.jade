@@ -1,0 +1,26 @@
+{% extends "profile.jade" %}
+
+{% block profile_content %}
+.panel.panel-default
+  .panel-heading Change User Settings
+  .panel-body
+    .row
+      .col-lg-6.col-md-6.col-sm-8
+        form(action="/member/{{profile.login_name}}/change-settings", method="post")
+          {{ form_errors(form) }}
+          .form-group
+            {{ form.time_zone.label }}
+            {{ form.time_zone(class="form-control") }}
+          button(type="submit").btn.btn-default Submit
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/change_user_settings.js",
+"assets/select2/select2.full.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+script(type="text/javascript").
+  $(document).ready(function(){
+    $("#time_zone").select2({});
+  });
+{% endblock%}

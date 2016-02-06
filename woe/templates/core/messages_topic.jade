@@ -1,0 +1,88 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.breadcrumb#topic-breadcrumb
+  li
+    a(href="/") Home
+  li 
+    a(href="/messages") Private Messages
+  li.active
+    b
+      a(href="/messages/{{topic.pk}}") {{topic.title}}
+.row
+  .col-md-9
+    ul.list-group.category
+      #post-container(data-pk="{{topic.pk}}")
+      li.list-group-item(style="overflow: hidden;")
+        #new-post-box
+          if current_user.is_authenticated() == False:
+            p.text-muted Please login to make a reply to this topic.
+  .col-md-3
+    ul.list-group.category
+      li.list-group-item.sidebar-section-header.section-header Participants
+      for participant in topic.participating_users
+        li.list-group-item
+          .media-left
+            a(href="{{url_for('view_profile', login_name=participant.login_name)}}")
+              img.media-object(src="{{ participant.get_avatar_url("40") }}", width="{{ participant.avatar_40_x }}", height="{{ participant.avatar_40_y }}", class="avatar-mini")
+          .media-body
+            a.hover_user(href="{{url_for('view_profile', login_name=participant.login_name)}}")= participant.display_name
+            if participant in topic.users_left_pm
+              if participant in topic.blocked_users
+                p.text-muted <i>Was Kicked from PM</i>
+              else
+                p.text-muted <i>Has Left PM</i>
+            else
+              if current_user == participant
+                br
+                a.inherit_colors.post-link(href="/messages/{{topic.pk}}/leave-topic") (Leave Topic)
+              elif current_user != participant and current_user == topic.creator
+                br
+                a.inherit_colors.post-link(href="/messages/{{topic.pk}}/kick-from-topic/{{participant.pk}}") (Kick)
+            
+nav.pagination-listing
+{% endblock %}
+
+{% block script %}
+
+{% assets filters="rjsmin", output="generated/editor.js",
+"assets/quill/quill.js", "assets/dropzone/dropzone.js", 
+"assets/select2/select2.full.js", "local/js/inline-editor.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+
+script(type="text/javascript").
+  $(document).ready(function(){  
+    {% if current_user.is_authenticated() == True %}
+    window._pagination={{current_user.post_pagination}};
+    {% if current_user == topic.creator %}
+    window._is_topic_mod=true;
+    {% else %}
+    window._is_topic_mod=false;
+    {% endif %}
+    window._is_logged_in=true;
+    {% else %}
+    window._pagination=20;
+    window._is_topic_mod=false;
+    window._is_logged_in=false;
+    {% endif %}
+    
+    window._initial_page={{initial_page}};
+    
+    {% if initial_post == "" %}
+    window._initial_post="";
+    {% else %}
+    window._initial_post="{{initial_post}}";
+    {% endif %}
+    
+    {% if current_user.is_authenticated() == True %}
+    window._can_edit = true;
+    window._current_user = "{{current_user.display_name}}";
+    {% endif %}
+  });
+  
+{% assets filters="rjsmin", output="generated/message-topic.js",
+"local/js/private-message-topic-index.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+{% endblock %}

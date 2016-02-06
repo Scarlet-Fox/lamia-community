@@ -1,0 +1,119 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  #temporary-buffer(style="display: none;")
+  .col-sm-12
+    .panel.panel-default
+      .panel-heading#filtering-header
+        span Filtering
+      .panel-body.hidden-md.hidden-lg.hidden-sm
+        form.display-form
+          .form-group.form-group-sm
+            label.control-label Display 
+            select.form-control.how-many
+              option(value="40", selected) 40
+              option(value="80") 80
+              option(value="100") 100
+              option(value="150") 150
+              option(value="200") 200
+              option(value="300") 300
+              option(value="400") 400
+              option(value="500") 500
+              option(value="600") 600
+              option(value="700") 700
+              option(value="800") 800
+              option(value="900") 900
+              option(value="1000") 1000
+        form.author-form
+          .form-group.form-group-sm
+            label.control-label Author
+            select.form-control.by-who.author(multiple="multiple")
+        form.search-form
+          .form-group.form-group-sm
+            label.control-label Search
+            input.form-control.search-for
+          button.btn.btn-default.update-statuses(type="submit") Update
+      .panel-body.hidden-xs
+        form.form-inline.float-left.display-form
+          .form-group.form-group-sm
+            label.control-label Display 
+            select.form-control.how-many
+              option(value="40", selected) 40
+              option(value="80") 80
+              option(value="100") 100
+              option(value="150") 150
+              option(value="200") 200
+              option(value="300") 300
+              option(value="400") 400
+              option(value="500") 500
+              option(value="600") 600
+              option(value="700") 700
+              option(value="800") 800
+              option(value="900") 900
+              option(value="1000") 1000
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+        form.form-inline.float-left.author-form
+          .form-group.form-group-sm
+            label.control-label Author
+            select.form-control.by-who-two.author(multiple="multiple", style="width: 200px")
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+        form.form-inline.float-left.search-form
+          .form-group.form-group-sm
+            label.control-label Search
+            input.form-control.search-for 
+          button.btn.btn-default.update-statuses(type="submit") Update
+          &nbsp;
+          a.btn.btn-default.post-link(href="/clear-status-updates") Clear
+  .col-sm-12
+    .panel.panel-default
+      .panel-heading
+        span Status Updates
+      .panel-body.body-background#msg-container
+      .panel-body.body-background#status-container
+        {% for status in status_updates %}
+        .col-md-4.col-sm-6.status-index-panel
+          .panel.panel-default
+            .panel-body
+              .media-left
+                a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+                  img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}px", height="{{status.author.avatar_40_y}}px", class="avatar-mini")
+              .media-body
+                a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}")= status.author.display_name
+                if status.attached_to_user != None
+                  span &nbsp;says to <a class="hover_user" href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}">{{status.attached_to_user.display_name|e}}</a>:
+                else
+                  span &nbsp;says:
+                span.discuss 
+                  a.status-reply-time.float-right(href="/status/{{status.pk}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
+                br
+                p.status-message {{status.message}}
+                span.status-reply-time 
+                  a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
+        {% endfor %}
+
+{% endblock %}
+
+{% block script %}
+script(type="text/javascript").
+  $(document).ready(function(){ 
+    window.count = {{count}};
+    window.authors = JSON.parse('{{authors}}');
+    window.search = '{{search}}';
+  });
+
+
+{% assets filters="rjsmin", output="generated/status-index.js",
+"assets/jquery.shuffle.modernizr.js", "local/js/status-index.js", 
+"assets/select2/select2.full.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+{% endblock %}
