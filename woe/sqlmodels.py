@@ -1,5 +1,6 @@
 from woe import sqla as db
 from sqlalchemy.dialects.postgresql import JSONB
+from slugify import slugify
 
 ############################################################
 # Private Message Models
@@ -16,10 +17,10 @@ class PrivateMessageUser(db.Model):
         name="fk_pm_u_pm"))
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageUser.pm_id")
 
-    ignoring = db.Column(db.Boolean)
-    exited = db.Column(db.Boolean)
-    blocked = db.Column(db.Boolean)
-    viewed = db.Column(db.Integer)
+    ignoring = db.Column(db.Boolean, default=False)
+    exited = db.Column(db.Boolean, default=False)
+    blocked = db.Column(db.Boolean, default=False)
+    viewed = db.Column(db.Boolean, default=False)
     last_viewed = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -27,13 +28,17 @@ class PrivateMessageUser(db.Model):
 
 class PrivateMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    title = db.Column(db.String)
     count = db.Column(db.Integer)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_pm_author"))
     author = db.relationship("User", foreign_keys="PrivateMessage.author_id")
 
-    created = db.Column(db.Integer)
+    last_reply_id = db.Column(db.Integer, db.ForeignKey('private_message_reply.id',
+        name="fk_pm_lastreply"))
+    last_reply = db.relationship("PrivateMessageReply", foreign_keys="PrivateMessage.last_reply_id")
+
+    created = db.Column(db.DateTime)
     old_mongo_hash = db.Column(db.String, nullable=True)
 
     def __repr__(self):
@@ -72,8 +77,8 @@ class StatusUpdateUser(db.Model):
         name="fk_status_user_status"))
     status = db.relationship("StatusUpdate", foreign_keys="StatusUpdateUser.status_id")
 
-    ignoring = db.Column(db.Boolean)
-    blocked = db.Column(db.Boolean)
+    ignoring = db.Column(db.Boolean, default=False)
+    blocked = db.Column(db.Boolean, default=False)
     viewed = db.Column(db.Integer)
     last_viewed = db.Column(db.DateTime)
 
@@ -86,6 +91,8 @@ class StatusComment(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_status_comment_author"))
     author = db.relationship("User")
+    created = db.Column(db.DateTime)
+    hidden = db.Column(db.Boolean, default=False)
 
     status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
         name="fk_status_comment_status"))
@@ -99,11 +106,18 @@ class StatusUpdate(db.Model):
     message = db.Column(db.Text)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_status_update_author"))
-    author = db.relationship("User")
+    author = db.relationship("User", foreign_keys="StatusUpdate.author_id")
+    attached_to_user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_status_update_attachedtouser"))
+    attached_to_user = db.relationship("User", foreign_keys="StatusUpdate.attached_to_user_id")
 
     last_replied = db.Column(db.DateTime)
     last_viewed = db.Column(db.DateTime)
     replies = db.Column(db.Integer)
+    created = db.Column(db.DateTime)
+    hidden = db.Column(db.Boolean, default=False)
+    muted = db.Column(db.Boolean, default=False)
+    locked = db.Column(db.Boolean, default=False)
 
     old_mongo_hash = db.Column(db.String, nullable=True)
 
@@ -237,7 +251,7 @@ class Notification(db.Model):
 
     category = db.Column(db.String)
     created = db.Column(db.DateTime)
-    url = db.Column(db.DateTime)
+    url = db.Column(db.String)
     acknowledged = db.Column(db.Boolean)
     seen = db.Column(db.Boolean)
     emailed = db.Column(db.Boolean)
@@ -257,11 +271,11 @@ class IgnoringUser(db.Model):
     __table_args__ = (db.UniqueConstraint('user_id', 'ignoring_id', name='unique_user_ignoring'),)
     created = db.Column(db.DateTime)
 
-    distort_posts = db.Column(db.Boolean)
-    block_sigs = db.Column(db.Boolean)
-    block_pms = db.Column(db.Boolean)
-    block_blogs = db.Column(db.Boolean)
-    block_status = db.Column(db.Boolean)
+    distort_posts = db.Column(db.Boolean, default=True)
+    block_sigs = db.Column(db.Boolean, default=True)
+    block_pms = db.Column(db.Boolean, default=True)
+    block_blogs = db.Column(db.Boolean, default=True)
+    block_status = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
         return "<IgnoredUser: (user='%s', ignoring='%s')>" % (self.user.display_name, self.ignored.display_name)
@@ -398,7 +412,9 @@ class Character(db.Model):
     backstory = db.Column(db.Text)
     other = db.Column(db.Text)
     motto = db.Column(db.String)
+    created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime, nullable=True)
+    hidden = db.Column(db.Boolean, default=False)
 
     character_history = db.Column(JSONB)
     old_mongo_hash = db.Column(db.String, nullable=True)
@@ -525,9 +541,11 @@ allowed_label_table = db.Table('category_allowed_labels', db.metadata,
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id',
+
+    parent_id = db.Column(db.Integer, db.ForeignKey('category.id',
         name="fk_category_categoryparent"))
-    category = db.relationship("Category")
+    parent = db.relationship("Category", backref="children", remote_side=[id])
+
     section_id = db.Column(db.Integer, db.ForeignKey('section.id',
         name="fk_category_section"))
     section = db.relationship("Section")
@@ -604,8 +622,13 @@ class Topic(db.Model):
 
     title = db.Column(db.String)
     slug = db.Column(db.String, unique=True)
-    sticky = db.Column(db.Boolean)
-    announcement = db.Column(db.Boolean)
+    sticky = db.Column(db.Boolean, default=False)
+    announcement = db.Column(db.Boolean, default=False)
+    hidden = db.Column(db.Boolean, default=False)
+    locked = db.Column(db.Boolean, default=False)
+    created = db.Column(db.DateTime)
+    post_count = db.Column(db.Integer, default=0)
+    view_count = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return "<Topic: (title='%s', created='%s')>" % (self.title, self.created)
@@ -644,6 +667,7 @@ class Post(db.Model):
 
     html = db.Column(db.Text)
     modified = db.Column(db.DateTime, nullable=True)
+    created = db.Column(db.DateTime)
 
     old_mongo_hash = db.Column(db.String, nullable=True)
     data = db.Column(JSONB)
