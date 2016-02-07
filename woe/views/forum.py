@@ -967,7 +967,7 @@ def index():
     status_updates = [result[1] for result in sqla.session.query(sqla.distinct(sqlm.StatusUpdate.author_id), sqlm.StatusUpdate) \
         .order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]]
 
-    return render_template("index.jade", page_title="World of Equestria!",
+    return render_template("index.jade", page_title="Scarlet's Web",
         sections=sections, sub_categories=sub_categories,
         categories=categories, status_updates=status_updates, online_users=online_users,
         post_count=post_count, member_count=member_count, newest_member=newest_member,
