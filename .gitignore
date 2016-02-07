@@ -12,3 +12,5 @@ media
 .env
 generated/
 .webassets-cache/
+uploads/
+avatars/
