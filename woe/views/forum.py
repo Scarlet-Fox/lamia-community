@@ -1,4 +1,5 @@
 from woe import app
+from woe import sqla
 from woe.models.core import User, DisplayNameHistory, StatusUpdate, Attachment
 from woe.parsers import ForumPostParser
 from woe.models.forum import Category, Post, Topic, Prefix, get_topic_slug, PostHistory
@@ -12,6 +13,8 @@ from threading import Thread
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
 from woe.views.dashboard import broadcast
 import re, json
+from datetime import datetime
+import woe.sqlmodels as sqlm
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
@@ -927,32 +930,45 @@ def category_index(slug):
 
 @app.route('/')
 def index():
-    categories = OrderedDict()
+    sections = []
+    categories = {}
+    sub_categories = {}
 
-    for category in Category.objects(root_category=True):
-        categories[category.name] = [category,]
-        for subcategory in Category.objects(parent=category):
-            categories[category.name].append(subcategory)
+    for section in sqla.session.query(sqlm.Section).order_by(sqlm.Section.weight).all():
+        sections.append(section)
 
-    status_updates = StatusUpdate.objects(hidden=False, attached_to_user=None)[:30]
-    cleaned_statuses = []
-    user_already_posted = []
-    for status in status_updates:
-        if status.author_name in user_already_posted:
-            continue
+        categories[section] = []
 
-        user_already_posted.append(status.author_name)
-        cleaned_statuses.append(status)
+        for category in sqla.session.query(sqlm.Category) \
+            .filter_by(section=section).filter_by(parent=None).order_by(sqlm.Category.weight).all():
+            categories[section].append(category)
+            if len(category.children) > 0:
+                sub_categories[category] = category.children
 
-    online_users = User.objects(hidden_last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
-    all_online_users = User.objects(hidden_last_seen__gte=arrow.utcnow().replace(minutes=-15).datetime)
-    post_count = Post.objects().count()
-    member_count = User.objects(banned=False).count()
-    newest_member = User.objects(banned=False).order_by("-joined")[0]
-    recently_replied_topics = Topic.objects(post_count__gt=0, hidden=False).order_by("-last_post_date")[:5]
-    recently_created_topics = Topic.objects(post_count__gt=0, hidden=False).order_by("-created")[:5]
+    online_users = sqla.session.query(sqlm.User) \
+        .filter(sqlm.User.hidden_last_seen > arrow.utcnow() \
+        .replace(minutes=-15).datetime).all()
+
+    post_count = sqla.session.query(sqlm.Post) \
+        .filter_by(hidden=False).count()
+
+    member_count = sqla.session.query(sqlm.User) \
+        .filter_by(banned=False).count()
+
+    newest_member = sqla.session.query(sqlm.User) \
+        .order_by(sqla.desc(sqlm.User.joined)).first()
+
+    recently_replied_topics = sqla.session.query(sqlm.Topic) \
+        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:5]
+
+    recently_created_topics = sqla.session.query(sqlm.Topic) \
+        .order_by(sqlm.Topic.created.desc())[:5]
+
+    status_updates = [result[1] for result in sqla.session.query(sqla.distinct(sqlm.StatusUpdate.author_id), sqlm.StatusUpdate) \
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]]
 
     return render_template("index.jade", page_title="World of Equestria!",
-        categories=categories, status_updates=cleaned_statuses[:5], online_users=all_online_users,
+        sections=sections, sub_categories=sub_categories,
+        categories=categories, status_updates=status_updates, online_users=online_users,
         post_count=post_count, member_count=member_count, newest_member=newest_member,
-        online_user_count=online_users.count(), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)
+        online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)

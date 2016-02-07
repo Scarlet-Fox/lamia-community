@@ -11,8 +11,8 @@
           li.list-group-item
             .media-left
               span.subcategory-listing-recent-image
-                a(href="{{url_for('view_profile', login_name=t.creator.login_name)}}")
-                  img(src="{{t.creator.get_avatar_url("40")}}", width="{{t.creator.avatar_40_x}}", height="{{t.creator.avatar_40_y}}", class="avatar-mini")
+                a(href="{{url_for('view_profile', login_name=t.author.login_name)}}")
+                  img(src="{{t.author.get_avatar_url("40")}}", width="{{t.author.avatar_40_x}}", height="{{t.author.avatar_40_y}}", class="avatar-mini")
             .media-body
               a(href="/t/{{t.slug}}")= t.title
               br
@@ -26,41 +26,74 @@
           li.list-group-item
             .media-left
               span.subcategory-listing-recent-image
-                a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
-                  img(src="{{t.last_post_author_avatar}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
+                a(href="{{url_for('view_profile', login_name=t.recent_post.author.login_name)}}")
+                  img(src="{{t.last_post_author_avatar}}", width="{{t.recent_post.author.avatar_40_x}}", height="{{t.recent_post.author.avatar_40_y}}", class="avatar-mini")
             .media-body
               a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title
               br
-              a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.last_post_date|humanize_time}}
+              a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
 .row
   .col-md-8
-    {% for category_list in categories.values() if not category_list[0].restricted or current_user.is_admin or current_user in category_list[0].allowed_users %}
-    ul.list-group.category 
-      {% for category in category_list %}
-      {% if loop.first %}
-      li.list-group-item.section-header.category-section-header {{category.name}}
-      {% else %}
+    {% for section in sections %}
+    ul.list-group.category
+      li.list-group-item.section-header.category-section-header {{section.name}}
+      {% for category in categories[section] %}
       li.list-group-item.subcategory.category-subcategories
         div
           .row
             .col-xs-4.col-sm-6
               span.subcategory-listing-name 
-                a(href="/category/{{category.slug}}")= category.name
-            {% if category.post_count != 0 %}
+                a(href="/category/{{category.slug}}") {{category.name}}
+                br
+                {% for subcategory in sub_categories[category] %}
+                {% if loop.first %}
+                span
+                  &nbsp;
+                {% endif %}
+                span.small 
+                  a(href="/category/{{subcategory.slug}}") {{subcategory.name}}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            {% if category.recent_post %}
             .col-sm-6.col-xs-8
               .media-left
                 span.subcategory-listing-recent-image
-                  a(href="{{url_for('view_profile', login_name=category.last_post_by.login_name)}}")
-                    img(src="{{category.last_post_by.get_avatar_url("40")}}", width="{{category.last_post_by.avatar_40_x}}", height="{{category.last_post_by.avatar_40_y}}", class="avatar-mini")
+                  a(href="{{url_for('view_profile', login_name=category.recent_post.author.login_name)}}")
+                    img(src="{{category.recent_post.author.get_avatar_url("40")}}", width="{{category.recent_post.author.avatar_40_x}}", height="{{category.recent_post.author.avatar_40_y}}", class="avatar-mini")
               .media-body
                 span.subcategory-listing-recent
-                  a(href="/t/{{category.last_topic.slug}}")= category.last_topic.title
+                  a(href="/t/{{category.recent_topic.slug}}")= category.recent_topic.title
                   br
-                  a(href="/t/{{category.last_topic.slug}}/page/1/post/last_seen") {{category.last_post_date|humanize_time}}
+                  a(href="/t/{{category.recent_topic.slug}}/page/1/post/last_seen") {{category.last_post_date|humanize_time}}
             {% endif %}
-      {% endif %}
       {% endfor %}
     {% endfor %}
+    //- {% for category_list in categories.values() if not category_list[0].restricted or current_user.is_admin or current_user in category_list[0].allowed_users %}
+    //- ul.list-group.category 
+    //-   {% for category in category_list %}
+    //-   {% if loop.first %}
+    //-   li.list-group-item.section-header.category-section-header {{category.name}}
+    //-   {% else %}
+    //-   li.list-group-item.subcategory.category-subcategories
+    //-     div
+    //-       .row
+    //-         .col-xs-4.col-sm-6
+    //-           span.subcategory-listing-name 
+    //-             a(href="/category/{{category.slug}}")= category.name
+    //-         {% if category.post_count != 0 %}
+    //-         .col-sm-6.col-xs-8
+    //-           .media-left
+    //-             span.subcategory-listing-recent-image
+    //-               a(href="{{url_for('view_profile', login_name=category.recent_post.author.login_name)}}")
+    //-                 img(src="{{category.recent_post.author.get_avatar_url("40")}}", width="{{category.recent_post.author.avatar_40_x}}", height="{{category.recent_post.author.avatar_40_y}}", class="avatar-mini")
+    //-           .media-body
+    //-             span.subcategory-listing-recent
+    //-               a(href="/t/{{category.recent_topic.slug}}")= category.recent_topic.title
+    //-               br
+    //-               a(href="/t/{{category.recent_topic.slug}}/page/1/post/last_seen") {{category.last_post_date|humanize_time}}
+    //-         {% endif %}
+    //-   {% endif %}
+    //-   {% endfor %}
+    //- {% endfor %}
     .row.hidden-xs
       .col-md-6
         .panel.panel-default
@@ -71,8 +104,8 @@
               li.list-group-item
                 .media-left
                   span.subcategory-listing-recent-image
-                    a(href="{{url_for('view_profile', login_name=t.creator.login_name)}}")
-                      img(src="{{t.creator.get_avatar_url("40")}}", width="{{t.creator.avatar_40_x}}", height="{{t.creator.avatar_40_y}}", class="avatar-mini")
+                    a(href="{{url_for('view_profile', login_name=t.author.login_name)}}")
+                      img(src="{{t.author.get_avatar_url("40")}}", width="{{t.author.avatar_40_x}}", height="{{t.author.avatar_40_y}}", class="avatar-mini")
                 .media-body
                   a(href="/t/{{t.slug}}")= t.title
                   br
@@ -86,12 +119,12 @@
               li.list-group-item
                 .media-left
                   span.subcategory-listing-recent-image
-                    a(href="{{url_for('view_profile', login_name=t.last_post_by.login_name)}}")
-                      img(src="{{t.last_post_by.get_avatar_url("40")}}", width="{{t.last_post_by.avatar_40_x}}", height="{{t.last_post_by.avatar_40_y}}", class="avatar-mini")
+                    a(href="{{url_for('view_profile', login_name=t.recent_post.author.login_name)}}")
+                      img(src="{{t.recent_post.author.get_avatar_url("40")}}", width="{{t.recent_post.author.avatar_40_x}}", height="{{t.recent_post.author.avatar_40_y}}", class="avatar-mini")
                 .media-body
                   a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title
                   br
-                  a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.last_post_date|humanize_time}}
+                  a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
   .col-md-4
     if current_user.is_authenticated()
       ul.list-group.category
@@ -112,11 +145,11 @@
           a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
           span &nbsp;says:
           span.discuss 
-            a(href="/status/{{status.pk}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
+            a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
           br
           p.status-message {{status.message}}
           span.status-reply-time 
-            a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
+            a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
       {% endfor %}
 .row 
   .col-md-12

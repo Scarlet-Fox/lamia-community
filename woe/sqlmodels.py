@@ -99,7 +99,7 @@ class StatusComment(db.Model):
     status = db.relationship("StatusUpdate")
 
     def __repr__(self):
-        return "<StatusComment: (created='%s', user='%s', status='%s')>" % (self.created, self.user.display_name, self.status.message[0:50])
+        return "<StatusComment: (created='%s', author='%s')>" % (self.created, self.author.display_name)
 
 class StatusUpdate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -121,8 +121,13 @@ class StatusUpdate(db.Model):
 
     old_mongo_hash = db.Column(db.String, nullable=True)
 
+    def get_comment_count(self):
+        my_id = self.id
+        count = db.session.query(StatusComment).filter(StatusComment.status_id==my_id).count()
+        return count
+
     def __repr__(self):
-        return "<StatusUpdate: (created='%s', user='%s', message='%s')>" % (self.created, self.user.display_name, self.message[0:50])
+        return "<StatusUpdate: (created='%s', author='%s', message='%s')>" % (self.created, self.author.display_name, self.message[0:50])
 
 ############################################################
 # Core Site Models
@@ -391,6 +396,27 @@ class User(db.Model):
         if not self.validated:
             return False
         return True
+
+    def get_notification_count(self):
+        return 0
+
+    def get_dashboard_notifications(self):
+        return 0
+
+    def get_recent_notifications(self, count=15):
+        return []
+
+    def get_id(self):
+        return self.login_name
+
+    def get_avatar_url(self, size=""):
+        if size != "":
+            size = "_"+size
+
+        if not self.avatar_extension:
+            return "/static/no_profile_avatar"+size+".png"
+        else:
+            return "/static/avatars/"+str(self.avatar_timestamp)+str(self.id)+size+self.avatar_extension
 
 ############################################################
 # Roleplay Models
@@ -668,6 +694,7 @@ class Post(db.Model):
     html = db.Column(db.Text)
     modified = db.Column(db.DateTime, nullable=True)
     created = db.Column(db.DateTime)
+    hidden = db.Column(db.Boolean, default=False)
 
     old_mongo_hash = db.Column(db.String, nullable=True)
     data = db.Column(JSONB)

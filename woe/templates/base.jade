@@ -69,7 +69,7 @@ body(role='document')
               li.divider
               for notification in current_user.get_recent_notifications(15)
                 li.notification-li
-                  a.notification-link(href='{{notification.url}}', data-notification="{{notification.pk}}")= notification.text
+                  a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.text
           button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
             span.sr-only Toggle navigation
             span.icon-bar
@@ -182,7 +182,7 @@ body(role='document')
                   li.divider
                   for notification in current_user.get_recent_notifications(15)
                     li.notification-li
-                      a.notification-link(href='{{notification.url}}', data-notification="{{notification.pk}}")= notification.text
+                      a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.text
                       
     #content-border
       {% block content %}
