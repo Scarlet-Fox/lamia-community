@@ -555,12 +555,12 @@ def get_post_html_in_topic(slug, post):
 @app.route('/t/<slug>/page/<page>/post/<post>', methods=['GET'])
 def topic_index(slug, page, post):
     try:
-        topic = Topic.objects(slug=slug)[0]
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug).first()
     except IndexError:
         return abort(404)
     pagination = 20
 
-    if current_user._get_current_object() in topic.banned_from_topic:
+    if current_user._get_current_object() in topic.banned:
         return abort(404)
 
     if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
@@ -573,7 +573,7 @@ def topic_index(slug, page, post):
 
     if post == "latest_post":
         try:
-            post = Post.objects(topic=topic, hidden=False).order_by("-created")[0]
+            post = sqla.session.query(sqlm.Post).filter_by(topic=topic, hidden=False).order_by(sqla.desc(sqlm.Post.created)).first()
         except:
             return redirect("/t/"+unicode(topic.slug))
 
@@ -584,15 +584,18 @@ def topic_index(slug, page, post):
             last_seen = arrow.get(arrow.utcnow().timestamp).datetime
 
         try:
+            # TODO
             post = Post.objects(topic=topic, hidden=False, created__lt=last_seen).order_by("-created")[0]
         except:
             try:
+                # TODO
                 post = Post.objects(topic=topic, pk=post, hidden=False)[0]
             except:
                 return redirect("/t/"+unicode(topic.slug))
     else:
         if post != "":
             try:
+                # TODO
                 post = Post.objects(topic=topic, pk=post, hidden=False)[0]
             except:
                 return redirect("/t/"+unicode(topic.slug))
@@ -600,25 +603,29 @@ def topic_index(slug, page, post):
             post = ""
 
     if post != "":
-        topic.update(inc__view_count=1)
+        if topic.last_seen_by is None:
+            topic.last_seen_by = {}
+        topic.view_count = topic.view_count + 1
         try:
             topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
-            topic.save()
+            # TODO SAVE TOPIC
         except:
             pass
         target_date = post.created
-        posts_before_target = Post.objects(hidden=False, topic=topic, created__lt=target_date).count()
+        posts_before_target = sqla.session.query(sqlm.Post).filter_by(topic=topic, hidden=False) \
+            .filter(sqlm.Post.created <= post.created).count()
+
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
 
         rp_topic = "false"
-        if topic.category.slug in ["roleplays", "scenarios"]:
+        if topic.category.slug in ["roleplays"]:
             rp_topic = "true"
         return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, initial_post=str(post.pk), rp_area=rp_topic)
 
-    topic.update(inc__view_count=1)
+    topic.view_count = topic.view_count + 1
     try:
         topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
-        topic.save()
+        # TODO SAVE TOPIC
     except:
         pass
 
@@ -921,6 +928,7 @@ def category_topics(slug):
         parsed_topic["last_pages"] = parsed_topic["last_page"] > 1
         parsed_topic["closed"] = topic.locked
         parsed_topic["title"] = topic.title
+        parsed_topic["slug"] = topic.slug
 
         parsed_topics.append(parsed_topic)
 

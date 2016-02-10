@@ -663,6 +663,12 @@ class Topic(db.Model):
     def __repr__(self):
         return "<Topic: (title='%s', created='%s')>" % (self.title, self.created)
 
+    def is_topic_mod(self, user):
+        if user in self.moderators or user.is_mod or user.is_admin:
+            return 1
+        else:
+            return 0
+
 post_boop_table = db.Table('post_boops_from_users', db.metadata,
     db.Column('post_id', db.Integer, db.ForeignKey('post.id',
         name="fk_postboop_post")),
