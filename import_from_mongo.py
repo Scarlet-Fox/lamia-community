@@ -335,6 +335,9 @@ from datetime import datetime
 #     elif topic.prefix == "Ponies":
 #         sql_topic.category = sqla.session.query(Category).filter_by(name="World of Equestria").first()
 #         topic.prefix = None
+#     elif topic.prefix == "Media":
+#         sql_topic.category = sqla.session.query(Category).filter_by(name="Other Media").first()
+#         topic.prefix = None
 #     elif topic.prefix == "Music":
 #         sql_topic.category = sqla.session.query(Category).filter_by(name="Music").first()
 #         topic.prefix = None

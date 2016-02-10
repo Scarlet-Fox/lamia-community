@@ -416,7 +416,10 @@ class User(db.Model):
         if not self.avatar_extension:
             return "/static/no_profile_avatar"+size+".png"
         else:
-            return "/static/avatars/"+str(self.avatar_timestamp)+str(self.id)+size+self.avatar_extension
+            if self.old_mongo_hash is not None:
+                return "/static/avatars/"+str(self.avatar_timestamp)+str(self.old_mongo_hash)+size+self.avatar_extension
+            else:
+                return "/static/avatars/"+str(self.avatar_timestamp)+str(self.id)+size+self.avatar_extension
 
 ############################################################
 # Roleplay Models
@@ -645,6 +648,7 @@ class Topic(db.Model):
     recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
         name="fk_topic_recentpost"))
     recent_post = db.relationship("Post", foreign_keys="Topic.recent_post_id")
+    last_seen_by = db.Column(JSONB)
 
     title = db.Column(db.String)
     slug = db.Column(db.String, unique=True)

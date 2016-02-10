@@ -848,19 +848,19 @@ def new_topic(slug):
 @app.route('/category/<slug>/topics', methods=['POST'])
 def category_topics(slug):
     try:
-        category = Category.objects(slug=slug)[0]
+        category = sqla.session.query(sqlm.Category).filter_by(slug=slug).first()
     except IndexError:
         return abort(404)
 
     if current_user.is_authenticated():
-        preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
+        preferences = current_user.data.get("category_filter_preference_"+str(category.id), {})
         prefixes = preferences.keys()
     else:
         prefixes = []
 
     request_json = request.get_json(force=True)
     page = request_json.get("page", 1)
-    pagination = request_json.get("pagination", 20)
+    pagination = request_json.get("pagination", 15)
 
     try:
         minimum = (int(page)-1)*int(pagination)
@@ -870,39 +870,48 @@ def category_topics(slug):
         maximum = 20
 
     if len(prefixes) > 0:
-        topics = Topic.objects(category=category, prefix__in=prefixes, hidden=False, post_count__gt=0).order_by("-sticky", "-last_post_date")[minimum:maximum]
-        topic_count = Topic.objects(category=category, prefix__in=prefixes, hidden=False, post_count__gt=0).count()
+        topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
+            sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label).join(sqlm.Topic.recent_post).order_by(sqlm.Topic.announcement, \
+            sqlm.Topic.sticky, sqla.desc(sqlm.Post.created))[minimum:maximum]
+        topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
+            sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label).count()
     else:
-        topics = Topic.objects(category=category, post_count__gt=0, hidden=False).order_by("-sticky", "-last_post_date")[minimum:maximum]
-        topic_count = Topic.objects(category=category, post_count__gt=0, hidden=False).count()
+        topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False) \
+            .join(sqlm.Topic.recent_post).order_by(sqlm.Topic.announcement, \
+            sqlm.Topic.sticky, sqla.desc(sqlm.Post.created))[minimum:maximum]
+        topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False).count()
 
     parsed_topics = []
     for topic in topics:
-        if current_user._get_current_object() in topic.banned_from_topic:
+        if current_user._get_current_object() in topic.banned:
             continue
-        parsed_topic = topic.to_mongo().to_dict()
-        parsed_topic["creator"] = topic.creator.display_name
+        parsed_topic = {}
+        parsed_topic["creator"] = topic.author.display_name
         parsed_topic["created"] = humanize_time(topic.created, "MMM D YYYY")
 
         parsed_topic["updated"] = False
+        if topic.last_seen_by is None:
+            topic.last_seen_by = {}
+
         if current_user.is_authenticated():
             if topic.last_seen_by.get(str(current_user._get_current_object().pk)) != None:
                 if arrow.get(topic.last_post_date).timestamp > topic.last_seen_by.get(str(current_user._get_current_object().pk)):
                     parsed_topic["updated"] = True
 
-        if topic.prefix != None:
+        if topic.label != None:
             try:
-                parsed_topic["pre_html"] = topic.prefix_reference.pre_html
-                parsed_topic["post_html"] = topic.prefix_reference.post_html
-                parsed_topic["prefix"] = topic.prefix_reference.prefix
+                parsed_topic["pre_html"] = topic.label.pre_html
+                parsed_topic["post_html"] = topic.label.post_html
+                parsed_topic["prefix"] = topic.label.label
             except:
                 pass
-        if topic.last_post_date:
-            parsed_topic["last_post_date"] = humanize_time(topic.last_post_date)
-            parsed_topic["last_post_by"] = topic.last_post_by.display_name
-            parsed_topic["last_post_x"] = topic.last_post_by.avatar_40_x
-            parsed_topic["last_post_y"] = topic.last_post_by.avatar_40_y
-            parsed_topic["last_post_by_login_name"] = topic.last_post_by.login_name
+        if topic.recent_post:
+            parsed_topic["last_post_date"] = humanize_time(topic.recent_post.created)
+            parsed_topic["last_post_by"] = topic.recent_post.author.display_name
+            parsed_topic["last_post_x"] = topic.recent_post.author.avatar_40_x
+            parsed_topic["last_post_y"] = topic.recent_post.author.avatar_40_y
+            parsed_topic["last_post_by_login_name"] = topic.recent_post.author.login_name
+            parsed_topic["last_post_author_avatar"] = topic.recent_post.author.get_avatar_url("40")
         parsed_topic["post_count"] = "{:,}".format(topic.post_count)
         parsed_topic["view_count"] = "{:,}".format(topic.view_count)
         try:
@@ -910,7 +919,8 @@ def category_topics(slug):
         except:
             parsed_topic["last_page"] = 1
         parsed_topic["last_pages"] = parsed_topic["last_page"] > 1
-        parsed_topic["closed"] = topic.closed
+        parsed_topic["closed"] = topic.locked
+        parsed_topic["title"] = topic.title
 
         parsed_topics.append(parsed_topic)
 
@@ -919,12 +929,15 @@ def category_topics(slug):
 @app.route('/category/<slug>', methods=['GET'])
 def category_index(slug):
     try:
-        category = Category.objects(slug=slug)[0]
+        category = sqla.session.query(sqlm.Category).filter_by(slug=slug).first()
     except IndexError:
         return abort(404)
 
-    subcategories = Category.objects(parent=category)
-    prefixes = get_top_frequences(Topic.objects(category=category, prefix__ne=None).item_frequencies("prefix"),10)
+    subcategories = sqla.session.query(sqlm.Category).filter_by(parent=category).all()
+    prefixes = sqla.session.query(sqlm.Label.label, sqla.func.count(sqlm.Topic.id)).filter(sqlm.Topic.category==category) \
+            .join(sqlm.Topic.label).group_by(sqlm.Label.label).order_by(sqla.desc(sqla.func.count(sqlm.Topic.id))).all()
+
+    print prefixes
 
     return render_template("forum/category.jade", page_title="%s - World of Equestria" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
 

@@ -44,9 +44,9 @@
                   | Prefix Filter 
                   span.caret
                 ul.dropdown-menu(role='menu')
-                  {% for prefix in prefixes[0] %}
+                  {% for prefix in prefixes %}
                   li
-                    a.prefix-filter-action(href='#', data-prefix='{{prefix}}') {{prefix}} <span class="glyphicon glyphicon-ok float-right"></span> 
+                    a.prefix-filter-action(href='#', data-prefix='{{prefix[0]}}') {{prefix[0]}} <span class="glyphicon glyphicon-ok float-right"></span> 
                   {% endfor %}
                   li.divider
                   li
