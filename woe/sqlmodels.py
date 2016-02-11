@@ -397,6 +397,12 @@ class User(db.Model):
             return False
         return True
 
+    def get_roles(self):
+        my_roles = []
+        for role in self.roles:
+            my_roles.append(role.pre_html+role.role+role.post_html)
+        return my_roles
+
     def get_notification_count(self):
         return 0
 
@@ -533,6 +539,46 @@ class Attachment(db.Model):
 
     def __repr__(self):
         return "<Attachment: (path='%s')>" % (self.path,)
+
+def get_specific_size(self, width=200):
+    network_path = os.path.join("/static/uploads", self.path)
+    file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path)
+    size_network_path = os.path.join("/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
+    size_file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
+
+    if self.do_not_convert or width > self.x_size:
+        return network_path
+
+    if os.path.exists(size_file_path):
+        return size_network_path
+    else:
+        def convert_image():
+            try:
+                source_image = Image(filename=file_path)
+            except:
+                self.do_not_convert = True
+                self.save()
+
+            original_x = source_image.width
+            original_y = source_image.height
+
+            if original_x != width:
+                resize_measure = float(width)/float(original_x)
+                try:
+                    source_image.resize(int(round(original_x*resize_measure)),int(round(original_y*resize_measure)))
+                except:
+                    self.do_not_convert = True
+                    self.save()
+
+            try:
+                source_image.save(filename=size_file_path)
+            except:
+                self.do_not_convert = True
+                self.save()
+
+        thread = Thread(target=convert_image, args=())
+        thread.start()
+        return network_path
 
 ############################################################
 # Forum Models
@@ -678,7 +724,7 @@ post_boop_table = db.Table('post_boops_from_users', db.metadata,
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
-        name="fk_post_topic"))
+        name="fk_post_topic"), index=True)
     topic = db.relationship("Topic", foreign_keys="Post.topic_id")
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
@@ -703,8 +749,8 @@ class Post(db.Model):
 
     html = db.Column(db.Text)
     modified = db.Column(db.DateTime, nullable=True)
-    created = db.Column(db.DateTime)
-    hidden = db.Column(db.Boolean, default=False)
+    created = db.Column(db.DateTime, index=True)
+    hidden = db.Column(db.Boolean, default=False, index=True)
 
     old_mongo_hash = db.Column(db.String, nullable=True)
     data = db.Column(JSONB)

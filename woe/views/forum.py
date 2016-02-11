@@ -10,7 +10,7 @@ from flask import abort, redirect, url_for, request, render_template, make_respo
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time, math
 from threading import Thread
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
 from woe.views.dashboard import broadcast
 import re, json
 from datetime import datetime
@@ -26,9 +26,9 @@ def category_list_api():
     if len(query) < 2:
         return app.jsonify(results=[])
 
-    q_ = parse_search_string_return_q(query, ["name",])
-    categories = Category.objects(q_)
-    results = [{"text": unicode(c.name), "id": str(c.pk)} for c in categories]
+    q_ = parse_search_string(sqla.session.query(sqlm.Category), sqlm.Category, ["name",])
+    categories = q_.all()
+    results = [{"text": unicode(c.name), "id": str(c.id)} for c in categories]
     return app.jsonify(results=results)
 
 @app.route('/topic-list-api', methods=['GET'])
@@ -38,30 +38,35 @@ def topic_list_api():
     if len(query) < 2:
         return app.jsonify(results=[])
 
-    q_ = parse_search_string_return_q(query, ["title",])
-    topics = Topic.objects(q_)
-    results = [{"text": unicode(t.title), "id": str(t.pk)} for t in topics]
+    q_ = parse_search_string(sqla.session.query(sqlm.Topic), sqlm.Topic, ["title",])
+    topics = q_.all()
+    results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
     return app.jsonify(results=results)
 
 @app.route('/t/<slug>/toggle-follow', methods=['POST'])
 @login_required
 def toggle_follow_topic(slug):
     try:
-        topic = Topic.objects(slug=slug)[0]
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug).first()
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() in topic.banned_from_topic:
+    if current_user._get_current_object() in topic.banned:
         return abort(404)
 
     if not current_user._get_current_object() in topic.watchers:
-        topic.update(add_to_set__watchers=current_user._get_current_object())
+        topic.watchers.append(current_user._get_current_object())
     else:
         try:
             topic.watchers.remove(current_user._get_current_object())
         except:
             pass
-        topic.save()
+
+    try:
+        sqla.session.add(topic)
+        sqla.commit()
+    except:
+        sqla.rollback()
 
     return app.jsonify(url="/t/"+unicode(topic.slug)+"")
 
@@ -69,7 +74,7 @@ def toggle_follow_topic(slug):
 @login_required
 def new_post_in_topic(slug):
     try:
-        topic = Topic.objects(slug=slug)[0]
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug).first()
     except IndexError:
         return abort(404)
 
@@ -315,12 +320,13 @@ def count_topic_posts(slug):
 
 @app.route('/t/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
+    start = time.time()
     try:
-        topic = Topic.objects(slug=slug)[0]
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug).first()
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() in topic.banned_from_topic:
+    if current_user._get_current_object() in topic.banned:
         return abort(404)
 
     if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
@@ -335,107 +341,99 @@ def topic_posts(slug):
         pagination = 20
         page = 1
 
+
+    post_count = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+        .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)).count()
+
+    max_page = math.ceil(float(post_count)/float(pagination))
+    if page > max_page:
+        page = int(max_page)
+
     if page < 1:
         page = 1
 
-    post_count = Post.objects(hidden=False, topic=topic).count()
-    max_page = math.ceil(float(topic.post_count)/float(pagination))
-    if page > max_page:
-        page = max_page
+    posts = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+        .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+        .order_by(sqlm.Post.created) \
+        [(page-1)*pagination:page*pagination]
 
-    hidden_posts = Post.objects(hidden=True, topic=topic).count()
-    unmarked_posts = Post.objects(position_in_topic=None, topic=topic).count()
-
-    if unmarked_posts > 0 or hidden_posts != topic.hidden_posts or topic.last_swept == None or (arrow.get() - arrow.get(topic.last_swept)).total_seconds() > 60.0*60.0:
-        posts = list(Post.objects(hidden=False, topic=topic, created__gte=arrow.get(topic.created).replace(hours=-24).datetime).order_by("created")[(page-1)*pagination:page*pagination])
-        thread = Thread(target=count_topic_posts, args=(slug, ))
-        topic.update(last_swept=arrow.utcnow().datetime)
-        thread.start()
-    else:
-        posts = list(Post.objects(hidden=False, topic=topic, position_in_topic__gte=(page-1)*pagination, position_in_topic__lt=page*pagination))
-
-    topic.update(post_count=post_count)
     parsed_posts = []
 
-    for post in posts:
-        # if app.config['DEBUG']:
-        app.redis_store.delete('post-'+str(post.pk))
-        cached_post = app.redis_store.get('post-'+str(post.pk))
-        if cached_post != None:
-            parsed_posts.append(json.loads(cached_post))
-        else:
-            clean_html_parser = ForumPostParser()
-            parsed_post = post.to_mongo().to_dict()
-            parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
-            parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
-            parsed_post["html"] = clean_html_parser.parse(post.html)
-            parsed_post["roles"] = post.author.get_roles()
-            parsed_post["user_avatar"] = post.author.get_avatar_url()
-            parsed_post["user_avatar_x"] = post.author.avatar_full_x
-            parsed_post["user_avatar_y"] = post.author.avatar_full_y
-            parsed_post["user_avatar_60"] = post.author.get_avatar_url("60")
-            parsed_post["user_avatar_x_60"] = post.author.avatar_60_x
-            parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
-            parsed_post["user_title"] = post.author.title
-            parsed_post["author_name"] = post.author.display_name
-            if post == topic.first_post:
-                parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"
-            parsed_post["author_login_name"] = post.author.login_name
-            parsed_post["group_pre_html"] = post.author.group_pre_html
-            parsed_post["author_group_name"] = post.author.group_name
-            parsed_post["group_post_html"] = post.author.group_post_html
-            parsed_post["has_booped"] = current_user._get_current_object() in post.boops
-            parsed_post["boop_count"] = len(post.boops)
-            if current_user.is_authenticated():
-                parsed_post["can_boop"] = current_user._get_current_object() != post.author
-            else:
-                parsed_post["can_boop"] = False
+    first_post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+        .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+        .order_by(sqlm.Post.created)[0]
 
-            if current_user.is_authenticated():
-                if post.author.pk == current_user.pk:
-                    parsed_post["is_author"] = True
-                else:
-                    parsed_post["is_author"] = False
+    for post in posts:
+        clean_html_parser = ForumPostParser()
+        parsed_post = {}
+        parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
+        parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
+        parsed_post["html"] = clean_html_parser.parse(post.html)
+        parsed_post["roles"] = post.author.get_roles()
+        parsed_post["user_avatar"] = post.author.get_avatar_url()
+        parsed_post["user_avatar_x"] = post.author.avatar_full_x
+        parsed_post["user_avatar_y"] = post.author.avatar_full_y
+        parsed_post["user_avatar_60"] = post.author.get_avatar_url("60")
+        parsed_post["user_avatar_x_60"] = post.author.avatar_60_x
+        parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
+        parsed_post["user_title"] = post.author.title
+        parsed_post["author_name"] = post.author.display_name
+        if post == first_post:
+            parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"
+        parsed_post["author_login_name"] = post.author.login_name
+        parsed_post["has_booped"] = current_user._get_current_object() in post.boops
+        parsed_post["boop_count"] = len(post.boops)
+        if current_user.is_authenticated():
+            parsed_post["can_boop"] = current_user._get_current_object() != post.author
+        else:
+            parsed_post["can_boop"] = False
+
+        if current_user.is_authenticated():
+            if post.author.id == current_user.id:
+                parsed_post["is_author"] = True
             else:
                 parsed_post["is_author"] = False
+        else:
+            parsed_post["is_author"] = False
 
-            if post.author.last_seen != None:
-                if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime and post.author.hide_login != True:
-                    parsed_post["author_online"] = True
-                else:
-                    parsed_post["author_online"] = False
+        if post.author.last_seen != None:
+            if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime and post.author.hide_login != True:
+                parsed_post["author_online"] = True
             else:
                 parsed_post["author_online"] = False
+        else:
+            parsed_post["author_online"] = False
 
-            if post.data.has_key("character"):
-                try:
-                    character = Character.objects(pk=post.data["character"], creator=post.author)[0]
-                    parsed_post["character_name"] = character.name
-                    parsed_post["character_slug"] = character.slug
-                    parsed_post["character_motto"] = character.motto
-                except:
-                    pass
-            else:
-                character = None
+        if post.character is not None:
+            try:
+                character = post.character
+                parsed_post["character_name"] = character.name
+                parsed_post["character_slug"] = character.slug
+                parsed_post["character_motto"] = character.motto
+            except:
+                pass
+        else:
+            character = None
 
-            if post.data.has_key("avatar"):
-                try:
-                    a = Attachment.objects(pk=post.data["avatar"], owner=post.author)[0]
-                    parsed_post["character_avatar_small"] = a.get_specific_size(60)
-                    parsed_post["character_avatar_large"] = a.get_specific_size(200)
-                    parsed_post["character_avatar"] = True
-                except:
-                    pass
-            else:
-                try:
-                    parsed_post["character_avatar_small"] = character.default_avatar.get_specific_size(60)
-                    parsed_post["character_avatar_large"] = character.default_avatar.get_specific_size(200)
-                    parsed_post["character_avatar"] = True
-                except:
-                    pass
+        if post.avatar is not None:
+            try:
+                a = post.avatar
+                parsed_post["character_avatar_small"] = a.get_specific_size(60)
+                parsed_post["character_avatar_large"] = a.get_specific_size(200)
+                parsed_post["character_avatar"] = True
+            except:
+                pass
+        else:
+            try:
+                pass
+                # TODO - fix this
+                # parsed_post["character_avatar_small"] = character.default_avatar.get_specific_size(60)
+                # parsed_post["character_avatar_large"] = character.default_avatar.get_specific_size(200)
+                # parsed_post["character_avatar"] = True
+            except:
+                pass
 
-            app.redis_store.set('post-'+str(post.pk), json.dumps(parsed_post, cls=app.MongoJsonEncoder), 60*60*24)
-            parsed_posts.append(parsed_post)
+        parsed_posts.append(parsed_post)
 
     return app.jsonify(posts=parsed_posts, count=post_count)
 
@@ -579,24 +577,24 @@ def topic_index(slug, page, post):
 
     elif post == "last_seen":
         try:
-            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().pk), arrow.utcnow().timestamp)).datetime
+            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().id), arrow.utcnow().timestamp)).datetime
         except:
             last_seen = arrow.get(arrow.utcnow().timestamp).datetime
 
         try:
-            # TODO
-            post = Post.objects(topic=topic, hidden=False, created__lt=last_seen).order_by("-created")[0]
+            post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+                .filter_by(hidden=False).filter(sqlm.Post.created < last_seen).order_by(Post.created.desc()).first()
         except:
             try:
-                # TODO
-                post = Post.objects(topic=topic, pk=post, hidden=False)[0]
+                post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+                    .filter_by(hidden=False, id=post).filter(sqlm.Post.created < last_seen).order_by(Post.created.desc()).first()
             except:
                 return redirect("/t/"+unicode(topic.slug))
     else:
         if post != "":
             try:
-                # TODO
-                post = Post.objects(topic=topic, pk=post, hidden=False)[0]
+                post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+                    .filter_by(hidden=False, id=post).filter(sqlm.Post.created < last_seen).order_by(Post.created.desc()).first()
             except:
                 return redirect("/t/"+unicode(topic.slug))
         else:
@@ -607,9 +605,11 @@ def topic_index(slug, page, post):
             topic.last_seen_by = {}
         topic.view_count = topic.view_count + 1
         try:
-            topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
-            # TODO SAVE TOPIC
+            topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+            sqla.session.add(topic)
+            sqla.session.commit()
         except:
+            sqla.session.rollback()
             pass
         target_date = post.created
         posts_before_target = sqla.session.query(sqlm.Post).filter_by(topic=topic, hidden=False) \
@@ -620,13 +620,15 @@ def topic_index(slug, page, post):
         rp_topic = "false"
         if topic.category.slug in ["roleplays"]:
             rp_topic = "true"
-        return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, initial_post=str(post.pk), rp_area=rp_topic)
+        return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
 
     topic.view_count = topic.view_count + 1
     try:
-        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
-        # TODO SAVE TOPIC
+        topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+        sqla.session.add(topic)
+        sqla.session.commit()
     except:
+        sqla.session.rollback()
         pass
 
     rp_topic = "false"
@@ -638,26 +640,28 @@ def topic_index(slug, page, post):
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
     try:
-        category = Category.objects(slug=slug)[0]
+        category = sqla.session.query(sqlm.Category).filter_by(slug=slug).first()
     except IndexError:
         return abort(404)
     if not current_user.is_authenticated():
         return app.jsonify(preferences={})
 
-    if request.method == 'POST':
+    if current_user.data is None:
+        current_user.data = {}
 
+    if request.method == 'POST':
         request_json = request.get_json(force=True)
         try:
             if len(request_json.get("preferences")) < 10:
-                current_user.data["category_filter_preference_"+str(category.pk)] = request_json.get("preferences")
+                current_user.data["category_filter_preference_"+str(category.id)] = request_json.get("preferences")
         except:
             return app.jsonify(preferences={})
 
         current_user.update(data=current_user.data)
-        preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
+        preferences = current_user.data.get("category_filter_preference_"+str(category.id), {})
         return app.jsonify(preferences=preferences)
     else:
-        preferences = current_user.data.get("category_filter_preference_"+str(category.pk), {})
+        preferences = current_user.data.get("category_filter_preference_"+str(category.id), {})
         return app.jsonify(preferences=preferences)
 
 @app.route('/t/<slug>/edit-topic', methods=['GET', 'POST'])
