@@ -209,7 +209,7 @@ class SiteLog(db.Model):
     user = db.relationship("User")
 
     def __repr__(self):
-        return "%s %s %s :: %s %s %s %s" % (self.time.isoformat(), self.method, self.ip_address, self.agent, self.agent_browser, self.agent_browser_version, self.agent_platform)
+        return "%s %s %s %s :: %s %s %s %s" % (self.time.isoformat(), self.method, self.path, self.ip_address, self.agent, self.agent_browser, self.agent_browser_version, self.agent_platform)
 
 
 ############################################################

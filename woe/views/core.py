@@ -33,20 +33,19 @@ def make_session_permanent():
 @app.errorhandler(500)
 def server_error(e):
     traceback = get_current_traceback()
-    l = Log(
-        method=request.method,
-        path=request.path,
-        ip_address=request.remote_addr,
-        agent_platform=request.user_agent.platform,
-        agent_browser=request.user_agent.browser,
-        agent_browser_version=request.user_agent.version,
-        agent=request.user_agent.string,
-        time=arrow.utcnow().datetime
-    )
+    l = sqlm.SiteLog()
+    l.method = request.method
+    l.path = request.path
+    l.ip_address = request.remote_addr
+    l.agent_platform = request.user_agent.platform
+    l.agent_browser = request.user_agent.browser
+    l.agent_browser_version = request.user_agent.version
+    l.agent = request.user_agent.string
+    l.time = arrow.utcnow().datetime
+
     try:
         if current_user.is_authenticated():
             l.user = current_user._get_current_object()
-            l.user_name = current_user.login_name
     except:
         pass
 
@@ -69,20 +68,20 @@ def server_error(e):
 
 @app.errorhandler(403)
 def unauthorized_access(e):
-    l = Log(
-        method=request.method,
-        path=request.path,
-        ip_address=request.remote_addr,
-        agent_platform=request.user_agent.platform,
-        agent_browser=request.user_agent.browser,
-        agent_browser_version=request.user_agent.version,
-        agent=request.user_agent.string,
-        time=arrow.utcnow().datetime
-    )
+    traceback = get_current_traceback()
+    l = sqlm.SiteLog()
+    l.method = request.method
+    l.path = request.path
+    l.ip_address = request.remote_addr
+    l.agent_platform = request.user_agent.platform
+    l.agent_browser = request.user_agent.browser
+    l.agent_browser_version = request.user_agent.version
+    l.agent = request.user_agent.string
+    l.time = arrow.utcnow().datetime
+
     try:
         if current_user.is_authenticated():
             l.user = current_user._get_current_object()
-            l.user_name = current_user.login_name
     except:
         pass
 
@@ -99,26 +98,31 @@ def unauthorized_access(e):
     l.error_name = name
     l.error_code = code
     l.error_description = description
-    l.save()
+
+    try:
+        sqla.session.add(l)
+        sqla.session.commit()
+    except:
+        sqla.session.rollback()
 
     return render_template('403.jade', page_title="Page Not Found - World of Equestria"), 403
 
 @app.errorhandler(404)
 def page_not_found(e):
-    l = Log(
-        method=request.method,
-        path=request.path,
-        ip_address=request.remote_addr,
-        agent_platform=request.user_agent.platform,
-        agent_browser=request.user_agent.browser,
-        agent_browser_version=request.user_agent.version,
-        agent=request.user_agent.string,
-        time=arrow.utcnow().datetime
-    )
+    traceback = get_current_traceback()
+    l = sqlm.SiteLog()
+    l.method = request.method
+    l.path = request.path
+    l.ip_address = request.remote_addr
+    l.agent_platform = request.user_agent.platform
+    l.agent_browser = request.user_agent.browser
+    l.agent_browser_version = request.user_agent.version
+    l.agent = request.user_agent.string
+    l.time = arrow.utcnow().datetime
+
     try:
         if current_user.is_authenticated():
             l.user = current_user._get_current_object()
-            l.user_name = current_user.login_name
     except:
         pass
 
@@ -135,7 +139,12 @@ def page_not_found(e):
     l.error_name = name
     l.error_code = code
     l.error_description = description
-    l.save()
+
+    try:
+        sqla.session.add(l)
+        sqla.session.commit()
+    except:
+        sqla.session.rollback()
 
     return render_template('404.jade', page_title="Page Not Found - World of Equestria"), 404
 
@@ -171,23 +180,23 @@ def inject_notification_count():
 
 @app.before_request
 def log_request():
-    l = Log(
-        method=request.method,
-        path=request.path,
-        ip_address=request.remote_addr,
-        agent_platform=request.user_agent.platform,
-        agent_browser=request.user_agent.browser,
-        agent_browser_version=request.user_agent.version,
-        agent=request.user_agent.string,
-        time=arrow.utcnow().datetime
-    )
+    l = sqlm.SiteLog()
+    l.method = request.method
+    l.path = request.path
+    l.ip_address = request.remote_addr
+    l.agent_platform = request.user_agent.platform
+    l.agent_browser = request.user_agent.browser
+    l.agent_browser_version = request.user_agent.version
+    l.agent = request.user_agent.string
+    l.time = arrow.utcnow().datetime.replace(tzinfo=None)
+
     try:
         if current_user.is_authenticated():
             l.user = current_user._get_current_object()
-            l.user_name = current_user.login_name
-        l.save()
+        sqla.session.add(l)
+        sqla.session.commit()
     except:
-        pass
+        sqla.session.rollback()
 
 @app.route('/get-user-info-api', methods=['POST',])
 def get_user_info_api():
