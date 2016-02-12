@@ -9,6 +9,8 @@ from flask.ext.cache import Cache
 from flask.ext.assets import Environment, Bundle
 from flask.ext.redis import FlaskRedis
 from flask_sqlalchemy import SQLAlchemy
+from flask import session
+from flask.ext.session import Session
 from bson.dbref import DBRef
 from os import path
 import json
@@ -26,6 +28,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 app.config["MONGODB_SETTINGS"] = {'DB': settings_file["database"]}
 app.config["SECRET_KEY"] = settings_file["secret_key"]
+app.secret_key = settings_file["secret_key"]
 app.config["AVATAR_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'avatars')
 app.config["MAX_CONTENT_LENGTH"] = 1000000000
 app.config['DEBUG'] = settings_file["debug"]
@@ -35,13 +38,16 @@ sqla = SQLAlchemy(app)
 app.sqla = sqla
 app.settings_file = settings_file
 
+app.config['SESSION_TYPE'] = 'sqlalchemy'
+app.config['SESSION_SQLALCHEMY'] = sqla
+Session(app)
+
 assets = Environment(app)
 app.config['ASSETS_DEBUG'] = settings_file["asset_debug"]
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 cache.init_app(app)
 db = MongoEngine(app)
-app.session_interface = MongoEngineSessionInterface(db)
 bcrypt = Bcrypt(app)
 if settings_file.get("toolbar", False):
     toolbar = DebugToolbarExtension(app)

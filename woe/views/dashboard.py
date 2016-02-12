@@ -150,6 +150,6 @@ def dashboard_notifications():
 @login_required
 def view_dashboard():
     notifications = Notification.objects(seen=False, user=current_user._get_current_object())
-    notifications.update(seen=True)
+    #notifications.update(seen=True)
 
     return render_template("dashboard.jade", page_title="Your Dashboard - World of Equestria")

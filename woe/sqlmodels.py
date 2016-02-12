@@ -1,6 +1,7 @@
 from woe import sqla as db
 from sqlalchemy.dialects.postgresql import JSONB
 from slugify import slugify
+from woe import bcrypt
 
 ############################################################
 # Private Message Models
@@ -385,10 +386,33 @@ class User(db.Model):
     old_mongo_hash = db.Column(db.String, nullable=True)
 
     def __repr__(self):
-        return "<IgnoredUser: (name='%s')>" % (self.display_name)
+        return "<Member: (name='%s')>" % (self.display_name)
 
     def get_hash(self):
         return self.password_hash[-40:]
+
+    def is_authenticated(self):
+        return True # Will only ever return True.
+
+    def set_password(self, password, rounds=12):
+        self.legacy_password = None
+        self.password_hash = bcrypt.generate_password_hash(password.strip().encode('utf-8'),rounds).encode('utf-8')
+
+    def check_password(self, password):
+        if self.legacy_password:
+            if ipb_password_check(self.ipb_salt, self.ipb_hash, password):
+                self.set_password(password)
+                self.legacy_password = False
+                self.ipb_salt = ""
+                self.ipb_hash = ""
+                return True
+            else:
+                return False
+        else:
+            return bcrypt.check_password_hash(self.password_hash.encode('utf-8'), password.strip().encode('utf-8'))
+
+    def is_anonymous(self):
+        return False # Will only ever return False. Anonymous = guest user. We don't support those.
 
     def is_active(self):
         if self.banned:
@@ -404,10 +428,10 @@ class User(db.Model):
         return my_roles
 
     def get_notification_count(self):
-        return 0
+        return Notification.query.filter_by(seen=False, user=self).count()
 
     def get_dashboard_notifications(self):
-        return 0
+        return Notification.query.filter_by(acknowledged=False, user=self).count()
 
     def get_recent_notifications(self, count=15):
         return []

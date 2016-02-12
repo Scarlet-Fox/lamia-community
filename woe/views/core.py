@@ -20,6 +20,10 @@ import mechanize
 import HTMLParser
 from werkzeug.exceptions import default_exceptions, HTTPException
 from  werkzeug.debug import get_current_traceback
+from woe import sqla
+import woe.sqlmodels as sqlm
+import pytz
+
 login_manager.login_view = "sign_in"
 
 @app.before_request
@@ -425,77 +429,83 @@ def static_from_root():
 @login_manager.user_loader
 def load_user(login_name):
     try:
-        user = User.objects(login_name=login_name)[0]
-        user.update(hidden_last_seen=arrow.utcnow().datetime)
-        if not user.hide_login:
-            user.update(last_seen=arrow.utcnow().datetime)
+        user = sqla.session.query(sqlm.User).filter_by(login_name=login_name).one()
+        user.hidden_last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
+        if not user.anonymous_login:
+            user.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
         if request.path.startswith("/message"):
-            user.update(last_seen_at="Private messages")
-            user.update(last_at_url="/messages")
+            user.last_seen_at = "Private messages"
+            user.last_at_url = "/messages"
         elif request.path == "/":
-            user.update(last_seen_at="Forum index")
-            user.update(last_at_url="/")
+            user.last_seen_at = "Forum index"
+            user.last_at_url = "/"
         elif request.path.startswith("/admin"):
-            user.update(last_seen_at="Forum index")
-            user.update(last_at_url="/")
+            user.last_seen_at = "Forum index"
+            user.last_at_url = "/"
         elif request.path.startswith("/t/"):
             try:
                 topic = Topic.objects(slug=request.path.split("/")[2])[0]
-                user.update(last_seen_at=unicode(topic.title))
-                user.update(last_at_url="/t/"+unicode(topic.slug))
+                user.last_seen_at = unicode(topic.title)
+                user.last_at_url = "/t/"+unicode(topic.slug)
             except:
                 pass
         elif request.path.startswith("/status-updates"):
-            user.update(last_seen_at="Viewing status updates")
-            user.update(last_at_url="/status-updates")
+            user.last_seen_at = "Viewing status updates"
+            user.last_at_url = "/status-updates"
         elif request.path.startswith("/status/"):
             try:
                 status = StatusUpdate.objects(pk=request.path.split("/")[2])[0]
-                user.update(last_seen_at=unicode(status.author.display_name)+"\'s status update")
-                user.update(last_at_url="/status/"+unicode(status.pk))
+                user.last_seen_at = unicode(status.author.display_name)+"\'s status update"
+                user.last_at_url = "/status/"+unicode(status.pk)
             except:
                 pass
         elif request.path.startswith("/category/"):
             try:
                 category = Category.objects(slug=request.path.split("/")[2])[0]
-                user.update(last_seen_at=category.name)
-                user.update(last_at_url="/category/"+unicode(category.slug))
+                user.last_seen_at = category.name
+                user.last_at_url = "/category/"+unicode(category.slug)
             except:
                 pass
         elif request.path.startswith("/search"):
-            user.update(last_seen_at="Searching...")
-            user.update(last_at_url="/search")
+            user.last_seen_at = "Searching..."
+            user.last_at_url = "/search"
         elif request.path.startswith("/characters/"):
             try:
                 character = Character.objects(slug=request.path.split("/")[2])[0]
-                user.update(last_seen_at="Viewing character %s" % unicode(character.name))
-                user.update(last_at_url="/characters/"+unicode(character.slug))
+                user.last_seen_at = "Viewing character %s" % unicode(character.name)
+                user.last_at_url = "/characters/"+unicode(character.slug)
             except:
                 pass
         elif request.path.startswith("/member/"):
             try:
                 profile = User.objects(login_name=request.path.split("/")[2])[0]
-                user.update(last_seen_at="Viewing user %s" % unicode(profile.display_name))
-                user.update(last_at_url="/member/"+unicode(profile.login_name))
+                user.last_seen_at = "Viewing user %s" % unicode(profile.display_name)
+                user.last_at_url = "/member/"+unicode(profile.login_name)
             except:
                 pass
         elif request.path == ("/characters"):
-            user.update(last_seen_at="Browsing character database")
-            user.update(last_at_url="/characters")
+            user.last_seen_at = "Browsing character database"
+            user.last_at_url = "/characters"
 
         try:
-            ip_address = IPAddress.objects(ip_address=request.remote_addr, user=user)[0]
+            ip_address = sqla.session.query(sqlm.IPAddress).filter_by(ip_address=request.remote_addr, user=user).one()
         except:
-            ip_address = IPAddress(ip_address=request.remote_addr, user=user, user_name=user.login_name)
-            ip_address.save()
-        ip_address.update(last_seen=arrow.utcnow().datetime)
+            ip_address = sqlm.IPAddress()
+            ip_address.ip_address = request.remote_addr
+            ip_address.user = user
+
+        ip_address.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
+
+        sqla.session.add(user)
+        sqla.session.add(ip_address)
+        sqla.session.commit()
 
         if user.validated:
             return user
         else:
             return None
-    except IndexError:
-        return None
+    except:
+        sqla.session.rollback()
 
 @app.route('/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
