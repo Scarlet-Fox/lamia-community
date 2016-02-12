@@ -212,7 +212,7 @@ def character_recent_activity(slug):
 @app.route('/user-characters-api', methods=["POST",])
 @login_required
 def send_user_characters():
-    characters = Character.objects(creator=current_user._get_current_object(), hidden=False).order_by("name")
+    characters = [] # TODO Character.objects(creator=current_user._get_current_object(), hidden=False).order_by("name")
     character_data = []
     for character in characters:
         parsed_character = {}

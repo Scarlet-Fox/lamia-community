@@ -45,7 +45,7 @@ script(type="text/javascript", src="{{ASSET_URL}}").
 script(type="text/javascript").
   $(document).ready(function(){  
   {% if current_user.is_authenticated() == True %}
-  window._pagination={{current_user.post_pagination}};
+  window._pagination=20;//{{current_user.post_pagination}};
   window._is_topic_mod={{topic.is_topic_mod(current_user)}};
   window._is_logged_in=true;
   {% else %}

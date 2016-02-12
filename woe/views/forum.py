@@ -366,6 +366,7 @@ def topic_posts(slug):
     for post in posts:
         clean_html_parser = ForumPostParser()
         parsed_post = {}
+        parsed_post["_id"] = post.id
         parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
         parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
         parsed_post["html"] = clean_html_parser.parse(post.html)
@@ -397,7 +398,7 @@ def topic_posts(slug):
             parsed_post["is_author"] = False
 
         if post.author.last_seen != None:
-            if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime and post.author.hide_login != True:
+            if arrow.get(post.author.last_seen) > arrow.utcnow().replace(minutes=-15).datetime and post.author.anonymous_login != True:
                 parsed_post["author_online"] = True
             else:
                 parsed_post["author_online"] = False
@@ -571,7 +572,9 @@ def topic_index(slug, page, post):
 
     if post == "latest_post":
         try:
-            post = sqla.session.query(sqlm.Post).filter_by(topic=topic, hidden=False).order_by(sqla.desc(sqlm.Post.created)).first()
+            post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+            .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+            .order_by(sqlm.Post.created).first()
         except:
             return redirect("/t/"+unicode(topic.slug))
 

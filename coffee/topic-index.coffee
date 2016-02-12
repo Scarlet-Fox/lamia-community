@@ -17,19 +17,19 @@ $ ->
       @is_logged_in = window._is_logged_in
       @selected_character = ""
       @selected_avatar = ""
-      
+
       socket = io.connect('http://' + document.domain + ':3000' + '')
-      
+
       window.onbeforeunload = () ->
         if topic.inline_editor.quill.getText().trim() != ""
           return "It looks like you were typing up a post."
-      
+
       socket.on "connect", () =>
         socket.emit 'join', "topic--#{@slug}"
-      
+
       socket.on "console", (data) ->
         console.log data
-        
+
       socket.on "event", (data) ->
         if data.post?
           if topic.page == topic.max_pages
@@ -50,34 +50,34 @@ $ ->
           else
             topic.max_pages = Math.ceil data.count/topic.pagination
             topic.page = topic.max_pages
-      
+
       window.socket = socket
-      
+
       do @refreshPosts
-      
+
       if window._can_edit? and $("#new-post-box").length > 0
         @inline_editor = new InlineEditor "#new-post-box", "", false
-      
+
         @inline_editor.onSave (html, text) ->
           topic.inline_editor.disableSaveButton()
           $.post "/t/#{topic.slug}/new-post", JSON.stringify({post: html, text: text, character: topic.selected_character, avatar: topic.selected_avatar}), (data) =>
             topic.inline_editor.enableSaveButton()
             if data.closed_topic?
               topic.inline_editor.flashError "Topic Closed: #{data.closed_message}"
-                
+
             if data.no_content?
               topic.inline_editor.flashError "Your post has no text."
-                
+
             if data.error?
               topic.inline_editor.flashError data.error
-              
+
             if data.success?
               topic.inline_editor.clearEditor()
-              socket.emit "event", 
+              socket.emit "event",
                 room: "topic--#{topic.slug}"
                 post: data.newest_post
                 count: data.count
-                
+
               if topic.page == topic.max_pages
                 data.newest_post.author_online = true
                 data.newest_post.show_boop = true
@@ -90,18 +90,18 @@ $ ->
                 window.addExtraHTML $("#post-"+data.newest_post._id)
               else
                 window.location = "/t/#{topic.slug}/page/1/post/latest_post"
-      
+
       $("#post-container").delegate ".go-to-end-of-page", "click", (e) ->
         e.preventDefault()
         $("#new-post-box")[0].scrollIntoView()
-      
+
       $("#post-container").delegate ".boop-button", "click", (e) ->
         e.preventDefault()
         element = $(this)
         current_status = element.data("status")
         count = parseInt(element.data("count"))
         pk = element.data("pk")
-        
+
         $.post "/boop-post", JSON.stringify({pk: pk}), (data) ->
           if current_status == "notbooped"
             element.children(".boop-text").html("""<img src="/static/emoticons/brohoof_by_angelishi-d6wk2et.gif">""")
@@ -118,48 +118,48 @@ $ ->
             element.data("count", count-1)
             element.children(".badge").text(element.data("count"))
             element.children(".badge").css("background-color", "#555")
-      
+
       $("#post-container").delegate ".reply-button", "click", (e) ->
         e.preventDefault()
         element = $(this)
         my_content = ""
         $.get "/t/#{topic.slug}/edit-post/#{element.data("pk")}", (data) ->
           my_content = "[reply=#{element.data("pk")}:post:#{data.author}]\n\n"
-          x = window.scrollX  
+          x = window.scrollX
           y = window.scrollY
           try
             topic.inline_editor.quill.focus()
           catch
             current_position = 0
-          
+
           window.scrollTo x, y
           unless current_position?
             current_position = topic.inline_editor.quill.getSelection()?.start
             unless current_position?
               current_position = topic.inline_editor.quill.getLength()
-          topic.inline_editor.quill.insertText current_position, my_content 
-      
+          topic.inline_editor.quill.insertText current_position, my_content
+
       $("#post-container").delegate ".toggle-show-roles-button", "click", (e) ->
         $(this).parent().children(".roles-div").toggle()
-      
+
       $("#post-container").delegate ".mention-button", "click", (e) ->
         e.preventDefault()
         element = $(this)
-        x = window.scrollX  
+        x = window.scrollX
         y = window.scrollY
         try
           topic.inline_editor.quill.focus()
         catch
           current_position = 0
-          
+
         window.scrollTo x, y
         unless current_position?
           current_position = topic.inline_editor.quill.getSelection()?.start
           unless current_position?
             current_position = topic.inline_editor.quill.getLength()
-          
+
         topic.inline_editor.quill.insertText current_position, "[@#{element.data("author")}], "
-      
+
       $("#post-container").delegate ".post-edit", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -171,7 +171,7 @@ $ ->
         else
           post_author = window.woe_is_me
         post_buttons.hide()
-        
+
         inline_editor = new InlineEditor "#post-"+element.data("pk"), "/t/#{topic.slug}/edit-post/#{element.data("pk")}", true, true
         inline_editor.onReady () ->
           if topic.characters.length > 0 and window.woe_is_me == post_author
@@ -223,14 +223,14 @@ $ ->
                   return "Clear Character"
               escapeMarkup: (text) ->
                 return text
-              
+
             $("#character-picker-#{quill_id}").on "select2:select", (e) =>
               topic["selected_character_#{quill_id}"] = $("#character-picker-#{quill_id}").val()
               try
                 $("#avatar-picker-#{quill_id}").select2("destroy")
                 $("#avatar-picker-#{quill_id}").remove()
               catch
-              
+
               selected = {}
               for character in topic.characters
                 if character.slug == $("#character-picker-#{quill_id}").val()
@@ -251,28 +251,28 @@ $ ->
                     alt = __element.data("count")+1
                     return """
                       #{alt}
-                      """                    
+                      """
                   escapeMarkup: (text) ->
                     return text
-              
+
                 $("#avatar-picker-#{quill_id}").on "select2:select", (e) =>
                   topic["selected_avatar_#{quill_id}"] = $("#avatar-picker-#{quill_id}").val()
-        
+
         inline_editor.onSave (html, text, edit_reason) ->
           quill_id = inline_editor.quillID
           character = $("#character-picker-#{quill_id}").val()
           avatar = $("#avatar-picker-#{quill_id}").val()
-          
+
           $.post "/t/#{topic.slug}/edit-post", JSON.stringify({pk: element.data("pk"), post: html, text: text, edit_reason: edit_reason, character: character, avatar: avatar}), (data) =>
             if data.error?
               inline_editor.flashError data.error
-            
+
             if data.success?
               inline_editor.destroyEditor()
               post_content.html data.html
               window.addExtraHTML post_content
               post_buttons.show()
-        
+
         inline_editor.onCancel (html, text) ->
           inline_editor.destroyEditor()
           inline_editor.resetElementHtml()
@@ -286,7 +286,7 @@ $ ->
           $(".change-page").parent().removeClass("active")
           topic.page--
           do topic.refreshPosts
-        
+
       $("nav.pagination-listing").delegate "#next-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -294,25 +294,25 @@ $ ->
           $(".change-page").parent().removeClass("active")
           topic.page++
           do topic.refreshPosts
-      
+
       $("nav.pagination-listing").delegate ".change-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
         topic.page = parseInt(element.text())
         do topic.refreshPosts
-        
+
       $("nav.pagination-listing").delegate "#go-to-end", "click", (e) ->
         e.preventDefault()
         element = $(this)
         topic.page = parseInt(topic.max_pages)
         do topic.refreshPosts
-        
+
       $("nav.pagination-listing").delegate "#go-to-start", "click", (e) ->
         e.preventDefault()
         element = $(this)
         topic.page = 1
         do topic.refreshPosts
-      
+
       popped = ('state' in window.history)
       initialURL = location.href
       $(window).on "popstate", (e) ->
@@ -320,13 +320,13 @@ $ ->
         popped = true
         if initialPop
           return
-        
+
         setTimeout(() ->
           window.location = window.location
         , 200)
-        
+
       window.RegisterAttachmentContainer "#post-container"
-      
+
       $.post "/user-characters-api", {}, (data) =>
         @characters = data.characters
         if @characters.length > 0
@@ -378,14 +378,14 @@ $ ->
                 return "Clear Character"
             escapeMarkup: (text) ->
               return text
-              
+
           $("#character-picker-#{quill_id}").on "select2:select", (e) =>
             @selected_character = $("#character-picker-#{quill_id}").val()
             try
               $("#avatar-picker-#{quill_id}").select2("destroy")
               $("#avatar-picker-#{quill_id}").remove()
             catch
-              
+
             selected = {}
             for character in @characters
               if character.slug == $("#character-picker-#{quill_id}").val()
@@ -406,13 +406,13 @@ $ ->
                   alt = element.data("count")+1
                   return """
                     #{alt}
-                    """                    
+                    """
                 escapeMarkup: (text) ->
                   return text
-              
+
               $("#avatar-picker-#{quill_id}").on "select2:select", (e) =>
                 @selected_avatar = $("#avatar-picker-#{quill_id}").val()
-                  
+
     paginationHTMLTemplate: () ->
       return """
           <ul class="pagination">
@@ -441,7 +441,7 @@ $ ->
             </li>
           </ul>
       """
-    
+
     postHTMLTemplate: () ->
       return """
             <li class="list-group-item post-listing-info">
@@ -601,7 +601,7 @@ $ ->
                   </div>
                 </div>
       """
-      
+
     refreshPosts: () ->
       new_post_html = ""
       $.post "/t/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
@@ -619,7 +619,7 @@ $ ->
             post.show_boop = true
           post.direct_url = "/t/#{@slug}/page/#{@page}/post/#{post._id}"
           new_post_html = new_post_html + @postHTML post
-        
+
         pages = []
         @max_pages = Math.ceil data.count/@pagination
         if @max_pages > 5
@@ -632,11 +632,11 @@ $ ->
         else
           pages = [1..Math.ceil data.count/@pagination]
         pagination_html = @paginationHTML {pages: pages}
-        
+
         $(".pagination-listing").html pagination_html
         $("#post-container").html new_post_html
         $(".page-link-#{@page}").parent().addClass("active")
-        
+
         if window._initial_post != ""
           setTimeout () ->
             $("#postlink-#{window._initial_post}")[0].scrollIntoView()
@@ -647,5 +647,5 @@ $ ->
             $("#topic-breadcrumb")[0].scrollIntoView()
           , 300
         window.setupContent()
-                
+
   window.topic = new Topic($("#post-container").data("slug"))
