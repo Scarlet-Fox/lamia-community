@@ -62,7 +62,12 @@ def server_error(e):
     l.error_name = name
     l.error_code = code
     l.error_description = description + "\n\n" + traceback.plaintext
-    l.save()
+
+    try:
+        sqla.session.add(l)
+        sqla.session.commit()
+    except:
+        sqla.session.rollback()
 
     return render_template('500.jade', page_title="SERVER ERROR! - World of Equestria"), 500
 
