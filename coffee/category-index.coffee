@@ -8,13 +8,13 @@ $ ->
       @pagination = $(".topic-listing").data("pagination")
       @topicHTML = Handlebars.compile(@topicHTMLTemplate())
       @paginationHTML = Handlebars.compile(@paginationHTMLTemplate())
-      
+
       do @getPreferences
-      
+
       $("#prefix-filter-show-all").click (e) =>
         e.preventDefault()
         do @disablePrefixFiltering
-        
+
       $(".prefix-filter-action").click (e) ->
         e.preventDefault()
         element = $(this)
@@ -25,14 +25,14 @@ $ ->
           element.children("span").removeClass "glyphicon-remove"
           element.children("span").addClass "glyphicon-ok"
         do category.setPreferences
-        
+
       $("nav.pagination-listing").delegate ".change-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
         $(".page-link-#{category.page}").parent().removeClass("active")
         category.page = parseInt(element.text())
         do category.refreshTopics
-        
+
       $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -40,7 +40,7 @@ $ ->
           $(".change-page").parent().removeClass("active")
           category.page--
           do category.refreshTopics
-        
+
       $("nav.pagination-listing").delegate "#next-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -49,7 +49,7 @@ $ ->
           $(".change-page").parent().removeClass("active")
           category.page++
           do category.refreshTopics
-    
+
     paginationHTMLTemplate: () ->
       return """
           <ul class="pagination">
@@ -68,7 +68,7 @@ $ ->
             </li>
           </ul>
       """
-    
+
     topicHTMLTemplate: () ->
       return """
         <div class="row">
@@ -118,8 +118,8 @@ $ ->
       {{#unless last}}
       <hr>
       {{/unless}}
-      """  
-      
+      """
+
     refreshTopics: () ->
       new_topic_html = ""
       $.post "/category/#{@slug}/topics", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
@@ -131,21 +131,20 @@ $ ->
         pages = [1..Math.ceil data.count/@pagination]
         @max_pages = pages[pages.length-1]
         pagination_html = @paginationHTML {pages: pages}
-        
+
         $(".topic-listing").html(new_topic_html)
         $(".pagination-listing").html(pagination_html)
         $(".page-link-#{@page}").parent().addClass("active")
-      
+
     disablePrefixFiltering: () ->
-      @preferences = {}
       $(".prefix-filter-action").children("span").removeClass("glyphicon-remove")
       $(".prefix-filter-action").children("span").addClass("glyphicon-ok")
       do @setPreferences
-    
+
     setPreferences: () ->
       @preferences = {}
       category = @
-      
+
       if $(".prefix-filter-action").children(".glyphicon-remove").length > 0
         $(".prefix-filter-action").children(".glyphicon-ok").parent().each () ->
           element = $(this)
@@ -153,11 +152,11 @@ $ ->
 
       $.post "/category/#{@slug}/filter-preferences", JSON.stringify({preferences: @preferences}), (data) =>
         do @refreshTopics
-    
+
     getPreferences: () ->
       $.get "/category/#{@slug}/filter-preferences", (data) =>
         @preferences = data.preferences
-        
+        #
         if $.isEmptyObject(@preferences)
           do @disablePrefixFiltering
         else
@@ -167,6 +166,6 @@ $ ->
             $("[data-prefix='#{prefix}']").children("span").removeClass("glyphicon-remove")
             $("[data-prefix='#{prefix}']").children("span").addClass("glyphicon-ok")
 
-        do @refreshTopics
-  
+          do @refreshTopics
+
   window.category = new Category($(".topic-listing").data("slug"))

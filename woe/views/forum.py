@@ -47,7 +47,7 @@ def topic_list_api():
 @login_required
 def toggle_follow_topic(slug):
     try:
-        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug).first()
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
 
@@ -74,14 +74,14 @@ def toggle_follow_topic(slug):
 @login_required
 def new_post_in_topic(slug):
     try:
-        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug).first()
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() in topic.banned_from_topic:
+    if current_user._get_current_object() in topic.banned:
         return abort(404)
 
-    if topic.closed or topic.hidden:
+    if topic.locked or topic.hidden:
         return app.jsonify(closed_topic=True, closed_message=topic.close_message)
 
     request_json = request.get_json(force=True)
@@ -95,8 +95,9 @@ def new_post_in_topic(slug):
     except:
         return abort(500)
 
-    try: # TODO : Cannot do this for roleplay topics.
-        users_last_post = Post.objects(author=current_user._get_current_object()).order_by("-created")[0]
+    try:
+        users_last_post = sqla.session.query(sqlm.Post).filter_by(author=current_user._get_current_object()) \
+            .order_by(sqla.desc(sqlm.Post.created))[0]
         difference = (arrow.utcnow().datetime - arrow.get(users_last_post.created).datetime).seconds
         if difference < 30 and not current_user._get_current_object().is_admin:
             return app.jsonify(error="Please wait %s seconds before posting again." % (30 - difference))
@@ -104,57 +105,53 @@ def new_post_in_topic(slug):
         pass
 
     try:
-        character = Character.objects(slug=request_json.get("character"), creator=current_user._get_current_object(), hidden=False)[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=request_json.get("character"), \
+            author=current_user._get_current_object(), hidden=False)[0]
     except:
         character = False
 
     try:
-        avatar_index = request_json.get("avatar")
-        if avatar_index == "":
-            avatar_index = 0
-        else:
-            avatar_index = int(avatar_index)
-        avatar = Attachment.objects(character=character, character_emote=True, character_gallery=True).order_by("created_date")[avatar_index]
+        avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
+            character_gallery=True, character_avatar=True, id=request_json.get("avatar")) \
+            .order_by(character_gallery_weight).first()
+
+        if avatar == None:
+            avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
+                character_gallery=True, character_avatar=True) \
+                .order_by(character_gallery_weight).first()[0]
     except:
         avatar = False
 
-    most_recent_post = Post.objects(topic=topic).order_by("-created")[0]
-    new_post = Post()
+    new_post = sqlm.Post()
     new_post.html = post_html
     new_post.author = current_user._get_current_object()
     new_post.author_name = current_user.login_name
     new_post.topic = topic
-    new_post.topic_name = topic.title
     new_post.created = arrow.utcnow().datetime
-    new_post.position_in_topic = most_recent_post.position_in_topic+1
     try:
         if character:
-            new_post.data["character"] = str(character.pk)
+            new_post.character = character
         if avatar:
-            new_post.data["avatar"] = str(avatar.pk)
-        new_post.save()
-        character.update(add_to_set__posts=new_post)
+            new_post.avatar = avatar
     except:
         pass
 
+    sqla.session.add(new_post)
+    sqla.session.commit()
 
-    topic.last_post_by = current_user._get_current_object()
-    topic.last_post_date = new_post.created
-    topic.last_post_author_avatar = current_user._get_current_object().get_avatar_url("40")
-    topic.post_count = Post.objects(topic=topic, hidden=False).count()
-    topic.save()
+    topic.recent_post = new_post
+    topic.post_count += 1
+    sqla.session.add(topic)
 
     category = topic.category
-    category.last_topic = topic
-    category.last_topic_name = topic.title
-    category.last_post_by = topic.last_post_by
-    category.last_post_date = topic.last_post_date
-    category.last_post_author_avatar = topic.last_post_author_avatar
-    category.post_count = category.post_count + 1
-    category.save()
+    category.recent_post = new_post
+    category.recent_topic = topic
+    category.post_count += 1
+    sqla.session.add(category)
+    sqla.session.commit()
 
     clean_html_parser = ForumPostParser()
-    parsed_post = new_post.to_mongo().to_dict()
+    parsed_post = {}
     parsed_post["created"] = humanize_time(new_post.created, "MMM D YYYY")
     parsed_post["modified"] = humanize_time(new_post.modified, "MMM D YYYY")
     parsed_post["html"] = clean_html_parser.parse(new_post.html)
@@ -167,57 +164,42 @@ def new_post_in_topic(slug):
     parsed_post["user_title"] = new_post.author.title
     parsed_post["author_name"] = new_post.author.display_name
     parsed_post["author_login_name"] = new_post.author.login_name
-    parsed_post["group_pre_html"] = new_post.author.group_pre_html
-    parsed_post["author_group_name"] = new_post.author.group_name
-    parsed_post["group_post_html"] = new_post.author.group_post_html
-    if new_post.data.has_key("character"):
+
+    if new_post.character is not None:
         try:
-            character = Character.objects(pk=new_post.data["character"], creator=new_post.author)[0]
-            parsed_post["character_name"] = character.name
-            parsed_post["character_slug"] = character.slug
+            parsed_post["character_name"] = new_post.character.name
+            parsed_post["character_slug"] = new_post.character.slug
         except:
-            pass
+            character = None
     else:
         character = None
 
-    if new_post.data.has_key("avatar"):
+    if new_post.avatar is not None:
         try:
-            a = Attachment.objects(pk=new_post.data["avatar"], owner=new_post.author)[0]
-            parsed_post["character_avatar_small"] = a.get_specific_size(60)
-            parsed_post["character_avatar_large"] = a.get_specific_size(200)
+            parsed_post["character_avatar_small"] = new_post.avatar.get_specific_size(60)
+            parsed_post["character_avatar_large"] = new_post.avatar.get_specific_size(200)
             parsed_post["character_avatar"] = True
         except:
-            pass
+            avatar = None
     else:
-        try:
-            parsed_post["character_avatar_small"] = character.default_avatar.get_specific_size(60)
-            parsed_post["character_avatar_large"] = character.default_avatar.get_specific_size(200)
-            parsed_post["character_avatar"] = True
-        except:
-            pass
+        avatar = None
 
-    if current_user.is_authenticated():
-        if new_post.author.pk == current_user.pk:
-            parsed_post["is_author"] = True
-        else:
-            parsed_post["is_author"] = False
-    else:
-        parsed_post["is_author"] = False
-
-    post_count = Post.objects(hidden=False, topic=topic).count()
+    parsed_post["is_author"] = True
+    parsed_post["boop_count"] = 0
+    post_count = topic.post_count
 
     mentions = mention_re.findall(post_html)
     to_notify_m = {}
     for mention in mentions:
         try:
-            to_notify_m[mention] = User.objects(login_name=mention)[0]
+            to_notify_m[mention] = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
         except:
             continue
 
     broadcast(
       to=to_notify_m.values(),
       category="mention",
-      url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
+      url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
       title="%s mentioned you in %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
       description=new_post.html,
       content=new_post,
@@ -228,14 +210,14 @@ def new_post_in_topic(slug):
     to_notify = {}
     for reply_ in replies:
         try:
-            to_notify[reply_] = Post.objects(pk=reply_[0])[0].author
+            to_notify[reply_] = sqlm.session.query(sqlm.Post).filter_by(id=reply_[0])[0].author
         except:
             continue
 
     broadcast(
       to=to_notify.values(),
       category="topic_reply",
-      url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
+      url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
       title="%s replied to you in %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
       description=new_post.html,
       content=new_post,
@@ -266,7 +248,7 @@ def new_post_in_topic(slug):
     broadcast(
         to=notify_users,
         category="topic",
-        url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.pk)),
+        url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
         title="%s has replied to %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
         description=new_post.html,
         content=topic,
@@ -281,7 +263,7 @@ def toggle_post_boop():
     request_json = request.get_json(force=True)
 
     try:
-        post = Post.objects(pk=request_json.get("pk"))[0]
+        post = sqla.session.query(sqlm.Post).filter_by(id=request_json.get("pk"))[0]
     except:
         return abort(404)
 
@@ -292,7 +274,7 @@ def toggle_post_boop():
         post.boops.remove(current_user._get_current_object())
         post.save()
     else:
-        post.update(add_to_set__boops=current_user._get_current_object())
+        post.boops.append(current_user._get_current_object())
         broadcast(
             to=[post.author,],
             category="boop",
@@ -303,26 +285,15 @@ def toggle_post_boop():
             author=current_user._get_current_object()
             )
 
+    sqla.session.add(post)
+    sqla.session.commit()
     return app.jsonify(success=True)
-
-def count_topic_posts(slug):
-    try:
-        topic = Topic.objects(slug=slug)[0]
-    except IndexError:
-        return abort(404)
-
-    posts = list(Post.objects(topic=topic, hidden=False).order_by("created"))
-    topic.update(hidden_posts=Post.objects(hidden=True, topic=topic).count())
-    Post.objects(hidden=True, topic=topic).update(position_in_topic=-1)
-
-    for i, post in enumerate(posts):
-        post.update(position_in_topic=i)
 
 @app.route('/t/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
     start = time.time()
     try:
-        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug).first()
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
 
@@ -424,29 +395,18 @@ def topic_posts(slug):
                 parsed_post["character_avatar"] = True
             except:
                 pass
-        else:
-            try:
-                pass
-                # TODO - fix this
-                # parsed_post["character_avatar_small"] = character.default_avatar.get_specific_size(60)
-                # parsed_post["character_avatar_large"] = character.default_avatar.get_specific_size(200)
-                # parsed_post["character_avatar"] = True
-            except:
-                pass
+        # else:
+        #     try:
+        #         pass
+        #         # parsed_post["character_avatar_small"] = character.default_avatar.get_specific_size(60)
+        #         # parsed_post["character_avatar_large"] = character.default_avatar.get_specific_size(200)
+        #         # parsed_post["character_avatar"] = True
+        #     except:
+        #         pass
 
         parsed_posts.append(parsed_post)
 
     return app.jsonify(posts=parsed_posts, count=post_count)
-
-@app.route('/topic/<slug>/', methods=['GET'],)
-def legacy_topic_index(slug):
-    ipb_id = slug.split("-")[0]
-    try:
-        topic = Topic.objects(old_ipb_id=ipb_id)[0]
-    except IndexError:
-        return abort(404)
-
-    return redirect("/t/"+topic.slug)
 
 @app.route('/t/<slug>/edit-post', methods=['POST'])
 @login_required
@@ -554,7 +514,7 @@ def get_post_html_in_topic(slug, post):
 @app.route('/t/<slug>/page/<page>/post/<post>', methods=['GET'])
 def topic_index(slug, page, post):
     try:
-        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug).first()
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
     pagination = 20
@@ -574,7 +534,7 @@ def topic_index(slug, page, post):
         try:
             post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
             .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
-            .order_by(sqlm.Post.created).first()
+            .order_by(sqla.desc(sqlm.Post.created))[0]
         except:
             return redirect("/t/"+unicode(topic.slug))
 
@@ -586,18 +546,24 @@ def topic_index(slug, page, post):
 
         try:
             post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
-                .filter_by(hidden=False).filter(sqlm.Post.created < last_seen).order_by(Post.created.desc()).first()
+                .filter(sqlm.Post.created < last_seen) \
+                .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+                .order_by(sqlm.Post.created.desc())[0]
         except:
             try:
                 post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
-                    .filter_by(hidden=False, id=post).filter(sqlm.Post.created < last_seen).order_by(Post.created.desc()).first()
+                    .filter_by(id=post).filter(sqlm.Post.created < last_seen) \
+                    .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+                    .order_by(sqlm.Post.created.desc())[0]
             except:
                 return redirect("/t/"+unicode(topic.slug))
     else:
         if post != "":
             try:
                 post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
-                    .filter_by(hidden=False, id=post).filter(sqlm.Post.created < last_seen).order_by(Post.created.desc()).first()
+                    .filter_by(id=post).filter(sqlm.Post.created < last_seen) \
+                    .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+                    .order_by(sqlm.Post.created.desc())[0]
             except:
                 return redirect("/t/"+unicode(topic.slug))
         else:
@@ -615,8 +581,10 @@ def topic_index(slug, page, post):
             sqla.session.rollback()
             pass
         target_date = post.created
-        posts_before_target = sqla.session.query(sqlm.Post).filter_by(topic=topic, hidden=False) \
-            .filter(sqlm.Post.created <= post.created).count()
+        posts_before_target = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+            .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+            .filter(sqlm.Post.created < post.created) \
+            .count()
 
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
 
@@ -643,7 +611,7 @@ def topic_index(slug, page, post):
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
     try:
-        category = sqla.session.query(sqlm.Category).filter_by(slug=slug).first()
+        category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
     if not current_user.is_authenticated():
@@ -660,7 +628,8 @@ def category_filter_preferences(slug):
         except:
             return app.jsonify(preferences={})
 
-        current_user.update(data=current_user.data)
+        sqla.session.add(current_user)
+        sqla.session.commit()
         preferences = current_user.data.get("category_filter_preference_"+str(category.id), {})
         return app.jsonify(preferences=preferences)
     else:
@@ -862,7 +831,7 @@ def new_topic(slug):
 @app.route('/category/<slug>/topics', methods=['POST'])
 def category_topics(slug):
     try:
-        category = sqla.session.query(sqlm.Category).filter_by(slug=slug).first()
+        category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
 
@@ -908,7 +877,7 @@ def category_topics(slug):
             topic.last_seen_by = {}
 
         if current_user.is_authenticated():
-            if topic.last_seen_by.get(str(current_user._get_current_object().pk)) != None:
+            if topic.last_seen_by.get(str(current_user._get_current_object().id)) != None:
                 if arrow.get(topic.last_post_date).timestamp > topic.last_seen_by.get(str(current_user._get_current_object().pk)):
                     parsed_topic["updated"] = True
 
@@ -944,7 +913,7 @@ def category_topics(slug):
 @app.route('/category/<slug>', methods=['GET'])
 def category_index(slug):
     try:
-        category = sqla.session.query(sqlm.Category).filter_by(slug=slug).first()
+        category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
 
@@ -984,7 +953,7 @@ def index():
         .filter_by(banned=False).count()
 
     newest_member = sqla.session.query(sqlm.User) \
-        .order_by(sqla.desc(sqlm.User.joined)).first()
+        .order_by(sqla.desc(sqlm.User.joined))[0]
 
     recently_replied_topics = sqla.session.query(sqlm.Topic) \
         .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:5]

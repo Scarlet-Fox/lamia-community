@@ -106,7 +106,6 @@
       };
 
       Category.prototype.disablePrefixFiltering = function() {
-        this.preferences = {};
         $(".prefix-filter-action").children("span").removeClass("glyphicon-remove");
         $(".prefix-filter-action").children("span").addClass("glyphicon-ok");
         return this.setPreferences();
@@ -138,7 +137,7 @@
             var prefix;
             _this.preferences = data.preferences;
             if ($.isEmptyObject(_this.preferences)) {
-              _this.disablePrefixFiltering();
+              return _this.disablePrefixFiltering();
             } else {
               $(".prefix-filter-action").children("span").removeClass("glyphicon-ok");
               $(".prefix-filter-action").children("span").addClass("glyphicon-remove");
@@ -146,8 +145,8 @@
                 $("[data-prefix='" + prefix + "']").children("span").removeClass("glyphicon-remove");
                 $("[data-prefix='" + prefix + "']").children("span").addClass("glyphicon-ok");
               }
+              return _this.refreshTopics();
             }
-            return _this.refreshTopics();
           };
         })(this));
       };
