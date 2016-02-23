@@ -739,6 +739,23 @@ class Topic(db.Model):
         else:
             return 0
 
+def find_topic_slug(title):
+    slug = slugify(title, max_length=100, word_boundary=True, save_order=True)
+    if slug.strip() == "":
+        slug="_"
+
+    def try_slug(slug, count=0):
+        new_slug = slug
+        if count > 0:
+            new_slug = slug+"-"+str(count)
+
+        if len(Topic.query.filter_by(slug=new_slug).all()) == 0:
+            return new_slug
+        else:
+            return try_slug(slug, count+1)
+
+    return try_slug(slug)
+
 post_boop_table = db.Table('post_boops_from_users', db.metadata,
     db.Column('post_id', db.Integer, db.ForeignKey('post.id',
         name="fk_postboop_post")),

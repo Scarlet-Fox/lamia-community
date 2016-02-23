@@ -716,7 +716,7 @@ def edit_topic(slug):
 def new_topic(slug):
     if request.method == 'POST':
         try:
-            category = Category.objects(slug=slug)[0]
+            category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
         except IndexError:
             return abort(404)
 
@@ -728,12 +728,18 @@ def new_topic(slug):
         if request_json.get("text", "").strip() == "":
             return app.jsonify(error="Please enter actual text for your post.")
 
-        if len(category.allowed_prefixes) > 0:
+        if len(category.allowed_labels) > 0:
             if request_json.get("prefix", "").strip() == "":
-                return app.jsonify(error="Please choose a prefix.")
+                return app.jsonify(error="Please choose a label.")
 
-            if not request_json.get("prefix", "").strip() in category.allowed_prefixes:
-                return app.jsonify(error="Please choose a valid prefix.")
+            if not current_user._get_current_object().is_admin and not current_user._get_current_object().is_mod:
+                try:
+                    label = sqla.session.query(sqlm.Label).filter_by(label=request_json.get("prefix", "").strip())[0]
+
+                    if not label in category.allowed_labels:
+                        return app.jsonify(error="Please choose a valid label.")
+                except:
+                    return app.jsonify(error="Please choose a valid label.")
 
         cleaner = ForumHTMLCleaner()
         try:
@@ -742,57 +748,50 @@ def new_topic(slug):
             return abort(500)
 
         try:
-            prefix = Prefix.objects(prefix=request_json.get("prefix", "").strip())[0]
-        except IndexError:
-            prefix = ""
-
-        try:
-            users_last_topic = Topic.objects(creator=current_user._get_current_object()).order_by("-created")[0]
+            users_last_topic = sqla.session.query(sqlm.Topic) \
+                .filter_by(author=current_user._get_current_object()) \
+                .order_by(sqla.desc(sqlm.Topic.created))[0]
             difference = (arrow.utcnow().datetime - arrow.get(users_last_topic.created).datetime).seconds
             if difference < 360 and not current_user._get_current_object().is_admin:
                 return app.jsonify(error="Please wait %s seconds before you create another topic." % (360 - difference))
-        except:
+        except IndexError:
             pass
 
-        new_topic = Topic()
+        new_topic = sqlm.Topic()
         new_topic.category = category
         new_topic.title = request_json.get("title")
-        new_topic.slug = get_topic_slug(new_topic.title)
+        new_topic.slug = sqlm.find_topic_slug(new_topic.title)
         new_topic.creator = current_user._get_current_object()
-        new_topic.created = arrow.utcnow().datetime
-        if prefix != "":
-            new_topic.pre_html = prefix.pre_html
-            new_topic.prefix = prefix.prefix
-            new_topic.post_html = prefix.post_html
-            new_topic.prefix_reference = prefix
-        new_topic.last_post_by = current_user._get_current_object()
-        new_topic.last_post_date = new_topic.created
-        new_topic.last_post_author_avatar = current_user._get_current_object().get_avatar_url("40")
+        new_topic.created = arrow.utcnow().datetime.replace(tzinfo=None)
+        if request_json.get("prefix", "").strip() != "":
+            new_topic.label = label
         new_topic.post_count = 1
-        new_topic.save()
+        sqla.session.add(new_topic)
+        sqla.session.commit()
 
-        category.last_topic = new_topic
-        category.last_topic_name = new_topic.title
-        category.last_post_by = new_topic.last_post_by
-        category.last_post_date = new_topic.last_post_date
-        category.last_post_author_avatar = new_topic.last_post_author_avatar
-        category.post_count = category.post_count + 1
-        category.save()
-
-        new_post = Post()
+        new_post = sqlm.Post()
         new_post.html = post_html
         new_post.author = current_user._get_current_object()
-        new_post.author_name = current_user.login_name
         new_post.topic = new_topic
-        new_post.topic_name = new_topic.title
-        new_post.created = arrow.utcnow().datetime
-        new_post.save()
-        new_topic.update(first_post=new_post)
+        new_post.created = arrow.utcnow().datetime.replace(tzinfo=None)
+        sqla.session.add(new_post)
+        sqla.session.commit()
+
+        category.recent_topic = new_topic
+        category.recent_post = new_post
+        category.post_count = category.post_count + 1
+        category.topic_count = category.topic_count + 1
+        new_topic.recent_post = new_post
+
+        sqla.session.add(category)
+        sqla.session.add(new_topic)
+        sqla.session.commit()
 
         send_notify_to_users = []
-        for user in new_post.author.followed_by:
-            if user not in new_post.author.ignored_users:
-                send_notify_to_users.append(user)
+        # TODO: 
+        # for user in new_post.author.followed_by:
+        #     if user not in new_post.author.ignored_users:
+        #         send_notify_to_users.append(user)
 
         broadcast(
           to=send_notify_to_users,
@@ -808,8 +807,8 @@ def new_topic(slug):
         to_notify = {}
         for mention in mentions:
             try:
-                to_notify[mention] = User.objects(login_name=mention)[0]
-            except:
+                to_notify[mention] = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
+            except IndexError:
                 continue
 
         broadcast(
@@ -825,7 +824,7 @@ def new_topic(slug):
         return app.jsonify(url="/t/"+new_topic.slug)
     else:
         try:
-            category = Category.objects(slug=slug)[0]
+            category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
         except IndexError:
             return abort(404)
 
