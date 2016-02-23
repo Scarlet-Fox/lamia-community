@@ -766,7 +766,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
         name="fk_post_topic"), index=True)
-    topic = db.relationship("Topic", foreign_keys="Post.topic_id")
+    topic = db.relationship("Topic", foreign_keys="Post.topic_id", cascade="delete")
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_post_author"))

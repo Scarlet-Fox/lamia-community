@@ -649,7 +649,7 @@ def edit_topic(slug):
     category = topic.category
 
     if request.method == 'POST':
-        if current_user._get_current_object() != topic.creator:
+        if current_user._get_current_object() != topic.author:
             if not current_user._get_current_object().is_admin and not current_user._get_current_object().is_mod:
                 if current_user._get_current_object() not in topic.topic_moderators:
                     return abort(404)
@@ -692,7 +692,7 @@ def edit_topic(slug):
 
         post.post_history.append(history)
 
-        if current_user._get_current_object() != topic.creator:
+        if current_user._get_current_object() != topic.author:
             if request_json.get("edit_reason", "").strip() == "":
                 return app.jsonify(error="Please include an edit reason for editing someone else's topic.")
 
@@ -761,7 +761,7 @@ def new_topic(slug):
         new_topic.category = category
         new_topic.title = request_json.get("title")
         new_topic.slug = sqlm.find_topic_slug(new_topic.title)
-        new_topic.creator = current_user._get_current_object()
+        new_topic.author = current_user._get_current_object()
         new_topic.created = arrow.utcnow().datetime.replace(tzinfo=None)
         if request_json.get("prefix", "").strip() != "":
             new_topic.label = label
@@ -788,7 +788,7 @@ def new_topic(slug):
         sqla.session.commit()
 
         send_notify_to_users = []
-        # TODO: 
+        # TODO:
         # for user in new_post.author.followed_by:
         #     if user not in new_post.author.ignored_users:
         #         send_notify_to_users.append(user)
@@ -958,9 +958,11 @@ def index():
         .order_by(sqla.desc(sqlm.User.joined))[0]
 
     recently_replied_topics = sqla.session.query(sqlm.Topic) \
+        .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
         .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:5]
 
     recently_created_topics = sqla.session.query(sqlm.Topic) \
+        .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
         .order_by(sqlm.Topic.created.desc())[:5]
 
     status_updates = [result[1] for result in sqla.session.query(sqla.distinct(sqlm.StatusUpdate.author_id), sqlm.StatusUpdate) \
