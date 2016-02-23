@@ -6,6 +6,8 @@ from flask.ext.login import login_required, current_user
 import arrow, urllib2
 from threading import Thread
 import json as py_json
+from woe import sqla
+import woe.sqlmodels as sqlm
 
 def send_message(data):
     req = urllib2.Request(app.settings_file["listener"]+"/notify")
@@ -24,8 +26,8 @@ def broadcast(to, category, url, title, description, content, author, priority=0
 
     for u in to:
         try:
-            if not type(u) == User:
-                user = User.objects(login_name=to)[0]
+            if not type(u) == sqlm.User:
+                user = sqla.session.query(sqlm.User).filter_by(login_name=to)[0]
             else:
                 user = u
             try:
@@ -36,11 +38,13 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         except IndexError:
             continue
 
-        if not user.notification_preferences.get(category, {"dashboard": True}).get("dashboard"):
-            continue
+        # TODO: This
+        # if not user.notification_preferences.get(category, {"dashboard": True}).get("dashboard"):
+        #     continue
 
-        if author in u.ignored_users:
-            continue
+        # TODO: This
+        # if author in u.ignored_users:
+        #     continue
 
         new_notification = Notification(
             category = category,
@@ -55,9 +59,9 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             priority = priority
         )
 
-        if content != None:
-            new_notification.content = content
-        new_notification.save()
+        # if content != None:
+        #     new_notification.content = content
+        # new_notification.save()
 
         data = {
             "users": [u.login_name, ],
@@ -66,7 +70,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             "category": category,
             "author": author.display_name,
             "member_name": author.login_name,
-            "member_pk": unicode(author.pk),
+            "member_pk": unicode(author.id),
             "member_disp_name": author.display_name,
             "author_url": "/member/"+author.login_name,
             "time": humanize_time(now.datetime),
@@ -74,10 +78,10 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             "stamp": arrow.get(new_notification.created).timestamp,
             "text": title,
             "priority": priority,
-            "_id": str(new_notification.pk)
+            "_id": str(new_notification.id)
         }
         try:
-            data["reference"] = str(new_notification.content.pk)
+            data["reference"] = str(new_notification.content.id)
         except:
             data["reference"] = ""
 

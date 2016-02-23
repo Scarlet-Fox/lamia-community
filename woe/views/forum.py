@@ -127,7 +127,7 @@ def new_post_in_topic(slug):
     new_post.author = current_user._get_current_object()
     new_post.author_name = current_user.login_name
     new_post.topic = topic
-    new_post.created = arrow.utcnow().datetime
+    new_post.created = arrow.utcnow().datetime.replace(tzinfo=None)
     try:
         if character:
             new_post.character = character
@@ -231,12 +231,12 @@ def new_post_in_topic(slug):
 
         skip_user = False
         for _u in to_notify.values():
-            if _u.pk == u.pk:
+            if _u.id == u.id:
                 skip_user = True
                 break
 
         for _u in to_notify_m.values():
-            if _u.pk == u.pk:
+            if _u.id == u.id:
                 skip_user = True
                 break
 
@@ -272,13 +272,12 @@ def toggle_post_boop():
 
     if current_user._get_current_object() in post.boops:
         post.boops.remove(current_user._get_current_object())
-        post.save()
     else:
         post.boops.append(current_user._get_current_object())
         broadcast(
             to=[post.author,],
             category="boop",
-            url="/t/%s/page/1/post/%s" % (str(post.topic.slug), str(post.pk)),
+            url="/t/%s/page/1/post/%s" % (str(post.topic.slug), str(post.id)),
             title="%s has booped your post in %s!" % (unicode(current_user._get_current_object().display_name), unicode(post.topic.title)),
             description="",
             content=post,
@@ -412,18 +411,17 @@ def topic_posts(slug):
 @login_required
 def edit_topic_post_html(slug):
     try:
-        topic = Topic.objects(slug=slug)[0]
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
 
     request_json = request.get_json(force=True)
 
     try:
-        post = Post.objects(topic=topic, pk=request_json.get("pk"), hidden=False)[0]
+        post = sqla.session.query(sqlm.Post).filter_by(topic=topic, id=request_json.get("pk")) \
+            .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None))[0]
     except:
         return abort(404)
-
-    app.redis_store.delete('post-'+str(post.pk))
 
     if current_user._get_current_object() != post.author and (current_user._get_current_object().is_admin != True and current_user._get_current_object().is_mod != True):
         return abort(404)
@@ -438,58 +436,61 @@ def edit_topic_post_html(slug):
         return abort(500)
 
     try:
-        character = Character.objects(slug=request_json.get("character"), creator=current_user._get_current_object(), hidden=False)[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=request_json.get("character"), \
+            author=current_user._get_current_object()).filter(sqla.or_(sqlm.Character.hidden == False, \
+            sqlm.Character.hidden == None))[0]
     except:
         character = False
 
     try:
-        avatar_index = request_json.get("avatar")
-        if avatar_index == "":
-            avatar_index = 0
-        else:
-            avatar_index = int(avatar_index)
-        avatar = Attachment.objects(character=character, character_emote=True, character_gallery=True).order_by("created_date")[avatar_index]
+        avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
+            character_gallery=True, character_avatar=True, id=request_json.get("avatar")) \
+            .order_by(character_gallery_weight).first()
+
+        if avatar == None:
+            avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
+                character_gallery=True, character_avatar=True) \
+                .order_by(character_gallery_weight).first()[0]
     except:
         avatar = False
 
-    history = PostHistory()
-    history.creator = current_user._get_current_object()
-    history.created = arrow.utcnow().datetime
-    history.html = post.html+""
-    history.data = post.data
-    history.reason = request_json.get("edit_reason", "")
+    history = {}
+    history["author"] = current_user._get_current_object().id
+    history["created"] = str(arrow.utcnow().datetime)
+    history["html"] = post.html+""
+    history["data"] = post.data
+    history["reason"] = request_json.get("edit_reason", "")
+
+    if post.post_history == None:
+        post.post_history = []
+
+    post.post_history.append(history)
 
     if current_user._get_current_object() != post.author:
         if request_json.get("edit_reason", "").strip() == "":
             return app.jsonify(error="Please include an edit reason for editing someone else's post.")
 
-    try:
-        if post.data.has_key("character"):
-            old_character = Character.objects(pk=post.data["character"])[0]
-            old_character.posts.remove(post)
-            old_character.save()
-    except:
-        pass
-
-    post.history.append(history)
     post.html = post_html
-    post.modified = arrow.utcnow().datetime
+    post.modified = arrow.utcnow().datetime.replace(tzinfo=None)
+
     if current_user._get_current_object() == post.author:
         if character:
-            post.data["character"] = str(character.pk)
+            post.character = character
         else:
             try:
-                del post.data["character"]
+                post.character == None
             except:
                 pass
         if avatar:
-            post.data["avatar"] = str(avatar.pk)
+            post.avatar == avatar
         else:
             try:
-                del post.data["avatar"]
+                post.avatar == None
             except:
                 pass
-    post.save()
+
+    sqla.session.add(post)
+    sqla.session.commit()
 
     clean_html_parser = ForumPostParser()
     return app.jsonify(html=clean_html_parser.parse(post.html), success=True)
@@ -498,12 +499,13 @@ def edit_topic_post_html(slug):
 @login_required
 def get_post_html_in_topic(slug, post):
     try:
-        topic = Topic.objects(slug=slug)[0]
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
 
     try:
-        post = Post.objects(topic=topic, pk=post, hidden=False)[0]
+        post = sqla.session.query(sqlm.Post).filter_by(topic=topic, id=post) \
+            .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None))[0]
     except:
         return abort(404)
 
@@ -540,9 +542,9 @@ def topic_index(slug, page, post):
 
     elif post == "last_seen":
         try:
-            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().id), arrow.utcnow().timestamp)).datetime
+            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().id), arrow.utcnow().timestamp)).datetime.replace(tzinfo=None)
         except:
-            last_seen = arrow.get(arrow.utcnow().timestamp).datetime
+            last_seen = arrow.get(arrow.utcnow().timestamp).datetime.replace(tzinfo=None)
 
         try:
             post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
@@ -640,7 +642,7 @@ def category_filter_preferences(slug):
 @login_required
 def edit_topic(slug):
     try:
-        topic = Topic.objects(slug=slug)[0]
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
 
@@ -662,10 +664,10 @@ def edit_topic(slug):
 
         if len(category.allowed_prefixes) > 0:
             if request_json.get("prefix", "").strip() == "":
-                return app.jsonify(error="Please choose a prefix.")
+                return app.jsonify(error="Please choose a label.")
 
             if not request_json.get("prefix", "").strip() in category.allowed_prefixes:
-                return app.jsonify(error="Please choose a valid prefix.")
+                return app.jsonify(error="Please choose a valid label.")
 
         cleaner = ForumHTMLCleaner()
         try:
@@ -674,16 +676,21 @@ def edit_topic(slug):
             return abort(500)
 
         try:
-            prefix = Prefix.objects(prefix=request_json.get("prefix", "").strip())[0]
+            label = sqla.session.query(sqlm.Label).filter_by(label=request_json.get("prefix", "").strip())[0]
         except IndexError:
             prefix = ""
 
-        history = PostHistory()
-        history.creator = current_user._get_current_object()
-        history.created = arrow.utcnow().datetime
-        history.html = topic.first_post.html+""
-        history.data = topic.first_post.data
-        history.reason = request_json.get("edit_reason", "")
+        history = {}
+        history["author"] = current_user._get_current_object().id
+        history["created"] = str(arrow.utcnow().datetime)
+        history["html"] = first_post.html+""
+        history["data"] = first_post.data
+        history["reason"] = request_json.get("edit_reason", "")
+
+        if post.post_history == None:
+            post.post_history = []
+
+        post.post_history.append(history)
 
         if current_user._get_current_object() != topic.creator:
             if request_json.get("edit_reason", "").strip() == "":
@@ -691,19 +698,15 @@ def edit_topic(slug):
 
         topic.title = request_json.get("title")
         if prefix != "":
-            topic.pre_html = prefix.pre_html
-            topic.prefix = prefix.prefix
-            topic.post_html = prefix.post_html
-            topic.prefix_reference = prefix
-
-        topic.save()
+            topic.label = label
 
         first_post = topic.first_post
-        app.redis_store.delete('post-'+str(first_post.pk))
-        first_post.history.append(history)
         first_post.modified = arrow.utcnow().datetime
         first_post.html = post_html
-        first_post.save()
+
+        sqla.session.add(topic)
+        sqla.session.add(first_post)
+        sqla.session.commit()
         return app.jsonify(url="/t/"+topic.slug)
     else:
         return render_template("forum/edit_topic.jade", page_title="Edit Topic", category=category, topic=topic)
@@ -878,7 +881,7 @@ def category_topics(slug):
 
         if current_user.is_authenticated():
             if topic.last_seen_by.get(str(current_user._get_current_object().id)) != None:
-                if arrow.get(topic.last_post_date).timestamp > topic.last_seen_by.get(str(current_user._get_current_object().pk)):
+                if arrow.get(topic.last_post_date).timestamp > topic.last_seen_by.get(str(current_user._get_current_object().id)):
                     parsed_topic["updated"] = True
 
         if topic.label != None:
@@ -962,7 +965,7 @@ def index():
         .order_by(sqlm.Topic.created.desc())[:5]
 
     status_updates = [result[1] for result in sqla.session.query(sqla.distinct(sqlm.StatusUpdate.author_id), sqlm.StatusUpdate) \
-        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]]
+        .order_by(sqla.desc(sqlm.StatusUpdate.created)).limit(5)]
 
     return render_template("index.jade", page_title="Scarlet's Web",
         sections=sections, sub_categories=sub_categories,

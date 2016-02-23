@@ -106,7 +106,7 @@ class StatusUpdate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_status_update_author"))
+        name="fk_status_update_author"), index=True)
     author = db.relationship("User", foreign_keys="StatusUpdate.author_id")
     attached_to_user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_status_update_attachedtouser"))
@@ -115,7 +115,7 @@ class StatusUpdate(db.Model):
     last_replied = db.Column(db.DateTime)
     last_viewed = db.Column(db.DateTime)
     replies = db.Column(db.Integer)
-    created = db.Column(db.DateTime)
+    created = db.Column(db.DateTime, index=True)
     hidden = db.Column(db.Boolean, default=False)
     muted = db.Column(db.Boolean, default=False)
     locked = db.Column(db.Boolean, default=False)
@@ -335,14 +335,14 @@ class User(db.Model):
     login_name = db.Column(db.String, unique=True)
     email_address = db.Column(db.String, unique=True)
     password_hash = db.Column(db.String)
-    joined = db.Column(db.DateTime)
+    joined = db.Column(db.DateTime, index=True)
 
     how_did_you_find_us = db.Column(db.Text)
     is_allowed_during_construction = db.Column(db.Boolean)
     my_url = db.Column(db.String, unique=True)
     time_zone = db.Column(db.String)
 
-    banned = db.Column(db.Boolean)
+    banned = db.Column(db.Boolean, index=True)
     validated = db.Column(db.Boolean)
     over_thirteen = db.Column(db.Boolean)
 
@@ -373,7 +373,7 @@ class User(db.Model):
     status_comment_count = db.Column(db.Integer)
 
     last_seen = db.Column(db.DateTime, nullable=True)
-    hidden_last_seen = db.Column(db.DateTime, nullable=True)
+    hidden_last_seen = db.Column(db.DateTime, nullable=True, index=True)
     last_at = db.Column(db.String)
     last_at_url = db.Column(db.String)
 
@@ -726,7 +726,7 @@ class Topic(db.Model):
     announcement = db.Column(db.Boolean, default=False)
     hidden = db.Column(db.Boolean, default=False)
     locked = db.Column(db.Boolean, default=False)
-    created = db.Column(db.DateTime)
+    created = db.Column(db.DateTime, index=True)
     post_count = db.Column(db.Integer, default=0)
     view_count = db.Column(db.Integer, default=0)
 
@@ -775,6 +775,7 @@ class Post(db.Model):
     modified = db.Column(db.DateTime, nullable=True)
     created = db.Column(db.DateTime, index=True)
     hidden = db.Column(db.Boolean, default=False, index=True)
+    post_history = db.Column(JSONB)
 
     old_mongo_hash = db.Column(db.String, nullable=True)
     data = db.Column(JSONB)
