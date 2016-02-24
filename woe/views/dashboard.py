@@ -8,6 +8,7 @@ from threading import Thread
 import json as py_json
 from woe import sqla
 import woe.sqlmodels as sqlm
+import hashlib
 
 def send_message(data):
     req = urllib2.Request(app.settings_file["listener"]+"/notify")
@@ -19,7 +20,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         raise TypeError("Category is not defined in NOTIFICATION_CATEGORIES.")
 
     if to == "ALL":
-        to = User.objects()
+        to = sqla.session.query(sqlm.User).filter_by(banned=False).all()
 
     now = arrow.utcnow()
     author = author
@@ -38,30 +39,34 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         except IndexError:
             continue
 
-        # TODO: This
-        # if not user.notification_preferences.get(category, {"dashboard": True}).get("dashboard"):
-        #     continue
+        if user.notification_preferences is None:
+            user.notification_preferences = {}
+            sqla.session.add(user)
+            sqla.session.commit()
 
-        # TODO: This
-        # if author in u.ignored_users:
-        #     continue
+        if not user.notification_preferences.get(category, {"dashboard": True}).get("dashboard"):
+            continue
 
-        new_notification = Notification(
+        try:
+            ignore = sqla.session.query(sqlm.IgnoringUser).filter_by(user=user, ignoring=author)[0]
+            continue
+        except:
+            pass
+
+        new_notification = sqlm.Notification(
             category = category,
             user = user,
-            user_name = user.login_name,
             author = author,
-            author_name = author.login_name,
-            created = now.datetime,
+            created = now.datetime.replace(tzinfo=None),
             url = url,
-            text = title,
-            description = description,
+            message = title,
             priority = priority
         )
 
-        # if content != None:
-        #     new_notification.content = content
-        # new_notification.save()
+        sqla.session.add(new_notification)
+        sqla.session.commit()
+
+        reference = hashlib.md5(url).hexdigest()
 
         data = {
             "users": [u.login_name, ],
@@ -80,10 +85,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             "priority": priority,
             "_id": str(new_notification.id)
         }
-        try:
-            data["reference"] = str(new_notification.content.id)
-        except:
-            data["reference"] = ""
+        data["reference"] = reference
 
         thread = Thread(target=send_message, args=(data, ))
         thread.start()
@@ -91,40 +93,52 @@ def broadcast(to, category, url, title, description, content, author, priority=0
 @app.route('/dashboard/ack_category', methods=["POST",])
 @login_required
 def acknowledge_category():
-    notifications = Notification.objects(seen=False, user=current_user._get_current_object())
-    notifications.update(seen=True)
+    notifications = sqla.session.query(sqlm.Notificaion) \
+        .filter_by(seen=False, user=current_user._get_current_object()) \
+        .update({seen: True})
 
     request_json = request.get_json(force=True)
-    notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False, category=request_json.get("category",""))
-    notifications.update(acknowledged=True)
+
+    notifications = sqla.session.query(sqlm.Notificaion) \
+        .filter_by(acknowledged=False, user=current_user._get_current_object(), category=request_json.get("category","")) \
+        .update({acknowledged: True})
+
     return app.jsonify(success=True, count=current_user._get_current_object().get_dashboard_notifications())
 
 @app.route('/dashboard/mark_seen', methods=["POST",])
 @login_required
 def mark_all_notifications():
-    notifications = Notification.objects(seen=False, user=current_user._get_current_object())
+    notifications = sqla.session.query(sqlm.Notificaion) \
+        .filter_by(seen=False, user=current_user._get_current_object()) \
+        .update({seen: True})
 
-    notifications.update(seen=True)
     return app.jsonify(success=True)
 
 @app.route('/dashboard/ack_notification', methods=["POST",])
 @login_required
 def acknowledge_notification():
-    notifications = Notification.objects(seen=False, user=current_user._get_current_object())
-    notifications.update(seen=True)
+    notifications = sqla.session.query(sqlm.Notificaion) \
+        .filter_by(seen=False, user=current_user._get_current_object()) \
+        .update({seen: True})
 
     request_json = request.get_json(force=True)
     try:
-        notification = Notification.objects(pk=request_json.get("notification",""))[0]
+        notification = sqla.session.query(sqlm.Notificaion) \
+            .filter_by(id=request_json.get("notification",""))[0]
+
         if notification.user != current_user._get_current_object():
             return app.jsonify(success=False)
+
+        sqla.session.query(sqlm.Notificaion) \
+            .filter_by(id=request_json.get("notification","")) \
+            .update({acknowledged: True})
     except:
         return app.jsonify(success=False)
-    notification.update(acknowledged=True)
 
     try:
-        notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False, content=notification.content)
-        notifications.update(acknowledged=True)
+        notifications = sqla.session.query(sqlm.Notificaion) \
+            .filter_by(acknowledged=False, user=current_user._get_current_object(), url=notification.url) \
+            .update({acknowledged: True})
     except:
         return app.jsonify(success=False)
 
@@ -138,22 +152,23 @@ def dashboard_notifications():
 
     for notification in notifications:
         try:
-            parsed_ = notification.to_mongo().to_dict()
+            parsed_ = {}
             parsed_["time"] = humanize_time(notification.created)
             parsed_["stamp"] = arrow.get(notification.created).timestamp
             parsed_["member_disp_name"] = notification.author.display_name
             parsed_["member_name"] = notification.author.login_name
-            parsed_["member_pk"] = unicode(notification.author.pk)
+            parsed_["member_pk"] = unicode(notification.author.id)
+            parsed_["text"] = notification.message
+            parsed_["id"] = notification.id
+            parsed_["category"] = notification.category
+            parsed_["reference"] = hashlib.md5(notification.url).hexdigest()
             parsed_notifications.append(parsed_)
         except AttributeError:
-            notification.delete()
+            pass
 
     return app.jsonify(notifications=parsed_notifications)
 
 @app.route('/dashboard')
 @login_required
 def view_dashboard():
-    notifications = Notification.objects(seen=False, user=current_user._get_current_object())
-    #notifications.update(seen=True)
-
     return render_template("dashboard.jade", page_title="Your Dashboard - World of Equestria")

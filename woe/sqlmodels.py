@@ -381,6 +381,7 @@ class User(db.Model):
     is_mod = db.Column(db.Boolean)
 
     display_name_history = db.Column(JSONB)
+    notification_preferences = db.Column(JSONB)
 
     # Migration related
     old_mongo_hash = db.Column(db.String, nullable=True)
@@ -434,7 +435,7 @@ class User(db.Model):
         return Notification.query.filter_by(acknowledged=False, user=self).count()
 
     def get_recent_notifications(self, count=15):
-        return []
+        return Notification.query.filter_by(acknowledged=False, user=self).order_by(Notification.created)[:15]
 
     def get_id(self):
         return self.login_name
