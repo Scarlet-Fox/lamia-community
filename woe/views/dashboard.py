@@ -160,6 +160,7 @@ def dashboard_notifications():
             parsed_["member_pk"] = unicode(notification.author.id)
             parsed_["text"] = notification.message
             parsed_["id"] = notification.id
+            parsed_["_id"] = notification.id
             parsed_["category"] = notification.category
             parsed_["reference"] = hashlib.md5(notification.url).hexdigest()
             parsed_notifications.append(parsed_)
