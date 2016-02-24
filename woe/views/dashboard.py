@@ -147,7 +147,7 @@ def acknowledge_notification():
 @app.route('/dashboard/notifications', methods=["POST",])
 @login_required
 def dashboard_notifications():
-    notifications = Notification.objects(user=current_user._get_current_object(), acknowledged=False)
+    notifications = sqla.session.query(sqlm.Notification).filter_by(user=current_user._get_current_object(), acknowledged=False).all()
     parsed_notifications = []
 
     for notification in notifications:
@@ -162,6 +162,7 @@ def dashboard_notifications():
             parsed_["id"] = notification.id
             parsed_["_id"] = notification.id
             parsed_["category"] = notification.category
+            parsed_["url"] = notification.url
             parsed_["reference"] = hashlib.md5(notification.url).hexdigest()
             parsed_notifications.append(parsed_)
         except AttributeError:
