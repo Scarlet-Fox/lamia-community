@@ -8,7 +8,7 @@ from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_user, logout_user, login_required, current_user
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
 from mongoengine.queryset import Q
 from wand.image import Image
 from werkzeug import secure_filename, urls
@@ -211,7 +211,7 @@ def get_user_info_api():
     user_name = urllib2.unquote(user_name)
 
     try:
-        user = User.objects(login_name=user_name)[0]
+        user = sqla.session.query(sqlm.User).filter_by(login_name=user_name)[0]
     except:
         return app.jsonify(data=False)
 
@@ -248,62 +248,54 @@ def make_report():
 
     if _type == "post":
         try:
-            content = Post.objects(pk=request_json.get("pk"))[0]
+            content = sqla.session.query(sqlm.Post).filter_by(id=request_json.get("pk"))[0]
         except:
             return abort(500)
-        content_id = content.pk
+        content_id = content.id
         content_html = content.html
-        url = "/t/%s/page/1/post/%s" % (content.topic.slug, content.pk)
+        url = "/t/%s/page/1/post/%s" % (content.topic.slug, content.id)
     elif _type == "pm":
         try:
-            content = PrivateMessage.objects(pk=request_json.get("pk"))[0]
+            content = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=request_json.get("pk"))[0]
         except:
             return abort(500)
-        content_id = content.pk
+        content_id = content.id
         content_html = content.message
-        url = "/messages/%s/page/1/post/%s" % (content.topic.pk, content.pk)
-    elif _type == "status":
-        try:
-            content = StatusUpdate.objects(pk=request_json.get("pk"))[0]
-        except:
-            return abort(500)
-        content_id = content.pk
-        content_html = content.message
-        url = "/messages/%s/page/1/post/%s" % (content.topic.pk, content.pk)
+        url = "/messages/%s/page/1/post/%s" % (content.topic.pk, content.id)
     elif _type == "profile":
         try:
-            content = User.objects(pk=request_json.get("pk"))[0]
+            content = sqla.session.query(sqlm.User).filter_by(id=request_json.get("pk"))[0]
         except:
             return abort(500)
-        content_id = content.pk
+        content_id = content.id
         content_html = content.about_me
-        url = "/member/%s" % (content.login_name)
+        url = "/member/%s" % (content.my_url)
 
     try:
-        report = Report.objects(
+        report = sqla.session.query(sqlm.Report).filter_by(
             content_type=_type,
-            content_pk=str(content_id),
-            initiated_by=current_user._get_current_object(),
-            created__gte=arrow.utcnow().replace(hours=-24).datetime
-            )[0]
+            content_id=content_id,
+            author=current_user._get_current_object()) \
+            .filter(sqlm.Report.created > arrow.utcnow().datetime.replace(tzinfo=None))[0]
         return app.jsonify(status="reported")
     except:
         pass
 
-    report = Report(
+    report = sqlm.Report(
         content_type = _type,
-        content_pk = str(content_id),
+        url = url,
+        created = arrow.utcnow().datetime.replace(tzinfo=None),
+        content_id = content_id,
+        author = current_user._get_current_object(),
         report = text,
-        content_reported = content_html,
-        initiated_by = current_user._get_current_object(),
-        initiated_by_u = current_user._get_current_object().display_name,
-        created = arrow.utcnow().datetime,
-        url = url
+        status = "open"
     )
-    report.save()
+
+    sqla.session.add(report)
+    sqla.session.commit()
 
     broadcast(
-        to=list(User.objects(is_admin=True)),
+        to=list(sqla.session.query(sqlm.User).filter_by(is_admin=True).all()),
         category="mod",
         url=url,
         title="A %s was reported by %s." % (_type, unicode(current_user._get_current_object().display_name)),
@@ -320,9 +312,14 @@ def pm_topic_list_api():
     if len(query) < 2:
         return app.jsonify(results=[])
 
-    q_ = parse_search_string_return_q(query, ["title",])
+    q_ = parse_search_string_return_q(query,
+        sqla.session.query(sqlm.PrivateMessage),
+        sqlm.PrivateMessage,
+        ["title",])
+
     me = current_user._get_current_object()
-    topics = PrivateMessageTopic.objects(q_, participating_users=me)
+    topics = q_.filter(sqlm.PrivateMessage.participants.any(id=me.id)).all()
+
     results = [{"text": unicode(t.title), "id": str(t.pk)} for t in topics]
     return app.jsonify(results=results)
 
@@ -337,29 +334,29 @@ def create_attachment():
         img_hash = hashlib.sha512(img_bin).hexdigest()
 
         try:
-            attach = Attachment.objects(file_hash=img_hash)[0]
-            return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
+            attach = sqla.session.query(sqlm.Attachment).filter_by(file_hash=img_hash)[0]
+            return app.jsonify(attachment=str(attach.id), xsize=attach.x_size, ysize=attach.y_size)
         except:
             pass
 
-        attach = Attachment()
+        attach = sqlm.Attachment()
         attach.extension = filename.split(".")[-1]
         attach.x_size = image.width
         attach.y_size = image.height
         attach.mimetype = mimetypes.guess_type(filename)[0]
         attach.size_in_bytes = len(img_bin)
-        attach.owner_name = current_user._get_current_object().login_name
         attach.owner = current_user._get_current_object()
         attach.alt = filename
-        attach.used_in = 0
         attach.created_date = arrow.utcnow().datetime
         attach.file_hash = img_hash
         attach.linked = False
         upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time.time())+"_"+str(current_user.pk)+filename)
         attach.path = str(time.time())+"_"+str(current_user.pk)+filename
-        attach.save()
+
+        sqla.session.add(attach)
+        sqla.session.commit()
         image.save(filename=upload_path)
-        return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
+        return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size, ysize=attach.y_size)
     else:
         return abort(404)
 
@@ -394,11 +391,6 @@ def grab_image():
     extension = filename.split(".")[-1]
 
     image_hash = hashlib.sha512(image_response).hexdigest()
-    # try:
-    #     attach = Attachment.objects(file_hash=image_hash)[0]
-    #     return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
-    # except:
-    #     pass
 
     try:
         image = Image(file=StringIO.StringIO(image_response))
@@ -408,7 +400,7 @@ def grab_image():
     except:
         return app.jsonify(error="There was an error processing this attachment, please verify that this file is an image file.")
 
-    attach = Attachment()
+    attach = sqlm.Attachment()
     attach.x_size = image.width
     attach.y_size = image.height
     try:
@@ -417,10 +409,8 @@ def grab_image():
         attach.mimetype = "unknown"
     attach.extension = extension
     attach.size_in_bytes = len(image_response)
-    attach.owner_name = current_user._get_current_object().login_name
     attach.owner = current_user._get_current_object()
     attach.alt = filename
-    attach.used_in = 1
     attach.created_date = arrow.utcnow().datetime
     attach.file_hash = image_hash
     attach.linked = True
@@ -432,7 +422,9 @@ def grab_image():
 
     image.save(filename=destination_filename)
     attach.path = os.path.join("linked/", hashlib.md5(image_domain).hexdigest(), filename)
-    attach.save()
+
+    sqla.session.add(attach)
+    sqla.session.commit()
 
     return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
 
@@ -458,41 +450,41 @@ def load_user(login_name):
             user.last_at_url = "/"
         elif request.path.startswith("/t/"):
             try:
-                topic = Topic.objects(slug=request.path.split("/")[2])[0]
+                topic = sqla.session.query(sqlm.Topic).filter_by(slug=request.path.split("/")[2])[0]
                 user.last_seen_at = unicode(topic.title)
                 user.last_at_url = "/t/"+unicode(topic.slug)
-            except:
+            except IndexError:
                 pass
         elif request.path.startswith("/status-updates"):
             user.last_seen_at = "Viewing status updates"
             user.last_at_url = "/status-updates"
         elif request.path.startswith("/status/"):
             try:
-                status = StatusUpdate.objects(pk=request.path.split("/")[2])[0]
+                status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=request.path.split("/")[2])[0]
                 user.last_seen_at = unicode(status.author.display_name)+"\'s status update"
                 user.last_at_url = "/status/"+unicode(status.pk)
-            except:
+            except IndexError:
                 pass
         elif request.path.startswith("/category/"):
             try:
-                category = Category.objects(slug=request.path.split("/")[2])[0]
+                category = sqla.session.query(sqlm.Category).filter_by(slug=request.path.split("/")[2])[0]
                 user.last_seen_at = category.name
                 user.last_at_url = "/category/"+unicode(category.slug)
-            except:
+            except IndexError:
                 pass
         elif request.path.startswith("/search"):
             user.last_seen_at = "Searching..."
             user.last_at_url = "/search"
         elif request.path.startswith("/characters/"):
             try:
-                character = Character.objects(slug=request.path.split("/")[2])[0]
+                character = sqla.session.query(sqlm.Character).filter_by(slug=request.path.split("/")[2])[0]
                 user.last_seen_at = "Viewing character %s" % unicode(character.name)
                 user.last_at_url = "/characters/"+unicode(character.slug)
             except:
                 pass
         elif request.path.startswith("/member/"):
             try:
-                profile = User.objects(login_name=request.path.split("/")[2])[0]
+                profile = sqla.session.query(sqlm.User).filter_by(login_name=request.path.split("/")[2])[0]
                 user.last_seen_at = "Viewing user %s" % unicode(profile.display_name)
                 user.last_at_url = "/member/"+unicode(profile.login_name)
             except:
@@ -527,7 +519,7 @@ def password_reset(token):
         return abort(404)
 
     try:
-        user = User.objects(password_forgot_token=token)[0]
+        user = sqla.session.query(sqlm.User).filter_by(password_forgot_token=token)[0]
     except:
         return abort(404)
 
@@ -537,7 +529,8 @@ def password_reset(token):
         user.password_forgot_token = None
         user.password_forgot_token_date = None
         user.set_password(form.password.data.strip())
-        user.save()
+        sqla.session.add(user)
+        sqla.session.commit()
         login_user(user)
         broadcast(
             to=[user,],
@@ -563,7 +556,8 @@ def forgot_password():
         token = bcrypt.generate_password_hash(time,10).encode('utf-8').replace("/","_")
         form.user.password_forgot_token = token
         form.user.password_forgot_token_date = arrow.utcnow().datetime
-        form.user.save()
+        sqla.session.add(form.user)
+        sqla.session.commit()
         return render_template("forgot_password_confirm.jade", page_title="Forgot Password - World of Equestria", profile=form.user)
 
     return render_template("forgot_password.jade", page_title="Forgot Password - World of Equestria", form=form)
@@ -571,7 +565,7 @@ def forgot_password():
 @app.route('/hello/<pk>')
 def confirm_register(pk):
     try:
-        user = User.objects(pk=pk)[0]
+        user = sqla.session.query(sqlm.User).filter_by(pk=pk)[0]
     except:
         return abort(404)
     return render_template("welcome_new_user.jade", page_title="Welcome! - World of Equestria", profile=user)
@@ -584,7 +578,7 @@ def register():
     form = RegistrationForm(csrf_enabled=False)
     form.ip = request.remote_addr
     if form.validate_on_submit():
-        new_user = User(
+        new_user = sqlm.User(
             login_name = form.username.data.strip().lower(),
             display_name = form.username.data.strip(),
             email_address = form.email.data.strip().lower()
@@ -593,10 +587,12 @@ def register():
         new_user.joined = arrow.utcnow().datetime
         new_user.over_thirteeen = True
         new_user.how_did_you_find_us = form.how_did_you_find_us.data
-        new_user.save()
+
+        sqla.session.add(new_user)
+        sqla.session.commit()
 
         broadcast(
-            to=User.objects(is_admin=True),
+            to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
             category="mod",
             url="/member/"+unicode(new_user.login_name),
             title="%s has joined the forum. Please review and approve/ban (go to /admin/)." % (unicode(new_user.display_name),),
@@ -606,7 +602,11 @@ def register():
             )
 
         broadcast(
-            to=User.objects(banned=False, login_name__ne=new_user.login_name, last_seen__gte=arrow.utcnow().replace(hours=-24).datetime),
+            to=sqla.session.query(sqlm.User).filter_by(
+                banned=False,
+                login_name__ne=new_user.login_name,
+                ).filter(hidden_last_seen > arrow.utcnow().replace(hours=-24).datetime.replace(tzinfo=None)) \
+                .all(),
             category="new_member",
             url="/member/"+unicode(new_user.login_name),
             title="%s has joined the forum! Greet them!" % (unicode(new_user.display_name),),
@@ -727,20 +727,22 @@ def sign_in():
         _fingerprint_hash = hashlib.sha256(fingerprint_hash.encode('utf-8')).hexdigest()
 
         try:
-            f = Fingerprint.objects(fingerprint_hash=_fingerprint_hash)[0]
-            f.update(last_seen=arrow.utcnow().datetime)
+            f = sqla.session.query(sqlm.Fingerprint).filter_by(fingerprint_hash=_fingerprint_hash)[0]
+            f.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
         except:
-            f = Fingerprint()
+            f = sqlm.Fingerprint()
             f.user = form.user
-            f.user_name = form.user.login_name
-            f.last_seen = arrow.utcnow().datetime
-            f.fingerprint = clean_fingerprint_data
+            f.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
+            f.json = clean_fingerprint_data
             f.fingerprint_hash = _fingerprint_hash
-            f.fingerprint_factors = len(clean_fingerprint_data)
-            try:
-                f.save()
-            except:
-                pass
+            f.factors = len(clean_fingerprint_data)
+
+        try:
+            sqla.session.add(f)
+            sqla.commit()
+        except:
+            sqla.session.rollback()
+            pass
 
         try:
             return redirect(form.redirect_to.data)
@@ -768,7 +770,9 @@ def user_list_api():
     query = request.args.get("q", "")[0:100]
     if len(query) < 2:
         return app.jsonify(results=[])
-    results = [{"text": unicode(u.display_name), "id": str(u.pk)} for u in User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query))]
+
+    users = parse_search_string(query, sqlm.User, sqla.session.query(sqlm.User), ["display_name", "login_name"]).filter_by(banned=False).all()
+    results = [{"text": unicode(u.display_name), "id": unicode(u.id)} for u in users]
 
     results_starting_ = []
     results_other_ = []
@@ -788,7 +792,9 @@ def user_list_api_variant():
     query = request.args.get("q", "")[0:100]
     if len(query) < 2:
         return app.jsonify(results=[])
-    results = [{"text": unicode(u.display_name), "id": unicode(u.login_name)} for u in User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query))]
+
+    users = parse_search_string(query, sqlm.User, sqla.session.query(sqlm.User), ["display_name", "login_name"]).filter_by(banned=False).all()
+    results = [{"text": unicode(u.display_name), "id": unicode(u.login_name)} for u in users]
 
     results_starting_ = []
     results_other_ = []
@@ -835,7 +841,7 @@ def member_list_api():
     elif order == 5:
         order = "hidden_last_seen"
     elif order == 3:
-        order = "roles"
+        order = "is_admin"
     elif order == 0:
         order = "display_name"
     else:
@@ -846,13 +852,31 @@ def member_list_api():
     except:
         direction = "desc"
 
-    if direction == "desc":
-        order = "-"+order
-
     query = request.args.get("search[value]", "")[0:100]
 
-    member_count = User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query), banned=False).count()
-    users = User.objects(Q(display_name__icontains=query) | Q(login_name__icontains=query), banned=False).order_by(order)[current:current+length]
+
+
+    member_count = parse_search_string(query,
+        sqlm.User,
+        sqla.session.query(sqlm.User),
+        ["display_name", "login_name"]
+    ).filter_by(banned=False).count()
+
+    if direction == "desc":
+        users = parse_search_string(query,
+            sqlm.User,
+            sqla.session.query(sqlm.User),
+            ["display_name", "login_name"]
+        ).filter_by(banned=False) \
+        .order_by(sqla.desc(getattr(model, order)))[current:current+length]
+    else:
+        users = parse_search_string(query,
+            sqlm.User,
+            sqla.session.query(sqlm.User),
+            ["display_name", "login_name"]
+        ).filter_by(banned=False) \
+        .order_by(getattr(model, order))[current:current+length]
+
     table_data = []
     for i, user in enumerate(users):
         my_roles = [" <b>"+role+"</b>" for role in user.get_roles()]
@@ -866,6 +890,7 @@ def member_list_api():
             roles_template += """</div>"""
 
         extra = ""
+
         if i > 7:
             extra = """data-hplacement=\"top\""""
 

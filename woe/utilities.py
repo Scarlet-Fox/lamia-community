@@ -8,7 +8,7 @@ from mongoengine.queryset import Q
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 
-def parse_search_string(search_text, model, query_object):
+def parse_search_string(search_text, model, query_object, fields_to_search):
     if search_text.strip() == "":
         return Q()
 

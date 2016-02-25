@@ -39,6 +39,8 @@ class PrivateMessage(db.Model):
         name="fk_pm_lastreply"))
     last_reply = db.relationship("PrivateMessageReply", foreign_keys="PrivateMessage.last_reply_id")
 
+    participants = db.relationship("User", secondary="private_message_user", backref="private_messages")
+
     created = db.Column(db.DateTime)
     old_mongo_hash = db.Column(db.String, nullable=True)
 
@@ -165,6 +167,7 @@ class Fingerprint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     json = db.Column(JSONB)
     factors = db.Column(db.Integer)
+    fingerprint_hash = db.Column(db.String)
     last_seen = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_fingerprint_user"))

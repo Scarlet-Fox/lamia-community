@@ -26,7 +26,7 @@ def category_list_api():
     if len(query) < 2:
         return app.jsonify(results=[])
 
-    q_ = parse_search_string(sqla.session.query(sqlm.Category), sqlm.Category, ["name",])
+    q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
     categories = q_.all()
     results = [{"text": unicode(c.name), "id": str(c.id)} for c in categories]
     return app.jsonify(results=results)
@@ -38,7 +38,7 @@ def topic_list_api():
     if len(query) < 2:
         return app.jsonify(results=[])
 
-    q_ = parse_search_string(sqla.session.query(sqlm.Topic), sqlm.Topic, ["title",])
+    q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic), ["title",])
     topics = q_.all()
     results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
     return app.jsonify(results=results)
