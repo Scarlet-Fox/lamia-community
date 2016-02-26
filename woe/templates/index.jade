@@ -142,7 +142,7 @@
         h3.panel-title {{online_user_count}} Users Online
       .panel-body
         {% for u in online_users %}
-        {% if u.hide_login == False %}
+        {% if u.anonymous_login == False %}
         a.hover_user(data-hplacement="top", href="{{url_for('view_profile', login_name=u.login_name)}}") {{u.display_name}}
         span {% if not loop.last %},{% endif %} 
         {% else %}

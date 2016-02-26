@@ -1,5 +1,6 @@
 from woe import sqla as db
 from sqlalchemy.dialects.postgresql import JSONB
+from woe.utilities import ipb_password_check
 from slugify import slugify
 from woe import bcrypt
 
@@ -82,7 +83,7 @@ class StatusUpdateUser(db.Model):
 
     ignoring = db.Column(db.Boolean, default=False)
     blocked = db.Column(db.Boolean, default=False)
-    viewed = db.Column(db.Integer)
+    viewed = db.Column(db.Integer, default=0)
     last_viewed = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -99,7 +100,7 @@ class StatusComment(db.Model):
 
     status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
         name="fk_status_comment_status"))
-    status = db.relationship("StatusUpdate")
+    status = db.relationship("StatusUpdate", backref="comments")
 
     def __repr__(self):
         return "<StatusComment: (created='%s', author='%s')>" % (self.created, self.author.display_name)
@@ -113,6 +114,8 @@ class StatusUpdate(db.Model):
     attached_to_user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_status_update_attachedtouser"))
     attached_to_user = db.relationship("User", foreign_keys="StatusUpdate.attached_to_user_id")
+
+    participants = db.relationship("User", secondary="status_update_user", backref="status_updates")
 
     last_replied = db.Column(db.DateTime)
     last_viewed = db.Column(db.DateTime)
@@ -128,6 +131,9 @@ class StatusUpdate(db.Model):
         my_id = self.id
         count = db.session.query(StatusComment).filter(StatusComment.status_id==my_id).count()
         return count
+
+    def blocked(self):
+        return db.session.query(StatusUpdateUser).filter(StatusComment.status_id==my_id).filter_by(blocked=True).all()
 
     def __repr__(self):
         return "<StatusUpdate: (created='%s', author='%s', message='%s')>" % (self.created, self.author.display_name, self.message[0:50])
@@ -376,6 +382,9 @@ class User(db.Model):
     status_comment_count = db.Column(db.Integer)
 
     last_seen = db.Column(db.DateTime, nullable=True)
+    legacy_password = db.Column(db.Boolean, nullable=True)
+    ipb_salt = db.Column(db.String, nullable=True)
+    ipb_hash = db.Column(db.String, nullable=True)
     hidden_last_seen = db.Column(db.DateTime, nullable=True, index=True)
     last_at = db.Column(db.String)
     last_at_url = db.Column(db.String)
@@ -413,6 +422,8 @@ class User(db.Model):
             else:
                 return False
         else:
+            print self.password_hash
+            print password.strip()
             return bcrypt.check_password_hash(self.password_hash.encode('utf-8'), password.strip().encode('utf-8'))
 
     def is_anonymous(self):

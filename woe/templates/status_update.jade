@@ -73,7 +73,7 @@
               if current_user == participant:
                 br
               elif current_user != participant and (current_user == status.author or mod == True):
-                if not participant in status.blocked:
+                if not participant in status.blocked():
                   br
                   a.inherit_colors.post-link(href="/status/{{status.pk}}/toggle-silence/{{participant.pk}}") (Silence)
                 else

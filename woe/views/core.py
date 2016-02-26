@@ -261,7 +261,7 @@ def make_report():
             return abort(500)
         content_id = content.id
         content_html = content.message
-        url = "/messages/%s/page/1/post/%s" % (content.topic.pk, content.id)
+        url = "/messages/%s/page/1/post/%s" % (content.topic.id, content.id)
     elif _type == "profile":
         try:
             content = sqla.session.query(sqlm.User).filter_by(id=request_json.get("pk"))[0]
@@ -320,7 +320,7 @@ def pm_topic_list_api():
     me = current_user._get_current_object()
     topics = q_.filter(sqlm.PrivateMessage.participants.any(id=me.id)).all()
 
-    results = [{"text": unicode(t.title), "id": str(t.pk)} for t in topics]
+    results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
     return app.jsonify(results=results)
 
 @app.route('/attach', methods=['POST',])
@@ -350,13 +350,13 @@ def create_attachment():
         attach.created_date = arrow.utcnow().datetime
         attach.file_hash = img_hash
         attach.linked = False
-        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time.time())+"_"+str(current_user.pk)+filename)
-        attach.path = str(time.time())+"_"+str(current_user.pk)+filename
+        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time.time())+"_"+str(current_user.id)+filename)
+        attach.path = str(time.time())+"_"+str(current_user.id)+filename
 
         sqla.session.add(attach)
         sqla.session.commit()
         image.save(filename=upload_path)
-        return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size, ysize=attach.y_size)
+        return app.jsonify(attachment=str(attach.id), xsize=attach.x_size, ysize=attach.y_size)
     else:
         return abort(404)
 
@@ -426,7 +426,7 @@ def grab_image():
     sqla.session.add(attach)
     sqla.session.commit()
 
-    return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
+    return app.jsonify(attachment=str(attach.id), xsize=attach.x_size)
 
 @app.route('/robots.txt')
 def static_from_root():
@@ -434,84 +434,81 @@ def static_from_root():
 
 @login_manager.user_loader
 def load_user(login_name):
-    try:
-        user = sqla.session.query(sqlm.User).filter_by(login_name=login_name).one()
-        user.hidden_last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
-        if not user.anonymous_login:
-            user.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
-        if request.path.startswith("/message"):
-            user.last_seen_at = "Private messages"
-            user.last_at_url = "/messages"
-        elif request.path == "/":
-            user.last_seen_at = "Forum index"
-            user.last_at_url = "/"
-        elif request.path.startswith("/admin"):
-            user.last_seen_at = "Forum index"
-            user.last_at_url = "/"
-        elif request.path.startswith("/t/"):
-            try:
-                topic = sqla.session.query(sqlm.Topic).filter_by(slug=request.path.split("/")[2])[0]
-                user.last_seen_at = unicode(topic.title)
-                user.last_at_url = "/t/"+unicode(topic.slug)
-            except IndexError:
-                pass
-        elif request.path.startswith("/status-updates"):
-            user.last_seen_at = "Viewing status updates"
-            user.last_at_url = "/status-updates"
-        elif request.path.startswith("/status/"):
-            try:
-                status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=request.path.split("/")[2])[0]
-                user.last_seen_at = unicode(status.author.display_name)+"\'s status update"
-                user.last_at_url = "/status/"+unicode(status.pk)
-            except IndexError:
-                pass
-        elif request.path.startswith("/category/"):
-            try:
-                category = sqla.session.query(sqlm.Category).filter_by(slug=request.path.split("/")[2])[0]
-                user.last_seen_at = category.name
-                user.last_at_url = "/category/"+unicode(category.slug)
-            except IndexError:
-                pass
-        elif request.path.startswith("/search"):
-            user.last_seen_at = "Searching..."
-            user.last_at_url = "/search"
-        elif request.path.startswith("/characters/"):
-            try:
-                character = sqla.session.query(sqlm.Character).filter_by(slug=request.path.split("/")[2])[0]
-                user.last_seen_at = "Viewing character %s" % unicode(character.name)
-                user.last_at_url = "/characters/"+unicode(character.slug)
-            except:
-                pass
-        elif request.path.startswith("/member/"):
-            try:
-                profile = sqla.session.query(sqlm.User).filter_by(login_name=request.path.split("/")[2])[0]
-                user.last_seen_at = "Viewing user %s" % unicode(profile.display_name)
-                user.last_at_url = "/member/"+unicode(profile.login_name)
-            except:
-                pass
-        elif request.path == ("/characters"):
-            user.last_seen_at = "Browsing character database"
-            user.last_at_url = "/characters"
-
+    user = sqla.session.query(sqlm.User).filter_by(login_name=login_name)[0]
+    user.hidden_last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
+    if not user.anonymous_login:
+        user.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
+    if request.path.startswith("/message"):
+        user.last_seen_at = "Private messages"
+        user.last_at_url = "/messages"
+    elif request.path == "/":
+        user.last_seen_at = "Forum index"
+        user.last_at_url = "/"
+    elif request.path.startswith("/admin"):
+        user.last_seen_at = "Forum index"
+        user.last_at_url = "/"
+    elif request.path.startswith("/t/"):
         try:
-            ip_address = sqla.session.query(sqlm.IPAddress).filter_by(ip_address=request.remote_addr, user=user).one()
+            topic = sqla.session.query(sqlm.Topic).filter_by(slug=request.path.split("/")[2])[0]
+            user.last_seen_at = unicode(topic.title)
+            user.last_at_url = "/t/"+unicode(topic.slug)
+        except IndexError:
+            pass
+    elif request.path.startswith("/status-updates"):
+        user.last_seen_at = "Viewing status updates"
+        user.last_at_url = "/status-updates"
+    elif request.path.startswith("/status/"):
+        try:
+            status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=request.path.split("/")[2])[0]
+            user.last_seen_at = unicode(status.author.display_name)+"\'s status update"
+            user.last_at_url = "/status/"+unicode(status.id)
+        except IndexError:
+            pass
+    elif request.path.startswith("/category/"):
+        try:
+            category = sqla.session.query(sqlm.Category).filter_by(slug=request.path.split("/")[2])[0]
+            user.last_seen_at = category.name
+            user.last_at_url = "/category/"+unicode(category.slug)
+        except IndexError:
+            pass
+    elif request.path.startswith("/search"):
+        user.last_seen_at = "Searching..."
+        user.last_at_url = "/search"
+    elif request.path.startswith("/characters/"):
+        try:
+            character = sqla.session.query(sqlm.Character).filter_by(slug=request.path.split("/")[2])[0]
+            user.last_seen_at = "Viewing character %s" % unicode(character.name)
+            user.last_at_url = "/characters/"+unicode(character.slug)
         except:
-            ip_address = sqlm.IPAddress()
-            ip_address.ip_address = request.remote_addr
-            ip_address.user = user
+            pass
+    elif request.path.startswith("/member/"):
+        try:
+            profile = sqla.session.query(sqlm.User).filter_by(login_name=request.path.split("/")[2])[0]
+            user.last_seen_at = "Viewing user %s" % unicode(profile.display_name)
+            user.last_at_url = "/member/"+unicode(profile.login_name)
+        except:
+            pass
+    elif request.path == ("/characters"):
+        user.last_seen_at = "Browsing character database"
+        user.last_at_url = "/characters"
 
-        ip_address.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
-
-        sqla.session.add(user)
-        sqla.session.add(ip_address)
-        sqla.session.commit()
-
-        if user.validated:
-            return user
-        else:
-            return None
+    try:
+        ip_address = sqla.session.query(sqlm.IPAddress).filter_by(ip_address=request.remote_addr, user=user).one()
     except:
-        sqla.session.rollback()
+        ip_address = sqlm.IPAddress()
+        ip_address.ip_address = request.remote_addr
+        ip_address.user = user
+
+    ip_address.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
+
+    sqla.session.add(user)
+    sqla.session.add(ip_address)
+    sqla.session.commit()
+
+    if user.validated:
+        return user
+    else:
+        return None
 
 @app.route('/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
@@ -635,7 +632,7 @@ def register():
             author=new_user
             )
 
-        return redirect('/hello/'+str(new_user.pk))
+        return redirect('/hello/'+str(new_user.id))
 
     return render_template("register.jade", page_title="Become One of Us - World of Equestria", form=form)
 
@@ -652,9 +649,16 @@ def sign_in():
         login_user(form.user)
 
         if form.anonymouse.data:
-            form.user.update(hide_login=True)
+            form.user.anonymous_login=True
         else:
-            form.user.update(hide_login=False)
+            form.user.anonymous_login=False
+
+        try:
+            sqla.session.add(form.user)
+            sqla.commit()
+        except:
+            sqla.session.rollback()
+            pass
 
         try:
             fingerprint__info_from_browser = json.loads(request.form.get("log_in_token"))
@@ -739,10 +743,9 @@ def sign_in():
 
         try:
             sqla.session.add(f)
-            sqla.commit()
+            sqla.session.commit()
         except:
             sqla.session.rollback()
-            pass
 
         try:
             return redirect(form.redirect_to.data)

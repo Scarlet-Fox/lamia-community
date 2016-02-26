@@ -7,12 +7,14 @@ from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_sea
 from mongoengine.queryset import Q
 import arrow, json
 from woe.views.dashboard import broadcast
+from woe import sqla
+import woe.sqlmodels as sqlm
 
 @app.route('/status/<status>/replies', methods=['GET'])
 @login_required
 def status_update_replies(status):
     try:
-        status = StatusUpdate.objects(id=status)[0]
+        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
     except:
         return abort(404)
 
@@ -22,7 +24,8 @@ def status_update_replies(status):
     replies = []
     idx = 0
     for reply in status.comments:
-        parsed_reply = reply.to_mongo().to_dict()
+        parsed_reply = {}
+        parsed_reply["text"] = reply.message
         parsed_reply["user_name"] = reply.author.display_name
         parsed_reply["author_login_name"] = reply.author.login_name
         parsed_reply["user_avatar"] = reply.author.get_avatar_url("40")
@@ -39,7 +42,7 @@ def status_update_replies(status):
 @login_required
 def display_status_update(status):
     try:
-        status = StatusUpdate.objects(id=status)[0]
+        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
     except:
         return abort(404)
 
@@ -51,7 +54,10 @@ def display_status_update(status):
     else:
         mod = False
 
-    status.update(last_viewed=arrow.utcnow().datetime)
+    status.last_viewed=arrow.utcnow().datetime.replace(tzinfo=None)
+
+    sqla.session.add(status)
+    sqla.session.commit()
 
     # has_viewed = False
     # for viewer in status.viewing:
@@ -61,8 +67,6 @@ def display_status_update(status):
     #
     # if has_viewed == False:
     #     status.viewing.append(StatusViewer(user=current_user._get_current_object(), last_seen=arrow.utcnow().datetime))
-
-    status.save()
 
     return render_template("status_update.jade", page_title="%s's Status Update - %s - World of Equestria" % (unicode(status.author.display_name), humanize_time(status.created)), status=status, mod=mod)
 
@@ -109,7 +113,7 @@ def status_update_index():
 
     try:
         users = User.objects(pk__in=authors)
-        authors = [{"id": unicode(u.pk), "text": u.display_name} for u in users]
+        authors = [{"id": unicode(u.id), "text": u.display_name} for u in users]
     except:
         users = []
         authors = []
@@ -157,7 +161,7 @@ def status_update_index():
 @login_required
 def make_status_update_reply(status):
     try:
-        status = StatusUpdate.objects(id=status)[0]
+        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
     except:
         return abort(404)
 
@@ -167,8 +171,13 @@ def make_status_update_reply(status):
     if status.muted and current_user._get_current_object() != status.author:
         return app.jsonify(error="This status update is silenced. Shhh!")
 
-    if not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod) and (current_user._get_current_object() in status.blocked):
-        return app.jsonify(error="You have been blocked from this status update.")
+    try:
+        if not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod) and \
+                (sqla.session.query(sqlm.StatusUpdateUser). \
+                filter_by(status=status, author=current_user._get_current_object())[0].blocked):
+            return app.jsonify(error="You have been blocked from this status update.")
+    except IndexError:
+        pass
 
     if status.locked:
         return app.jsonify(error="This status update is locked.")
@@ -206,7 +215,7 @@ def make_status_update_reply(status):
     status.save()
 
     if not current_user._get_current_object() in status.participants:
-        status.update(add_to_set__participants=current_user._get_current_object())
+        status.participants.append(current_user._get_current_object())
 
     clean_html_parser = ForumPostParser()
     parsed_reply = sc.to_mongo().to_dict()
@@ -218,22 +227,22 @@ def make_status_update_reply(status):
     parsed_reply["time"] = humanize_time(sc.created)
 
     send_notify_to_users = []
-    for user in status.participants:
-        if user == current_user._get_current_object():
+    for user in sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status).all():
+        if user.author == current_user._get_current_object():
             continue
 
-        if user in status.ignoring:
+        if user.author.ignoring:
             continue
 
-        if user == status.author:
+        if user.author == status.author:
             continue
 
-        send_notify_to_users.append(user)
+        send_notify_to_users.append(user.author)
 
     broadcast(
         to=send_notify_to_users,
         category="status",
-        url="/status/"+str(status.pk),
+        url="/status/"+str(status.id),
         title="Reply to %s's Status Update" % (unicode(status.author.display_name),),
         description=status.message,
         content=status,
@@ -244,7 +253,7 @@ def make_status_update_reply(status):
         broadcast(
             to=[status.author],
             category="status",
-            url="/status/"+str(status.pk),
+            url="/status/"+str(status.id),
             title="Reply to Your Status Update",
             description=status.message,
             content=status,
@@ -284,20 +293,20 @@ def create_new_status():
     broadcast(
       to=send_notify_to_users,
       category="user_activity",
-      url="/status/"+unicode(status.pk),
+      url="/status/"+unicode(status.id),
       title="%s created a status update." % (unicode(status.author.display_name),),
       description=status.message,
       content=status,
       author=status.author
       )
 
-    return app.jsonify(url="/status/"+unicode(status.pk))
+    return app.jsonify(url="/status/"+unicode(status.id))
 
 @app.route('/status/<status>/hide-reply/<idx>', methods=['POST'])
 @login_required
 def status_hide_reply(status, idx):
     try:
-        status = StatusUpdate.objects(id=status)[0]
+        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
     except:
         return abort(404)
 
@@ -316,8 +325,8 @@ def status_hide_reply(status, idx):
 @login_required
 def toggle_status_blocking(status, user):
     try:
-        status = StatusUpdate.objects(id=status)[0]
-        user = User.objects(id=user)[0]
+        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
+        user = sqla.session.query(sqlm.User).filter_by(id=user)[0]
     except:
         return abort(404)
 
@@ -328,48 +337,48 @@ def toggle_status_blocking(status, user):
     if user == current_user._get_current_object():
         return abort(404)
 
-    if not user in status.blocked:
-        status.update(add_to_set__blocked=user)
-    else:
-        try:
-            status.blocked.remove(user)
-        except:
-            pass
-        status.save()
+    status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(
+        author=current_user._get_current_object(), status=status)
 
-    return app.jsonify(url="/status/"+unicode(status.pk))
+    status_user.blocked = not status_user.blocked
+
+    sqla.session.add(status_user)
+    sqla.session.commit()
+
+    return app.jsonify(url="/status/"+unicode(status.id))
 
 @app.route('/status/<status>/toggle-ignore', methods=['POST'])
 @login_required
 def toggle_status_ignoring(status):
     try:
-        status = StatusUpdate.objects(id=status)[0]
+        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
     except:
         return abort(404)
 
-    if not current_user._get_current_object() in status.participants:
-        try:
-            status.update(add_to_set__participants=current_user._get_current_object())
-            return app.jsonify(url="/status/"+str(status.pk))
-        except:
-            return app.jsonify(url="/status/"+str(status.pk))
+    try:
+        status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status, author=current_user._get_current_object())[0]
+    except IndexError:
+        status_user = None
 
-    if not current_user._get_current_object() in status.ignoring:
-        status.update(add_to_set__ignoring=current_user._get_current_object())
-    else:
+    if not status_user:
         try:
-            status.ignoring.remove(current_user._get_current_object())
+            status.participants.append(current_user._get_current_object())
+            return app.jsonify(url="/status/"+str(status.id))
         except:
-            pass
-        status.save()
+            return app.jsonify(url="/status/"+str(status.id))
 
-    return app.jsonify(url="/status/"+unicode(status.pk))
+    status_user.ignoring = not status_user.ignoring
+
+    sqla.session.add(status_user)
+    sqla.session.commit()
+
+    return app.jsonify(url="/status/"+unicode(status.id))
 
 @app.route('/status/<status>/toggle-hidden', methods=['POST'])
 @login_required
 def toggle_status_hide(status):
     try:
-        status = StatusUpdate.objects(id=status)[0]
+        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
     except:
         return abort(404)
 
@@ -381,7 +390,7 @@ def toggle_status_hide(status):
             broadcast(
                 to=[status.author,],
                 category="status",
-                url="/status/"+str(status.pk),
+                url="/status/"+str(status.id),
                 title="Status update hidden.",
                 description=status.message,
                 content=status,
@@ -391,40 +400,46 @@ def toggle_status_hide(status):
         broadcast(
             to=list(User.objects(is_admin=True)),
             category="mod",
-            url="/status/"+str(status.pk),
+            url="/status/"+str(status.id),
             title="%s's status update hidden." % (unicode(status.author.display_name),),
             description=status.message,
             content=status,
             author=current_user._get_current_object()
             )
 
-    status.update(hidden=not status.hidden)
-    return app.jsonify(url="/status/"+unicode(status.pk))
+    status.hidden=not status.hidden
+    sqla.session.add(status)
+    sqla.session.commit()
+    return app.jsonify(url="/status/"+unicode(status.id))
 
 @app.route('/status/<status>/toggle-mute', methods=['POST'])
 @login_required
 def toggle_status_mute(status):
     try:
-        status = StatusUpdate.objects(id=status)[0]
+        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
     except:
         return abort(404)
 
     if current_user._get_current_object() != status.author and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
         return abort(404)
 
-    status.update(muted=not status.muted)
-    return app.jsonify(url="/status/"+unicode(status.pk))
+    status.muted=not status.muted
+    sqla.session.add(status)
+    sqla.session.commit()
+    return app.jsonify(url="/status/"+unicode(status.id))
 
 @app.route('/status/<status>/toggle-lock', methods=['POST'])
 @login_required
 def toggle_status_lock(status):
     try:
-        status = StatusUpdate.objects(id=status)[0]
+        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
     except:
         return abort(404)
 
     if current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True:
         return abort(404)
 
-    status.update(locked=not status.locked)
-    return app.jsonify(url="/status/"+unicode(status.pk))
+    status.locked=not status.locked
+    sqla.session.add(status)
+    sqla.session.commit()
+    return app.jsonify(url="/status/"+unicode(status.id))
