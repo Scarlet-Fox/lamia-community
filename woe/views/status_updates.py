@@ -1,5 +1,4 @@
 from woe import app
-from woe.models.core import User, StatusUpdate, StatusComment, StatusViewer
 from woe.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_required, current_user
@@ -22,8 +21,7 @@ def status_update_replies(status):
         return abort(404)
 
     replies = []
-    idx = 0
-    for reply in status.comments:
+    for reply in sqla.session.query(sqlm.StatusComment).filter_by(status=status, hidden=False):
         parsed_reply = {}
         parsed_reply["text"] = reply.message
         parsed_reply["user_name"] = reply.author.display_name
@@ -32,9 +30,8 @@ def status_update_replies(status):
         parsed_reply["user_avatar_x"] = reply.author.avatar_40_x
         parsed_reply["user_avatar_y"] = reply.author.avatar_40_y
         parsed_reply["time"] = humanize_time(reply.created)
-        parsed_reply["idx"] = idx
+        parsed_reply["idx"] = reply.id
         replies.append(parsed_reply)
-        idx+=1
 
     return app.jsonify(replies=replies, count=status.get_comment_count())
 
@@ -182,7 +179,7 @@ def make_status_update_reply(status):
     if status.locked:
         return app.jsonify(error="This status update is locked.")
 
-    if status.get_comment_count() > 99:
+    if status.get_comment_count() > 199:
         return app.jsonify(error="This status update is full!")
 
     request_json = request.get_json(force=True)
@@ -205,20 +202,27 @@ def make_status_update_reply(status):
         if difference < 5:
             return app.jsonify(error="Please wait %s seconds before you can reply again." % (5 - difference))
 
-    sc = StatusComment()
-    sc.text = _html
+    sc = sqlm.StatusComment()
+    sc.created = arrow.utcnow().datetime.replace(tzinfo=None)
+    sc.message = _html
     sc.author = current_user._get_current_object()
-    sc.created = arrow.utcnow().datetime
-    status.comments.append(sc)
+    sc.status = status
+
+    sqla.session.add(sc)
+    sqla.session.commit()
+
     status.replies = status.get_comment_count()
-    status.last_replied = arrow.utcnow().datetime
-    status.save()
+    status.last_replied = arrow.utcnow().datetime.replace(tzinfo=None)
+
+    sqla.session.add(status)
+    sqla.session.commit()
 
     if not current_user._get_current_object() in status.participants:
         status.participants.append(current_user._get_current_object())
 
     clean_html_parser = ForumPostParser()
-    parsed_reply = sc.to_mongo().to_dict()
+    parsed_reply = {}
+    parsed_reply["text"] = sc.message
     parsed_reply["user_name"] = sc.author.display_name
     parsed_reply["user_avatar"] = sc.author.get_avatar_url("40")
     parsed_reply["user_avatar_x"] = sc.author.avatar_40_x
@@ -231,7 +235,7 @@ def make_status_update_reply(status):
         if user.author == current_user._get_current_object():
             continue
 
-        if user.author.ignoring:
+        if user.ignoring:
             continue
 
         if user.author == status.author:
@@ -249,7 +253,7 @@ def make_status_update_reply(status):
         author=current_user._get_current_object()
         )
 
-    if current_user._get_current_object() != status.author and current_user._get_current_object() not in status.ignoring:
+    if current_user._get_current_object() != status.author:
         broadcast(
             to=[status.author],
             category="status",
@@ -267,9 +271,8 @@ def make_status_update_reply(status):
 def create_new_status():
     request_json = request.get_json(force=True)
 
-    status = StatusUpdate()
+    status = sqlm.StatusUpdate()
     status.author = current_user._get_current_object()
-    status.author_name = current_user._get_current_object().login_name
 
     if len(request_json.get("message", "")) == 0:
         return app.jsonify(error="Your status update is empty.")
@@ -282,42 +285,44 @@ def create_new_status():
 
     status.message = _html
     status.participants.append(status.author)
-    status.created = arrow.utcnow().datetime
-    status.save()
+    status.created = arrow.utcnow().datetime.replace(tzinfo=None)
+    status.replies = 0
 
-    send_notify_to_users = []
-    for user in status.author.followed_by:
-        if user not in status.author.ignored_users:
-            send_notify_to_users.append(user)
+    sqla.session.add(status)
+    sqla.session.commit()
 
-    broadcast(
-      to=send_notify_to_users,
-      category="user_activity",
-      url="/status/"+unicode(status.id),
-      title="%s created a status update." % (unicode(status.author.display_name),),
-      description=status.message,
-      content=status,
-      author=status.author
-      )
-
+    # TODO: FOLLOW
+    # send_notify_to_users = []
+    # for user in status.author.followed_by:
+    #     if user not in status.author.ignored_users:
+    #         send_notify_to_users.append(user)
+    #
+    # broadcast(
+    #   to=send_notify_to_users,
+    #   category="user_activity",
+    #   url="/status/"+unicode(status.id),
+    #   title="%s created a status update." % (unicode(status.author.display_name),),
+    #   description=status.message,
+    #   content=status,
+    #   author=status.author
+    #   )
+    #
     return app.jsonify(url="/status/"+unicode(status.id))
 
 @app.route('/status/<status>/hide-reply/<idx>', methods=['POST'])
 @login_required
 def status_hide_reply(status, idx):
     try:
-        status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
+        comment = sqla.session.query(sqlm.StatusComment).filter_by(id=idx)[0]
     except:
         return abort(404)
 
-    if current_user._get_current_object() != status.author and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
+    if (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
         return abort(404)
 
-    try:
-        status.comments[int(idx)].hidden = True
-        status.save()
-    except:
-        pass
+    comment.hidden = True
+    sqla.session.add(comment)
+    sqla.session.commit()
 
     return app.jsonify(success=True)
 

@@ -128,7 +128,6 @@
             ref = response.replies;
             for (i = 0, len = ref.length; i < len; i++) {
               comment = ref[i];
-              comment.hide_enabled = true;
               $("#status-replies").append(_this.replyHTML(comment));
             }
             if (scrolldown) {
