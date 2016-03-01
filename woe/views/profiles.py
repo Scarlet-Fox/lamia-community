@@ -8,6 +8,8 @@ from werkzeug import secure_filename
 import os
 import arrow
 from woe.utilities import ForumHTMLCleaner
+from woe import sqla
+import woe.sqlmodels as sqlm
 
 @app.route('/member/<login_name>/mod-panel')
 @login_required
@@ -57,9 +59,10 @@ def user_moderation_panel(login_name):
 @login_required
 def view_profile(login_name):
     try:
-        user = User.objects(login_name=login_name.strip().lower())[0]
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
     except IndexError:
         abort(404)
+
     parser = ForumPostParser()
     try:
         user.about_me = parser.parse(user.about_me)
@@ -71,24 +74,27 @@ def view_profile(login_name):
 @login_required
 def validate_user(login_name):
     try:
-        user = User.objects(login_name=login_name.strip().lower())[0]
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
     except IndexError:
-        return abort(404)
+        abort(404)
 
     if current_user._get_current_object().is_admin != True:
         return abort(404)
 
-    user.update(validated=True)
+    user.validated = True
 
-    return app.jsonify(url="/member/"+unicode(login_name))
+    sqla.session.add(user)
+    sqla.session.commit()
+
+    return app.jsonify(url="/member/"+unicode(user.my_url))
 
 @app.route('/member/<login_name>/toggle-ignore', methods=['POST'])
 @login_required
 def toggle_ignore_user(login_name):
     try:
-        user = User.objects(login_name=login_name.strip().lower())[0]
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
     except IndexError:
-        return abort(404)
+        abort(404)
 
     if current_user._get_current_object() == user:
         return abort(404)
@@ -96,9 +102,13 @@ def toggle_ignore_user(login_name):
     if user in current_user._get_current_object().ignored_users:
         c = current_user._get_current_object()
         c.ignored_users.remove(user)
-        c.save()
+        sqla.session.add(c)
+        sqla.session.commit()
     else:
-        current_user._get_current_object().update(add_to_set__ignored_users=user)
+        c = current_user._get_current_object()
+        c.ignored_users.append(user)
+        sqla.session.add(c)
+        sqla.session.commit()
 
     return app.jsonify(url="/member/"+unicode(login_name))
 

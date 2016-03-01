@@ -279,10 +279,10 @@ class IgnoringUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_ignoringuser_user"))
-    user = db.relationship("User", foreign_keys="IgnoringUser.user_id")
+    user = db.relationship("User", foreign_keys=user_id)
     ignoring_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_ignoringuser_ignoring"))
-    ignoring = db.relationship("User", foreign_keys="IgnoringUser.ignoring_id")
+    ignoring = db.relationship("User", foreign_keys=ignoring_id)
     __table_args__ = (db.UniqueConstraint('user_id', 'ignoring_id', name='unique_user_ignoring'),)
     created = db.Column(db.DateTime)
 
@@ -339,6 +339,12 @@ class User(db.Model):
                     backref="users")
 
     data = db.Column(JSONB)
+
+    ignored_users = db.relationship("Role",
+            secondary="ignoring_user",
+            primaryjoin="IgnoringUser.user_id == User.id",
+            secondaryjoin="IgnoringUser.ignoring_id == User.id"
+        )
 
     display_name = db.Column(db.String, unique=True)
     login_name = db.Column(db.String, unique=True)
