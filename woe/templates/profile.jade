@@ -29,7 +29,7 @@
       if current_user.is_authenticated() and current_user != profile and current_user not in profile.ignored_users
         center
           .btn-group
-            if current_user not in profile.followed_by
+            if current_user not in profile.followed_by()
               a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Follow
             else
               a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Unfollow

@@ -127,7 +127,7 @@ class DisplayNamePasswordForm(Form):
     def validate_display_name(self, field):
         if self.user_object.display_name != field.data.strip():
             user_count = sqla.session.query(sqlm.User).filter(
-                sqla.func.lower(sqlm.User.display_name) == func.lower(field.data.lower().strip())
+                sqla.func.lower(sqlm.User.display_name) == field.data.lower().strip()
             ).count()
             if user_count > 0:
                 raise validators.ValidationError("That name is already taken.")

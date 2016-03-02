@@ -340,10 +340,16 @@ class User(db.Model):
 
     data = db.Column(JSONB)
 
-    ignored_users = db.relationship("Role",
+    ignored_users = db.relationship("IgnoringUser",
             secondary="ignoring_user",
             primaryjoin="IgnoringUser.user_id == User.id",
             secondaryjoin="IgnoringUser.ignoring_id == User.id"
+        )
+
+    followed_users = db.relationship("FollowingUser",
+            secondary="following_user",
+            primaryjoin="FollowingUser.user_id == User.id",
+            secondaryjoin="FollowingUser.following_id == User.id"
         )
 
     display_name = db.Column(db.String, unique=True)
@@ -459,6 +465,11 @@ class User(db.Model):
 
     def get_id(self):
         return self.login_name
+
+    def followed_by(self):
+        followed_me = FollowingUser.query.filter_by(following=self)
+        users_following_me = [f.user for f in followed_me]
+        return users_following_me
 
     def get_avatar_url(self, size=""):
         if size != "":
