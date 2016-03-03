@@ -6,18 +6,20 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import arrow, time, math
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner
 from woe.views.dashboard import broadcast
+import woe.sqlmodels as sqlm
+from woe import sqla
 
 @app.route('/messages/<pk>/edit-post/<post>', methods=['GET'])
 @login_required
 def get_post_html_in_pm_topic(pk, post):
     try:
-        topic = PrivateMessageTopic.objects(pk=pk)[0]
+        topic = sqla.session.query(sqlm.PrivateMessage).filter_by(id=pk)[0]
     except IndexError:
         return abort(404)
 
     try:
-        post = PrivateMessage.objects(topic=topic, pk=post)[0]
-    except:
+        post = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=post, pm=topic)[0]
+    except IndexError:
         return abort(404)
 
     return json.jsonify(content=post.message, author=post.author.display_name)
@@ -26,35 +28,52 @@ def get_post_html_in_pm_topic(pk, post):
 @login_required
 def kick_from_pm_topic(pk, upk):
     try:
-        topic = PrivateMessageTopic.objects(pk=pk)[0]
+        topic = sqla.session.query(sqlm.PrivateMessage).filter_by(id=pk)[0]
     except IndexError:
         return abort(404)
 
-    if not current_user._get_current_object() in topic.participating_users or not current_user._get_current_object() == topic.creator:
+    if not current_user._get_current_object() == topic.creator:
         return abort(404)
 
     try:
-        target_user = User.objects(pk=upk)[0]
-    except:
+        target_user = sqla.session.query(sqlm.User).filter_by(id=upk)[0]
+    except IndexError:
         return abort(404)
 
-    topic.update(add_to_set__users_left_pm=target_user)
-    topic.update(add_to_set__blocked_users=target_user)
+    try:
+        pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+            pm = topic,
+            author = user
+        )[0]
+    except IndexError:
+        return abort(404)
 
-    return json.jsonify(url='/messages/'+str(topic.pk))
+    pm_user.blocked = True
+    pm_user.exited = True
+    sqla.session.add(pm_user)
+    sqla.session.commit()
+
+    return json.jsonify(url='/messages/'+str(topic.id))
 
 @app.route('/messages/<pk>/leave-topic', methods=['POST'])
 @login_required
 def leave_pm_topic(pk):
     try:
-        topic = PrivateMessageTopic.objects(pk=pk)[0]
+        topic = sqla.session.query(sqlm.PrivateMessage).filter_by(id=pk)[0]
     except IndexError:
         return abort(404)
 
-    if not current_user._get_current_object() in topic.participating_users:
+    try:
+        pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+            pm = topic,
+            author = current_user._get_current_object()
+        )[0]
+    except IndexError:
         return abort(404)
 
-    topic.update(add_to_set__users_left_pm=current_user._get_current_object())
+    pm_user.exited = True
+    sqla.session.add(pm_user)
+    sqla.session.commit()
 
     return json.jsonify(url='/messages')
 
@@ -62,17 +81,25 @@ def leave_pm_topic(pk):
 @login_required
 def edit_post_in_pm_topic(pk):
     try:
-        topic = PrivateMessageTopic.objects(pk=pk)[0]
+        topic = sqla.session.query(sqlm.PrivateMessage).filter_by(id=pk)[0]
     except IndexError:
         return abort(404)
 
-    if not current_user._get_current_object() in topic.participating_users:
+    try:
+        pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+            pm = topic,
+            author = current_user._get_current_object()
+        )[0]
+    except IndexError:
         return abort(404)
 
     request_json = request.get_json(force=True)
 
     try:
-        message = PrivateMessage.objects(topic=topic, pk=request_json.get("pk"))[0]
+        message = sqla.session.query(sqlm.PrivateMessageReply).filter_by(
+            id = request_json.get("pk"),
+            pm = topic
+        )[0]
     except IndexError:
         return abort(404)
 
@@ -90,7 +117,9 @@ def edit_post_in_pm_topic(pk):
 
     message.message = post_html
     message.modified = arrow.utcnow().datetime
-    message.save()
+
+    sqla.session.add(message)
+    sqla.session.commit()
 
     clean_html_parser = ForumPostParser()
     return app.jsonify(html=clean_html_parser.parse(message.message), success=True)
@@ -99,11 +128,16 @@ def edit_post_in_pm_topic(pk):
 @login_required
 def new_message_in_pm_topic(pk):
     try:
-        topic = PrivateMessageTopic.objects(pk=pk)[0]
+        topic = sqla.session.query(sqlm.PrivateMessage).filter_by(id=pk)[0]
     except IndexError:
         return abort(404)
 
-    if not current_user._get_current_object() in topic.participating_users:
+    try:
+        pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+            pm = topic,
+            author = current_user._get_current_object()
+        )[0]
+    except IndexError:
         return abort(404)
 
     request_json = request.get_json(force=True)
@@ -111,10 +145,11 @@ def new_message_in_pm_topic(pk):
     if request_json.get("text", "").strip() == "":
         return app.jsonify(error="Your post is empty.")
 
-    non_left_or_blocked_users = 0
-    for user in topic.participating_users:
-        if user not in topic.users_left_pm and user not in topic.blocked_users:
-            non_left_or_blocked_users += 1
+    non_left_or_blocked_users = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+        pm = topic,
+        exited = False,
+        blocked = False
+    ).count()
 
     if non_left_or_blocked_users == 1:
         return app.jsonify(error="There is only one participant in this private message. Don't talk to yourself. :)")
@@ -125,24 +160,20 @@ def new_message_in_pm_topic(pk):
     except:
         return abort(500)
 
-    topic.last_reply_by = current_user._get_current_object()
-    topic.last_reply_name = current_user._get_current_object().display_name
-    topic.last_reply_time = arrow.utcnow().datetime
-    topic.message_count = topic.message_count + 1
-    topic.save()
-
-    message = PrivateMessage()
+    message = sqlm.PrivateMessageReply()
     message.message = post_html
     message.author = current_user._get_current_object()
-    message.created = arrow.utcnow().datetime
-    message.author_name = current_user._get_current_object().login_name
-    message.topic = topic
-    message.topic_name = topic.title
-    message.topic_creator_name = topic.creator_name
-    message.save()
+    message.created = arrow.utcnow().datetime.replace(tzinfo=None)
+    message.pm = topic
+    sqla.session.add(message)
+    sqla.session.commit()
+
+    topic.last_reply = message
+    sqla.session.add(topic)
+    sqla.session.commit()
 
     clean_html_parser = ForumPostParser()
-    parsed_post = message.to_mongo().to_dict()
+    parsed_post = {}
     parsed_post["created"] = humanize_time(message.created, "MMM D YYYY")
     parsed_post["modified"] = humanize_time(message.modified, "MMM D YYYY")
     parsed_post["html"] = clean_html_parser.parse(message.message)
@@ -158,13 +189,13 @@ def new_message_in_pm_topic(pk):
     parsed_post["group_pre_html"] = message.author.group_pre_html
     parsed_post["author_group_name"] = message.author.group_name
     parsed_post["group_post_html"] = message.author.group_post_html
-    post_count = PrivateMessage.objects(topic=topic).count()
+    post_count = sqla.session.query(PrivateMessageReply).filter_by(pm=topic).count()
 
     notify_users = []
-    for u in topic.participating_users:
-        if u == message.author:
+    for u in sqla.session.query(sqlm.PrivateMessageUser).filter_by(pm = topic):
+        if u.author == message.author:
             continue
-        if u in topic.users_left_pm or u in topic.blocked_users:
+        if u.exited or u.blocked or u.ignoring:
             continue
         notify_users.append(u)
 
@@ -183,7 +214,7 @@ def new_message_in_pm_topic(pk):
 @app.route('/messages/<pk>/posts', methods=['POST'])
 def private_message_posts(pk):
     try:
-        topic = PrivateMessageTopic.objects(pk=pk)[0]
+        topic = sqla.session.query(sqlm.PrivateMessage).filter_by(id=pk)[0]
     except IndexError:
         return abort(404)
 
@@ -247,7 +278,7 @@ def private_message_posts(pk):
 @app.route('/messages/<pk>/page/<page>/post/<post>', methods=['GET'])
 def message_index(pk, page, post):
     try:
-        topic = PrivateMessageTopic.objects(pk=pk)[0]
+        topic = sqla.session.query(sqlm.PrivateMessage).filter_by(id=pk)[0]
     except IndexError:
         return abort(404)
 
