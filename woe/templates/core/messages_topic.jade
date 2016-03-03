@@ -8,11 +8,11 @@
     a(href="/messages") Private Messages
   li.active
     b
-      a(href="/messages/{{topic.pk}}") {{topic.title}}
+      a(href="/messages/{{topic.id}}") {{topic.title}}
 .row
   .col-md-9
     ul.list-group.category
-      #post-container(data-pk="{{topic.pk}}")
+      #post-container(data-pk="{{topic.id}}")
       li.list-group-item(style="overflow: hidden;")
         #new-post-box
           if current_user.is_authenticated() == False:
@@ -35,10 +35,10 @@
             else
               if current_user == participant
                 br
-                a.inherit_colors.post-link(href="/messages/{{topic.pk}}/leave-topic") (Leave Topic)
+                a.inherit_colors.post-link(href="/messages/{{topic.id}}/leave-topic") (Leave Topic)
               elif current_user != participant and current_user == topic.creator
                 br
-                a.inherit_colors.post-link(href="/messages/{{topic.pk}}/kick-from-topic/{{participant.pk}}") (Kick)
+                a.inherit_colors.post-link(href="/messages/{{topic.id}}/kick-from-topic/{{participant.id}}") (Kick)
             
 nav.pagination-listing
 {% endblock %}
@@ -54,7 +54,7 @@ script(type="text/javascript", src="{{ASSET_URL}}").
 script(type="text/javascript").
   $(document).ready(function(){  
     {% if current_user.is_authenticated() == True %}
-    window._pagination={{current_user.post_pagination}};
+    window._pagination=20;//{{current_user.post_pagination}};
     {% if current_user == topic.creator %}
     window._is_topic_mod=true;
     {% else %}

@@ -7,16 +7,16 @@ $ ->
       @pagination = 20
       @topicHTML = Handlebars.compile(@topicHTMLTemplate())
       @paginationHTML = Handlebars.compile(@paginationHTMLTemplate())
-      
+
       do @refreshTopics
-        
+
       $("nav.pagination-listing").delegate ".change-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
         $(".page-link-#{category.page}").parent().removeClass("active")
         category.page = parseInt(element.text())
         do category.refreshTopics
-        
+
       $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -24,7 +24,7 @@ $ ->
           $(".change-page").parent().removeClass("active")
           category.page--
           do category.refreshTopics
-        
+
       $("nav.pagination-listing").delegate "#next-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -33,7 +33,7 @@ $ ->
           $(".change-page").parent().removeClass("active")
           category.page++
           do category.refreshTopics
-          
+
     paginationHTMLTemplate: () ->
       return """
           <ul class="pagination">
@@ -52,7 +52,7 @@ $ ->
             </li>
           </ul>
       """
-    
+
     topicHTMLTemplate: () ->
       return """
         <div class="row">
@@ -72,7 +72,7 @@ $ ->
           </div>
           <div class="col-xs-3 hidden-xs hidden-sm">
             <span class="topic-listing-recent">
-              <a href="" class="topic-listing-text">{{message_count}} replies</a>
+              <a href="/messages/{{_id}}" class="topic-listing-text">{{message_count}} replies</a>
             </span>
           </div>
           <div class="col-xs-6 col-sm-3 hidden-xs">
@@ -90,8 +90,8 @@ $ ->
       {{#unless last}}
       <hr>
       {{/unless}}
-      """  
-      
+      """
+
     refreshTopics: () =>
       new_topic_html = ""
       $.post "/message-topics", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
@@ -103,10 +103,9 @@ $ ->
         pages = [1..Math.ceil data.count/@pagination]
         @max_pages = pages[pages.length-1]
         pagination_html = @paginationHTML {pages: pages}
-        
+
         $(".topic-listing").html(new_topic_html)
         $(".pagination-listing").html(pagination_html)
         $(".page-link-#{@page}").parent().addClass("active")
-          
+
   window.messages = new Messages()
-  

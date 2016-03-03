@@ -187,9 +187,6 @@ def new_message_in_pm_topic(pk):
     parsed_post["user_title"] = message.author.title
     parsed_post["author_name"] = message.author.display_name
     parsed_post["author_login_name"] = message.author.login_name
-    parsed_post["group_pre_html"] = message.author.group_pre_html
-    parsed_post["author_group_name"] = message.author.group_name
-    parsed_post["group_post_html"] = message.author.group_post_html
     post_count = sqla.session.query(PrivateMessageReply).filter_by(pm=topic).count()
 
     notify_users = []
@@ -259,9 +256,7 @@ def private_message_posts(pk):
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
         parsed_post["author_login_name"] = post.author.login_name
-        parsed_post["group_pre_html"] = post.author.group_pre_html
-        parsed_post["author_group_name"] = post.author.group_name
-        parsed_post["group_post_html"] = post.author.group_post_html
+        parsed_post["_id"] = post.id
 
         if current_user.is_authenticated():
             if post.author.id == current_user._get_current_object().id:
@@ -513,8 +508,9 @@ def messages_topics():
         _parsed["last_post_y"] = message.last_reply.author.avatar_40_y
         _parsed["last_post_by_login_name"] = message.last_reply.author.login_name
         _parsed["last_post_author_avatar"] = message.last_reply.author.get_avatar_url("40")
-        _parsed["post_count"] = "{:,}".format(message.count)
-        _parsed["pk"] = message.id
+        _parsed["message_count"] = "{:,}".format(message.count)
+        _parsed["_id"] = message.id
+        _parsed["title"] = message.title
         try:
             _parsed["last_page"] = float(message.count)/float(pagination)
         except:

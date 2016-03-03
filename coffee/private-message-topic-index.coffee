@@ -11,19 +11,19 @@ $ ->
       @paginationHTML = Handlebars.compile(@paginationHTMLTemplate())
       @is_mod = window._is_topic_mod
       @is_logged_in = window._is_logged_in
-      
+
       socket = io.connect('http://' + document.domain + ':3000' + '');
-      
+
       window.onbeforeunload = () ->
         if topic.inline_editor.quill.getText().trim() != ""
           return "It looks like you were typing up a post."
-      
+
       socket.on "connect", () =>
         socket.emit 'join', "pm--#{topic.pk}"
-      
+
       socket.on "console", (data) ->
         console.log data
-        
+
       socket.on "event", (data) ->
         if data.post?
           if topic.page == topic.max_pages
@@ -32,26 +32,26 @@ $ ->
           else
             topic.max_pages = Math.ceil data.count/topic.pagination
             topic.page = topic.max_pages
-      
+
       window.socket = socket
-      
+
       do @refreshPosts
 
       if window._can_edit?
         @inline_editor = new InlineEditor "#new-post-box", "", false
-      
+
         @inline_editor.onSave (html, text) ->
           $.post "/messages/#{topic.pk}/new-post", JSON.stringify({post: html, text: text}), (data) =>
             if data.error?
               topic.inline_editor.flashError data.error
-              
+
             if data.success?
               topic.inline_editor.clearEditor()
-              socket.emit "event", 
+              socket.emit "event",
                 room: "pm--#{topic.pk}"
                 post: data.newest_post
                 count: data.count
-                
+
               if topic.page == topic.max_pages
                 $("#post-container").append topic.postHTML data.newest_post
                 window.addExtraHTML $("#post-"+data.newest_post._id)
@@ -60,21 +60,21 @@ $ ->
                     $("#new-post-box")[0].scrollIntoView()
               else
                 window.location = "/messages/#{topic.pk}/page/1/post/latest_post"
-                
+
       $("#post-container").delegate ".reply-button", "click", (e) ->
         e.preventDefault()
         element = $(this)
         my_content = ""
         $.get "/messages/#{topic.pk}/edit-post/#{element.data("pk")}", (data) ->
           my_content = "[reply=#{element.data("pk")}:pm:#{data.author}]\n\n"
-          x = window.scrollX  
+          x = window.scrollX
           y = window.scrollY
           topic.inline_editor.quill.focus()
           window.scrollTo x, y
           current_position = topic.inline_editor.quill.getSelection()?.start
           unless current_position?
             current_position = topic.inline_editor.quill.getLength()
-          topic.inline_editor.quill.insertText current_position, my_content 
+          topic.inline_editor.quill.insertText current_position, my_content
 
       $("#post-container").delegate ".post-edit", "click", (e) ->
         e.preventDefault()
@@ -82,26 +82,26 @@ $ ->
         post_content = $("#post-"+element.data("pk"))
         post_buttons = $("#post-buttons-"+element.data("pk"))
         post_buttons.hide()
-        
+
         inline_editor = new InlineEditor "#post-"+element.data("pk"), "/messages/#{topic.pk}/edit-post/#{element.data("pk")}", true
-        
+
         inline_editor.onSave (html, text, edit_reason) ->
           $.post "/messages/#{topic.pk}/edit-post", JSON.stringify({pk: element.data("pk"), post: html, text: text}), (data) ->
             if data.error?
               inline_editor.flashError data.error
-            
+
             if data.success?
               inline_editor.destroyEditor()
               post_content.html data.html
               window.addExtraHTML post_content
               post_buttons.show()
-        
+
         inline_editor.onCancel (html, text) ->
           inline_editor.destroyEditor()
           inline_editor.resetElementHtml()
           window.addExtraHTML $("#post-"+element.data("pk"))
           post_buttons.show()
-                   
+
       $("nav.pagination-listing").delegate "#previous-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -109,7 +109,7 @@ $ ->
           $(".change-page").parent().removeClass("active")
           topic.page--
           do topic.refreshPosts
-        
+
       $("nav.pagination-listing").delegate "#next-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -117,25 +117,25 @@ $ ->
           $(".change-page").parent().removeClass("active")
           topic.page++
           do topic.refreshPosts
-      
+
       $("nav.pagination-listing").delegate ".change-page", "click", (e) ->
         e.preventDefault()
         element = $(this)
         topic.page = parseInt(element.text())
         do topic.refreshPosts
-        
+
       $("nav.pagination-listing").delegate "#go-to-end", "click", (e) ->
         e.preventDefault()
         element = $(this)
         topic.page = parseInt(topic.max_pages)
         do topic.refreshPosts
-        
+
       $("nav.pagination-listing").delegate "#go-to-start", "click", (e) ->
         e.preventDefault()
         element = $(this)
         topic.page = 1
         do topic.refreshPosts
-        
+
       popped = ('state' in window.history)
       initialURL = location.href
       $(window).on "popstate", (e) ->
@@ -143,13 +143,13 @@ $ ->
         popped = true
         if initialPop
           return
-        
+
         setTimeout(() ->
           window.location = window.location
         , 200)
-        
+
       window.RegisterAttachmentContainer "#post-container"
-              
+
     paginationHTMLTemplate: () ->
       return """
           <ul class="pagination">
@@ -178,7 +178,7 @@ $ ->
             </li>
           </ul>
       """
-    
+
     postHTMLTemplate: () ->
       return """
             <li class="list-group-item post-listing-info">
@@ -200,7 +200,7 @@ $ ->
                   <span class="hidden-md hidden-lg">Posted {{created}}</span>
                 </div>
                 <div class="col-md-9 hidden-xs hidden-sm">
-                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-{{_id}}">\#{{count}}</a></span>
+                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-{{_id}}">\#{{_id}}</a></span>
                   Posted {{created}}
                 </div>
               </div>
@@ -260,7 +260,7 @@ $ ->
                   </div>
                 </div>
       """
-      
+
     refreshPosts: () ->
       new_post_html = ""
       $.post "/messages/#{@pk}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
@@ -275,7 +275,7 @@ $ ->
           post._is_logged_in = @is_logged_in
           post.direct_url = "/messages/#{@pk}/page/#{@page}/post/#{post._id}"
           new_post_html = new_post_html + @postHTML post
-        
+
         pages = []
         @max_pages = Math.ceil data.count/@pagination
         if @max_pages > 5
@@ -288,11 +288,11 @@ $ ->
         else
           pages = [1..Math.ceil data.count/@pagination]
         pagination_html = @paginationHTML {pages: pages}
-        
+
         $(".pagination-listing").html pagination_html
         $("#post-container").html new_post_html
         $(".page-link-#{@page}").parent().addClass("active")
-        
+
         if window._initial_post != ""
           setTimeout () ->
             $("#postlink-#{window._initial_post}")[0].scrollIntoView()
@@ -303,5 +303,5 @@ $ ->
             $("#topic-breadcrumb")[0].scrollIntoView()
           , 300
         window.setupContent()
-                
+
   window.topic = new Topic($("#post-container").data("pk"))
