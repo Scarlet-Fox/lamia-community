@@ -532,6 +532,9 @@ def topic_index(slug, page, post):
     except:
         page = 1
 
+    if topic.last_seen_by is None:
+        topic.last_seen_by = {}
+
     if post == "latest_post":
         try:
             post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
@@ -572,8 +575,6 @@ def topic_index(slug, page, post):
             post = ""
 
     if post != "":
-        if topic.last_seen_by is None:
-            topic.last_seen_by = {}
         topic.view_count = topic.view_count + 1
         try:
             topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp

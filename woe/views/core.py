@@ -161,14 +161,14 @@ if app.settings_file.get("lockout_on", False):
     @app.before_request
     def lockdown_site():
         if not (request.path == "/under-construction" or request.path == "/sign-in" or "/static" in request.path):
-            if current_user._get_current_object().is_authenticated() and (current_user._get_current_object().is_admin or current_user._get_current_object().is_allowed_during_construction):
+            if current_user.is_authenticated() and (current_user._get_current_object().is_admin or current_user._get_current_object().is_allowed_during_construction):
                 pass
             else:
                 return redirect("/under-construction")
 
 @app.before_request
 def intercept_banned():
-    if current_user._get_current_object().is_authenticated():
+    if current_user.is_authenticated():
         if current_user._get_current_object().banned and not (request.path == "/banned" or request.path == "/sign-out" or "/static" in request.path):
             return redirect("/banned")
 
@@ -176,7 +176,7 @@ def intercept_banned():
 def inject_notification_count():
     c = current_user
     try:
-        if c._get_current_object().is_authenticated():
+        if c.is_authenticated():
             return dict(notification_count=c._get_current_object().get_notification_count())
         else:
             return dict(notification_count=0)

@@ -169,6 +169,7 @@ def new_message_in_pm_topic(pk):
     sqla.session.commit()
 
     topic.last_reply = message
+    topic.count = topic.count+1
     sqla.session.add(topic)
     sqla.session.commit()
 
@@ -202,7 +203,7 @@ def new_message_in_pm_topic(pk):
     broadcast(
         to=notify_users,
         category="pm",
-        url="/messages/%s/page/1/post/%s" % (str(topic.pk), str(message.pk)),
+        url="/messages/%s/page/1/post/%s" % (str(topic.id), str(message.id)),
         title="%s has replied to %s." % (unicode(message.author.display_name), unicode(topic.title)),
         description=message.message,
         content=topic,
@@ -218,7 +219,12 @@ def private_message_posts(pk):
     except IndexError:
         return abort(404)
 
-    if not current_user._get_current_object() in topic.participating_users:
+    try:
+        pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+            pm = topic,
+            author = current_user._get_current_object()
+        )[0]
+    except IndexError:
         return abort(404)
 
     request_json = request.get_json(force=True)
@@ -230,13 +236,17 @@ def private_message_posts(pk):
         pagination = 20
         page = 1
 
-    posts = PrivateMessage.objects(topic=topic)[(page-1)*pagination:page*pagination]
-    post_count = PrivateMessage.objects(topic=topic).count()
+    posts = sqla.session.query(sqlm.PrivateMessageReply) \
+        .filter_by(pm=topic).order_by(sqlm.PrivateMessageReply.created) \
+        [(page-1)*pagination:page*pagination]
+
+    post_count = sqla.session.query(sqlm.PrivateMessageReply) \
+        .filter_by(pm=topic).count()
     parsed_posts = []
 
     for post in posts:
         clean_html_parser = ForumPostParser()
-        parsed_post = post.to_mongo().to_dict()
+        parsed_post = {}
         parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
         parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
         parsed_post["html"] = clean_html_parser.parse(post.message)
@@ -254,7 +264,7 @@ def private_message_posts(pk):
         parsed_post["group_post_html"] = post.author.group_post_html
 
         if current_user.is_authenticated():
-            if post.author.pk == current_user.pk:
+            if post.author.id == current_user._get_current_object().id:
                 parsed_post["is_author"] = True
             else:
                 parsed_post["is_author"] = False
@@ -282,7 +292,16 @@ def message_index(pk, page, post):
     except IndexError:
         return abort(404)
 
-    if not current_user._get_current_object() in topic.participating_users or current_user._get_current_object() in topic.users_left_pm or current_user._get_current_object() in topic.blocked_users:
+    try:
+        pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+            pm = topic,
+            author = current_user._get_current_object()
+        )[0]
+
+        if pm_user.exited or pm_user.blocked:
+            return abort(404)
+
+    except IndexError:
         return abort(404)
 
     try:
@@ -290,29 +309,35 @@ def message_index(pk, page, post):
     except:
         page = 1
 
+    if topic.last_seen_by is None:
+        topic.last_seen_by = {}
+
     if post == "latest_post":
         try:
-            post = PrivateMessage.objects(topic=topic).order_by("-created")[0]
+            post = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic) \
+                .order_by(sqla.desc(sqlm.PrivateMessageReply.created))[0]
         except:
             return abort(404)
     elif post == "last_seen":
         try:
-            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().pk), arrow.utcnow().timestamp)).datetime
+            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().id), arrow.utcnow().timestamp)).datetime
         except:
             last_seen = arrow.get(arrow.utcnow().timestamp).datetime
 
         try:
-            post = PrivateMessage.objects(topic=topic, created__lt=last_seen).order_by("-created")[0]
-        except:
+            post = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic) \
+                .filter(sqlm.PrivateMessageReply.created < last_seen) \
+                .order_by(sqlm.PrivateMessageReply.created.desc())[0]
+        except IndexError:
             try:
-                post = PrivateMessage.objects(topic=topic, pk=post)[0]
-            except:
+                post = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic, id=post)[0]
+            except IndexError:
                 return abort(404)
     else:
         if post != "":
             try:
-                post = PrivateMessage.objects(topic=topic, pk=post)[0]
-            except:
+                post = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic, id=post)[0]
+            except IndexError:
                 return abort(404)
         else:
             post = ""
@@ -321,18 +346,23 @@ def message_index(pk, page, post):
 
     if post != "":
         try:
-            topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
-            topic.save()
+            topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+            sqla.session.add(topic)
+            sqla.session.commit()
         except:
             pass
         target_date = post.created
-        posts_before_target = PrivateMessage.objects(topic=topic, created__lt=target_date).count()
+        posts_before_target = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic) \
+            .filter(sqlm.PrivateMessageReply.created < post.created) \
+            .count()
+
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
-        return render_template("core/messages_topic.jade", page_title="%s - World of Equestria" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.pk))
+        return render_template("core/messages_topic.jade", page_title="%s - World of Equestria" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.id))
 
     try:
-        topic.last_seen_by[str(current_user._get_current_object().pk)] = arrow.utcnow().timestamp
-        topic.save()
+        topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+        sqla.session.add(topic)
+        sqla.session.commit()
     except:
         pass
 
@@ -352,16 +382,53 @@ def create_message():
     if request_json.get("to") == None or not len(request_json.get("to", [""])) > 0:
         return app.jsonify(error="Choose who should receive your message.")
 
-    participant_users = []
+    topic = sqlm.PrivateMessage()
+    topic.title = request_json.get("title", "").strip()
+    topic.count = 1
+    topic.author = current_user._get_current_object()
+    topic.created = arrow.utcnow().datetime.replace(tzinfo=None)
+    topic.last_seen_by = {}
+    sqla.session.add(topic)
+    sqla.session.commit()
+
+    message = sqlm.PrivateMessageReply()
+    message.message = request_json.get("html", "").strip()
+    message.author = current_user._get_current_object()
+    message.created = arrow.utcnow().datetime.replace(tzinfo=None)
+    message.pm = topic
+    sqla.session.add(message)
+    sqla.session.commit()
+
+    topic.last_reply = message
+    sqla.session.add(topic)
+    sqla.session.commit()
+
+    participant = sqlm.PrivateMessageUser(
+            author = current_user._get_current_object(),
+            pm = topic
+        )
+    sqla.session.add(participant)
+    sqla.session.commit()
+
+    to_notify = []
+
     for user_pk in request_json.get("to"):
-        if user_pk == current_user._get_current_object().pk:
+        if user_pk == current_user._get_current_object().id:
             continue
 
         try:
-            u = User.objects(pk=user_pk)[0]
+            u = sqla.session.query(sqlm.User).filter_by(id=upk)[0]
 
-            if current_user._get_current_object() in u.ignored_users:
-                return app.jsonify(error="You can not send a message to %s." % (u.display_name,))
+            try:
+                ignore_setting = sqla.session.query(sqlm.IgnoringUser).filter_by(
+                        user = u,
+                        ignoring = current_user._get_current_object()
+                    )[0]
+
+                if ignore_setting.block_pms:
+                    return app.jsonify(error="You can not send a message to %s." % (u.display_name,))
+            except IndexError:
+                pass
 
             if u.banned:
                 return app.jsonify(error="%s is banned, they will not receive your message." % (u.display_name,))
@@ -369,59 +436,29 @@ def create_message():
             if current_user._get_current_object() == u:
                 return app.jsonify(error="Stop talking to yourself! (Remove yourself from the \"to\" list.)")
 
-            participant_users.append(u)
+            new_participant = sqlm.PrivateMessageUser(
+                    author = u,
+                    pm = topic
+                )
+            sqla.session.add(new_participant)
+            sqla.session.commit()
+            to_notify.append(u)
         except IndexError:
             continue
 
-    if len(participant_users) == 0:
-        return app.jsonify(error="Your member list is invalid.")
 
-    topic = PrivateMessageTopic()
-
-    participant = PrivateMessageParticipant()
-    participant.user = current_user._get_current_object()
-    participant.last_read = arrow.utcnow().datetime
-    topic.participants.append(participant)
-    topic.participating_users.append(participant.user)
-
-    topic.participating_users.extend(participant_users)
-    for _p in participant_users:
-        participant = PrivateMessageParticipant()
-        participant.user = _p
-        topic.participants.append(participant)
-
-    topic.title = request_json.get("title", "").strip()
-    topic.creator = current_user._get_current_object()
-    topic.creator_name = current_user._get_current_object().display_name
-    topic.created = arrow.utcnow().datetime
-    topic.participant_count = len(topic.participants)
-    topic.last_reply_by = current_user._get_current_object()
-    topic.last_reply_name = current_user._get_current_object().display_name
-    topic.last_reply_time = arrow.utcnow().datetime
-    topic.message_count = 1
-    topic.save()
-
-    message = PrivateMessage()
-    message.message = request_json.get("html", "").strip()
-    message.author = current_user._get_current_object()
-    message.created = arrow.utcnow().datetime
-    message.author_name = current_user._get_current_object().login_name
-    message.topic = topic
-    message.topic_name = topic.title
-    message.topic_creator_name = topic.creator_name
-    message.save()
 
     broadcast(
-        to=topic.participating_users,
+        to=to_notify,
         category="pm",
-        url="/messages/"+str(topic.pk),
+        url="/messages/"+str(topic.id),
         title="New Message: "+unicode(topic.title),
         description=message.message,
         content=topic,
         author=message.author
         )
 
-    return app.jsonify(url="/messages/"+str(topic.pk))
+    return app.jsonify(url="/messages/"+str(topic.id))
 
 @app.route('/new-message', methods=['GET'])
 @login_required
@@ -445,44 +482,44 @@ def messages_topics():
         minimum = 0
         maximum = 20
 
-    messages_count = PrivateMessageTopic.objects(participating_users=current_user._get_current_object(),
-        users_left_pm__ne=current_user._get_current_object(),
-        blocked_users__ne=current_user._get_current_object()
-        ).count()
-    messages = PrivateMessageTopic.objects(participating_users=current_user._get_current_object(),
-        users_left_pm__ne=current_user._get_current_object(),
-        blocked_users__ne=current_user._get_current_object()
-        ).order_by("-last_reply_time")[minimum:maximum]
+    messages_count = sqla.session.query(sqlm.PrivateMessage) \
+        .join(sqlm.PrivateMessageUser.pm) \
+        .filter(
+            sqlm.PrivateMessageUser.author == current_user._get_current_object(),
+            sqlm.PrivateMessageUser.blocked == False,
+            sqlm.PrivateMessageUser.exited == False
+            ).count()
+
+    messages = sqla.session.query(sqlm.PrivateMessage) \
+        .join(sqlm.PrivateMessageUser.pm) \
+        .filter(
+            sqlm.PrivateMessageUser.author == current_user._get_current_object(),
+            sqlm.PrivateMessageUser.blocked == False,
+            sqlm.PrivateMessageUser.exited == False
+            ) \
+        .join(sqlm.PrivateMessage.last_reply) \
+        .order_by(sqlm.PrivateMessageReply.created.desc())[minimum:maximum]
 
     parsed_messages = []
 
     for message in messages:
-        try:
-            _parsed = message.to_mongo().to_dict()
-        except:
-            _parsed = {}
-        _parsed["creator"] = message.creator.display_name
+        _parsed = {}
+        _parsed["creator"] = message.author.display_name
         _parsed["created"] = humanize_time(message.created, "MMM D YYYY")
 
-        _parsed["last_post_date"] = humanize_time(message.last_reply_time)
-        _parsed["last_post_by"] = message.last_reply_by.display_name
-        _parsed["last_post_x"] = message.last_reply_by.avatar_40_x
-        _parsed["last_post_y"] = message.last_reply_by.avatar_40_y
-        _parsed["last_post_by_login_name"] = message.last_reply_by.login_name
-        _parsed["last_post_author_avatar"] = message.last_reply_by.get_avatar_url("40")
-        _parsed["post_count"] = "{:,}".format(message.message_count)
-        _parsed["pk"] = message.pk
+        _parsed["last_post_date"] = humanize_time(message.last_reply.created)
+        _parsed["last_post_by"] = message.last_reply.author.display_name
+        _parsed["last_post_x"] = message.last_reply.author.avatar_40_x
+        _parsed["last_post_y"] = message.last_reply.author.avatar_40_y
+        _parsed["last_post_by_login_name"] = message.last_reply.author.login_name
+        _parsed["last_post_author_avatar"] = message.last_reply.author.get_avatar_url("40")
+        _parsed["post_count"] = "{:,}".format(message.count)
+        _parsed["pk"] = message.id
         try:
-            _parsed["last_page"] = float(message.message_count)/float(pagination)
+            _parsed["last_page"] = float(message.count)/float(pagination)
         except:
             _parsed["last_page"] = 1
         _parsed["last_pages"] = _parsed["last_page"] > 1
-
-        try:
-            del _parsed["participants"]
-        except:
-            pass
-
         parsed_messages.append(_parsed)
 
     return app.jsonify(topics=parsed_messages, count=messages_count)

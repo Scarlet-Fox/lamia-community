@@ -44,6 +44,7 @@ class PrivateMessage(db.Model):
 
     created = db.Column(db.DateTime)
     old_mongo_hash = db.Column(db.String, nullable=True)
+    last_seen_by = db.Column(JSONB)
 
     def __repr__(self):
         return "<PrivateMessage: (title='%s')>" % (self.title, )
@@ -363,7 +364,7 @@ class User(db.Model):
     my_url = db.Column(db.String, unique=True)
     time_zone = db.Column(db.String)
 
-    banned = db.Column(db.Boolean, index=True)
+    banned = db.Column(db.Boolean, index=True, default=False)
     validated = db.Column(db.Boolean)
     over_thirteen = db.Column(db.Boolean)
 
