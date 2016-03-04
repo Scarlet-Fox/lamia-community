@@ -312,13 +312,22 @@ def pm_topic_list_api():
     if len(query) < 2:
         return app.jsonify(results=[])
 
-    q_ = parse_search_string_return_q(query,
-        sqla.session.query(sqlm.PrivateMessage),
+    q_ = sqla.session.query(sqlm.PrivateMessage) \
+        .join(sqlm.PrivateMessageUser) \
+        .filter(
+            sqlm.PrivateMessageUser.author == current_user._get_current_object(),
+            sqlm.PrivateMessageUser.blocked == False,
+            sqlm.PrivateMessageUser.exited == False
+            ) \
+        .join(sqlm.PrivateMessage.last_reply) \
+        .order_by(sqlm.PrivateMessageReply.created.desc())
+
+    q_ = parse_search_string(query,
         sqlm.PrivateMessage,
+        q_,
         ["title",])
 
-    me = current_user._get_current_object()
-    topics = q_.filter(sqlm.PrivateMessage.participants.any(id=me.id)).all()
+    topics = q_.all()
 
     results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
     return app.jsonify(results=results)

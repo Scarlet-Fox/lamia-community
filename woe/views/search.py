@@ -3,9 +3,11 @@ from woe.models.core import User, PrivateMessage, PrivateMessageTopic, StatusUpd
 from woe.models.forum import Category, Post, Topic
 from flask import request, render_template, session, redirect
 from flask.ext.login import current_user, login_required
-from woe.utilities import humanize_time, parse_search_string_return_q
+from woe.utilities import humanize_time, parse_search_string_return_q, parse_search_string
 from mongoengine.queryset import Q
 import arrow, json, pytz
+import woe.sqlmodels as sqlm
+from woe import sqla
 import HTMLParser
 
 @app.route('/search', methods=['GET',])
@@ -13,10 +15,10 @@ import HTMLParser
 def search_display():
     start_date = session.get("start_date","")
     end_date = session.get("end_date", "")
-    categories = [{"id": unicode(c.pk), "text": c.name} for c in session.get("categories", [])]
-    topics = [{"id": unicode(t.pk), "text": t.title} for t in session.get("topics", [])]
+    categories = [{"id": unicode(c.id), "text": c.name} for c in session.get("categories", [])]
+    topics = [{"id": unicode(t.id), "text": t.title} for t in session.get("topics", [])]
     if session.get("search_authors"):
-        authors = [{"id": unicode(a.pk), "text": a.display_name} for a in session.get("search_authors", [])]
+        authors = [{"id": unicode(a.id), "text": a.display_name} for a in session.get("search_authors", [])]
     else:
         authors = []
     query = session.get("query","")
@@ -60,7 +62,7 @@ def search_lookup():
     try:
         start_date = arrow.get(request_json.get("start_date",""), ["M/D/YY",])
         offset = timezone.utcoffset(start_date.naive).total_seconds()
-        start_date = start_date.replace(seconds=-offset).datetime
+        start_date = start_date.replace(seconds=-offset).datetime.replace(tzinfo=None)
         session["start_date"] = request_json.get("start_date","")
     except:
         start_date = False
@@ -69,14 +71,18 @@ def search_lookup():
     try: # created
         end_date = arrow.get(request_json.get("end_date",""), ["M/D/YY",])
         offset = timezone.utcoffset(end_date.naive).total_seconds()
-        end_date = end_date.replace(seconds=-offset).replace(hours=24).datetime
+        end_date = end_date.replace(seconds=-offset).replace(hours=24).datetime.replace(tzinfo=None)
         session["end_date"] = request_json.get("end_date","")
     except:
         end_date = False
         session["end_date"] = ""
 
     try: # category
-        categories = list(Category.objects(pk__in=request_json.get("categories")))
+        categories = list(
+                sqla.session.query(sqlm.Category) \
+                    .filter(sqlm.Category.id.in_(request_json.get("categories"))) \
+                    .all()
+            )
         session["categories"] = categories
     except:
         categories = []
@@ -84,16 +90,28 @@ def search_lookup():
 
     try:
         if content_type == "posts":
-            topics = list(Topic.objects(pk__in=request_json.get("topics")))
+            topics = list(
+                sqla.session.query(sqlm.Topic) \
+                    .filter(sqlm.Topic.id.in_(request_json.get("topics"))) \
+                    .all()
+            )
         elif content_type == "messages":
-            topics = list(PrivateMessageTopic.objects(pk__in=request_json.get("topics")))
+            topics = list(
+                sqla.session.query(sqlm.PrivateMessage) \
+                    .filter(sqlm.PrivateMessage.id.in_(request_json.get("topics"))) \
+                    .all()
+            )
         session["topics"] = topics
     except:
         topics = []
         session["topics"] = []
 
     try:
-        authors = list(User.objects(pk__in=request_json.get("authors",[])))
+        authors = list(
+                sqla.session.query(sqlm.User) \
+                    .filter(sqlm.User.id.in_(request_json.get("authors"))) \
+                    .all()
+            )
         session["search_authors"] = authors
     except:
         authors = []
@@ -107,99 +125,111 @@ def search_lookup():
     except:
         page = 1
 
-    _q_objects = Q()
+    if content_type == "posts":
+        query_ = sqla.session.query(sqlm.Post)
+        model_ = sqlm.Post
+    elif content_type == "topics":
+        query_ = sqla.session.query(sqlm.Topic)
+        model_ = sqlm.Topic
+    elif content_type == "status":
+        query_ = sqla.session.query(sqlm.StatusUpdate)
+        model_ = sqlm.StatusUpdate
+    elif content_type == "messages":
+        query_ = sqla.session.query(sqlm.PrivateMessageReply)
+        model_ = sqlm.PrivateMessageReply
 
     if start_date:
-        _q_objects = _q_objects & Q(created__gte=start_date)
+        query_ = query_.filter(model_.created >= start_date)
 
     if end_date:
-        _q_objects = _q_objects & Q(created__lte=end_date)
+        query_ = query_.filter(model_.created <= end_date)
 
     if categories and content_type == "topics":
-        _q_objects = _q_objects & Q(category__in=categories)
+        query_ = query_.filter(model_.category_id.in_([c.id for c in categories]))
 
-    if topics:
-        _q_objects = _q_objects & Q(topic__in=topics)
+    if topics and content_type == "posts":
+        query_ = query_.filter(model_.topic_id.in_([t.id for t in topics]))
+    if topics and content_type == "messages":
+        query_ = query_.filter(model_.pm_id.in_([t.id for t in topics]))
 
-    if authors and content_type == "posts":
-        _q_objects = _q_objects & Q(author__in=authors)
-    if authors and content_type == "topics":
-        _q_objects = _q_objects & Q(creator__in=authors)
-    if authors and content_type == "messages":
-        _q_objects = _q_objects & Q(author__in=authors)
-    if authors and content_type == "status":
-        _q_objects = _q_objects & Q(author__in=authors)
+    if authors:
+        query_ = query_.filter(model_.author.id.in_([a.id for a in authors]))
 
     parsed_results = []
     if content_type == "posts":
-        _q_objects = _q_objects & parse_search_string_return_q(query, ["html",])
-        count = Post.objects(_q_objects).count()
-        results = Post.objects(_q_objects, hidden=False).order_by("-created")[(page-1)*pagination:pagination*page]
+        query_ = parse_search_string(query, model_, query_, ["html",])
+        count = query_.count()
+
+        results = query_.order_by(sqla.desc(model_.created))[(page-1)*pagination:pagination*page]
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.topic.title
-            parsed_result["url"] = "/t/"+str(result.topic.slug)+"/page/1/post/"+str(result.pk)
+            parsed_result["url"] = "/t/"+str(result.topic.slug)+"/page/1/post/"+str(result.id)
             parsed_result["description"] = result.html
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
+
     elif content_type == "topics":
-        _q_objects = _q_objects &  parse_search_string_return_q(query, ["title",])
-        count = Topic.objects(_q_objects).count()
-        results = Topic.objects(_q_objects, hidden=False).order_by("-last_post_date")[(page-1)*pagination:pagination*page]
+        query_ = parse_search_string(query, model_, query_, ["title",])
+        count = query_.count()
+
+        results = query_.filter(model_.hidden==False) \
+            .join(sqlm.Topic.recent_post) \
+            .order_by(sqla.desc(sqlm.Post.created))[(page-1)*pagination:pagination*page]
+
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.title
             parsed_result["url"] = "/t/"+result.slug
             parsed_result["description"] = ""
-            parsed_result["author_profile_link"] = result.creator.login_name
-            parsed_result["author_name"] = result.creator.display_name
+            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = False
             parsed_results.append(parsed_result)
+
     elif content_type == "status":
-        _q_objects = _q_objects & (parse_search_string_return_q(query, ["comments__text",]) | parse_search_string_return_q(query, ["message",]))
-        count = StatusUpdate.objects(_q_objects).count()
-        results = StatusUpdate.objects(_q_objects, hidden=False).order_by("-last_replied")[(page-1)*pagination:pagination*page]
+        query_ = parse_search_string(query, model_, query_, ["message",])
+        count = query_.count()
+
+        results = query_.filter(model_.hidden==False) \
+            .join(sqlm.StatusComment) \
+            .order_by(sqla.desc(sqlm.StatusComment.created))[(page-1)*pagination:pagination*page]
+
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.message
             parsed_result["description"] = ""
-            parsed_result["url"] = "/status/"+str(result.pk)
+            parsed_result["url"] = "/status/"+str(result.id)
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = False
             parsed_results.append(parsed_result)
+
     elif content_type == "messages":
-        my_message_topics = PrivateMessageTopic.objects(
-            participating_users=current_user._get_current_object(),
-            blocked_users__ne=current_user._get_current_object(),
-            users_left_pm__ne=current_user._get_current_object())
-        _q_objects = _q_objects & (parse_search_string_return_q(query, ["topic_name",]) | parse_search_string_return_q(query, ["message",]))
-        _q_objects = _q_objects & Q(topic__in=my_message_topics)
-        count = PrivateMessage.objects(_q_objects).count()
-        results = PrivateMessage.objects(_q_objects).order_by("-created")[(page-1)*pagination:pagination*page]
+        query_ = query_.join(sqlm.PrivateMessageUser, sqlm.PrivateMessageUser.pm_id == sqlm.PrivateMessageReply.pm_id) \
+            .filter(
+                sqlm.PrivateMessageUser.author == current_user._get_current_object(),
+                sqlm.PrivateMessageUser.blocked == False,
+                sqlm.PrivateMessageUser.exited == False
+            ).order_by(sqlm.PrivateMessageReply.created.desc())
+        query_ = parse_search_string(query, model_, query_, [sqlm.PrivateMessageReply.message])
+        count = query_.count()
+        results = query_[(page-1)*pagination:pagination*page]
+
         for result in results:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
-            parsed_result["title"] = result.topic.title
+            parsed_result["title"] = result.pm.title
             parsed_result["description"] = result.message
-            parsed_result["url"] = "/messages/"+str(result.topic.pk)+"/page/1/post/"+str(result.pk)
+            parsed_result["url"] = "/messages/"+str(result.pm.id)+"/page/1/post/"+str(result.id)
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
-
-    # for term in query.split(" "):
-    #     term = term.strip()
-    #     if term[0] == "-":
-    #         continue
-    #     term_re = re.compile(re.escape(term), re.IGNORECASE)
-    #
-    #     for result in parsed_results:
-    #         result["description"] = term_re.sub("""<span style="background-color: yellow">"""+term+"</span>", result["description"])
 
     return app.jsonify(results=parsed_results, count=count, pagination=pagination)

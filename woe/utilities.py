@@ -10,7 +10,7 @@ url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a
 
 def parse_search_string(search_text, model, query_object, fields_to_search):
     if search_text.strip() == "":
-        return Q()
+        return query_object
 
     and_terms = []
     not_terms = []
@@ -55,11 +55,17 @@ def parse_search_string(search_text, model, query_object, fields_to_search):
 
     for term in and_terms:
         for field in fields_to_search:
-            query_object.filter(getattr(model, field).ilike("%%%s%%" % term))
+            if type(field) is str:
+                query_object = query_object.filter(getattr(model, field).ilike("%%%s%%" % term))
+            else:
+                query_object = query_object.filter(field.ilike("%%%s%%" % term))
 
     for term in not_terms:
         for field in fields_to_search:
-            query_object.filter(~getattr(model, field).ilike("%%%s%%" % term))
+            if type(field) is str:
+                query_object = query_object.filter(~getattr(model, field).ilike("%%%s%%" % term))
+            else:
+                query_object = query_object.filter(~field.ilike("%%%s%%" % term))
 
     return query_object
 
