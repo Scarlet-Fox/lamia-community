@@ -46,6 +46,9 @@ class PrivateMessage(db.Model):
     old_mongo_hash = db.Column(db.String, nullable=True)
     last_seen_by = db.Column(JSONB)
 
+    def participant_objects(self):
+        return PrivateMessageUser.query.filter_by(pm=self).all()
+
     def __repr__(self):
         return "<PrivateMessage: (title='%s')>" % (self.title, )
 

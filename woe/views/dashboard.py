@@ -93,22 +93,22 @@ def broadcast(to, category, url, title, description, content, author, priority=0
 @app.route('/dashboard/ack_category', methods=["POST",])
 @login_required
 def acknowledge_category():
-    notifications = sqla.session.query(sqlm.Notificaion) \
+    notifications = sqla.session.query(sqlm.Notification) \
         .filter_by(seen=False, user=current_user._get_current_object()) \
-        .update({seen: True})
+        .update({sqlm.Notification.seen: True})
 
     request_json = request.get_json(force=True)
 
-    notifications = sqla.session.query(sqlm.Notificaion) \
+    notifications = sqla.session.query(sqlm.Notification) \
         .filter_by(acknowledged=False, user=current_user._get_current_object(), category=request_json.get("category","")) \
-        .update({acknowledged: True})
+        .update({sqlm.Notification.acknowledged: True})
 
     return app.jsonify(success=True, count=current_user._get_current_object().get_dashboard_notifications())
 
 @app.route('/dashboard/mark_seen', methods=["POST",])
 @login_required
 def mark_all_notifications():
-    notifications = sqla.session.query(sqlm.Notificaion) \
+    notifications = sqla.session.query(sqlm.Notification) \
         .filter_by(seen=False, user=current_user._get_current_object()) \
         .update({seen: True})
 
@@ -117,26 +117,26 @@ def mark_all_notifications():
 @app.route('/dashboard/ack_notification', methods=["POST",])
 @login_required
 def acknowledge_notification():
-    notifications = sqla.session.query(sqlm.Notificaion) \
+    notifications = sqla.session.query(sqlm.Notification) \
         .filter_by(seen=False, user=current_user._get_current_object()) \
         .update({seen: True})
 
     request_json = request.get_json(force=True)
     try:
-        notification = sqla.session.query(sqlm.Notificaion) \
+        notification = sqla.session.query(sqlm.Notification) \
             .filter_by(id=request_json.get("notification",""))[0]
 
         if notification.user != current_user._get_current_object():
             return app.jsonify(success=False)
 
-        sqla.session.query(sqlm.Notificaion) \
+        sqla.session.query(sqlm.Notification) \
             .filter_by(id=request_json.get("notification","")) \
             .update({acknowledged: True})
     except:
         return app.jsonify(success=False)
 
     try:
-        notifications = sqla.session.query(sqlm.Notificaion) \
+        notifications = sqla.session.query(sqlm.Notification) \
             .filter_by(acknowledged=False, user=current_user._get_current_object(), url=notification.url) \
             .update({acknowledged: True})
     except:

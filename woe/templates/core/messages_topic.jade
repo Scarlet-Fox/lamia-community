@@ -20,25 +20,25 @@
   .col-md-3
     ul.list-group.category
       li.list-group-item.sidebar-section-header.section-header Participants
-      for participant in topic.participating_users
+      for participant in topic.participant_objects()
         li.list-group-item
           .media-left
-            a(href="{{url_for('view_profile', login_name=participant.login_name)}}")
-              img.media-object(src="{{ participant.get_avatar_url("40") }}", width="{{ participant.avatar_40_x }}", height="{{ participant.avatar_40_y }}", class="avatar-mini")
+            a(href="{{url_for('view_profile', login_name=participant.author.login_name)}}")
+              img.media-object(src="{{ participant.author.get_avatar_url("40") }}", width="{{ participant.author.avatar_40_x }}", height="{{ participant.author.avatar_40_y }}", class="avatar-mini")
           .media-body
-            a.hover_user(href="{{url_for('view_profile', login_name=participant.login_name)}}")= participant.display_name
-            if participant in topic.users_left_pm
-              if participant in topic.blocked_users
+            a.hover_user(href="{{url_for('view_profile', login_name=participant.author.login_name)}}")= participant.author.display_name
+            if participant.exited
+              if participant.blocked
                 p.text-muted <i>Was Kicked from PM</i>
               else
                 p.text-muted <i>Has Left PM</i>
             else
-              if current_user == participant
+              if current_user == participant.author
                 br
                 a.inherit_colors.post-link(href="/messages/{{topic.id}}/leave-topic") (Leave Topic)
-              elif current_user != participant and current_user == topic.creator
+              elif current_user != participant.author and current_user == topic.author
                 br
-                a.inherit_colors.post-link(href="/messages/{{topic.id}}/kick-from-topic/{{participant.id}}") (Kick)
+                a.inherit_colors.post-link(href="/messages/{{topic.id}}/kick-from-topic/{{participant.author.id}}") (Kick)
             
 nav.pagination-listing
 {% endblock %}

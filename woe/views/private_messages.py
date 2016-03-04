@@ -32,7 +32,7 @@ def kick_from_pm_topic(pk, upk):
     except IndexError:
         return abort(404)
 
-    if not current_user._get_current_object() == topic.creator:
+    if not current_user._get_current_object() == topic.author:
         return abort(404)
 
     try:
@@ -43,7 +43,7 @@ def kick_from_pm_topic(pk, upk):
     try:
         pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
             pm = topic,
-            author = user
+            author = target_user
         )[0]
     except IndexError:
         return abort(404)
@@ -185,9 +185,10 @@ def new_message_in_pm_topic(pk):
     parsed_post["user_avatar_x_60"] = message.author.avatar_60_x
     parsed_post["user_avatar_y_60"] = message.author.avatar_60_y
     parsed_post["user_title"] = message.author.title
+    parsed_post["_id"] = message.id
     parsed_post["author_name"] = message.author.display_name
     parsed_post["author_login_name"] = message.author.login_name
-    post_count = sqla.session.query(PrivateMessageReply).filter_by(pm=topic).count()
+    post_count = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic).count()
 
     notify_users = []
     for u in sqla.session.query(sqlm.PrivateMessageUser).filter_by(pm = topic):
@@ -195,7 +196,7 @@ def new_message_in_pm_topic(pk):
             continue
         if u.exited or u.blocked or u.ignoring:
             continue
-        notify_users.append(u)
+        notify_users.append(u.author)
 
     broadcast(
         to=notify_users,
