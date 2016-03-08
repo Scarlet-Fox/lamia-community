@@ -239,26 +239,26 @@ def send_user_characters():
         ).order_by(sqlm.Character.name)
     character_data = []
 
-    for character in characters: #TODO - FIX THIS SHIT
+    for character in characters:
         parsed_character = {}
         parsed_character["name"] = character.name
         parsed_character["slug"] = character.slug
         try:
-            parsed_character["default_avvie"] = character.default_avatar.get_specific_size(50)
+            parsed_character["default_avvie"] = character.get_avatar(50)
         except:
             parsed_character["default_avvie"] = ""
         parsed_character["alternate_avvies"] = []
 
-        # if parsed_character["default_avvie"] != "":
-        #     parsed_character["alternate_avvies"].append({"url": character.default_avatar.get_specific_size(50), "alt": character.default_avatar.alt})
+        for attachment in sqla.session.query(sqlm.Attachment) \
+                .filter_by(character_avatar=True, character=character) \
+                .order_by(sqlm.Attachment.character_gallery_weight):
 
-        for attachment in Attachment.objects(character=character, character_emote=True, character_gallery=True).order_by("created_date"):
-            # if attachment == character.default_avatar:
-            #     continue
             parsed_attachment = {}
             parsed_attachment["url"] = attachment.get_specific_size(50)
-            parsed_attachment["alt"] = attachment.alt #TODO - add an actual attachment id here
+            parsed_attachment["alt"] = attachment.alt
+            parsed_attachment["id"] = attachment.id
             parsed_character["alternate_avvies"].append(parsed_attachment)
+
         character_data.append(parsed_character)
     return app.jsonify(characters=character_data)
 
@@ -350,7 +350,13 @@ def toggle_hide_character(slug):
     if current_user._get_current_object().is_admin != True:
         return abort(404)
 
-    character.update(hidden=not character.hidden)
+    if character.hidden == None:
+        character.hidden = True
+
+    character.hidden = not character.hidden
+
+    sqla.session.add(character)
+    sqla.session.commit()
 
     return app.jsonify(url="/characters/"+unicode(character.slug))
 
@@ -391,14 +397,21 @@ def toggle_character_gallery_image_emote(slug):
         return abort(404)
 
     try:
-        attachment = Attachment.objects(pk=request_json["pk"])[0]
+        attachment = sqla.session.query(sqlm.Attachment).filter_by(id=request_json["pk"])[0]
     except IndexError:
         return abort(404)
 
     if attachment.character != character:
         return abort(404)
 
-    attachment.update(character_emote=not attachment.character_emote)
+    if attachment.character_avatar == None:
+        attachment.character_avatar = True
+
+    attachment.character_avatar = not attachment.character_avatar
+
+    sqla.session.add(attachment)
+    sqla.session.commit()
+
     return app.jsonify(success=True)
 
 @app.route('/characters/<slug>/manage-gallery/remove-image', methods=["POST",])
@@ -415,7 +428,7 @@ def remove_image_from_character_gallery(slug):
         return abort(404)
 
     try:
-        attachment = Attachment.objects(pk=request_json["pk"])[0]
+        attachment = sqla.session.query(sqlm.Attachment).filter_by(id=request_json["pk"])[0]
     except IndexError:
         return abort(404)
 
@@ -423,12 +436,19 @@ def remove_image_from_character_gallery(slug):
         return abort(404)
 
     if attachment == character.default_avatar:
-        character.update(default_avatar=None)
+        character.default_avatar = None
 
     if attachment == character.default_gallery_image:
-        character.update(default_gallery_image=None)
+        character.default_gallery_image = None
 
-    attachment.update(character_gallery=False)
+    attachment.character_gallery = False
+    attachment.character = None
+    attachment.hidden = True
+
+    sqla.session.add(character)
+    sqla.session.add(attachment)
+    sqla.session.commit()
+
     return app.jsonify(success=True)
 
 @app.route('/characters/<slug>/manage-gallery/make-default-profile', methods=["POST",])
@@ -445,15 +465,19 @@ def set_default_character_profile_image(slug):
         return abort(404)
 
     try:
-        attachment = Attachment.objects(pk=request_json["pk"])[0]
+        attachment = sqla.session.query(sqlm.Attachment).filter_by(id=request_json["pk"])[0]
     except IndexError:
         return abort(404)
 
     if attachment.character != character:
         return abort(404)
 
-    character.update(legacy_gallery_field=None)
-    character.update(default_gallery_image=attachment)
+    character.legacy_gallery_field = None
+    character.default_gallery_image = attachment
+
+    sqla.session.add(character)
+    sqla.session.commit()
+
     return app.jsonify(success=True)
 
 @app.route('/characters/<slug>/manage-gallery/make-default-avatar', methods=["POST",])
@@ -470,16 +494,21 @@ def set_default_character_avatar(slug):
         return abort(404)
 
     try:
-        attachment = Attachment.objects(pk=request_json["pk"])[0]
+        attachment = sqla.session.query(sqlm.Attachment).filter_by(id=request_json["pk"])[0]
     except IndexError:
         return abort(404)
 
     if attachment.character != character:
         return abort(404)
 
-    character.update(legacy_avatar_field=None)
-    character.update(default_avatar=attachment)
-    attachment.update(character_emote=True)
+    character.legacy_avatar_field = None
+    character.default_avatar = attachment
+    attachment.character_avatar = True
+
+    sqla.session.add(character)
+    sqla.session.add(attachment)
+    sqla.session.commit()
+
     return app.jsonify(success=True)
 
 @app.route('/characters/<slug>/manage-gallery/edit-image', methods=["POST",])
@@ -496,7 +525,7 @@ def edit_gallery_image(slug):
         return abort(404)
 
     try:
-        attachment = Attachment.objects(pk=request_json["pk"])[0]
+        attachment = sqla.session.query(sqlm.Attachment).filter_by(id=request_json["pk"])[0]
     except IndexError:
         return abort(404)
 
@@ -505,9 +534,12 @@ def edit_gallery_image(slug):
 
     cleaner = ForumHTMLCleaner()
 
-    attachment.update(caption=cleaner.basic_escape(request_json.get("author", "")))
-    attachment.update(alt=cleaner.basic_escape(request_json.get("caption", "")))
-    attachment.update(origin_url=cleaner.basic_escape(request_json.get("source", "")))
+    attachment.caption=cleaner.basic_escape(request_json.get("author", ""))
+    attachment.alt=cleaner.basic_escape(request_json.get("caption", ""))
+    attachment.origin_url=cleaner.basic_escape(request_json.get("source", ""))
+
+    sqla.session.add(attachment)
+    sqla.session.commit()
 
     return app.jsonify(success=True)
 
@@ -529,11 +561,11 @@ def create_attachment_for_character(slug):
         if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
             return abort(404)
 
-        attach = Attachment()
+        attach = sqlm.Attachment()
         attach.character = character
-        attach.character_name = character.name
         attach.character_gallery = True
-        attach.character_emote = False
+        attach.character_avatar = False
+        attach.character_gallery_weight = 100000
         attach.extension = filename.split(".")[-1]
         attach.x_size = image.width
         attach.y_size = image.height
@@ -548,14 +580,20 @@ def create_attachment_for_character(slug):
         attach.linked = False
         upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time.time())+"_"+str(current_user.pk)+filename)
         attach.path = str(time.time())+"_"+str(current_user.pk)+filename
-        attach.save()
+
+        sqla.session.add(attach)
+        sqla.session.commit()
+
         image.save(filename=upload_path)
 
         if character.default_avatar == None and character.legacy_avatar_field == None:
-            character.update(default_avatar=attach)
+            character.default_avatar = attach
 
         if character.default_gallery_image == None and character.legacy_gallery_field == None:
-            character.update(default_gallery_image=attach)
+            character.default_gallery_image = attach
+
+        sqla.session.add(character)
+        sqla.session.commit()
 
         return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
     else:

@@ -74,7 +74,7 @@
               post: html,
               text: text,
               character: topic.selected_character,
-              avatar: topic.selected_avatar
+              avatar: $("#avatar-picker-" + topic.inline_editor.quillID).val()
             }), (function(_this) {
               return function(data) {
                 topic.inline_editor.enableSaveButton();
@@ -388,7 +388,7 @@
               }
               characterPickerTemplate = "<!-- <label style=\"margin-left: 10px;\">Character Picker: </label> -->\n<select id=\"character-picker-{{quill_id}}\" style=\"margin-left: 5px; width: 300px;\">\n  <option value=\"\" selected></option>\n  {{#each characters}}\n  <option value=\"{{slug}}\" data-image=\"{{default_avvie}}\">\n      {{name}}\n  </option>\n  {{/each}}\n</select>";
               characterPickerHTML = Handlebars.compile(characterPickerTemplate);
-              avatarPickerTemplate = "<!-- <label style=\"margin-left: 10px;\">Character Picker: </label> -->\n<select id=\"avatar-picker-{{quill_id}}\" style=\"margin-left: 5px; width: 80px;\">\n  <option value=\"\" selected></option>\n  {{#each avatars}}\n  <option value=\"{{@index}}\" data-count=\"{{@index}}\" data-image=\"{{url}}\" {{#if @first}}selected{{/if}}>\n  </option>\n  {{/each}}\n</select>";
+              avatarPickerTemplate = "<!-- <label style=\"margin-left: 10px;\">Character Picker: </label> -->\n<select id=\"avatar-picker-{{quill_id}}\" style=\"margin-left: 5px; width: 80px;\">\n  <option value=\"\" selected></option>\n  {{#each avatars}}\n  <option value=\"{{id}}\" data-count=\"{{@index}}\" data-image=\"{{url}}\" {{#if @first}}selected{{/if}}>\n  </option>\n  {{/each}}\n</select>";
               avatarPickerHTML = Handlebars.compile(avatarPickerTemplate);
               $("#upload-files-" + quill_id).after(characterPickerHTML({
                 characters: _this.characters,
@@ -432,7 +432,7 @@
                     avatars: selected.alternate_avvies,
                     quill_id: quill_id
                   }));
-                  $("#avatar-picker-" + quill_id).select2({
+                  return $("#avatar-picker-" + quill_id).select2({
                     templateResult: function(result) {
                       var element, image;
                       element = $(result.element);
@@ -450,9 +450,6 @@
                     escapeMarkup: function(text) {
                       return text;
                     }
-                  });
-                  return $("#avatar-picker-" + quill_id).on("select2:select", function(e) {
-                    return _this.selected_avatar = $("#avatar-picker-" + quill_id).val();
                   });
                 }
               });

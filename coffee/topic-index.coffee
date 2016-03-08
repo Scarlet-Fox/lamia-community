@@ -60,7 +60,7 @@ $ ->
 
         @inline_editor.onSave (html, text) ->
           topic.inline_editor.disableSaveButton()
-          $.post "/t/#{topic.slug}/new-post", JSON.stringify({post: html, text: text, character: topic.selected_character, avatar: topic.selected_avatar}), (data) =>
+          $.post "/t/#{topic.slug}/new-post", JSON.stringify({post: html, text: text, character: topic.selected_character, avatar: $("#avatar-picker-#{topic.inline_editor.quillID}").val()}), (data) =>
             topic.inline_editor.enableSaveButton()
             if data.closed_topic?
               topic.inline_editor.flashError "Topic Closed: #{data.closed_message}"
@@ -354,7 +354,7 @@ $ ->
           <select id="avatar-picker-{{quill_id}}" style="margin-left: 5px; width: 80px;">
             <option value="" selected></option>
             {{#each avatars}}
-            <option value="{{@index}}" data-count="{{@index}}" data-image="{{url}}" {{#if @first}}selected{{/if}}>
+            <option value="{{id}}" data-count="{{@index}}" data-image="{{url}}" {{#if @first}}selected{{/if}}>
             </option>
             {{/each}}
           </select>
@@ -410,8 +410,8 @@ $ ->
                 escapeMarkup: (text) ->
                   return text
 
-              $("#avatar-picker-#{quill_id}").on "select2:select", (e) =>
-                @selected_avatar = $("#avatar-picker-#{quill_id}").val()
+              # $("#avatar-picker-#{quill_id}").on "select2:select", (e) =>
+              #   @selected_avatar = $("#avatar-picker-#{quill_id}").val()
 
     paginationHTMLTemplate: () ->
       return """

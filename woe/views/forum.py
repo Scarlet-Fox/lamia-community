@@ -110,17 +110,22 @@ def new_post_in_topic(slug):
     except:
         character = False
 
+    print character
+    print request_json.get("avatar")
+
     try:
         avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
             character_gallery=True, character_avatar=True, id=request_json.get("avatar")) \
-            .order_by(character_gallery_weight).first()
+            .order_by(sqlm.Attachment.character_gallery_weight)[0]
 
         if avatar == None:
             avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
                 character_gallery=True, character_avatar=True) \
-                .order_by(character_gallery_weight).first()[0]
+                .order_by(sqlm.Attachment.character_gallery_weight)[0]
     except:
         avatar = False
+
+    print avatar
 
     new_post = sqlm.Post()
     new_post.html = post_html
