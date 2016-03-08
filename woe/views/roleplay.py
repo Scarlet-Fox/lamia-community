@@ -7,10 +7,12 @@ from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow, hashlib, mimetypes, time
-from woe.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q
+from woe.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q, parse_search_string
 from mongoengine.queryset import Q
 from woe.models.roleplay import Character, CharacterHistory, get_character_slug
 from wand.image import Image
+import woe.sqlmodels as sqlm
+from woe import sqla
 
 @app.route('/characters')
 @login_required
@@ -21,12 +23,19 @@ def character_database():
 @login_required
 def character_gallery(slug):
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         abort(404)
 
-    images = Attachment.objects(character=character, character_gallery=True, character_emote=False)
-    emotes = Attachment.objects(character=character, character_gallery=True, character_emote=True)
+    images = sqla.session.query(sqlm.Attachment).filter_by(
+        character = character,
+        character_avatar = False
+        ).order_by("Attachment.character_gallery_weight").all()
+
+    emotes = sqla.session.query(sqlm.Attachment).filter_by(
+        character = character,
+        character_avatar = True
+        ).order_by("Attachment.character_gallery_weight").all()
 
     return render_template("roleplay/character_gallery.jade", character=character, images=images, emotes=emotes, page_title="%s's Gallery - Character Database - World of Equestria" % unicode(character.name))
 
@@ -34,14 +43,16 @@ def character_gallery(slug):
 @login_required
 def manage_gallery(slug):
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
         return abort(404)
 
-    images = Attachment.objects(character=character, character_gallery=True)
+    images = sqla.session.query(sqlm.Attachment).filter_by(
+        character = character
+        ).order_by("Attachment.character_gallery_weight").all()
 
     return render_template("roleplay/manage_gallery.jade", character=character, images=images, page_title="Edit %s's Gallery - Character Database - World of Equestria" % unicode(character.name))
 
@@ -68,7 +79,7 @@ def create_character():
         except:
             return abort(500)
 
-        character = Character()
+        character = sqlm.Character()
         character.age = form.age.data
         character.species =form.species.data
         character.name = form.name.data
@@ -77,13 +88,12 @@ def create_character():
         character.personality = form.personality.data
         character.backstory = form.backstory.data
         character.other = form.other.data
-        character.created = arrow.utcnow().datetime
+        character.created = arrow.utcnow().datetime.replace(tzinfo=None)
         character.post_count = 0
-        character.slug = get_character_slug(character.name)
-        character.creator = current_user._get_current_object()
-        character.creator_name = current_user._get_current_object().login_name
-        character.creator_display_name = current_user._get_current_object().display_name
-        character.save()
+        character.slug = sqlm.get_character_slug(character.name)
+        character.author = current_user._get_current_object()
+        sqla.session.add(character)
+        sqla.session.commit()
         return redirect("/characters/"+unicode(character.slug))
     else:
         pass
@@ -94,11 +104,11 @@ def create_character():
 @login_required
 def character_edit_profile(slug):
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
         return abort(404)
 
     form = CharacterForm(csrf_enabled=False)
@@ -121,20 +131,25 @@ def character_edit_profile(slug):
         except:
             return abort(500)
 
-        c = CharacterHistory(creator=current_user._get_current_object(),
-                created=arrow.utcnow().datetime,
-                data={
-                    "age": character.age+"",
-                    "species": character.species+"",
-                    "name": character.name+"",
-                    "motto": character.motto+"",
-                    "appearance": character.appearance+"",
-                    "personality": character.personality+"",
-                    "backstory": character.backstory+"",
-                    "other": character.other+""
+        c = {
+                "author": current_user._get_current_object().id,
+                "created": str(arrow.utcnow().datetime),
+                "data": {
+                        "age": character.age+"",
+                        "species": character.species+"",
+                        "name": character.name+"",
+                        "motto": character.motto+"",
+                        "appearance": character.appearance+"",
+                        "personality": character.personality+"",
+                        "backstory": character.backstory+"",
+                        "other": character.other+""
                 }
-            )
-        character.history.append(c)
+            }
+
+        if character.character_history == None:
+            character.character_history = []
+        character.character_history.append(c)
+
         character.age = form.age.data
         character.species =form.species.data
         character.name = form.name.data
@@ -143,7 +158,10 @@ def character_edit_profile(slug):
         character.personality = form.personality.data
         character.backstory = form.backstory.data
         character.other = form.other.data
-        character.save()
+
+        sqla.session.add(character)
+        sqla.session.commit()
+
         return redirect("/characters/"+unicode(character.slug))
     else:
         form.name.data = character.name
@@ -168,7 +186,7 @@ def character_edit_profile(slug):
 @login_required
 def character_recent_activity_api(slug):
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         abort(404)
 
@@ -178,12 +196,15 @@ def character_recent_activity_api(slug):
         draw = 0
 
     table_data = []
-    for i, post in enumerate(character.posts):
+
+    posts = sqla.session.query(sqlm.Post).filter_by(character=character).all()
+
+    for i, post in enumerate(posts):
         table_data.append(
             [
                 """<a href="/t/%s/page/1/post/%s">%s</a>""" % (
                         post.topic.slug,
-                        post.pk,
+                        post.id,
                         post.topic.title
                     ),
                 post.author.display_name,
@@ -203,7 +224,7 @@ def character_recent_activity_api(slug):
 @login_required
 def character_recent_activity(slug):
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         abort(404)
 
@@ -212,9 +233,13 @@ def character_recent_activity(slug):
 @app.route('/user-characters-api', methods=["POST",])
 @login_required
 def send_user_characters():
-    characters = [] # TODO Character.objects(creator=current_user._get_current_object(), hidden=False).order_by("name")
+    characters = sqla.session.query(sqlm.Character).filter_by(
+            author = current_user._get_current_object(),
+            hidden = False
+        ).order_by(sqlm.Character.name)
     character_data = []
-    for character in characters:
+
+    for character in characters: #TODO - FIX THIS SHIT
         parsed_character = {}
         parsed_character["name"] = character.name
         parsed_character["slug"] = character.slug
@@ -232,7 +257,7 @@ def send_user_characters():
             #     continue
             parsed_attachment = {}
             parsed_attachment["url"] = attachment.get_specific_size(50)
-            parsed_attachment["alt"] = attachment.alt
+            parsed_attachment["alt"] = attachment.alt #TODO - add an actual attachment id here
             parsed_character["alternate_avvies"].append(parsed_attachment)
         character_data.append(parsed_character)
     return app.jsonify(characters=character_data)
@@ -268,8 +293,6 @@ def character_list_api():
         order = "species"
     elif order == 3:
         order = "created"
-    elif order == 4:
-        order = "creator_display_name"
     else:
         order = "created"
 
@@ -278,14 +301,21 @@ def character_list_api():
     except:
         direction = "desc"
 
-    if direction == "desc":
-        order = "-"+order
-
     query = request.args.get("search[value]", "")[0:100]
 
-    character_count = Character.objects(hidden=False).count()
-    filtered_character_count = Character.objects(Q(creator_display_name__icontains=query) | Q(name__icontains=query), hidden=False).count()
-    characters = Character.objects(Q(creator_display_name__icontains=query) | Q(name__icontains=query), hidden=False).order_by(order)[current:current+length]
+    character_count = sqla.session.query(sqlm.Character).filter_by(hidden=False).count()
+    filtered_character_count = parse_search_string(
+            query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
+        ).filter_by(hidden=False).count()
+
+    if direction == "desc":
+        characters = parse_search_string(
+                query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
+            ).order_by(sqla.desc(getattr(sqlm.Character, order)))[current:current+length]
+    else:
+        characters = parse_search_string(
+                query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
+            ).order_by(getattr(sqlm.Character, order))[current:current+length]
 
     table_data = []
     for i, character in enumerate(characters):
@@ -298,7 +328,7 @@ def character_list_api():
                 character.age,
                 character.species,
                 humanize_time(character.created),
-                character.creator_display_name
+                character.author.display_name
             ]
         )
     data = {
@@ -313,7 +343,7 @@ def character_list_api():
 @login_required
 def toggle_hide_character(slug):
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         abort(404)
 
@@ -328,7 +358,7 @@ def toggle_hide_character(slug):
 @login_required
 def character_basic_profile(slug):
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         abort(404)
     parser = ForumPostParser()
@@ -353,7 +383,7 @@ def toggle_character_gallery_image_emote(slug):
     request_json = request.get_json(force=True)
 
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         return abort(404)
 
@@ -377,7 +407,7 @@ def remove_image_from_character_gallery(slug):
     request_json = request.get_json(force=True)
 
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         return abort(404)
 
@@ -407,7 +437,7 @@ def set_default_character_profile_image(slug):
     request_json = request.get_json(force=True)
 
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         return abort(404)
 
@@ -432,7 +462,7 @@ def set_default_character_avatar(slug):
     request_json = request.get_json(force=True)
 
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         return abort(404)
 
@@ -458,7 +488,7 @@ def edit_gallery_image(slug):
     request_json = request.get_json(force=True)
 
     try:
-        character = Character.objects(slug=slug.strip().lower())[0]
+        character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
     except IndexError:
         return abort(404)
 
@@ -492,7 +522,7 @@ def create_attachment_for_character(slug):
         img_hash = hashlib.sha512(img_bin).hexdigest()
 
         try:
-            character = Character.objects(slug=slug.strip().lower())[0]
+            character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
         except IndexError:
             abort(404)
 

@@ -129,6 +129,8 @@ for character in rp.Character.objects():
     sql_character.backstory = character.backstory
     sql_character.other = character.other
     sql_character.motto = character.motto
+    sql_character.legacy_avatar_field = character.legacy_avatar_field
+    sql_character.legacy_gallery_field = character.legacy_gallery_field
     sql_character.old_mongo_hash = str(character.id)
     sqla.session.add(sql_character)
     sqla.session.commit()

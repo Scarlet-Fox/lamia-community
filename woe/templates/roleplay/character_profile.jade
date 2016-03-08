@@ -33,7 +33,7 @@
           {{character.species|e}}
           br
         strong Added by : 
-        a.hover_user(href="/member/{{character.creator.login_name}}") {{character.creator.display_name|e}}
+        a.hover_user(href="/member/{{character.author.login_name}}") {{character.author.display_name|e}}
         br
         if character.age or character.species
           hr
@@ -44,7 +44,7 @@
             a(href="/characters/{{character.slug}}/view-posts") Roleplay Posts
             li(role="presentation")
               a(href="/characters/{{character.slug}}/gallery") Character Gallery
-    if current_user == character.creator or current_user.is_admin
+    if current_user == character.author or current_user.is_admin
       .panel.panel-default
         .panel-heading Edit
         .panel-body.text-center
@@ -90,7 +90,7 @@
           br
         br
         hr
-        i - <a href="/member/{{character.creator.login_name}}">{{character.creator.display_name|e}}</a>
+        i - <a href="/member/{{character.author.login_name}}">{{character.author.display_name|e}}</a>
     {% endblock %}
 {% endblock %}
 

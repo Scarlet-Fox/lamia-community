@@ -3,6 +3,10 @@ from sqlalchemy.dialects.postgresql import JSONB
 from woe.utilities import ipb_password_check
 from slugify import slugify
 from woe import bcrypt
+from flask.ext.login import current_user
+from wand.image import Image
+from threading import Thread
+import arrow, re, os, math
 
 ############################################################
 # Private Message Models
@@ -488,36 +492,6 @@ class User(db.Model):
                 return "/static/avatars/"+str(self.avatar_timestamp)+str(self.id)+size+self.avatar_extension
 
 ############################################################
-# Roleplay Models
-############################################################
-
-class Character(db.Model):
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_character_author"))
-    author = db.relationship("User")
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    slug = db.Column(db.String, unique=True)
-
-    age = db.Column(db.String)
-    species = db.Column(db.String)
-    appearance = db.Column(db.Text)
-    personality = db.Column(db.Text)
-    backstory = db.Column(db.Text)
-    other = db.Column(db.Text)
-    motto = db.Column(db.String)
-    created = db.Column(db.DateTime)
-    modified = db.Column(db.DateTime, nullable=True)
-    hidden = db.Column(db.Boolean, default=False)
-
-    character_history = db.Column(JSONB)
-    old_mongo_hash = db.Column(db.String, nullable=True)
-
-    def __repr__(self):
-        return "<Character: (name='%s')>" % (self.name,)
-
-############################################################
 # Moderation Models
 ############################################################
 
@@ -592,7 +566,7 @@ class Attachment(db.Model):
 
     character_id = db.Column(db.Integer, db.ForeignKey('character.id',
         name="fk_attachment_character"), nullable=True)
-    character = db.relationship("Character")
+    character = db.relationship("Character", foreign_keys="Attachment.character_id")
     character_gallery = db.Column(db.Boolean)
     character_gallery_weight = db.Column(db.Integer)
     character_avatar = db.Column(db.Boolean)
@@ -600,45 +574,132 @@ class Attachment(db.Model):
     def __repr__(self):
         return "<Attachment: (path='%s')>" % (self.path,)
 
-def get_specific_size(self, width=200):
-    network_path = os.path.join("/static/uploads", self.path)
-    file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path)
-    size_network_path = os.path.join("/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
-    size_file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
+    def get_specific_size(self, width=200):
+        network_path = os.path.join("/static/uploads", self.path)
+        file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path)
+        size_network_path = os.path.join("/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
+        size_file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
 
-    if self.do_not_convert or width > self.x_size:
-        return network_path
+        if self.do_not_convert or width > self.x_size:
+            return network_path
 
-    if os.path.exists(size_file_path):
-        return size_network_path
-    else:
-        def convert_image():
-            try:
-                source_image = Image(filename=file_path)
-            except:
-                self.do_not_convert = True
-                self.save()
-
-            original_x = source_image.width
-            original_y = source_image.height
-
-            if original_x != width:
-                resize_measure = float(width)/float(original_x)
+        if os.path.exists(size_file_path):
+            return size_network_path
+        else:
+            def convert_image():
                 try:
-                    source_image.resize(int(round(original_x*resize_measure)),int(round(original_y*resize_measure)))
+                    source_image = Image(filename=file_path)
                 except:
                     self.do_not_convert = True
                     self.save()
 
-            try:
-                source_image.save(filename=size_file_path)
-            except:
-                self.do_not_convert = True
-                self.save()
+                original_x = source_image.width
+                original_y = source_image.height
 
-        thread = Thread(target=convert_image, args=())
-        thread.start()
-        return network_path
+                if original_x != width:
+                    resize_measure = float(width)/float(original_x)
+                    try:
+                        source_image.resize(int(round(original_x*resize_measure)),int(round(original_y*resize_measure)))
+                    except:
+                        self.do_not_convert = True
+                        self.save()
+
+                try:
+                    source_image.save(filename=size_file_path)
+                except:
+                    self.do_not_convert = True
+                    self.save()
+
+            thread = Thread(target=convert_image, args=())
+            thread.start()
+            return network_path
+
+############################################################
+# Roleplay Models
+############################################################
+
+class Character(db.Model):
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_character_author"))
+    author = db.relationship("User")
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    slug = db.Column(db.String, unique=True)
+
+    age = db.Column(db.String)
+    species = db.Column(db.String)
+    appearance = db.Column(db.Text)
+    personality = db.Column(db.Text)
+    backstory = db.Column(db.Text)
+    other = db.Column(db.Text)
+    motto = db.Column(db.String)
+    created = db.Column(db.DateTime)
+    modified = db.Column(db.DateTime, nullable=True)
+    hidden = db.Column(db.Boolean, default=False)
+
+    character_history = db.Column(JSONB)
+    old_mongo_hash = db.Column(db.String, nullable=True)
+
+    default_avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
+        name="fk_character_default_avatar"))
+    default_avatar = db.relationship("Attachment", foreign_keys="Character.default_avatar_id")
+    legacy_avatar_field = db.Column(db.String)
+
+    default_gallery_image_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
+        name="fk_character_default_gallery"))
+    default_gallery_image = db.relationship("Attachment", foreign_keys="Character.default_gallery_image_id")
+    legacy_gallery_field = db.Column(db.String)
+
+    def get_avatar(self, size=200):
+        all_avatars = Attachment.query.filter_by(
+            character = self,
+            character_avatar = True
+        ).order_by("Attachment.character_gallery_weight").all()
+
+        if self.default_avatar:
+            return self.default_avatar.get_specific_size(size)
+        elif len(all_avatars) > 0:
+            return all_avatars[0].get_specific_size(size)
+        elif self.legacy_avatar_field:
+            return "/static/uploads/"+self.legacy_avatar_field
+        else:
+            return ""
+
+    def get_portrait(self, size=250):
+        all_portraits = Attachment.query.filter_by(
+            character = self,
+            character_avatar = False
+        ).order_by("Attachment.character_gallery_weight").all()
+
+        if self.default_gallery_image:
+            return self.default_gallery_image.get_specific_size(size)
+        elif len(all_portraits) > 0:
+            return all_portraits[0].get_specific_size(size)
+        elif self.legacy_gallery_field:
+            return "/static/uploads/"+self.legacy_gallery_field
+        else:
+            return ""
+
+    def __repr__(self):
+        return "<Character: (name='%s')>" % (self.name,)
+
+def get_character_slug(name):
+    slug = slugify(name, max_length=100, word_boundary=True, save_order=True)
+    if slug.strip() == "":
+        slug="_"
+
+    def try_slug(slug, count=0):
+        new_slug = slug
+        if count > 0:
+            new_slug = slug+"-"+str(count)
+
+        if len(Character.query.filter_by(slug=new_slug).all()) == 0:
+            return new_slug
+        else:
+            return try_slug(slug, count+1)
+
+    return try_slug(slug)
 
 ############################################################
 # Forum Models
@@ -818,7 +879,7 @@ class Post(db.Model):
 
     character_id = db.Column(db.Integer, db.ForeignKey('character.id',
         name="fk_post_character"), nullable=True)
-    character = db.relationship("Character", foreign_keys="Post.character_id")
+    character = db.relationship("Character", foreign_keys="Post.character_id", backref="posts")
 
     avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id'),
         name="fk_post_avatar", nullable=True)

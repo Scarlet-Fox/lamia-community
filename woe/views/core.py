@@ -880,14 +880,14 @@ def member_list_api():
             sqla.session.query(sqlm.User),
             ["display_name", "login_name"]
         ).filter_by(banned=False) \
-        .order_by(sqla.desc(getattr(model, order)))[current:current+length]
+        .order_by(sqla.desc(getattr(sqlm.User, order)))[current:current+length]
     else:
         users = parse_search_string(query,
             sqlm.User,
             sqla.session.query(sqlm.User),
             ["display_name", "login_name"]
         ).filter_by(banned=False) \
-        .order_by(getattr(model, order))[current:current+length]
+        .order_by(getattr(sqlm.User, order))[current:current+length]
 
     table_data = []
     for i, user in enumerate(users):
