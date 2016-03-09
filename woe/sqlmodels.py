@@ -16,11 +16,11 @@ class PrivateMessageUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_pm_u_author"))
+        name="fk_pm_u_author", ondelete="CASCADE"))
     author = db.relationship("User", foreign_keys="PrivateMessageUser.author_id")
 
     pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id',
-        name="fk_pm_u_pm"))
+        name="fk_pm_u_pm", ondelete="CASCADE"))
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageUser.pm_id")
 
     ignoring = db.Column(db.Boolean, default=False)
@@ -37,7 +37,7 @@ class PrivateMessage(db.Model):
     title = db.Column(db.String)
     count = db.Column(db.Integer)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_pm_author"))
+        name="fk_pm_author", ondelete="CASCADE"))
     author = db.relationship("User", foreign_keys="PrivateMessage.author_id")
 
     last_reply_id = db.Column(db.Integer, db.ForeignKey('private_message_reply.id',
@@ -59,11 +59,11 @@ class PrivateMessage(db.Model):
 class PrivateMessageReply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_pm_r_author"))
+        name="fk_pm_r_author", ondelete="CASCADE"))
     author = db.relationship("User", foreign_keys="PrivateMessageReply.author_id")
 
     pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id',
-        name="fk_pm_r_pm"))
+        name="fk_pm_r_pm", ondelete="CASCADE"))
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageReply.pm_id")
 
     message = db.Column(db.Text)
@@ -82,11 +82,11 @@ class PrivateMessageReply(db.Model):
 class StatusUpdateUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_status_user_author"))
+        name="fk_status_user_author", ondelete="CASCADE"))
     author = db.relationship("User", foreign_keys="StatusUpdateUser.author_id")
 
     status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
-        name="fk_status_user_status"))
+        name="fk_status_user_status", ondelete="CASCADE"))
     status = db.relationship("StatusUpdate", foreign_keys="StatusUpdateUser.status_id")
 
     ignoring = db.Column(db.Boolean, default=False)
@@ -101,13 +101,13 @@ class StatusComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_status_comment_author"))
+        name="fk_status_comment_author", ondelete="CASCADE"))
     author = db.relationship("User")
     created = db.Column(db.DateTime)
     hidden = db.Column(db.Boolean, default=False)
 
     status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
-        name="fk_status_comment_status"))
+        name="fk_status_comment_status", ondelete="CASCADE"))
     status = db.relationship("StatusUpdate", backref="comments")
 
     def __repr__(self):
@@ -117,10 +117,10 @@ class StatusUpdate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_status_update_author"), index=True)
+        name="fk_status_update_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="StatusUpdate.author_id")
     attached_to_user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_status_update_attachedtouser"))
+        name="fk_status_update_attachedtouser", ondelete="CASCADE"))
     attached_to_user = db.relationship("User", foreign_keys="StatusUpdate.attached_to_user_id")
 
     participants = db.relationship("User", secondary="status_update_user", backref="status_updates")
@@ -169,7 +169,7 @@ class IPAddress(db.Model):
     ip_address = db.Column(db.Text)
     last_seen = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_ipaddress_user"))
+        name="fk_ipaddress_user", ondelete="CASCADE"))
     user = db.relationship("User")
 
     __table_args__ = (db.UniqueConstraint('user_id', 'id', name='unique_user_ip_addy'),)
@@ -184,7 +184,7 @@ class Fingerprint(db.Model):
     fingerprint_hash = db.Column(db.String)
     last_seen = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_fingerprint_user"))
+        name="fk_fingerprint_user", ondelete="CASCADE"))
     user = db.relationship("User")
 
     def __repr__(self):
@@ -222,7 +222,7 @@ class SiteLog(db.Model):
     error_code = db.Column(db.String)
     error_description = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_sitelog_user"), nullable=True)
+        name="fk_sitelog_user", ondelete="SET NULL"), nullable=True)
     user = db.relationship("User")
 
     def __repr__(self):
@@ -247,11 +247,11 @@ class Notification(db.Model):
     message = db.Column(db.Text)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_notification_user"))
+        name="fk_notification_user", ondelete="CASCADE"))
     user = db.relationship("User", backref="notifications", foreign_keys="Notification.user_id")
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_notification_author"))
+        name="fk_notification_author", ondelete="CASCADE"))
     author = db.relationship("User", foreign_keys="Notification.author_id")
 
     NOTIFICATION_CATEGORIES = (
@@ -286,10 +286,10 @@ class Notification(db.Model):
 class IgnoringUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_ignoringuser_user"))
+        name="fk_ignoringuser_user", ondelete="CASCADE"))
     user = db.relationship("User", foreign_keys=user_id)
     ignoring_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_ignoringuser_ignoring"))
+        name="fk_ignoringuser_ignoring", ondelete="CASCADE"))
     ignoring = db.relationship("User", foreign_keys=ignoring_id)
     __table_args__ = (db.UniqueConstraint('user_id', 'ignoring_id', name='unique_user_ignoring'),)
     created = db.Column(db.DateTime)
@@ -306,10 +306,10 @@ class IgnoringUser(db.Model):
 class FollowingUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_followinguser_user"))
+        name="fk_followinguser_user", ondelete="CASCADE"))
     user = db.relationship("User", foreign_keys="FollowingUser.user_id")
     following_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_followinguser_following"))
+        name="fk_followinguser_following", ondelete="CASCADE"))
     following = db.relationship("User", foreign_keys="FollowingUser.following_id")
     __table_args__ = (db.UniqueConstraint('user_id', 'following_id', name='unique_user_following'),)
     created = db.Column(db.DateTime)
@@ -320,10 +320,10 @@ class FollowingUser(db.Model):
 class Friendship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_friendship_user"))
+        name="fk_friendship_user", ondelete="CASCADE"))
     user = db.relationship("User", foreign_keys="Friendship.user_id")
     friend_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_friendship_friend"))
+        name="fk_friendship_friend", ondelete="CASCADE"))
     friend = db.relationship("User", foreign_keys="Friendship.friend_id")
     __table_args__ = (db.UniqueConstraint('user_id', 'friend_id', name='unique_user_friend'),)
     created = db.Column(db.DateTime)
@@ -336,9 +336,9 @@ class Friendship(db.Model):
 
 user_role_table = db.Table('user_roles', db.metadata,
     db.Column('role_id', db.Integer, db.ForeignKey('role.id',
-        name="fk_userrole_role")),
+        name="fk_userrole_role", ondelete="CASCADE")),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_userrole_user")))
+        name="fk_userrole_user", ondelete="CASCADE")))
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -501,7 +501,7 @@ class Report(db.Model):
     content_type = db.Column(db.String)
     content_id = db.Column(db.Integer)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_report_author"))
+        name="fk_report_author", ondelete="CASCADE"))
     author = db.relationship("User")
 
     report = db.Column(db.Text)
@@ -525,10 +525,10 @@ class ReportComment(db.Model):
     created = db.Column(db.DateTime)
     comment = db.Column(db.Text)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_reportcomment_author"))
+        name="fk_reportcomment_author", ondelete="CASCADE"))
     author = db.relationship("User")
     report_id = db.Column(db.Integer, db.ForeignKey('report.id',
-        name="fk_reportcomment_report"))
+        name="fk_reportcomment_report", ondelete="CASCADE"))
     report = db.relationship("Report")
 
     def __repr__(self):
@@ -561,11 +561,11 @@ class Attachment(db.Model):
     caption = db.Column(db.String)
 
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_attachment_owner"))
+        name="fk_attachment_owner", ondelete="SET NULL"))
     owner = db.relationship("User")
 
     character_id = db.Column(db.Integer, db.ForeignKey('character.id',
-        name="fk_attachment_character"), nullable=True)
+        name="fk_attachment_character", ondelete="SET NULL"), nullable=True)
     character = db.relationship("Character", foreign_keys="Attachment.character_id")
     character_gallery = db.Column(db.Boolean)
     character_gallery_weight = db.Column(db.Integer)
@@ -620,7 +620,7 @@ class Attachment(db.Model):
 
 class Character(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_character_author"))
+        name="fk_character_author", ondelete="CASCADE"))
     author = db.relationship("User")
 
     id = db.Column(db.Integer, primary_key=True)
@@ -642,12 +642,12 @@ class Character(db.Model):
     old_mongo_hash = db.Column(db.String, nullable=True)
 
     default_avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
-        name="fk_character_default_avatar"))
+        name="fk_character_default_avatar", ondelete="SET NULL"))
     default_avatar = db.relationship("Attachment", foreign_keys="Character.default_avatar_id")
     legacy_avatar_field = db.Column(db.String)
 
     default_gallery_image_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
-        name="fk_character_default_gallery"))
+        name="fk_character_default_gallery", ondelete="SET NULL"))
     default_gallery_image = db.relationship("Attachment", foreign_keys="Character.default_gallery_image_id")
     legacy_gallery_field = db.Column(db.String)
 
@@ -725,25 +725,25 @@ class Section(db.Model):
 
 allowed_user_table = db.Table('category_allowed_users', db.metadata,
     db.Column('category_id', db.Integer, db.ForeignKey('category.id',
-        name="fk_allowedcategoryuser_category")),
+        name="fk_allowedcategoryuser_category", ondelete="CASCADE")),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_allowedcategoryuser_user")))
+        name="fk_allowedcategoryuser_user", ondelete="CASCADE")))
 
 allowed_label_table = db.Table('category_allowed_labels', db.metadata,
     db.Column('category_id', db.Integer, db.ForeignKey('category.id',
-        name="fk_allowedcategorylabel_category")),
+        name="fk_allowedcategorylabel_category", ondelete="CASCADE")),
     db.Column('label_id', db.Integer, db.ForeignKey('label.id',
-        name="fk_allowedcategorylabel_label")))
+        name="fk_allowedcategorylabel_label", ondelete="CASCADE")))
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('category.id',
-        name="fk_category_categoryparent"))
+        name="fk_category_categoryparent", ondelete="SET NULL"))
     parent = db.relationship("Category", backref="children", remote_side=[id])
 
     section_id = db.Column(db.Integer, db.ForeignKey('section.id',
-        name="fk_category_section"))
+        name="fk_category_section", ondelete="SET NULL"))
     section = db.relationship("Section")
 
     allowed_users = db.relationship("User",
@@ -752,10 +752,10 @@ class Category(db.Model):
                     secondary=allowed_label_table)
 
     recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
-        name="fk_category_recentpost"))
+        name="fk_category_recentpost", ondelete="SET NULL"))
     recent_post = db.relationship("Post", foreign_keys="Category.recent_post_id")
     recent_topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
-        name="fk_category_recenttopic"))
+        name="fk_category_recenttopic", ondelete="SET NULL"))
     recent_topic = db.relationship("Topic", foreign_keys="Category.recent_topic_id")
 
     name = db.Column(db.String)
@@ -773,37 +773,37 @@ class Category(db.Model):
 
 topic_watchers_table = db.Table('topic_watchers', db.metadata,
     db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
-        name="fk_topicwatchers_topic")),
+        name="fk_topicwatchers_topic", ondelete="CASCADE")),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_topicwatchers_user")))
+        name="fk_topicwatchers_user", ondelete="CASCADE")))
 
 topic_mods_table = db.Table('topic_moderators', db.metadata,
     db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
-        name="fk_topicmods_topic")),
+        name="fk_topicmods_topic", ondelete="CASCADE")),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_topicmods_user")))
+        name="fk_topicmods_user", ondelete="CASCADE")))
 
 topic_banned_table = db.Table('topic_banned_users', db.metadata,
     db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
-        name="fk_topicbanned_topic")),
+        name="fk_topicbanned_topic", ondelete="CASCADE")),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_topicbanned_user")))
+        name="fk_topicbanned_user", ondelete="CASCADE")))
 
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id',
-        name="fk_topic_category"))
+        name="fk_topic_category", ondelete="CASCADE"))
     category = db.relationship("Category", foreign_keys="Topic.category_id")
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_topic_author"))
+        name="fk_topic_author", ondelete="CASCADE"))
     author = db.relationship("User", foreign_keys="Topic.author_id")
 
     editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_topic_editor"), nullable=True)
+        name="fk_topic_editor", ondelete="SET NULL"), nullable=True)
     editor = db.relationship("User", foreign_keys="Topic.editor_id")
 
     label_id = db.Column(db.Integer, db.ForeignKey('label.id',
-        name="fk_topic_label"), nullable=True)
+        name="fk_topic_label", ondelete="SET NULL"), nullable=True)
     label = db.relationship("Label", foreign_keys="Topic.label_id")
 
     watchers = db.relationship("User",
@@ -813,7 +813,7 @@ class Topic(db.Model):
     banned = db.relationship("User",
                     secondary=topic_banned_table)
     recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
-        name="fk_topic_recentpost"))
+        name="fk_topic_recentpost", ondelete="SET NULL"))
     recent_post = db.relationship("Post", foreign_keys="Topic.recent_post_id")
     last_seen_by = db.Column(JSONB)
 
@@ -855,22 +855,22 @@ def find_topic_slug(title):
 
 post_boop_table = db.Table('post_boops_from_users', db.metadata,
     db.Column('post_id', db.Integer, db.ForeignKey('post.id',
-        name="fk_postboop_post")),
+        name="fk_postboop_post", ondelete="CASCADE")),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_postboop_user")))
+        name="fk_postboop_user", ondelete="CASCADE")))
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
-        name="fk_post_topic"), index=True)
+        name="fk_post_topic", ondelete="CASCADE"), index=True)
     topic = db.relationship("Topic", foreign_keys="Post.topic_id", cascade="delete")
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_post_author"))
+        name="fk_post_author", ondelete="CASCADE"))
     author = db.relationship("User", foreign_keys="Post.author_id")
 
     editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_post_editor"), nullable=True)
+        name="fk_post_editor", ondelete="SET NULL"), nullable=True)
     editor = db.relationship("User", foreign_keys="Post.editor_id")
 
     boops = db.relationship("User",
@@ -878,11 +878,11 @@ class Post(db.Model):
                     backref="booped_posts")
 
     character_id = db.Column(db.Integer, db.ForeignKey('character.id',
-        name="fk_post_character"), nullable=True)
+        name="fk_post_character", ondelete="SET NULL"), nullable=True)
     character = db.relationship("Character", foreign_keys="Post.character_id", backref="posts")
 
-    avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id'),
-        name="fk_post_avatar", nullable=True)
+    avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
+        name="fk_post_avatar", ondelete="SET NULL"), nullable=True)
     avatar = db.relationship("Attachment", foreign_keys="Post.avatar_id")
 
     html = db.Column(db.Text)

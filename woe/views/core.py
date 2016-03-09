@@ -21,10 +21,15 @@ import HTMLParser
 from werkzeug.exceptions import default_exceptions, HTTPException
 from  werkzeug.debug import get_current_traceback
 from woe import sqla
+from flask.ext.login import AnonymousUserMixin
 import woe.sqlmodels as sqlm
 import pytz
 
+class Anonymouse(AnonymousUserMixin):
+    login_name = None
+
 login_manager.login_view = "sign_in"
+login_manager.anonymous_user = Anonymouse
 
 @app.before_request
 def make_session_permanent():
