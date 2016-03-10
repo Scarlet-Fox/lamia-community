@@ -234,7 +234,7 @@ for message_topic in core.PrivateMessageTopic.objects():
 celestial_hub_categories = ["Latest News","Welcome Mat","Help Lab","Frequently Asked Questions"]
 starlight_amphitheater = ["Anime", "World of Equestria", "Western Animation", "Music", "Other Media"]
 moonlight_symposium = ["Discussion", "Interrogations", "Games", "Nintendo", "Art Show"]
-sunlight_homestead = ["Roleplays", "Out of Character", "Meta Lounge", "Super Party Palace", "Minecraft"]
+sunlight_homestead = ["Super Party Palace", "Roleplays", "Out of Character", "Meta Lounge", "Minecraft"]
 
 celestial = Section(name="Celestial Hub", weight=0, slug=slugify("Celestial Hub"))
 starlight = Section(name="Starlight Amphitheater", weight=10, slug=slugify("Starlight Amphitheater"))
