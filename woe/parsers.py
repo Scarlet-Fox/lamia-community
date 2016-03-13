@@ -138,21 +138,21 @@ class ForumPostParser(object):
 
                 html = html.replace(
                     """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe width="560" height="315" src="https://www.youtube.com/embed/%s" frameborder="0" allowfullscreen></iframe>""" % (video, )
+                    """<iframe style="max-width: 100%%" width="560" height="315" src="https://www.youtube.com/embed/%s" frameborder="0" allowfullscreen></iframe>""" % (video, )
                 )
             elif dailymotion_match:
                 video = dailymotion_match.groups()[0]
 
                 html = html.replace(
                     """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe frameborder="0" width="480" height="270" src="//www.dailymotion.com/embed/video/%s" allowfullscreen></iframe>""" % (video, )
+                    """<iframe style="max-width: 100%%" frameborder="0" width="480" height="270" src="//www.dailymotion.com/embed/video/%s" allowfullscreen></iframe>""" % (video, )
                 )
             elif vimeo_match:
                 video = vimeo_match.groups()[0]
 
                 html = html.replace(
                     """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe src="https://player.vimeo.com/video/%s?color=ffffff&title=0&byline=0&portrait=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""" % (video, )
+                    """<iframe style="max-width: 100%%" src="https://player.vimeo.com/video/%s?color=ffffff&title=0&byline=0&portrait=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""" % (video, )
                 )
             elif soundcloud_match:
                 sound_user = soundcloud_match.groups()[0]
@@ -163,7 +163,7 @@ class ForumPostParser(object):
 
                 html = html.replace(
                     """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe width="100%%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?%s&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"></iframe>""" % (options,)
+                    """<iframe style="max-width: 100%%" width="100%%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?%s&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"></iframe>""" % (options,)
                 )
             elif spotify_match:
                 uri = spotify_match.groups()[0]
@@ -172,14 +172,14 @@ class ForumPostParser(object):
 
                 html = html.replace(
                     """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe src="https://embed.spotify.com/?uri=%s" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>""" % (uri,)
+                    """<iframe style="max-width: 100%%" src="https://embed.spotify.com/?uri=%s" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>""" % (uri,)
                 )
             elif vine_match:
                 video = vine_match.groups()[0]
 
                 html = html.replace(
                     """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe src="https://vine.co/v/%s/embed/simple?autoplay=0" width="400" height="400" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>""" % (video, )
+                    """<iframe style="max-width: 100%%" src="https://vine.co/v/%s/embed/simple?autoplay=0" width="400" height="400" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>""" % (video, )
                 )
             else:
                 html = html.replace(
