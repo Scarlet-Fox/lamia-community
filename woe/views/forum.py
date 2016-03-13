@@ -956,14 +956,14 @@ def index():
         .filter(sqlm.User.hidden_last_seen > arrow.utcnow() \
         .replace(minutes=-15).datetime).all()
 
-    post_count = sqla.session.query(sqlm.Post) \
-        .filter_by(hidden=False).count()
-
-    member_count = sqla.session.query(sqlm.User) \
-        .filter_by(banned=False).count()
-
-    newest_member = sqla.session.query(sqlm.User) \
-        .order_by(sqla.desc(sqlm.User.joined))[0]
+    # post_count = sqla.session.query(sqlm.Post) \
+    #     .filter_by(hidden=False).count()
+    #
+    # member_count = sqla.session.query(sqlm.User) \
+    #     .filter_by(banned=False).count()
+    #
+    # newest_member = sqla.session.query(sqlm.User) \
+    #     .order_by(sqla.desc(sqlm.User.joined))[0]
 
     recently_replied_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
@@ -979,5 +979,5 @@ def index():
     return render_template("index.jade", page_title="Scarlet's Web",
         sections=sections, sub_categories=sub_categories,
         categories=categories, status_updates=status_updates, online_users=online_users,
-        post_count=post_count, member_count=member_count, newest_member=newest_member,
+        # post_count=post_count, member_count=member_count, newest_member=newest_member,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)

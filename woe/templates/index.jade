@@ -99,14 +99,6 @@
                   br
                   a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
   .col-md-4
-    if current_user.is_authenticated()
-      ul.list-group.category
-        li.list-group-item.section-header(style="font-size: 14px;") New Status Update
-        li.list-group-item
-          form.form-group.status-reply-box
-            input.form-control#status-new(type="text", maxlength="250")
-            br
-            button#new-status.btn.btn-default(type="submit") Create
     ul.list-group
       li.list-group-item.section-header.sidebar-section-header Status Updates
       {% for status in status_updates %}
@@ -124,17 +116,13 @@
           span.status-reply-time 
             a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
       {% endfor %}
-.row 
-  .col-md-12
-    center
-      p.front-page-stats
-        span.label.label-default {{post_count}}
-        span &nbsp;Posts &nbsp; &nbsp; &nbsp; &nbsp;
-        span.label.label-default {{member_count}}
-        span &nbsp;Members &nbsp; &nbsp; &nbsp; &nbsp;
-        span.label.label-default 
-          span.href_span(href="{{url_for('view_profile', login_name=newest_member.login_name)}}") {{newest_member.display_name}}
-        span &nbsp;Newest Member
+      if current_user.is_authenticated()
+        li.list-group-item
+          p
+          form.form-group.status-reply-box
+            input.form-control#status-new(type="text", maxlength="250")
+            br
+            button#new-status.btn.btn-primary(type="submit") Create a Status Update
 .row
   .col-md-12
     .panel.panel-default

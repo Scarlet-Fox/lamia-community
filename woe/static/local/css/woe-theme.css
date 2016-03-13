@@ -260,6 +260,9 @@ color:#777;
 color:#a4a4a4;
 }
 
+.list-group {
+  margin-bottom: 10px;
+}
 
 .list-group-item:first-child {
 border-radius:0px;
@@ -753,6 +756,10 @@ a.inherit_colors {
   border: 1px solid transparent;
   border-radius: 4px;
   color: #777;
+}
+
+.navbar {
+  margin-bottom: 10px;
 }
 
 .navbar-default .mini-notification-button {

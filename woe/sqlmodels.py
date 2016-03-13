@@ -137,12 +137,11 @@ class StatusUpdate(db.Model):
     old_mongo_hash = db.Column(db.String, nullable=True)
 
     def get_comment_count(self):
-        my_id = self.id
-        count = db.session.query(StatusComment).filter(StatusComment.status_id==my_id).count()
+        count = db.session.query(StatusComment).filter(StatusComment.status_id==self.id).count()
         return count
 
     def blocked(self):
-        return db.session.query(StatusUpdateUser).filter(StatusComment.status_id==my_id).filter_by(blocked=True).all()
+        return db.session.query(StatusUpdateUser).filter(StatusComment.status_id==self.id).filter_by(blocked=True).all()
 
     def __repr__(self):
         return "<StatusUpdate: (created='%s', author='%s', message='%s')>" % (self.created, self.author.display_name, self.message[0:50])
