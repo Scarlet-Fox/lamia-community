@@ -8,7 +8,7 @@ $ ->
         return false
       @element.data("editor_is_active", true)
       @edit_reason = edit_reason
-      
+
       if url != ""
         $.get url, (data) =>
           @element.data("editor_initial_html", data.content)
@@ -16,13 +16,13 @@ $ ->
       else
         @element.data("editor_initial_html", @element.html())
         @setupEditor cancel_button
-    
+
     createAndShowImageLinkModal: () =>
       this.quill.focus()
       current_position = this.quill.getSelection()?.start
       unless current_position?
         current_position = this.quill.getLength()
-      
+
       $("#image-link-modal-#{@quillID}").html(
         """
           <div class="modal-dialog">
@@ -44,24 +44,24 @@ $ ->
             </div>
           </div>
         """)
-      
+
       _this = this
       $("#image-link-modal-insert").click (e) ->
         e.preventDefault()
-        
+
         $(".image-link-error").remove()
         $("#image-link-instructions").text("Processing your image...")
         $("#image-link-load").show()
         $("#image-link-modal-insert").addClass("disabled")
         $("#image-link-select").hide()
-        
+
         $.post "/upload-image", JSON.stringify({image: $("#image-link-select").val()}), (data) ->
-        
+
           $("#image-link-instructions").text("Use this to insert images into your post.")
           $("#image-link-load").hide()
           $("#image-link-modal-insert").removeClass("disabled")
           $("#image-link-select").show()
-        
+
           if data.error
             if $(".image-link-error").length == 0
               $("#image-link-select").before """
@@ -71,11 +71,11 @@ $ ->
               </div>
               """
           else
-            $("#image-link-modal-#{_this.quillID}").modal("hide") 
+            $("#image-link-modal-#{_this.quillID}").modal("hide")
             _this.quill.insertText current_position, "[attachment=#{data.attachment}:#{data.xsize}]"
-        
+
       $("#image-link-modal-#{@quillID}").modal("show")
-      
+
     createAndShowEmoticonModal: () =>
       this.quill.focus()
       current_position = this.quill.getSelection()?.start
@@ -119,16 +119,16 @@ $ ->
             </div>
           </div>
         """)
-      
+
       _this = this
       $(".emoticon-listing").click (e) ->
         e.preventDefault()
         emoticon_code = $(this).data("emotecode")
         _this.quill.insertText current_position, emoticon_code
-        $("#emoticon-modal-#{_this.quillID}").modal("hide") 
-        
+        $("#emoticon-modal-#{_this.quillID}").modal("hide")
+
       $("#emoticon-modal-#{@quillID}").modal("show")
-      
+
     createAndShowMentionModal: () =>
       $("#mention-modal-#{@quillID}").html(
         """
@@ -169,22 +169,22 @@ $ ->
             }
           cache: true
         minimumInputLength: 2
-        
+
       $("#mention-modal-insert").click (e) =>
         e.preventDefault()
-        
+
         __text = ""
         for val, i in $("#member-select").val()
           __text = __text + "[@#{val}]"
           unless i == $("#member-select").val().length-1
             __text = __text + ", "
-            
+
         @quill.insertText @quill.getLength(), __text
-            
+
         $("#mention-modal-#{@quillID}").modal("hide")
-        
+
       $("#mention-modal-#{@quillID}").modal("show")
-    
+
     setupEditor: (cancel_button=false) =>
       @element.html(@editordivHTML())
 
@@ -200,22 +200,25 @@ $ ->
         do @createAndShowEmoticonModal
       $("#toolbar-#{@quillID}").find(".ql-image-link").click (e) =>
         do @createAndShowImageLinkModal
-      
+
       @element.after @dropzoneHTML
       @element.after @submitButtonHTML cancel_button
-      
-      quill = new Quill "#post-editor-#{@quillID}", 
+
+      quill = new Quill "#post-editor-#{@quillID}",
         modules:
           'link-tooltip': true
           'toolbar': { container: "#toolbar-#{@quillID}" }
         theme: 'snow'
-        
+
       quill.setHTML @element.data("editor_initial_html")
       @quill = quill
-      
+
       @element.data("_editor", this)
       @element.data("editor", quill)
-      
+
+      $("#toolbar").on 'click mousedown mousemove', (e) ->
+        e.preventDefault()
+
       $("#dropzone-#{@quillID}").dropzone
         url: "/attach"
         dictDefaultMessage: "Click here or drop a file in to upload (image files only)."
@@ -225,14 +228,14 @@ $ ->
           this.on "success", (file, response) ->
             last_character = quill.getLength()
             quill.insertText last_character, "\n[attachment=#{response.attachment}:#{response.xsize}]"
-      
+
       $("#upload-files-#{@quillID}").click (e) =>
         e.preventDefault()
         if $("#dropzone-#{@quillID}").is(":visible")
           $("#dropzone-#{@quillID}").hide()
         else
           $("#dropzone-#{@quillID}").show()
-      
+
       $("#save-text-#{@quillID}").click (e) =>
         e.preventDefault()
         if @saveFunction?
@@ -240,53 +243,53 @@ $ ->
             @saveFunction @element.data("editor").getHTML(), @element.data("editor").getText(), $("#edit-reason-#{@quillID}").val()
           else
             @saveFunction @element.data("editor").getHTML(), @element.data("editor").getText()
-            
+
       $("#cancel-edit-#{@quillID}").click (e) =>
         e.preventDefault()
         if @cancelFunction?
           @cancelFunction @element.data("editor").getHTML(), @element.data("editor").getText()
-      
+
       if @readyFunction?
         do @readyFunction
-      
+
     getQuillID: () ->
       return Quill.editors.length+1
-    
+
     setElementHtml: (set_html) ->
       @element.data("given_editor_initial_html", set_html)
-    
+
     resetElementHtml: () ->
       if @element.data("given_editor_initial_html")?
         @element.html(@element.data("given_editor_initial_html"))
       else
         @element.html(@element.data("editor_initial_html"))
-    
+
     onSave: (saveFunction) ->
       @saveFunction = saveFunction
-      
+
     onReady: (readyFunction) ->
       @readyFunction = readyFunction
-    
+
     onCancel: (cancelFunction) ->
       @cancelFunction = cancelFunction
-    
+
     onFullPage: (fullPageFunction) ->
       @fullPageFunction = fullPageFunction
-      
+
     noSaveButton: () ->
       do $("#save-text-#{@quillID}").remove
-      
+
     flashError: (message) ->
       @element.parent().children(".alert").remove()
       @element.parent().prepend """<div class="alert alert-danger alert-dismissible fade in" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
           #{message}
         </div>"""
-    
+
     clearEditor: () ->
       @element.data("editor").setText("")
       Dropzone.forElement("#dropzone-#{@quillID}").removeAllFiles()
-    
+
     destroyEditor: () ->
       @element.data("editor_is_active", false)
       @element.parent().children(".alert").remove()
@@ -298,7 +301,7 @@ $ ->
       do $("#emoticon-modal-#{@quillID}").remove
       do $("#mention-modal-#{@quillID}").remove
       do $("#edit-reason-#{@quillID}").parent().parent().remove
-    
+
     editReasonHTML: () =>
       return """
         <div class="form-inline">
@@ -309,22 +312,22 @@ $ ->
         </form>
         <br><br>
       """
-    
+
     dropzoneHTML: () =>
       return """
           <div id="dropzone-#{@quillID}" class="dropzone" style="display: none;"></div>
       """
-    
+
     disableSaveButton: () =>
       $("#save-text-#{@quillID}").addClass("disabled")
       $("#upload-files-#{@quillID}").addClass("disabled")
       $("#cancel-edit-#{@quillID}").addClass("disabled")
-    
+
     enableSaveButton: () =>
       $("#save-text-#{@quillID}").removeClass("disabled")
       $("#upload-files-#{@quillID}").removeClass("disabled")
       $("#cancel-edit-#{@quillID}").removeClass("disabled")
-    
+
     submitButtonHTML: (cancel_button=false) =>
       if cancel_button == true
         return """
@@ -341,12 +344,12 @@ $ ->
             <button type="button" class="btn btn-default post-post" id="upload-files-#{@quillID}">Upload Files</button>
           </div>
         """
-    
+
     editordivHTML: () =>
       return """
         <div id="post-editor-#{@quillID}" class="editor-box" data-placeholder=""></div>
       """
-    
+
     toolbarHTML: () =>
       return """
         <div id="toolbar-#{@quillID}" class="toolbar">
@@ -440,5 +443,5 @@ $ ->
           </span>
         </div>
       """
-      
+
   window.InlineEditor = InlineEditor

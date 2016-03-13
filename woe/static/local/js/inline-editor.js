@@ -189,6 +189,9 @@
         this.quill = quill;
         this.element.data("_editor", this);
         this.element.data("editor", quill);
+        $("#toolbar").on('click mousedown mousemove', function(e) {
+          return e.preventDefault();
+        });
         $("#dropzone-" + this.quillID).dropzone({
           url: "/attach",
           dictDefaultMessage: "Click here or drop a file in to upload (image files only).",
