@@ -838,6 +838,14 @@ def user_list_api_variant():
 def show_memeber_listing():
     return render_template("members.jade", page_title="Members - World of Equestria")
 
+@app.route('/preview', methods=["POST",])
+@login_required
+def preview():
+    request_json = request.get_json(force=True)
+    clean_html_parser = ForumPostParser()
+
+    return app.jsonify(preview=clean_html_parser.parse(request_json.get("text", "")))
+
 @app.route('/member-list-api', methods=["GET",])
 @login_required
 def member_list_api():

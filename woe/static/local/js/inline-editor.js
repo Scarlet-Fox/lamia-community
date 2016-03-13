@@ -20,6 +20,7 @@
         this.submitButtonHTML = bind(this.submitButtonHTML, this);
         this.enableSaveButton = bind(this.enableSaveButton, this);
         this.disableSaveButton = bind(this.disableSaveButton, this);
+        this.previewHTML = bind(this.previewHTML, this);
         this.dropzoneHTML = bind(this.dropzoneHTML, this);
         this.editReasonHTML = bind(this.editReasonHTML, this);
         this.setupEditor = bind(this.setupEditor, this);
@@ -175,6 +176,7 @@
           };
         })(this));
         this.element.after(this.dropzoneHTML);
+        this.element.after(this.previewHTML);
         this.element.after(this.submitButtonHTML(cancel_button));
         quill = new Quill("#post-editor-" + this.quillID, {
           modules: {
@@ -233,6 +235,17 @@
             if (_this.cancelFunction != null) {
               return _this.cancelFunction(_this.element.data("editor").getHTML(), _this.element.data("editor").getText());
             }
+          };
+        })(this));
+        $("#preview-" + this.quillID).click((function(_this) {
+          return function(e) {
+            e.preventDefault();
+            $("#preview-box-" + _this.quillID).parent().show();
+            return $.post("/preview", JSON.stringify({
+              text: _this.element.data("editor").getHTML()
+            }), function(response) {
+              return $("#preview-box-" + _this.quillID).html(response.preview);
+            });
           };
         })(this));
         if (this.readyFunction != null) {
@@ -307,6 +320,10 @@
         return "<div id=\"dropzone-" + this.quillID + "\" class=\"dropzone\" style=\"display: none;\"></div>";
       };
 
+      InlineEditor.prototype.previewHTML = function() {
+        return "<div class=\"panel panel-default\" style=\"display: none;\">\n  <div class=\"panel-heading\">Post Preview (Click Preview Button to Update)</div>\n  <div id=\"preview-box-" + this.quillID + "\" class=\"panel-body\"></div>\n</div>";
+      };
+
       InlineEditor.prototype.disableSaveButton = function() {
         $("#save-text-" + this.quillID).addClass("disabled");
         $("#upload-files-" + this.quillID).addClass("disabled");
@@ -324,9 +341,9 @@
           cancel_button = false;
         }
         if (cancel_button === true) {
-          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"cancel-edit-" + this.quillID + "\">Cancel</button>\n</div>";
+          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"cancel-edit-" + this.quillID + "\">Cancel</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"preview-" + this.quillID + "\">Preview</button>\n</div>";
         } else {
-          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n</div>";
+          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"preview-" + this.quillID + "\">Preview</button>\n</div>";
         }
       };
 

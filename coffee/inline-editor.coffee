@@ -202,6 +202,7 @@ $ ->
         do @createAndShowImageLinkModal
 
       @element.after @dropzoneHTML
+      @element.after @previewHTML
       @element.after @submitButtonHTML cancel_button
 
       quill = new Quill "#post-editor-#{@quillID}",
@@ -248,6 +249,13 @@ $ ->
         e.preventDefault()
         if @cancelFunction?
           @cancelFunction @element.data("editor").getHTML(), @element.data("editor").getText()
+
+      $("#preview-#{@quillID}").click (e) =>
+        e.preventDefault()
+        $("#preview-box-#{@quillID}").parent().show()
+
+        $.post "/preview", JSON.stringify({text: @element.data("editor").getHTML()}), (response) =>
+          $("#preview-box-#{@quillID}").html response.preview
 
       if @readyFunction?
         do @readyFunction
@@ -318,6 +326,14 @@ $ ->
           <div id="dropzone-#{@quillID}" class="dropzone" style="display: none;"></div>
       """
 
+    previewHTML: () =>
+      return """
+          <div class="panel panel-default" style="display: none;">
+            <div class="panel-heading">Post Preview (Click Preview Button to Update)</div>
+            <div id="preview-box-#{@quillID}" class="panel-body"></div>
+          </div>
+      """
+
     disableSaveButton: () =>
       $("#save-text-#{@quillID}").addClass("disabled")
       $("#upload-files-#{@quillID}").addClass("disabled")
@@ -335,6 +351,7 @@ $ ->
             <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
             <button type="button" class="btn btn-default post-post" id="upload-files-#{@quillID}">Upload Files</button>
             <button type="button" class="btn btn-default" id="cancel-edit-#{@quillID}">Cancel</button>
+            <button type="button" class="btn btn-default" id="preview-#{@quillID}">Preview</button>
           </div>
         """
       else
@@ -342,6 +359,7 @@ $ ->
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
             <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
             <button type="button" class="btn btn-default post-post" id="upload-files-#{@quillID}">Upload Files</button>
+            <button type="button" class="btn btn-default" id="preview-#{@quillID}">Preview</button>
           </div>
         """
 
