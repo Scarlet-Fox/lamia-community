@@ -302,7 +302,7 @@ class IgnoringUser(db.Model):
     block_status = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
-        return "<IgnoredUser: (user='%s', ignoring='%s')>" % (self.user.display_name, self.ignored.display_name)
+        return "<IgnoredUser: (user='%s', ignoring='%s')>" % (self.user.display_name, self.ignoring.display_name)
 
 class FollowingUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -348,6 +348,7 @@ class User(db.Model):
                     backref="users")
 
     data = db.Column(JSONB)
+    time_online = db.Column(db.Integer, default=0)
 
     ignored_users = db.relationship("IgnoringUser",
             secondary="ignoring_user",

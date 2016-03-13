@@ -190,7 +190,7 @@ def inject_notification_count():
 
 @app.before_request
 def log_request():
-    if not request.path.startswith("/admin/") and not request.path.startswith("/static/"):    
+    if not request.path.startswith("/admin/") and not request.path.startswith("/static/"):
         l = sqlm.SiteLog()
         l.method = request.method
         l.path = request.path
@@ -450,6 +450,13 @@ def static_from_root():
 @login_manager.user_loader
 def load_user(login_name):
     user = sqla.session.query(sqlm.User).filter_by(login_name=login_name)[0]
+
+    if user.hidden_last_seen is not None:
+        is_recently_active = user.hidden_last_seen > arrow.utcnow().replace(minutes=-5).datetime.replace(tzinfo=None)
+
+        if is_recently_active:
+            user.time_online += int((arrow.utcnow() - arrow.get(user.hidden_last_seen)).total_seconds())
+
     user.hidden_last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
     if not user.anonymous_login:
         user.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)

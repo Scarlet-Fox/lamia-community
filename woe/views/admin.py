@@ -46,7 +46,8 @@ class UserView(ModelView):
     # column_searchable_list = ('login_name', 'display_name','about_me')
     # form_excluded_columns = ("ignored_users", "ignored_user_signatures","followed_by", "pending_friends", "rejected_friends", "friends")
 
-    column_filters = ["id", ]
+    column_filters = ["id", "login_name"]
+    form_excluded_columns = ["status_updates", "private_messages", "notifications", "booped_posts"]
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
