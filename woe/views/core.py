@@ -190,23 +190,24 @@ def inject_notification_count():
 
 @app.before_request
 def log_request():
-    l = sqlm.SiteLog()
-    l.method = request.method
-    l.path = request.path
-    l.ip_address = request.remote_addr
-    l.agent_platform = request.user_agent.platform
-    l.agent_browser = request.user_agent.browser
-    l.agent_browser_version = request.user_agent.version
-    l.agent = request.user_agent.string
-    l.time = arrow.utcnow().datetime.replace(tzinfo=None)
+    if not request.path.startswith("/admin/") and not request.path.startswith("/static/"):    
+        l = sqlm.SiteLog()
+        l.method = request.method
+        l.path = request.path
+        l.ip_address = request.remote_addr
+        l.agent_platform = request.user_agent.platform
+        l.agent_browser = request.user_agent.browser
+        l.agent_browser_version = request.user_agent.version
+        l.agent = request.user_agent.string
+        l.time = arrow.utcnow().datetime.replace(tzinfo=None)
 
-    try:
-        if current_user.is_authenticated():
-            l.user = current_user._get_current_object()
-        sqla.session.add(l)
-        sqla.session.commit()
-    except:
-        sqla.session.rollback()
+        try:
+            if current_user.is_authenticated():
+                l.user = current_user._get_current_object()
+            sqla.session.add(l)
+            sqla.session.commit()
+        except:
+            sqla.session.rollback()
 
 @app.route('/get-user-info-api', methods=['POST',])
 def get_user_info_api():

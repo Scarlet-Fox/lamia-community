@@ -71,6 +71,7 @@ class PrivateMessageReply(db.Model):
 
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime, nullable=True)
+    pm_title = db.Column(db.String)
 
     def __repr__(self):
         return "<PrivateMessageReply: (created='%s', user='%s', pm='%s')>" % (self.created, self.user.display_name, self.pm.title)
@@ -419,7 +420,7 @@ class User(db.Model):
     old_mongo_hash = db.Column(db.String, nullable=True)
 
     def __repr__(self):
-        return "<Member: (name='%s')>" % (self.display_name)
+        return "%s" % (self.display_name)
 
     def get_hash(self):
         return self.password_hash[-40:]
@@ -712,7 +713,7 @@ class Label(db.Model):
     post_html = db.Column(db.String)
 
     def __repr__(self):
-        return "<Label: (label='%s')>" % (self.label,)
+        return "%s" % (self.label,)
 
 class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -890,6 +891,7 @@ class Post(db.Model):
     created = db.Column(db.DateTime, index=True)
     hidden = db.Column(db.Boolean, default=False, index=True)
     post_history = db.Column(JSONB)
+    t_title = db.Column(db.String)
 
     old_mongo_hash = db.Column(db.String, nullable=True)
     data = db.Column(JSONB)

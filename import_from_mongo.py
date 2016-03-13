@@ -12,6 +12,9 @@ sqla.create_all()
 
 for mongo_user in core.User.objects():
     new_user = User()
+    if mongo_user.login_name in ["scarlet", "zoop", "artemis"]:
+        new_user.is_admin = True
+        new_user.is_mod = True
     new_user.login_name = mongo_user.login_name
     new_user.display_name = mongo_user.display_name
     new_user.email_address = mongo_user.email_address
@@ -217,6 +220,7 @@ for message_topic in core.PrivateMessageTopic.objects():
         sql_user = sqla.session.query(User).filter_by(old_mongo_hash=str(message_reply.author.id)).first()
         sql_message_reply = PrivateMessageReply()
         sql_message_reply.author = sql_user
+        sql_message_reply.pm_title = sql_message_topic.title
         sql_message_reply.message = message_reply.message
         sql_message_reply.pm = sql_message_topic
         sql_message_reply.created = message_reply.created
@@ -369,6 +373,7 @@ for topic in forum.Topic.objects():
         sql_post.author = sql_user
         sql_post.html = post.html
         sql_post.topic = sql_topic
+        sql_post.t_topic = sql_topic.title
         sql_post.old_mongo_hash = str(post.id)
         sql_post.hidden = post.hidden
 

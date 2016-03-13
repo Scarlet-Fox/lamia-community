@@ -132,6 +132,7 @@ def new_post_in_topic(slug):
     new_post.author = current_user._get_current_object()
     new_post.author_name = current_user.login_name
     new_post.topic = topic
+    new_post.t_title = new_topic.title
     new_post.created = arrow.utcnow().datetime.replace(tzinfo=None)
     try:
         if character:
@@ -779,6 +780,7 @@ def new_topic(slug):
         new_post.html = post_html
         new_post.author = current_user._get_current_object()
         new_post.topic = new_topic
+        new_post.t_title = new_topic.title
         new_post.created = arrow.utcnow().datetime.replace(tzinfo=None)
         sqla.session.add(new_post)
         sqla.session.commit()

@@ -28,11 +28,13 @@ def _label_formatter_(view, context, model, name):
 class LabelView(ModelView):
     can_create = True
     can_delete = True
-    column_list = ("label",)
+    column_list = ("id", "label",)
 
     column_formatters = {
         'label': _label_formatter_
     }
+
+    column_filters = ["id", ]
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
@@ -40,9 +42,11 @@ class LabelView(ModelView):
 class UserView(ModelView):
     can_create = False
     can_delete = False
-    column_list = ("login_name", "display_name", "email_address", "banned", "validated", "hidden_last_seen")
+    column_list = ("id", "login_name", "display_name", "email_address", "banned", "validated", "hidden_last_seen")
     # column_searchable_list = ('login_name', 'display_name','about_me')
     # form_excluded_columns = ("ignored_users", "ignored_user_signatures","followed_by", "pending_friends", "rejected_friends", "friends")
+
+    column_filters = ["id", ]
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
@@ -50,13 +54,14 @@ class UserView(ModelView):
 class NotificationView(ModelView):
     can_delete = False
     column_list = (
+        "id",
         "created",
         "category",
         "author",
         "user",
         "message",
     )
-    column_filters = ("acknowledged",)
+    column_filters = ("acknowledged", "id")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
@@ -64,18 +69,20 @@ class NotificationView(ModelView):
 class CategoryView(ModelView):
     can_delete = False
     column_list = (
+        "id",
         "name",
         "parent",
         "weight",
     )
 
+    column_filters = ["id", ]
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class TopicView(ModelView):
     can_delete = False
-    column_list = ("title","created")
-    # column_filters = ["sticky","hidden","closed","prefix"]
+    column_list = ("id", "title","created")
+    column_filters = ["id", "slug", "sticky","hidden","locked","label"]
     # column_searchable_list = ('title',)
     # form_excluded_columns = ("watchers", "banned_from_topic", "first_post")
 
@@ -84,92 +91,108 @@ class TopicView(ModelView):
 
 class StatusView(ModelView):
     can_delete = False
-    column_list = ("author","attached_to_user","created","replies", "hidden", "locked", "muted")
+    column_list = ("id", "author","attached_to_user","created","replies", "hidden", "locked", "muted")
     # column_filters = ["author_name","attached_to_user_name", "hidden", "locked", "muted"]
     # form_excluded_columns = ("participants", "ignoring","blocked")
+
+    column_filters = ["id", ]
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+
+class StatusCommentView(ModelView):
+    can_delete = False
+    column_list = ("id", "author","created","status")
+    # column_filters = ["author_name","attached_to_user_name", "hidden", "locked", "muted"]
+    # form_excluded_columns = ("participants", "ignoring","blocked")
+
+    column_filters = ["id", ]
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class PostView(ModelView):
     can_delete = False
-    column_list = ("topic", "created", "author")
+    column_list = ("id", "topic", "created", "author")
     # column_filters = ('topic_name', 'author_name', 'html', 'old_ipb_id', 'hidden')
     # form_excluded_columns = ("boops", )
+
+    column_filters = ["id", ]
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+
+class AttachView(ModelView):
+    can_delete = False
+    column_list = ("id", "path", "mimetype", "size_in_bytes", "x_size", "created_date", "used_in")
+    # column_filters = ("owner_name", 'linked','mimetype','origin_domain','origin_url','alt','extension', "do_not_convert")
+
+    column_filters = ["id", ]
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+
+class PrivateMessageTopicView(ModelView):
+    can_delete = False
+    column_list = ("id", "title", "author")
+    # column_list = ("title", "created", "last_reply_time", "last_reply_name", "message_count", "participant_count")
+    # column_filters = ("creator_name","title","last_reply_name")
+    # form_excluded_columns = ("participating_users", "blocked_users","users_left_pm")
+
+    column_filters = ["id", ]
+    def is_accessible(self):
+        return current_user.login_name in ["scarlet", "zoop"]
+
+class IPAddressView(ModelView):
+    column_list = ("id", "user", "ip_address", "last_seen")
+    column_filters = ("ip_address", "user_id")
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+class LogView(ModelView):
+    column_list = ("id", "user", "ip_address", "time", "method", "path", "error", "error_code")
+    column_filters = ("user_id", "ip_address", "time", "path", "method", "error", "error_code")
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+class FingerprintView(ModelView):
+    column_list = ("id", "user", "fingerprint_hash", "factors", "last_seen")
+    column_filters = ("user_id", "fingerprint_hash", "factors", "last_seen")
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+class CharacterView(ModelView):
+    column_list = ("id", "author", "name", "created",)
+    column_filters = ("author_id", "name", "created")
+    column_searchable_list = ("name", "appearance", "personality", "backstory", "other")
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
+class ReportView(ModelView):
+    column_list = ("id", "author", "url", "status", "created")
+    column_filters = ("url",)
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
 admin.add_view(LabelView(sqlm.Label, sqla.session))
+admin.add_view(CharacterView(sqlm.Character, sqla.session))
+admin.add_view(ReportView(sqlm.Report, sqla.session))
+admin.add_view(AttachView(sqlm.Attachment, sqla.session, category='Core'))
+admin.add_view(LogView(sqlm.SiteLog, sqla.session, category='Core'))
+admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, category='Core'))
+admin.add_view(FingerprintView(sqlm.Fingerprint, sqla.session, category='Core'))
 admin.add_view(UserView(sqlm.User, sqla.session, category='Members'))
 admin.add_view(NotificationView(sqlm.Notification, sqla.session, category='Members'))
 admin.add_view(StatusView(sqlm.StatusUpdate, sqla.session, category='Members'))
+admin.add_view(PrivateMessageTopicView(sqlm.PrivateMessage, sqla.session, category='Members'))
 admin.add_view(PostView(sqlm.Post, sqla.session, category='Forum'))
 admin.add_view(TopicView(sqlm.Topic, sqla.session, category='Forum'))
 admin.add_view(CategoryView(sqlm.Category, sqla.session, category='Forum'))
 
-#
-# class AttachView(ModelView):
-#     can_delete = False
-#     column_list = ("owner_name", "path", "mimetype", "size_in_bytes", "x_size", "created_date", "used_in")
-#     column_filters = ("owner_name", 'linked','mimetype','origin_domain','origin_url','alt','extension', "do_not_convert")
-#
-#     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.is_admin)
-#
-# class PrivateMessageTopicView(ModelView):
-#     can_delete = False
-#     column_list = ("title", "creator_name", "created", "last_reply_time", "last_reply_name", "message_count", "participant_count")
-#     column_filters = ("creator_name","title","last_reply_name")
-#     form_excluded_columns = ("participating_users", "blocked_users","users_left_pm")
-#
-#     def is_accessible(self):
-#         return current_user.login_name in ["luminescence", "zoop"]
-#
-# class PrivateMessageView(ModelView):
-#     can_delete = False
-#     column_list = ("topic_name", "topic_creator_name", "created", "author_name", "message")
-#     column_filters = ("topic_name", "topic_creator_name", "author_name", "message")
-#
-#     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.login_name in ["luminescence", "zoop"])
-#
-# class IPAddressView(ModelView):
-#     column_list = ("user_name", "ip_address", "last_seen")
-#     column_filters = ("user_name", "ip_address", "last_seen")
-#
-#     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.is_admin)
-#
-# class LogView(ModelView):
-#     column_list = ("user_name", "ip_address", "time", "method", "path", "error", "error_code")
-#     column_filters = ("user_name", "ip_address", "time", "path", "method", "error", "error_code")
-#
-#     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.is_admin)
-#
-# class FingerprintView(ModelView):
-#     column_list = ("user_name", "fingerprint_hash", "fingerprint_factors", "last_seen")
-#     column_filters = ("user_name", "fingerprint_hash", "fingerprint_factors", "last_seen")
-#
-#     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.is_admin)
-#
-# class ReportView(ModelView):
-#     column_list = ("initiated_by_u", "content_type", "content_pk", "url", "status", "created")
-#     column_filters = ("initiated_by_u", "content_type", "content_pk", "url", "status", "created")
-#
-#     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.is_admin)
-#
-# class CharacterView(ModelView):
-#     column_list = ("creator_name", "name", "created", "post_count")
-#     column_filters = ("creator_name", "name", "created")
-#     column_searchable_list = ('creator_name', "name", "appearance", "personality", "backstory", "other")
-#     form_excluded_columns = ("creator", "creator_name","posts", "roleplays", "avatars", "gallery")
-#
-#     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.is_admin)
 #
 # class BlogView(ModelView):
 #     column_list = ("creator_name", "name", "created", "disabled")
