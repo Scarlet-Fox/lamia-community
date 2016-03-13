@@ -31,6 +31,9 @@ mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
 legacy_postcharacter_re = re.compile(r'\[(post)?character=.*?\]')
 list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL)
+link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
+bbcode_re = re.compile("(\[(attachment|spoiler|center|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
+href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -89,6 +92,42 @@ class ForumPostParser(object):
         pass
 
     def parse(self, html, strip_images=False):
+        # parse urls
+        all_bbcode = bbcode_re.findall(html)
+        all_html_links = href_re.findall(html)
+        parse_for_urls = html
+
+        for bbcode in all_bbcode:
+            parse_for_urls = parse_for_urls.replace(bbcode[0], "")
+
+        for bbcode in all_html_links:
+            parse_for_urls = parse_for_urls.replace(bbcode[0], "")
+
+        links_in_clean_text = link_re.findall(parse_for_urls)
+        for i, link in enumerate(links_in_clean_text):
+            filler = "LINKTEXT+3235763519_"+str(i)
+
+            html = html.replace(link[0], """
+                <a href="%s">%s</a>
+            """ % (filler, filler))
+
+        for i, link in enumerate(links_in_clean_text):
+            filler = "LINKTEXT+3235763519_"+str(i)
+            print filler
+
+            if link[0].lower().startswith("www"):
+                link_text = "http://"+link[0]
+            else:
+                link_text = link[0]
+
+            html = html.replace(
+                """<a href="%s">%s</a>""" % (filler, filler),
+                """
+                    <a href="%s">%s</a>
+                """ % (link_text, link[0])
+            )
+
+
         # parse attachment tags
         attachment_bbcode_in_post = attachment_re.findall(html)
 
@@ -96,7 +135,12 @@ class ForumPostParser(object):
             try:
                 attachment = sqla.session.query(sqlm.Attachment).filter_by(id=attachment_bbcode[0])[0]
             except:
-                continue
+                sqla.session.rollback()
+                try:
+                    attachment = sqla.session.query(sqlm.Attachment).filter_by(old_mongo_hash=attachment_bbcode[0])[0]
+                except:
+                    sqla.session.rollback()
+                    continue
 
             size = attachment_bbcode[1]
             if int(size) < 5:
@@ -163,33 +207,47 @@ class ForumPostParser(object):
         replies = reply_re.findall(html)
         for reply in replies:
             if reply[1] == "post":
-                _replying_to = sqla.session.query(sqlm.Post).filter_by(id=reply[0])[0]
-                if _replying_to.data.has_key("character"):
+                try:
+                    r_id = int(reply[0])
+                    _replying_to = sqla.session.query(sqlm.Post).filter_by(id=r_id)[0]
+                except ValueError:
+                    sqla.session.rollback()
+
                     try:
-                        if _replying_to.character is not None:
-                            _replying_to.author.display_name = _replying_to.character.name
+                        _replying_to = sqla.session.query(sqlm.Post).filter_by(old_mongo_hash=reply[0])[0]
                     except:
-                        pass
+                        sqla.session.rollback()
+                        continue
+
+                try:
+                    if _replying_to.character is not None:
+                        _replying_to.author.display_name = _replying_to.character.name
+                except:
+                    continue
+
                 html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
                 %s
                 </div></blockquote>
                 """ % (
                     arrow.get(_replying_to.created).timestamp,
-                    "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.pk),
+                    "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.id),
                     _replying_to.author.display_name,
                     "/member/%s" % _replying_to.author.login_name,
                     re.sub(reply_re, "", _replying_to.html.replace("img", "imgdisabled"))
                 ))
             if reply[1] == "pm":
-                _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=reply[0])[0]
+                try:
+                    _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=reply[0])[0]
+                except:
+                    sqla.session.rollback()
                 html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
                 %s
                 </blockquote>
                 """ % (
                     arrow.get(_replying_to.created).timestamp,
-                    "/messages/%s/page/1/post/%s" % (_replying_to.topic.pk, _replying_to.pk),
+                    "/messages/%s/page/1/post/%s" % (_replying_to.topic.id, _replying_to.id),
                     _replying_to.author.display_name,
                     "/member/%s" % _replying_to.author.login_name,
                     re.sub(reply_re, "", _replying_to.message.replace("img", "imgdisabled"))
@@ -201,6 +259,7 @@ class ForumPostParser(object):
                 user = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
                 html = html.replace("[@%s]" % unicode(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.login_name, user.display_name), 1)
             except:
+                sqla.session.rollback()
                 html = html.replace("[@%s]" % unicode(mention), "", 1)
 
         html = html.replace("[hr]", "<hr>")

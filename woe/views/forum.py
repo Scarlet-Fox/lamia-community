@@ -132,7 +132,7 @@ def new_post_in_topic(slug):
     new_post.author = current_user._get_current_object()
     new_post.author_name = current_user.login_name
     new_post.topic = topic
-    new_post.t_title = new_topic.title
+    new_post.t_title = topic.title
     new_post.created = arrow.utcnow().datetime.replace(tzinfo=None)
     try:
         if character:
