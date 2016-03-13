@@ -13,6 +13,7 @@ from woe.models.forum import Post
 from woe.models.roleplay import Character
 from woe import sqla
 import woe.sqlmodels as sqlm
+from urllib import urlencode
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)(:wrap)?\]')
 spoiler_re = re.compile(r'\[spoiler\](.*?)\[\/spoiler\]', re.DOTALL)
@@ -34,6 +35,12 @@ list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL)
 link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 bbcode_re = re.compile("(\[(attachment|spoiler|center|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
 href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
+youtube_re = re.compile("https?://(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?", re.I)
+dailymotion_re = re.compile("(?:dailymotion\.com(?:\/video|\/hub)|dai\.ly)\/([0-9a-z]+)(?:[\-_0-9a-zA-Z]+#video=([a-z0-9]+))?", re.I)
+vimeo_re = re.compile("(?:https?:\/\/)?(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|)(\d+)(?:$|\/|\?)", re.I)
+soundcloud_re = re.compile("(?:(?:https:\/\/)|(?:http:\/\/)|(?:www.)|(?:\s))+(?:soundcloud.com\/)+([a-zA-Z0-9\-\.]+)(?:\/)+([a-zA-Z0-9\-\.]+)", re.I)
+spotify_re = re.compile("spotify\.com/(album|track|user/[^/]+/playlist)/([a-zA-Z0-9]+)", re.I)
+vine_re = re.compile("(?:vine\.co/v/|www\.vine\.co/v/)(.*)", re.I)
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -107,26 +114,78 @@ class ForumPostParser(object):
         for i, link in enumerate(links_in_clean_text):
             filler = "LINKTEXT+3235763519_"+str(i)
 
-            html = html.replace(link[0], """
-                <a href="%s">%s</a>
-            """ % (filler, filler))
+            html = html.replace(link[0], """<a href="%s">%s</a>""" % (filler, filler))
 
         for i, link in enumerate(links_in_clean_text):
             filler = "LINKTEXT+3235763519_"+str(i)
-            print filler
 
             if link[0].lower().startswith("www"):
                 link_text = "http://"+link[0]
             else:
                 link_text = link[0]
 
-            html = html.replace(
-                """<a href="%s">%s</a>""" % (filler, filler),
-                """
-                    <a href="%s">%s</a>
-                """ % (link_text, link[0])
-            )
+            print link_text
 
+            youtube_match = youtube_re.search(link_text)
+            dailymotion_match = dailymotion_re.search(link_text)
+            vimeo_match = vimeo_re.search(link_text)
+            soundcloud_match = soundcloud_re.search(link_text)
+            spotify_match = spotify_re.search(link_text)
+            vine_match = vine_re.search(link_text)
+
+            if youtube_match:
+                video = youtube_match.groups()[0]
+
+                html = html.replace(
+                    """<a href="%s">%s</a>""" % (filler, filler),
+                    """<iframe width="560" height="315" src="https://www.youtube.com/embed/%s" frameborder="0" allowfullscreen></iframe>""" % (video, )
+                )
+            elif dailymotion_match:
+                video = dailymotion_match.groups()[0]
+
+                html = html.replace(
+                    """<a href="%s">%s</a>""" % (filler, filler),
+                    """<iframe frameborder="0" width="480" height="270" src="//www.dailymotion.com/embed/video/%s" allowfullscreen></iframe>""" % (video, )
+                )
+            elif vimeo_match:
+                video = vimeo_match.groups()[0]
+
+                html = html.replace(
+                    """<a href="%s">%s</a>""" % (filler, filler),
+                    """<iframe src="https://player.vimeo.com/video/%s?color=ffffff&title=0&byline=0&portrait=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""" % (video, )
+                )
+            elif soundcloud_match:
+                sound_user = soundcloud_match.groups()[0]
+                sound_track = soundcloud_match.groups()[1]
+                options = urlencode({
+                    "url": "https://soundcloud.com/"+sound_user+"/"+sound_track
+                    })
+
+                html = html.replace(
+                    """<a href="%s">%s</a>""" % (filler, filler),
+                    """<iframe width="100%%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?%s&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"></iframe>""" % (options,)
+                )
+            elif spotify_match:
+                uri = spotify_match.groups()[0]
+                track = spotify_match.groups()[1]
+                uri = "spotify:"+uri.replace("/", ":")+":"+track
+
+                html = html.replace(
+                    """<a href="%s">%s</a>""" % (filler, filler),
+                    """<iframe src="https://embed.spotify.com/?uri=%s" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>""" % (uri,)
+                )
+            elif vine_match:
+                video = vine_match.groups()[0]
+
+                html = html.replace(
+                    """<a href="%s">%s</a>""" % (filler, filler),
+                    """<iframe src="https://vine.co/v/%s/embed/simple?autoplay=0" width="400" height="400" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>""" % (video, )
+                )
+            else:
+                html = html.replace(
+                    """<a href="%s">%s</a>""" % (filler, filler),
+                    """<a href="%s">%s</a>""" % (link_text, link[0].strip())
+                )
 
         # parse attachment tags
         attachment_bbcode_in_post = attachment_re.findall(html)
