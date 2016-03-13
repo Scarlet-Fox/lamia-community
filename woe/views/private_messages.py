@@ -421,7 +421,7 @@ def create_message():
             continue
 
         try:
-            u = sqla.session.query(sqlm.User).filter_by(id=upk)[0]
+            u = sqla.session.query(sqlm.User).filter_by(id=user_pk)[0]
 
             try:
                 ignore_setting = sqla.session.query(sqlm.IgnoringUser).filter_by(

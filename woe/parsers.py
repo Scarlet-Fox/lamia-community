@@ -11,6 +11,8 @@ from threading import Thread
 from woe.models.core import Attachment, User, PrivateMessage
 from woe.models.forum import Post
 from woe.models.roleplay import Character
+from woe import sqla
+import woe.sqlmodels as sqlm
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)(:wrap)?\]')
 spoiler_re = re.compile(r'\[spoiler\](.*?)\[\/spoiler\]', re.DOTALL)
@@ -92,7 +94,7 @@ class ForumPostParser(object):
 
         for attachment_bbcode in attachment_bbcode_in_post:
             try:
-                attachment = Attachment.objects(pk=attachment_bbcode[0])[0]
+                attachment = sqla.session.query(sqlm.Attachment).filter_by(id=attachment_bbcode[0])[0]
             except:
                 continue
 
@@ -161,11 +163,11 @@ class ForumPostParser(object):
         replies = reply_re.findall(html)
         for reply in replies:
             if reply[1] == "post":
-                _replying_to = Post.objects(pk=reply[0])[0]
+                _replying_to = sqla.session.query(sqlm.Post).filter_by(id=reply[0])[0]
                 if _replying_to.data.has_key("character"):
                     try:
-                        character = Character.objects(pk=_replying_to.data["character"], creator=_replying_to.author)[0]
-                        _replying_to.author.display_name = character.name
+                        if _replying_to.character is not None:
+                            _replying_to.author.display_name = _replying_to.character.name
                     except:
                         pass
                 html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
@@ -180,7 +182,7 @@ class ForumPostParser(object):
                     re.sub(reply_re, "", _replying_to.html.replace("img", "imgdisabled"))
                 ))
             if reply[1] == "pm":
-                _replying_to = PrivateMessage.objects(pk=reply[0])[0]
+                _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=reply[0])[0]
                 html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
                 %s
@@ -196,7 +198,7 @@ class ForumPostParser(object):
         mentions = mention_re.findall(html)
         for mention in mentions:
             try:
-                user = User.objects(login_name=mention)[0]
+                user = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
                 html = html.replace("[@%s]" % unicode(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.login_name, user.display_name), 1)
             except:
                 html = html.replace("[@%s]" % unicode(mention), "", 1)
