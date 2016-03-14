@@ -1,37 +1,6 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.row.hidden-sm.hidden-md.hidden-lg
-  .col-md-6
-    .panel.panel-default
-      .panel-heading
-        h3.panel-title New Topics
-      ul.list-group.panel-body
-        for t in recently_created_topics
-          li.list-group-item
-            .media-left
-              span.subcategory-listing-recent-image
-                a(href="{{url_for('view_profile', login_name=t.author.login_name)}}")
-                  img(src="{{t.author.get_avatar_url("40")}}", width="{{t.author.avatar_40_x}}", height="{{t.author.avatar_40_y}}", class="avatar-mini")
-            .media-body
-              a(href="/t/{{t.slug}}")= t.title
-              br
-              a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
-  .col-md-6
-    .panel.panel-default
-      .panel-heading
-        h3.panel-title Recently Replied to Topics
-      ul.list-group.panel-body
-        for t in recently_replied_topics
-          li.list-group-item
-            .media-left
-              span.subcategory-listing-recent-image
-                a(href="{{url_for('view_profile', login_name=t.recent_post.author.login_name)}}")
-                  img(src="{{t.last_post_author_avatar}}", width="{{t.recent_post.author.avatar_40_x}}", height="{{t.recent_post.author.avatar_40_y}}", class="avatar-mini")
-            .media-body
-              a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title
-              br
-              a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
 .row
   .col-md-8
     {% for section in sections %}
@@ -44,15 +13,13 @@
             .col-xs-4.col-sm-6
               span.subcategory-listing-name 
                 a(href="/category/{{category.slug}}") {{category.name}}
-                br
                 {% for subcategory in sub_categories[category] %}
                 {% if loop.first %}
-                span
+                p.small
                   &nbsp;
-                {% endif %}
-                span.small 
+                  {% endif %}
                   a(href="/category/{{subcategory.slug}}") {{subcategory.name}}{% if not loop.last %}, {% endif %}
-                {% endfor %}
+                  {% endfor %}
             {% if category.recent_post %}
             .col-sm-6.col-xs-8
               .media-left
@@ -67,37 +34,33 @@
             {% endif %}
       {% endfor %}
     {% endfor %}
-    .row.hidden-xs
+    .row
       .col-md-6
-        .panel.panel-default
-          .panel-heading
-            h3.panel-title New Topics
-          ul.list-group.panel-body
-            for t in recently_created_topics
-              li.list-group-item
-                .media-left
-                  span.subcategory-listing-recent-image
-                    a(href="{{url_for('view_profile', login_name=t.author.login_name)}}")
-                      img(src="{{t.author.get_avatar_url("40")}}", width="{{t.author.avatar_40_x}}", height="{{t.author.avatar_40_y}}", class="avatar-mini")
-                .media-body
-                  a(href="/t/{{t.slug}}")= t.title
-                  br
-                  a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
+        ul.list-group
+          li.list-group-item.section-header.sidebar-section-header New Topics
+          for t in recently_created_topics
+            li.list-group-item
+              .media-left
+                span.subcategory-listing-recent-image
+                  a(href="{{url_for('view_profile', login_name=t.author.login_name)}}")
+                    img(src="{{t.author.get_avatar_url("40")}}", width="{{t.author.avatar_40_x}}", height="{{t.author.avatar_40_y}}", class="avatar-mini")
+              .media-body
+                a(href="/t/{{t.slug}}")= t.title
+                br
+                a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
       .col-md-6
-        .panel.panel-default
-          .panel-heading
-            h3.panel-title Recently Replied to Topics
-          ul.list-group.panel-body
-            for t in recently_replied_topics
-              li.list-group-item
-                .media-left
-                  span.subcategory-listing-recent-image
-                    a(href="{{url_for('view_profile', login_name=t.recent_post.author.login_name)}}")
-                      img(src="{{t.recent_post.author.get_avatar_url("40")}}", width="{{t.recent_post.author.avatar_40_x}}", height="{{t.recent_post.author.avatar_40_y}}", class="avatar-mini")
-                .media-body
-                  a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title
-                  br
-                  a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
+        ul.list-group
+          li.list-group-item.section-header.sidebar-section-header Recently Replied to Topics
+          for t in recently_replied_topics
+            li.list-group-item
+              .media-left
+                span.subcategory-listing-recent-image
+                  a(href="{{url_for('view_profile', login_name=t.recent_post.author.login_name)}}")
+                    img(src="{{t.recent_post.author.get_avatar_url("40")}}", width="{{t.recent_post.author.avatar_40_x}}", height="{{t.recent_post.author.avatar_40_y}}", class="avatar-mini")
+              .media-body
+                a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title
+                br
+                a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
   .col-md-4
     ul.list-group
       li.list-group-item.section-header.sidebar-section-header Status Updates
@@ -125,10 +88,8 @@
             button#new-status.btn.btn-primary(type="submit") Create a Status Update
 .row
   .col-md-12
-    .panel.panel-default
-      .panel-heading
-        h3.panel-title {{online_user_count}} Users Online
-      .panel-body
+    li.list-group-item.section-header.sidebar-section-header {{online_user_count}} Users Online
+    li.list-group-item
         {% for u in online_users %}
         {% if u.anonymous_login == False %}
         a.hover_user(data-hplacement="top", href="{{url_for('view_profile', login_name=u.login_name)}}") {{u.display_name}}

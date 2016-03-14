@@ -1,16 +1,12 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.breadcrumb#topic-breadcrumb(style="margin-bottom: 0px;")
-  li
-    a(href="/") Home
-  li.active 
-    b
-      a(href="/characters") Character Database
-  a.btn.btn-xs.btn-default.float-right(href="/characters/new-character", style="color: #333;") New Character
 .member-page(style="background: #fff; padding: 20px;")
   .row
     .col-md-12
+      a.btn.btn-xs.btn-default.btn-primary.float-right(href="/characters/new-character") Create a New Character
+      br
+      br
       table.table#character-table
         thead
           tr

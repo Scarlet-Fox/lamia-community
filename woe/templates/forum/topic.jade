@@ -1,25 +1,29 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.breadcrumb#topic-breadcrumb
-  li
-    a(href="/") Home
-  {% if topic.category.parent != None and topic.category.parent.root_category != True %}
-  li.active 
-    a(href="{{url_for('category_index', slug=topic.category.parent.slug)}}")= topic.category.parent.name
-  {% endif %}
-  li.active 
-    a(href="{{url_for('category_index', slug=topic.category.slug)}}")= topic.category.name
-  li.active
-    b
-      a(href="{{url_for('topic_index', slug=topic.slug)}}")= topic.title
-  {% if current_user.is_authenticated() %}
-  {% if current_user in topic.watchers %}
-  a.btn.btn-xs.btn-default.post-link.float-right(href="/t/{{topic.slug}}/toggle-follow", style="color: #333;") Unfollow
-  {% else %}
-  a.btn.btn-xs.btn-default.post-link.float-right(href="/t/{{topic.slug}}/toggle-follow", style="color: #333;") Follow
-  {% endif %}
-  {% endif %}
+.row
+  .col-md-12
+    ul.list-group
+      li.list-group-item.section-header
+        ul.breadcrumb#topic-breadcrumb
+          li
+            a(href="/") Home
+          {% if topic.category.parent != None and topic.category.parent.root_category != True %}
+          li.active 
+            a(href="{{url_for('category_index', slug=topic.category.parent.slug)}}")= topic.category.parent.name
+          {% endif %}
+          li.active 
+            a(href="{{url_for('category_index', slug=topic.category.slug)}}")= topic.category.name
+          li.active
+            b
+              a(href="{{url_for('topic_index', slug=topic.slug)}}")= topic.title
+        {% if current_user.is_authenticated() %}
+        {% if current_user in topic.watchers %}
+        a.btn.btn-xs.btn-default.post-link.float-right(href="/t/{{topic.slug}}/toggle-follow", style="color: #333;") Unfollow
+        {% else %}
+        a.btn.btn-xs.btn-default.post-link.float-right(href="/t/{{topic.slug}}/toggle-follow", style="color: #333;") Follow
+        {% endif %}
+        {% endif %}
 .row
   .col-md-12
     ul.list-group.category

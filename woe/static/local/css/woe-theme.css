@@ -236,16 +236,21 @@ text-shadow:none;
   border-radius:3px;
 }
 
-
 .pagination-listing {
     text-align: center !important;
 }
 .breadcrumb {
-    background: url("/static/local/img/luna-background.jpg");
+   padding: 0px;
+   margin-bottom: 0px;
+   list-style: none;
+   background: none;
+   border-radius: 0px;
+   float: left;
+    /*background: url("/static/local/img/luna-background.jpg");
 
 
     box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
-    background-attachment: fixed;
+    background-attachment: fixed;*/
 }
 
 .breadcrumb a {
@@ -264,8 +269,13 @@ color:#a4a4a4;
   margin-bottom: 10px;
 }
 
+.list-group-item {
+    padding: 6px 15px;
+    border: 1px solid #ddd;
+}
+
 .list-group-item:first-child {
-border-radius:0px;
+  border-radius:0px;
 }
 
 .panel-title {
@@ -280,7 +290,7 @@ border-radius:0px;
   color: white !important;
   text-shadow: #000 0px 1px 2px !important;
   background-attachment: fixed;
-  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
+  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px;
   font-weight: bold;
 }
 
@@ -347,9 +357,20 @@ border-radius:0px;
   background-attachment: fixed;
   text-shadow: #000 0px 1px 2px !important;
   font-weight: bold;
-  font-size: 14px !important;
-  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px inset;
-  height: 44px;
+  font-size: 13px !important;
+  box-shadow: rgba(0,0,0,0.8) 0px 1px 3px;
+  height: 30px;
+  background-repeat: repeat-y;
+  background-attachment:fixed;
+  margin-bottom: 10px;
+}
+
+.section-header .btn-xs {
+  margin-top: -3px;
+}
+
+.btn {
+  border-radius: 0px;
 }
 
 .ql-snow.ql-toolbar .ql-picker.ql-font .ql-picker-label, .ql-snow.ql-toolbar .ql-picker.ql-size .ql-picker-label {
@@ -427,9 +448,6 @@ background-color: rgb(248, 248, 248);}
   overflow: hidden;
   font-size: 14px;
 }
-.front-page-status img {
-  margin-right: 10px;
-}
 .front-page-status p {
   overflow: hidden;
 }
@@ -473,8 +491,11 @@ background-color: rgb(248, 248, 248);}
   font-size: 15px;
 }
 .subcategory-listing-recent-image {
+  min-width: 48px;
   padding-right: 10px;
   float: left;
+  min-height: 40px;
+  min-width: 54px;
 }
 .subcategory-listing-recent {
   margin-top: 2px;
@@ -719,8 +740,10 @@ a.inherit_colors {
 }
 .avatar-mini {
   border: 1px solid #d5d5d5;
-  box-shadow: 0px 2px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 2px rgba(0,0,0,0.1);
   padding: 1px;
+  z-index: 5;
+  vertical-align: middle;
 }
 .popover {
   max-width: 100% !important;
@@ -760,6 +783,7 @@ a.inherit_colors {
 
 .navbar {
   margin-bottom: 10px;
+  border-radius: 0px;
 }
 
 .navbar-default .mini-notification-button {
@@ -828,4 +852,8 @@ td {
 .image-wrap {
   float: left;
   margin: 0px 20px 20px 0px;
+}
+
+.btn {
+  text-shadow: none;
 }

@@ -1,21 +1,24 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.breadcrumb
-  li
-    a(href="/") Home
-  {% if category.parent != None and category.parent.root_category != True %}
-  li.active 
-    a(href="{{url_for('category_index', slug=category.parent.slug)}}") {{category.parent.name}}
-  {% endif %}
-  li.active 
-    b
-      a(href="{{url_for('category_index', slug=category.slug)}}") {{category.name}}
+.row
+  .col-md-12
+    ul.list-group
+      li.list-group-item.section-header
+        ul.breadcrumb
+          li
+            a(href="/") Home
+          {% if category.parent != None and category.parent.root_category != True %}
+          li.active 
+            a(href="{{url_for('category_index', slug=category.parent.slug)}}") {{category.parent.name}}
+          {% endif %}
+          li.active 
+            b
+              a(href="{{url_for('category_index', slug=category.slug)}}") {{category.name}}
 .row
   {% if subcategories %}
   .col-md-12
     ul.list-group.category
-      li.list-group-item.section-header Subcategories
       {% for subcategory in subcategories %}
       li.list-group-item.subcategory
         div
@@ -25,12 +28,12 @@
                 a(href="{{url_for('category_index', slug=subcategory.slug)}}")= subcategory.name
             .col-sm-6.hidden-xs.hidden-sm
               .subcategory-listing-recent-image
-                a(href="{{url_for('view_profile', login_name=subcategory.last_post_by.login_name)}}")
-                  img(src="{{subcategory.last_post_author_avatar}}", width="{{ subcategory.last_post_by.avatar_40_x }}", height="{{ subcategory.last_post_by.avatar_40_y }}")
+                a(href="{{url_for('view_profile', login_name=subcategory.recent_post.author.login_name)}}")
+                  img(src="{{subcategory.recent_post.author.get_avatar_url("40")}}", width="{{ subcategory.recent_post.author.avatar_40_x }}", height="{{ subcategory.recent_post.author.avatar_40_y }}")
               .subcategory-listing-recent
-                a(href="/t/{{subcategory.last_topic.slug}}")= subcategory.last_topic.title
+                a(href="/t/{{subcategory.recent_topic.slug}}")= subcategory.recent_topic.title
                 br
-                a(href="/t/{{subcategory.last_topic.slug}}") {{subcategory.last_post_date|humanize_time}}
+                a(href="/t/{{subcategory.recent_topic.slug}}") {{subcategory.recent_post.created|humanize_time}}
       {% endfor %}
   {% endif %}
 .row
