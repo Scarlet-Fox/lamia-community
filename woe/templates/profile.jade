@@ -68,7 +68,7 @@
         a(href="")
           span.glyphicon.glyphicon-cog.float-right#about-me-cog-icon
         {% endif %}
-      li.list-group-item
+      li.list-group-item(style="min-height: 245px;")
         if profile.about_me == "<br>" or profile.about_me == "<div></div>"
           #user-profile-about-me.post-content
             p {{profile.display_name|e}} doesn't have an about me...
