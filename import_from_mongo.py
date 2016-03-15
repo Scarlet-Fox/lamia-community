@@ -236,8 +236,8 @@ for message_topic in core.PrivateMessageTopic.objects():
     sqla.session.commit()
 
 celestial_hub_categories = ["Latest News","Welcome Mat","Help Lab","Frequently Asked Questions"]
-starlight_amphitheater = ["Anime", "World of Equestria", "Western Animation", "Music", "Other Media"]
-moonlight_symposium = ["Discussion", "Interrogations", "Games", "Nintendo", "Art Show"]
+starlight_amphitheater = ["Anime", "Manga", "World of Equestria", "Western Animation", "Music", "Other Media"]
+moonlight_symposium = ["Chit Chat", "Interrogations", "Games", "Nintendo", "Art Show"]
 sunlight_homestead = ["Super Party Palace", "Roleplays", "Out of Character", "Meta Lounge", "Minecraft"]
 
 celestial = Section(name="Celestial Hub", weight=0, slug=slugify("Celestial Hub"))
@@ -271,6 +271,10 @@ for i, category in enumerate(starlight_amphitheater):
         section = starlight,
         weight = i*10
     )
+
+    if category == "Manga":
+        sqlcategory.parent = sqla.session.query(Category).filter_by(name="Anime").first()
+
     sqla.session.add(sqlcategory)
     sqla.session.commit()
 
@@ -336,6 +340,8 @@ for topic in forum.Topic.objects():
         sql_topic.category = sqla.session.query(Category).filter_by(name="Minecraft").first()
     elif topic.category.name == "Out of Character Discussion":
         sql_topic.category = sqla.session.query(Category).filter_by(name="Out of Character").first()
+    elif topic.category.name == "Discussion":
+        sql_topic.category = sqla.session.query(Category).filter_by(name="Chit Chat").first()
     elif topic.prefix == "Anime":
         sql_topic.category = sqla.session.query(Category).filter_by(name="Anime").first()
         topic.prefix = None
