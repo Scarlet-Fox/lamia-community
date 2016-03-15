@@ -64,6 +64,15 @@ emoticon_codes = {
     ":sunjoy:" : "sun_happy_by_angelishi-d6wlo5g.gif",
     ":twitch:" : "twilight___twitch_by_angelishi.gif",
     ":?" : "twilight_think_by_angelishi.gif",
+    ":yawn:" : "rd_yawn_by_angelishi-d9cwc1o.gif",
+    ":want:" : "scootaloo_want_face_by_angelishi-d7xyd7g.gif",
+    ":unamused:" : "celestia_noapproval_by_angelishi-d9cwc1c.png",
+    ":playful:" : "celestia_playful_by_angelishi-d9cwc1g.gif",
+    ":jester:" : "head_wobble_by_angelishi-d9cwc16.gif",
+    ":plz:" : "luna_please_by_angelishi-d9cwc1l.gif",
+    ":troll:" : "discord_troll_laugh_by_angelishi-d7xyd7m.gif",
+    ":shy:" : "embarrassed_fluttershy_by_angelishi-d7xyd7k.gif",
+    ":horror:" : "shocked_fluttershy_by_angelishi-d7xyd7j.gif",
     ";)" : "twilight_wink_by_angelishi.gif"
 }
 
