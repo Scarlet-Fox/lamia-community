@@ -11,10 +11,10 @@
 .row
   .col-sm-8
     for entry in entries
-      .panel.panel-default
-        .panel-heading
+      ul.list-group
+        li.list-group-item.section-header
           span(style="font-size: 115%; font-weight: normal;")= entry.title
-        .panel-body
+        li.list-group-item
           .media-left
             img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
           .media-body
@@ -39,14 +39,14 @@
                 a(href="/blog/{{blog.slug}}/page/{{page_link}}")= page_link
   .col-sm-4
     if blog.description
-      .panel.panel-default
-        .panel-heading.panel-title Description
-        .panel-body
+      ul.list-group
+        li.list-group-item.section-header.panel-title Description
+        li.list-group-item
           p= blog.description
     if comments
-      .panel.panel-default
-        .panel-heading.panel-title Recent Comments
-        .panel-body
+      ul.list-group
+        li.list-group-item.section-header.panel-title Recent Comments
+        li.list-group-item
           for comment in comments
             .media-left
               img.avatar-mini(src="{{comment.author.get_avatar_url("40")}}", width="{{comment.author.avatar_40_x}}", height="{{comment.author.avatar_40_y}}")

@@ -23,15 +23,15 @@ def user_moderation_panel(login_name):
     except IndexError:
         abort(404)
 
-    last_five_ip_addresses = sqla.session.query(sqlm.IPAddress).fiter_by(user=user)[0:5]
+    last_five_ip_addresses = sqla.session.query(sqlm.IPAddress).filter_by(user=user)[0:5]
 
     fingerprints_with_top_matches = {}
-    most_recent_fingerprints = sqla.session.query(sqlm.Fingerprint).fiter_by(user=user)[0:5]
+    most_recent_fingerprints = sqla.session.query(sqlm.Fingerprint).filter_by(user=user)[0:5]
 
     for recent_fingerprint in most_recent_fingerprints:
         matches = []
         other_fingerprints = sqla.session.query(sqlm.Fingerprint) \
-            .fiter_by(user=user) \
+            .filter_by(user=user) \
             .filter(sqlm.Fingerprint.factors > recent_fingerprint.factors-6) \
             .filter(sqlm.Fingerprint.factors < recent_fingerprint.factors+6)[0:5]
 

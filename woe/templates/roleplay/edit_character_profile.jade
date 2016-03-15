@@ -1,9 +1,9 @@
 {% extends "roleplay/character_profile.jade" %}
 
 {% block profile_content %}
-.panel.panel-default
-  .panel-heading Edit {{character.name|e}}'s Profile
-  .panel-body
+ul.list-group
+  li.list-group-item.section-header Edit {{character.name|e}}'s Profile
+  li.list-group-item
     .edit-fields(style="padding: 10px;")
       form.form-horizontal(action="/characters/{{character.slug}}/edit-profile", method="post")
         {{ form_errors(form) }}

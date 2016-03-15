@@ -1,9 +1,9 @@
 {% extends "roleplay/character_profile.jade" %}
 
 {% block profile_content %}
-.panel.panel-default
-  .panel-heading {{character.name|e}}'s Posts
-  .panel-body
+ul.list-group
+  li.list-group-item.section-header {{character.name|e}}'s Posts
+  li.list-group-item
     table.table#post-table
       thead
         tr

@@ -1,9 +1,9 @@
 {% extends "profile.jade" %}
 
 {% block profile_content %}
-.panel.panel-default
-  .panel-heading Moderation Panel
-  .panel-body
+ul.list-group
+  li.list-group-item.section-header Moderation Panel
+  li.list-group-item
     h3 Recent IP Address
     ul
       for ip in recent_ips

@@ -1,9 +1,9 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.panel.panel-default
-  .panel-heading Create a New Character (with love)
-  .panel-body
+ul.list-group
+  li.list-group-item.section-header Create a New Character (with love)
+  li.list-group-item
     .edit-fields(style="padding: 10px;")
       form.form-horizontal(action="/characters/new-character", method="post")
         {{ form_errors(form) }}

@@ -4,10 +4,10 @@
 .row
   #temporary-buffer(style="display: none;")
   .col-sm-12
-    .panel.panel-default
-      .panel-heading#filtering-header
+    ul.list-group
+      li.list-group-item.section-header#filtering-header
         span Filtering
-      .panel-body.hidden-md.hidden-lg.hidden-sm
+      li.list-group-item.hidden-md.hidden-lg.hidden-sm
         form.display-form
           .form-group.form-group-sm
             label.control-label Display 
@@ -34,7 +34,7 @@
             label.control-label Search
             input.form-control.search-for
           button.btn.btn-default.update-statuses(type="submit") Update
-      .panel-body.hidden-xs
+      li.list-group-item.hidden-xs
         form.form-inline.float-left.display-form
           .form-group.form-group-sm
             label.control-label Display 
@@ -74,15 +74,15 @@
           &nbsp;
           a.btn.btn-default.post-link(href="/clear-status-updates") Clear
   .col-sm-12
-    .panel.panel-default
-      .panel-heading
+    ul.list-group
+      li.list-group-item.section-header
         span Status Updates
-      .panel-body.body-background#msg-container
-      .panel-body.body-background#status-container
+      li.list-group-item.body-background#msg-container
+      li.list-group-item.body-background#status-container
         {% for status in status_updates %}
         .col-md-4.col-sm-6.status-index-panel
-          .panel.panel-default
-            .panel-body
+          ul.list-group
+            li.list-group-item
               .media-left
                 a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
                   img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}px", height="{{status.author.avatar_40_y}}px", class="avatar-mini")

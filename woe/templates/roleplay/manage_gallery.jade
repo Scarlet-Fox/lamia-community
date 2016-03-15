@@ -1,9 +1,9 @@
 {% extends "roleplay/character_profile.jade" %}
 
 {% block profile_content %}
-//- .panel.panel-default
-//-   .panel-heading Current Avatar & Profile
-//-   .panel-body
+//- ul.list-group
+//-   li.list-group-item.section-header Current Avatar & Profile
+//-   li.list-group-item
 //-     if character.legacy_avatar_field or character.legacy_gallery_field
 //-       div.alert.alert-warning.alert-dismissible(role="alert")
 //-         | Your character was imported from IP.Board. Please download
@@ -23,14 +23,14 @@
 //-           h4 Default Profile Image
 //-         img.center-block.image-box(src="/static/uploads/{{character.get_portrait()}}", style="max-width: 200px;")
 //-         {% endif %}
-.panel.panel-default
-  .panel-heading Add Images
-  .panel-body 
+ul.list-group
+  li.list-group-item.section-header Add Images
+  li.list-group-item 
     .dropzone 
 if images
-  .panel.panel-default
-    .panel-heading Image Gallery
-    .panel-body
+  ul.list-group
+    li.list-group-item.section-header Image Gallery
+    li.list-group-item
       for image in images
         .media(data-image="{{image.pk}}")
           .media-left

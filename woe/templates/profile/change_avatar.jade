@@ -1,10 +1,10 @@
 {% extends "profile.jade" %}
 
 {% block profile_content %}
-.panel.panel-default
-  .panel-heading Change Your Profile
-  .panel-body
-    .panel-body.text-center
+ul.list-group
+  li.list-group-item.section-header Change Your Profile
+  li.list-group-item
+    li.list-group-item.text-center
       {% if profile.avatar_extension != "" %}
       img.center-block.profile-page-avatar#profile-avatar(src="{{profile.get_avatar_url()}}", width="{{profile.avatar_full_x}}", height="{{profile.avatar_full_y}}")
       {% else %}

@@ -1,9 +1,9 @@
 {% extends "roleplay/character_profile.jade" %}
 
 {% block profile_content %}
-.panel.panel-default
-  .panel-heading {{character.name|e}}'s Gallery
-  .panel-body
+ul.list-group
+  li.list-group-item.section-header {{character.name|e}}'s Gallery
+  li.list-group-item
     .container(style="width: 100% !important; max-width: 100% !important;")
       #slider-container(style="position: relative; margin: 0 auto; width: 600px; height: 442px; overflow: hidden;")
         div(u="slides", style="cursor: move; position: absolute; left: 0px; top: 0px; width: 600px; height: 442px;
@@ -16,9 +16,9 @@
         span.jssora11l(u="arrowleft", style="top: 50%; left: 5px;")
         span.jssora11r(u="arrowright", style="top: 50%; right: 5px;")
 if images
-  .panel.panel-default
-    .panel-heading Full Size Links
-    .panel-body
+  ul.list-group
+    li.list-group-item.section-header Full Size Links
+    li.list-group-item
       table.table
         tr
           th Image
@@ -44,9 +44,9 @@ if images
             else
               td
 if emotes
-  .panel.panel-default
-    .panel-heading Avatars
-    .panel-body
+  ul.list-group
+    li.list-group-item.section-header Avatars
+    li.list-group-item
       table.table
         tr
           th Image

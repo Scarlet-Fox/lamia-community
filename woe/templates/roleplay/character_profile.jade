@@ -3,9 +3,9 @@
 {% block content %}
 .row 
   .col-sm-4
-    .panel.panel-default
-      .panel-heading {{character.name}}
-      .panel-body.text-center
+    ul.list-group
+      li.list-group-item.section-header {{character.name}}
+      li.list-group-item.text-center
       {% if character.get_avatar() != "" %}
       img.center-block.profile-page-avatar#profile-avatar(src="{{character.get_avatar(200)}}", style="max-width: 200px;")
       {% endif %}
@@ -21,9 +21,9 @@
           else
             a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Hide Character
       br
-    .panel.panel-default
-      .panel-heading More Information
-      .panel-body.text-center
+    ul.list-group
+      li.list-group-item.section-header More Information
+      li.list-group-item.text-center
         if character.age
           strong Age : 
           {{character.age|e}}
@@ -45,9 +45,9 @@
             li(role="presentation")
               a(href="/characters/{{character.slug}}/gallery") Character Gallery
     if current_user == character.author or current_user.is_admin
-      .panel.panel-default
-        .panel-heading Edit
-        .panel-body.text-center
+      ul.list-group
+        li.list-group-item.section-header Edit
+        li.list-group-item.text-center
           ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
               li(role="presentation")
                 a(href="/characters/{{character.slug}}/edit-profile") Edit Profile
@@ -55,9 +55,9 @@
                 a(href="/characters/{{character.slug}}/manage-gallery") Manage Gallery
   .col-sm-8
     {% block profile_content %}
-    .panel.panel-default
-      .panel-heading Basic Profile
-      .panel-body.character-profile
+    ul.list-group
+      li.list-group-item.section-header Basic Profile
+      li.list-group-item.character-profile
         center
           {% if character.get_portrait() != "" %}
           img.center-block.profile-page-avatar#profile-avatar(src="{{character.get_portrait(250)}}", style="max-width: 250px;")

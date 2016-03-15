@@ -3,10 +3,10 @@
 {% block content %}
 .row
   .col-md-6.col-lg-4
-    .panel.panel-default
-      .panel-heading#filtering-header
+    ul.list-group
+      li.list-group-item.section-header#filtering-header
         span Search Options
-      .panel-body
+      li.list-group-item
         form.form-horizontal
           .form-group
             label.control-label.col-sm-4 Content
@@ -50,10 +50,10 @@
               &nbsp;
               a.btn.btn-default.post-link(href="/clear-search") Clear
   .col-md-6.col-lg-8
-    .panel.panel-default
-      .panel-heading
+    ul.list-group.category
+      li.list-group-item.section-header
         span#results-header Search Results 
-      .panel-body
+      li.list-group-item
         .search-pagination
         #search-results-buffer(style="display: none;")
         #search-results        
