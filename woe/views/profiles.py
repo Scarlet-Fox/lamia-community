@@ -223,11 +223,13 @@ def change_user_settings(login_name):
 
     if form.validate_on_submit():
         user.time_zone=form.time_zone.data
+        user.theme = form.theme_object
         sqla.session.add(user)
         sqla.session.commit()
         return redirect("/member/"+user.login_name)
     else:
         form.time_zone.data = user.time_zone
+        form.theme.data = str(user.theme.id)
 
     return render_template("profile/change_user_settings.jade", profile=user, form=form, page_title="Change Settings - World of Equestria")
 

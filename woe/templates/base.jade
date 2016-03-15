@@ -23,13 +23,13 @@ head
       title ({{notification_count}}) - {{ page_title }}
     else
       title {{ page_title }}
-    if current_user.is_authenticated() and current_user.custom_theme
-      {% assets filters="cssmin", output="generated/woe-core.css",
+    if current_user.is_authenticated() and current_user.theme
+      {% assets filters="cssmin", output="generated/"+current_user.get_text_id()+"woe-core.css",
       "assets/bootstrap.css", "assets/quill/quill.base.css", "assets/quill/quill.snow.css", 
-      "assets/dropzone/dropzone.css", "bootstrap-datepicker/bootstrap-datepicker.css",
+      "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
       "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
       "assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
-      "{{current_user.custom_theme}}" %}
+      "local/themes/default.css", current_user.theme.css_file %}
       link(href='{{ASSET_URL}}', rel='stylesheet')
       {% endassets %}
     else
@@ -38,7 +38,7 @@ head
       "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
       "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
       "assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
-      "local/css/woe-theme.css" %}
+      "local/themes/default.css" %}
       link(href='{{ASSET_URL}}', rel='stylesheet')
       {% endassets %}
       

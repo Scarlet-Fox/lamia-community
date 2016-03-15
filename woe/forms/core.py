@@ -32,9 +32,19 @@ class UserSettingsForm(Form):
     TIMEZONE_CHOICES = [(z, z) for z in pytz.common_timezones]
     time_zone = SelectField('Time zone', choices=TIMEZONE_CHOICES)
 
+    THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]
+    theme = SelectField('Theme', choices=THEME_CHOICES)
+
     def validate_time_zone(self, field):
         if field.data not in pytz.common_timezones:
             raise validators.ValidationError("Invalid time zone.")
+
+    def validate_theme(self, field):
+        try:
+            self.theme_object = sqla.session.query(sqlm.SiteTheme).filter_by(id=field.data)[0]
+        except:
+            sqla.session.rollback()
+            raise validators.ValidationError("Invalid theme.")
 
 class RegistrationForm(Form):
     username = StringField('Username', [validators.InputRequired(),

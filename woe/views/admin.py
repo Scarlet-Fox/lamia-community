@@ -165,6 +165,7 @@ class FingerprintView(ModelView):
         return (current_user.is_authenticated() and current_user.is_admin)
 
 class CharacterView(ModelView):
+    can_delete = False
     column_list = ("id", "author", "name", "created",)
     column_filters = ("author_id", "name", "created")
     column_searchable_list = ("name", "appearance", "personality", "backstory", "other")
@@ -179,9 +180,16 @@ class ReportView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class ThemeView(ModelView):
+    column_list = ("id", "name")
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 admin.add_view(LabelView(sqlm.Label, sqla.session))
 admin.add_view(CharacterView(sqlm.Character, sqla.session))
 admin.add_view(ReportView(sqlm.Report, sqla.session))
+admin.add_view(ThemeView(sqlm.SiteTheme, sqla.session, category='Core'))
 admin.add_view(AttachView(sqlm.Attachment, sqla.session, category='Core'))
 admin.add_view(LogView(sqlm.SiteLog, sqla.session, category='Core'))
 admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, category='Core'))

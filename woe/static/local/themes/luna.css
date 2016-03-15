@@ -1,0 +1,23 @@
+.panel-heading {
+  background: url("/static/local/themes/luna/background.jpg");
+}
+
+.section-header {
+  background: url("/static/local/themes/luna/background.jpg");
+}
+
+.popover-title {
+  background-image: url("/static/local/themes/luna/background.jpg") !important;
+}
+
+.toggle-show-roles-button {
+  background: url("/static/local/themes/luna/background.jpg");
+}
+
+.site-background {
+  background: #f8f8f8 url("/static/local/themes/luna/header.png") no-repeat scroll top;
+}
+
+body {
+  background: #f8f8f8;
+}

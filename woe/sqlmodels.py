@@ -152,8 +152,8 @@ class StatusUpdate(db.Model):
 
 class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    css = db.Column(db.Text)
     name = db.Column(db.String, unique=True)
+    css_file = db.Column(db.String)
     weight = db.Column(db.Integer, default=0)
     created = db.Column(db.DateTime)
 
@@ -371,6 +371,9 @@ class User(db.Model):
     is_allowed_during_construction = db.Column(db.Boolean, default=False)
     my_url = db.Column(db.String, unique=True)
     time_zone = db.Column(db.String, default="")
+    theme_id = db.Column(db.Integer, db.ForeignKey('site_theme.id',
+        name="fk_member_theme", ondelete="SET NULL"))
+    theme = db.relationship("SiteTheme")
 
     banned = db.Column(db.Boolean, index=True, default=False)
     validated = db.Column(db.Boolean, default=False)
@@ -421,6 +424,9 @@ class User(db.Model):
 
     def __repr__(self):
         return "%s" % (self.display_name)
+
+    def get_text_id(self):
+        return "%s" % (self.id, )
 
     def get_hash(self):
         return self.password_hash[-40:]
