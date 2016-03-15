@@ -6,21 +6,21 @@
     ul.list-group
       li.list-group-item.section-header {{character.name}}
       li.list-group-item.text-center
-      {% if character.get_avatar() != "" %}
-      img.center-block.profile-page-avatar#profile-avatar(src="{{character.get_avatar(200)}}", style="max-width: 200px;")
-      {% endif %}
-      {% if character.motto != "" %}
-      center
-        span.text-muted(style="max-width: 200px;")= character.motto
-      {% endif %}
-      if current_user.is_authenticated() and current_user.is_admin
+        {% if character.get_avatar() != "" %}
+        img.center-block.profile-page-avatar#profile-avatar(src="{{character.get_avatar(200)}}", style="max-width: 200px;")
+        {% endif %}
+        {% if character.motto != "" %}
         center
-          br
-          if character.hidden
-            a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Unhide Character
-          else
-            a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Hide Character
-      br
+          span.text-muted(style="max-width: 200px;")= character.motto
+        {% endif %}
+        if current_user.is_authenticated() and current_user.is_admin
+          center
+            br
+            if character.hidden
+              a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Unhide Character
+            else
+              a.btn.btn-warning.post-link(href="/characters/{{character.slug}}/toggle-hide") Hide Character
+        br
     ul.list-group
       li.list-group-item.section-header More Information
       li.list-group-item.text-center
