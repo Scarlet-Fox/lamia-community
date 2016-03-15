@@ -1,14 +1,18 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.breadcrumb#topic-breadcrumb
-  li
-    a(href="/") Home
-  li 
-    a(href="/messages") Private Messages
-  li.active
-    b
-      a(href="/messages/{{topic.id}}") {{topic.title}}
+.row
+  .col-md-12
+    ul.list-group
+      li.list-group-item.section-header
+        ul.breadcrumb#topic-breadcrumb
+          li
+            a(href="/") Home
+          li 
+            a(href="/messages") Private Messages
+          li.active
+            b
+              a(href="/messages/{{topic.id}}") {{topic.title}}
 .row
   .col-md-9
     ul.list-group.category
