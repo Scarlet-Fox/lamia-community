@@ -119,12 +119,41 @@ $ ->
             element.children(".badge").text(element.data("count"))
             element.children(".badge").css("background-color", "#555")
 
+      getSelectionParentElement = () ->
+        parentEl = null
+        sel = null
+        if window.getSelection
+          sel = window.getSelection()
+          if sel.rangeCount
+            parentEl = sel.getRangeAt(0).commonAncestorContainer
+            if parentEl.nodeType != 1
+              parentEl = parentEl.parentNode;
+        else if sel == document.selection and sel.type != "Control"
+          parentEl = sel.createRange().parentElement()
+        return parentEl;
+
+      getSelectionText = () ->
+        text = ""
+        if window.getSelection
+          text = window.getSelection().toString();
+        else if document.selection and document.selection.type != "Control"
+          text = document.selection.createRange().text;
+        return text
+
       $("#post-container").delegate ".reply-button", "click", (e) ->
         e.preventDefault()
+
+        post_object = getSelectionParentElement().closest(".post-content")
+        highlighted_text = getSelectionText().trim()
+
         element = $(this)
         my_content = ""
         $.get "/t/#{topic.slug}/edit-post/#{element.data("pk")}", (data) ->
-          my_content = "[reply=#{element.data("pk")}:post:#{data.author}]\n\n"
+          if post_object? and post_object == $("#post-#{element.data("pk")}")[0]
+            my_content = "[reply=#{element.data("pk")}:post:#{data.author}]\n#{highlighted_text}\n[/reply]"
+          else
+            my_content = "[reply=#{element.data("pk")}:post:#{data.author}]\n\n"
+
           x = window.scrollX
           y = window.scrollY
           try

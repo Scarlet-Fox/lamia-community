@@ -6,7 +6,7 @@
     var Topic;
     Topic = (function() {
       function Topic(slug) {
-        var initialURL, popped, socket, topic;
+        var getSelectionParentElement, getSelectionText, initialURL, popped, socket, topic;
         this.first_load = true;
         this.slug = slug;
         topic = this;
@@ -141,14 +141,47 @@
             }
           });
         });
+        getSelectionParentElement = function() {
+          var parentEl, sel;
+          parentEl = null;
+          sel = null;
+          if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.rangeCount) {
+              parentEl = sel.getRangeAt(0).commonAncestorContainer;
+              if (parentEl.nodeType !== 1) {
+                parentEl = parentEl.parentNode;
+              }
+            }
+          } else if (sel === document.selection && sel.type !== "Control") {
+            parentEl = sel.createRange().parentElement();
+          }
+          return parentEl;
+        };
+        getSelectionText = function() {
+          var text;
+          text = "";
+          if (window.getSelection) {
+            text = window.getSelection().toString();
+          } else if (document.selection && document.selection.type !== "Control") {
+            text = document.selection.createRange().text;
+          }
+          return text;
+        };
         $("#post-container").delegate(".reply-button", "click", function(e) {
-          var element, my_content;
+          var element, highlighted_text, my_content, post_object;
           e.preventDefault();
+          post_object = getSelectionParentElement().closest(".post-content");
+          highlighted_text = getSelectionText().trim();
           element = $(this);
           my_content = "";
           return $.get("/t/" + topic.slug + "/edit-post/" + (element.data("pk")), function(data) {
             var current_position, error, ref, x, y;
-            my_content = "[reply=" + (element.data("pk")) + ":post:" + data.author + "]\n\n";
+            if ((post_object != null) && post_object === $("#post-" + (element.data("pk")))[0]) {
+              my_content = "[reply=" + (element.data("pk")) + ":post:" + data.author + "]\n" + highlighted_text + "\n[/reply]";
+            } else {
+              my_content = "[reply=" + (element.data("pk")) + ":post:" + data.author + "]\n\n";
+            }
             x = window.scrollX;
             y = window.scrollY;
             try {
