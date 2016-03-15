@@ -29,6 +29,7 @@ italic_re = re.compile(r'\[i\](.*?)\[\/i\]', re.DOTALL)
 strike_re = re.compile(r'\[s\](.*?)\[\/s\]', re.DOTALL)
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
+deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\](.*?)\[\/reply\]')
 reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
 legacy_postcharacter_re = re.compile(r'\[(post)?character=.*?\]')
 list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL)
@@ -272,8 +273,12 @@ class ForumPostParser(object):
         #clean up old char tags
         html = legacy_postcharacter_re.sub("", html)
 
-        replies = reply_re.findall(html)
-        for reply in replies:
+        def process_reply(reply, html, container=False):
+            if container:
+                string_to_replace = "[reply=%s:%s%s]%s[/reply]" % (reply[0],reply[1],reply[2], reply[3])
+            else:
+                string_to_replace = "[reply=%s:%s%s]" % (reply[0],reply[1],reply[2])
+
             if reply[1] == "post":
                 try:
                     r_id = int(reply[0])
@@ -285,15 +290,20 @@ class ForumPostParser(object):
                         _replying_to = sqla.session.query(sqlm.Post).filter_by(old_mongo_hash=reply[0])[0]
                     except:
                         sqla.session.rollback()
-                        continue
+                        return
 
                 try:
                     if _replying_to.character is not None:
                         _replying_to.author.display_name = _replying_to.character.name
                 except:
-                    continue
+                    return
 
-                html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
+                if container:
+                    inner_html = reply[3]
+                else:
+                    inner_html = _replying_to.html.replace("img", "imgdisabled")
+
+                return html.replace(string_to_replace, """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
                 %s
                 </div></blockquote>
@@ -302,14 +312,20 @@ class ForumPostParser(object):
                     "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.id),
                     _replying_to.author.display_name,
                     "/member/%s" % _replying_to.author.login_name,
-                    re.sub(reply_re, "", _replying_to.html.replace("img", "imgdisabled"))
+                    re.sub(reply_re, "", inner_html)
                 ))
             if reply[1] == "pm":
                 try:
                     _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=reply[0])[0]
                 except:
                     sqla.session.rollback()
-                html = html.replace("[reply=%s:%s%s]" % (reply[0],reply[1],reply[2]), """
+
+                if container:
+                    inner_html = reply[3]
+                else:
+                    inner_html = _replying_to.html.replace("img", "imgdisabled")
+
+                return html.replace(string_to_replace, """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
                 %s
                 </blockquote>
@@ -318,8 +334,16 @@ class ForumPostParser(object):
                     "/messages/%s/page/1/post/%s" % (_replying_to.topic.id, _replying_to.id),
                     _replying_to.author.display_name,
                     "/member/%s" % _replying_to.author.login_name,
-                    re.sub(reply_re, "", _replying_to.message.replace("img", "imgdisabled"))
+                    re.sub(reply_re, "", inner_html)
                 ))
+
+        replies = deluxe_reply_re.findall(html)
+        for reply in replies:
+            html = process_reply(reply, html, container=True)
+
+        replies = reply_re.findall(html)
+        for reply in replies:
+            html = process_reply(reply, html)
 
         mentions = mention_re.findall(html)
         for mention in mentions:
