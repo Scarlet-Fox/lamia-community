@@ -90,38 +90,37 @@ $ ->
                 <h4 class="modal-title">Pick an Emote! <img src="/static/emoticons/fluttershy_happy_by_angelishi.gif"></h4>
               </div>
               <div class="modal-body">
-                <img src="/static/emoticons/applejack_confused_by_angelishi-d6wk2ew.gif" class="emoticon-listing" data-emotecode=":wat:">
-                <img src="/static/emoticons/brohoof_by_angelishi-d6wk2et.gif" class="emoticon-listing" data-emotecode=":hoofbump:">
-                <img src="/static/emoticons/derpy_by_angelishi-d7amv0j.gif" class="emoticon-listing" data-emotecode=":derp:">
                 <img src="/static/emoticons/fluttershy_happy_by_angelishi.gif" class="emoticon-listing" data-emotecode=":)">
                 <img src="/static/emoticons/fluttershy_sad_by_angelishi.gif" class="emoticon-listing" data-emotecode=":(">
-                <img src="/static/emoticons/liar_applejack_by_angelishi-d7aglwl.gif" class="emoticon-listing" data-emotecode=":liarjack:">
-                <img src="/static/emoticons/love_spike_by_angelishi-d7amv0g.gif" class="emoticon-listing" data-emotecode=":love:">
-                <img src="/static/emoticons/moon_by_angelishi-d7amv0a.gif" class="emoticon-listing" data-emotecode=":moonjoy:">
+                <img src="/static/emoticons/shocked_fluttershy_by_angelishi-d7xyd7j.gif" class="emoticon-listing" data-emotecode=":horror:">
+                <img src="/static/emoticons/embarrassed_fluttershy_by_angelishi-d7xyd7k.gif" class="emoticon-listing" data-emotecode=":shy:">
+             		<img src="/static/emoticons/applejack_confused_by_angelishi-d6wk2ew.gif" class="emoticon-listing" data-emotecode=":wat:">
                 <img src="/static/emoticons/nervous_aj_by_angelishi-d7ahd5y.gif" class="emoticon-listing" data-emotecode=":S">
-                <img src="/static/emoticons/pinkamena_by_angelishi-d6wk2er.gif" class="emoticon-listing" data-emotecode=":pinkamena:">
+                <img src="/static/emoticons/liar_applejack_by_angelishi-d7aglwl.gif" class="emoticon-listing" data-emotecode=":liarjack:">
                 <img src="/static/emoticons/pinkie_laugh_by_angelishi-d6wk2ek.gif" class="emoticon-listing" data-emotecode=":D">
                 <img src="/static/emoticons/pinkie_mustache_by_angelishi-d6wk2eh.gif" class="emoticon-listing" data-emotecode=":mustache:">
                 <img src="/static/emoticons/pinkie_silly_by_angelishi-d6wk2ef.gif" class="emoticon-listing" data-emotecode=":P">
-                <img src="/static/emoticons/rainbowdash_cool_by_angelishi.gif" class="emoticon-listing" data-emotecode=":cool:">
+                <img src="/static/emoticons/pinkamena_by_angelishi-d6wk2er.gif" class="emoticon-listing" data-emotecode=":pinkamena:">
                 <img src="/static/emoticons/rarity_happy_by_angelishi.gif" class="emoticon-listing" data-emotecode=":pleased:">
                 <img src="/static/emoticons/rarity_shock_2_by_angelishi-d6wk2eb.gif" class="emoticon-listing" data-emotecode=":shocked:">
-                <img src="/static/emoticons/rd_laugh_by_angelishi-d7aharw.gif" class="emoticon-listing" data-emotecode=":rofl:">
                 <img src="/static/emoticons/singing_rarity_by_angelishi-d7agp33.gif" class="emoticon-listing" data-emotecode=":sing:">
-                <img src="/static/emoticons/sun_happy_by_angelishi-d6wlo5g.gif" class="emoticon-listing" data-emotecode=":sunjoy:">
                 <img src="/static/emoticons/twilight___twitch_by_angelishi.gif" class="emoticon-listing" data-emotecode=":twitch:">
                 <img src="/static/emoticons/twilight_think_by_angelishi.gif" class="emoticon-listing" data-emotecode=":?">
                 <img src="/static/emoticons/twilight_wink_by_angelishi.gif" class="emoticon-listing" data-emotecode=";)">
                 <img src="/static/emoticons/rd_yawn_by_angelishi-d9cwc1o.gif" class="emoticon-listing" data-emotecode=":yawn:">
-                <img src="/static/emoticons/scootaloo_want_face_by_angelishi-d7xyd7g.gif" class="emoticon-listing" data-emotecode=":want:">
+                <img src="/static/emoticons/rainbowdash_cool_by_angelishi.gif" class="emoticon-listing" data-emotecode=":cool:">
+                <img src="/static/emoticons/rd_laugh_by_angelishi-d7aharw.gif" class="emoticon-listing" data-emotecode=":rofl:">
                 <img src="/static/emoticons/celestia_noapproval_by_angelishi-d9cwc1c.png" class="emoticon-listing" data-emotecode=":unamused:">
                 <img src="/static/emoticons/celestia_playful_by_angelishi-d9cwc1g.gif" class="emoticon-listing" data-emotecode=":playful:">
-                <img src="/static/emoticons/head_wobble_by_angelishi-d9cwc16.gif" class="emoticon-listing" data-emotecode=":jester:">
                 <img src="/static/emoticons/luna_please_by_angelishi-d9cwc1l.gif" class="emoticon-listing" data-emotecode=":plz:">
                 <img src="/static/emoticons/discord_troll_laugh_by_angelishi-d7xyd7m.gif" class="emoticon-listing" data-emotecode=":troll:">
-                <img src="/static/emoticons/embarrassed_fluttershy_by_angelishi-d7xyd7k.gif" class="emoticon-listing" data-emotecode=":shy:">
-                <img src="/static/emoticons/shocked_fluttershy_by_angelishi-d7xyd7j.gif" class="emoticon-listing" data-emotecode=":horror:">
-              </div>
+                <img src="/static/emoticons/scootaloo_want_face_by_angelishi-d7xyd7g.gif" class="emoticon-listing" data-emotecode=":want:">
+                <img src="/static/emoticons/derpy_by_angelishi-d7amv0j.gif" class="emoticon-listing" data-emotecode=":derp:">
+                <img src="/static/emoticons/head_wobble_by_angelishi-d9cwc16.gif" class="emoticon-listing" data-emotecode=":jester:">
+                <img src="/static/emoticons/love_spike_by_angelishi-d7amv0g.gif" class="emoticon-listing" data-emotecode=":love:">
+                <img src="/static/emoticons/sun_happy_by_angelishi-d6wlo5g.gif" class="emoticon-listing" data-emotecode=":sunjoy:">
+                <img src="/static/emoticons/moon_by_angelishi-d7amv0a.gif" class="emoticon-listing" data-emotecode=":moonjoy:">
+	              <img src="/static/emoticons/brohoof_by_angelishi-d6wk2et.gif" class="emoticon-listing" data-emotecode=":hoofbump:">              </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
               </div>
