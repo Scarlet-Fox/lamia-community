@@ -35,7 +35,7 @@ class PrivateMessageUser(db.Model):
 class PrivateMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
-    count = db.Column(db.Integer)
+    count = db.Column(db.Integer, default=0)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_pm_author", ondelete="CASCADE"))
     author = db.relationship("User", foreign_keys="PrivateMessage.author_id")
@@ -71,7 +71,7 @@ class PrivateMessageReply(db.Model):
 
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime, nullable=True)
-    pm_title = db.Column(db.String)
+    pm_title = db.Column(db.String, default="")
 
     def __repr__(self):
         return "<PrivateMessageReply: (created='%s', user='%s', pm='%s')>" % (self.created, self.user.display_name, self.pm.title)
@@ -128,7 +128,7 @@ class StatusUpdate(db.Model):
 
     last_replied = db.Column(db.DateTime)
     last_viewed = db.Column(db.DateTime)
-    replies = db.Column(db.Integer)
+    replies = db.Column(db.Integer, default=0)
     created = db.Column(db.DateTime, index=True)
     hidden = db.Column(db.Boolean, default=False)
     muted = db.Column(db.Boolean, default=False)
@@ -154,7 +154,7 @@ class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     css = db.Column(db.Text)
     name = db.Column(db.String, unique=True)
-    weight = db.Column(db.Integer)
+    weight = db.Column(db.Integer, default=0)
     created = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -180,8 +180,8 @@ class IPAddress(db.Model):
 class Fingerprint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     json = db.Column(JSONB)
-    factors = db.Column(db.Integer)
-    fingerprint_hash = db.Column(db.String)
+    factors = db.Column(db.Integer, default=0)
+    fingerprint_hash = db.Column(db.String, default="")
     last_seen = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_fingerprint_user", ondelete="CASCADE"))
@@ -209,17 +209,17 @@ class Fingerprint(db.Model):
 
 class SiteLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    method = db.Column(db.String)
-    path = db.Column(db.String)
-    ip_address = db.Column(db.String)
-    agent_platform = db.Column(db.String)
-    agent_browser = db.Column(db.String)
-    agent_browser_version = db.Column(db.String)
-    agent = db.Column(db.String)
+    method = db.Column(db.String, default="")
+    path = db.Column(db.String, default="")
+    ip_address = db.Column(db.String, default="")
+    agent_platform = db.Column(db.String, default="")
+    agent_browser = db.Column(db.String, default="")
+    agent_browser_version = db.Column(db.String, default="")
+    agent = db.Column(db.String, default="")
     time = db.Column(db.DateTime)
-    error = db.Column(db.Boolean)
-    error_name = db.Column(db.String)
-    error_code = db.Column(db.String)
+    error = db.Column(db.Boolean, default=False)
+    error_name = db.Column(db.String, default="")
+    error_code = db.Column(db.String, default="")
     error_description = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_sitelog_user", ondelete="SET NULL"), nullable=True)
@@ -235,9 +235,9 @@ class SiteLog(db.Model):
 
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    pre_html = db.Column(db.String)
-    role = db.Column(db.String)
-    post_html = db.Column(db.String)
+    pre_html = db.Column(db.String, default="")
+    role = db.Column(db.String, default="", unique=True)
+    post_html = db.Column(db.String, default="")
 
     def __repr__(self):
         return "<Role: (role='%s')>" % (self.role,)
@@ -272,13 +272,13 @@ class Notification(db.Model):
         ("other", "Other")
     )
 
-    category = db.Column(db.String)
+    category = db.Column(db.String, default="")
     created = db.Column(db.DateTime)
-    url = db.Column(db.String)
-    acknowledged = db.Column(db.Boolean)
-    seen = db.Column(db.Boolean)
-    emailed = db.Column(db.Boolean)
-    priority = db.Column(db.Integer)
+    url = db.Column(db.String, default="")
+    acknowledged = db.Column(db.Boolean, default=False)
+    seen = db.Column(db.Boolean, default=False)
+    emailed = db.Column(db.Boolean, default=False)
+    priority = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return "<Notification: (user='%s', message='%s')>" % (self.user.display_name, self.message)
@@ -328,8 +328,8 @@ class Friendship(db.Model):
     __table_args__ = (db.UniqueConstraint('user_id', 'friend_id', name='unique_user_friend'),)
     created = db.Column(db.DateTime)
 
-    pending = db.Column(db.Boolean)
-    blocked = db.Column(db.Boolean)
+    pending = db.Column(db.Boolean, default=True)
+    blocked = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return "<Friendship: (user='%s', friend='%s', pending='%s', blocked='%s')>" % (self.user.display_name, self.friend.display_name, self.pending, self.blocked)
@@ -364,54 +364,54 @@ class User(db.Model):
     display_name = db.Column(db.String, unique=True)
     login_name = db.Column(db.String, unique=True)
     email_address = db.Column(db.String, unique=True)
-    password_hash = db.Column(db.String)
+    password_hash = db.Column(db.String, default="")
     joined = db.Column(db.DateTime, index=True)
 
-    how_did_you_find_us = db.Column(db.Text)
-    is_allowed_during_construction = db.Column(db.Boolean)
+    how_did_you_find_us = db.Column(db.Text, default="")
+    is_allowed_during_construction = db.Column(db.Boolean, default=False)
     my_url = db.Column(db.String, unique=True)
-    time_zone = db.Column(db.String)
+    time_zone = db.Column(db.String, default="")
 
     banned = db.Column(db.Boolean, index=True, default=False)
-    validated = db.Column(db.Boolean)
-    over_thirteen = db.Column(db.Boolean)
+    validated = db.Column(db.Boolean, default=False)
+    over_thirteen = db.Column(db.Boolean, default=True)
 
-    emails_muted = db.Column(db.Boolean)
+    emails_muted = db.Column(db.Boolean, default=False)
     last_sent_notification_email = db.Column(db.DateTime, nullable=True)
 
-    title = db.Column(db.String)
-    minecraft = db.Column(db.String)
-    location = db.Column(db.String)
-    about_me = db.Column(db.Text)
-    anonymous_login = db.Column(db.Boolean)
+    title = db.Column(db.String, default="")
+    minecraft = db.Column(db.String, default="")
+    location = db.Column(db.String, default="")
+    about_me = db.Column(db.Text, default="")
+    anonymous_login = db.Column(db.Boolean, default=False)
 
-    avatar_extension = db.Column(db.String)
-    avatar_full_x = db.Column(db.Integer)
-    avatar_full_y = db.Column(db.Integer)
-    avatar_60_x = db.Column(db.Integer)
-    avatar_60_y = db.Column(db.Integer)
-    avatar_40_x = db.Column(db.Integer)
-    avatar_40_y = db.Column(db.Integer)
-    avatar_timestamp = db.Column(db.String)
+    avatar_extension = db.Column(db.String, default="")
+    avatar_full_x = db.Column(db.Integer, default=200)
+    avatar_full_y = db.Column(db.Integer, default=200)
+    avatar_60_x = db.Column(db.Integer, default=60)
+    avatar_60_y = db.Column(db.Integer, default=60)
+    avatar_40_x = db.Column(db.Integer, default=40)
+    avatar_40_y = db.Column(db.Integer, default=40)
+    avatar_timestamp = db.Column(db.String, default="")
 
-    password_forgot_token = db.Column(db.String)
+    password_forgot_token = db.Column(db.String, default="")
     password_forgot_token_date = db.Column(db.DateTime, nullable=True)
 
-    posts_count = db.Column(db.Integer)
-    topic_count = db.Column(db.Integer)
-    status_count = db.Column(db.Integer)
-    status_comment_count = db.Column(db.Integer)
+    posts_count = db.Column(db.Integer, default=0)
+    topic_count = db.Column(db.Integer, default=0)
+    status_count = db.Column(db.Integer, default=0)
+    status_comment_count = db.Column(db.Integer, default=0)
 
     last_seen = db.Column(db.DateTime, nullable=True)
     legacy_password = db.Column(db.Boolean, nullable=True)
     ipb_salt = db.Column(db.String, nullable=True)
     ipb_hash = db.Column(db.String, nullable=True)
     hidden_last_seen = db.Column(db.DateTime, nullable=True, index=True)
-    last_at = db.Column(db.String)
-    last_at_url = db.Column(db.String)
+    last_at = db.Column(db.String, default="")
+    last_at_url = db.Column(db.String, default="")
 
-    is_admin = db.Column(db.Boolean)
-    is_mod = db.Column(db.Boolean)
+    is_admin = db.Column(db.Boolean, default=False)
+    is_mod = db.Column(db.Boolean, default=False)
 
     display_name_history = db.Column(JSONB)
     notification_preferences = db.Column(JSONB)
@@ -498,8 +498,8 @@ class User(db.Model):
 
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String)
-    content_type = db.Column(db.String)
+    url = db.Column(db.String, default="")
+    content_type = db.Column(db.String, default="")
     content_id = db.Column(db.Integer)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_report_author", ondelete="CASCADE"))
@@ -515,7 +515,7 @@ class Report(db.Model):
         ('action taken', 'Action Taken')
     )
 
-    status = db.Column(db.String)
+    status = db.Column(db.String, default="open")
     created = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -541,25 +541,25 @@ class ReportComment(db.Model):
 
 class Attachment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    path = db.Column(db.String)
-    mimetype = db.Column(db.String)
-    extension = db.Column(db.String)
+    path = db.Column(db.String, default="")
+    mimetype = db.Column(db.String, default="")
+    extension = db.Column(db.String, default="")
 
-    size_in_bytes = db.Column(db.Integer)
+    size_in_bytes = db.Column(db.Integer, default=0)
     created_date = db.Column(db.DateTime)
-    do_not_convert = db.Column(db.Boolean)
-    alt = db.Column(db.String)
+    do_not_convert = db.Column(db.Boolean, default=False)
+    alt = db.Column(db.String, default="")
 
     old_mongo_hash = db.Column(db.String, nullable=True)
 
-    x_size = db.Column(db.Integer)
-    y_size = db.Column(db.Integer)
+    x_size = db.Column(db.Integer, default=100)
+    y_size = db.Column(db.Integer, default=100)
 
-    file_hash = db.Column(db.String)
-    linked = db.Column(db.Boolean)
-    origin_url =  db.Column(db.String)
-    origin_domain = db.Column(db.String)
-    caption = db.Column(db.String)
+    file_hash = db.Column(db.String, default="")
+    linked = db.Column(db.Boolean, default=False)
+    origin_url =  db.Column(db.String, default="")
+    origin_domain = db.Column(db.String, default="")
+    caption = db.Column(db.String, default="")
 
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_attachment_owner", ondelete="SET NULL"))
@@ -568,9 +568,9 @@ class Attachment(db.Model):
     character_id = db.Column(db.Integer, db.ForeignKey('character.id',
         name="fk_attachment_character", ondelete="SET NULL"), nullable=True)
     character = db.relationship("Character", foreign_keys="Attachment.character_id")
-    character_gallery = db.Column(db.Boolean)
-    character_gallery_weight = db.Column(db.Integer)
-    character_avatar = db.Column(db.Boolean)
+    character_gallery = db.Column(db.Boolean, default=False)
+    character_gallery_weight = db.Column(db.Integer, default=0)
+    character_avatar = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return "<Attachment: (path='%s')>" % (self.path,)
@@ -625,16 +625,16 @@ class Character(db.Model):
     author = db.relationship("User")
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, default="")
     slug = db.Column(db.String, unique=True)
 
-    age = db.Column(db.String)
-    species = db.Column(db.String)
-    appearance = db.Column(db.Text)
-    personality = db.Column(db.Text)
-    backstory = db.Column(db.Text)
-    other = db.Column(db.Text)
-    motto = db.Column(db.String)
+    age = db.Column(db.String, default="")
+    species = db.Column(db.String, default="")
+    appearance = db.Column(db.Text, default="")
+    personality = db.Column(db.Text, default="")
+    backstory = db.Column(db.Text, default="")
+    other = db.Column(db.Text, default="")
+    motto = db.Column(db.String, default="")
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime, nullable=True)
     hidden = db.Column(db.Boolean, default=False)
@@ -708,9 +708,9 @@ def get_character_slug(name):
 
 class Label(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    pre_html = db.Column(db.String)
-    label = db.Column(db.String)
-    post_html = db.Column(db.String)
+    pre_html = db.Column(db.String, default="")
+    label = db.Column(db.String, default="")
+    post_html = db.Column(db.String, default="")
 
     def __repr__(self):
         return "%s" % (self.label,)
@@ -719,7 +719,7 @@ class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     slug = db.Column(db.String, unique=True)
-    weight = db.Column(db.Integer)
+    weight = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return "<Section: (name='%s', weight='%s')>" % (self.name, self.weight)
@@ -759,15 +759,15 @@ class Category(db.Model):
         name="fk_category_recenttopic", ondelete="SET NULL"))
     recent_topic = db.relationship("Topic", foreign_keys="Category.recent_topic_id")
 
-    name = db.Column(db.String)
+    name = db.Column(db.String, default="")
     slug = db.Column(db.String, unique=True)
 
-    weight = db.Column(db.Integer)
-    restricted = db.Column(db.Boolean)
+    weight = db.Column(db.Integer, default=0)
+    restricted = db.Column(db.Boolean, default=False)
 
-    topic_count = db.Column(db.Integer)
-    post_count = db.Column(db.Integer)
-    view_count = db.Column(db.Integer)
+    topic_count = db.Column(db.Integer, default=0)
+    post_count = db.Column(db.Integer, default=0)
+    view_count = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return "<Category: (name='%s', weight='%s')>" % (self.name, self.weight)
@@ -891,7 +891,7 @@ class Post(db.Model):
     created = db.Column(db.DateTime, index=True)
     hidden = db.Column(db.Boolean, default=False, index=True)
     post_history = db.Column(JSONB)
-    t_title = db.Column(db.String)
+    t_title = db.Column(db.String, default="")
 
     old_mongo_hash = db.Column(db.String, nullable=True)
     data = db.Column(JSONB)
