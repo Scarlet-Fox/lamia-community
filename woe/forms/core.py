@@ -32,8 +32,11 @@ class UserSettingsForm(Form):
     TIMEZONE_CHOICES = [(z, z) for z in pytz.common_timezones]
     time_zone = SelectField('Time zone', choices=TIMEZONE_CHOICES)
 
-    THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]
-    theme = SelectField('Theme', choices=THEME_CHOICES)
+    try:
+        THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]
+        theme = SelectField('Theme', choices=THEME_CHOICES)
+    except:
+        sqla.session.rollback()
 
     def validate_time_zone(self, field):
         if field.data not in pytz.common_timezones:

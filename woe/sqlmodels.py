@@ -917,6 +917,82 @@ blog_subscriber_table = db.Table('blog_subscribers', db.metadata,
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
         name="fk_subscriber_user", ondelete="CASCADE")))
 
+blogentry_boop_table = db.Table('blog_entry_boops', db.metadata,
+    db.Column('blogentry_id', db.Integer, db.ForeignKey('blog_entry.id',
+        name="fk_boop_blogentry", ondelete="CASCADE")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_boop_blogentry_user", ondelete="CASCADE")))
+
+class BlogEntry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, default="")
+    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id',
+        name="fk_blogentry_blog", ondelete="CASCADE"), index=True)
+    blog = db.relationship("Blog", foreign_keys="BlogEntry.blog_id", cascade="delete")
+
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_blogentry_author", ondelete="CASCADE"))
+    author = db.relationship("User", foreign_keys="BlogEntry.author_id")
+
+    editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_blogentry_editor", ondelete="SET NULL"), nullable=True)
+    editor = db.relationship("User", foreign_keys="BlogEntry.editor_id")
+
+    boops = db.relationship("User",
+                    secondary=blogentry_boop_table)
+
+    character_id = db.Column(db.Integer, db.ForeignKey('character.id',
+        name="fk_blogentry_character", ondelete="SET NULL"), nullable=True)
+    character = db.relationship("Character", foreign_keys="BlogEntry.character_id", backref="blog_entries")
+
+    avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
+        name="fk_blogentry_avatar", ondelete="SET NULL"), nullable=True)
+    avatar = db.relationship("Attachment", foreign_keys="BlogEntry.avatar_id")
+
+    draft = db.Column(db.Boolean, default=True, index=True)
+    html = db.Column(db.Text)
+    modified = db.Column(db.DateTime, nullable=True)
+    created = db.Column(db.DateTime, index=True)
+    published = db.Column(db.DateTime, index=True)
+    hidden = db.Column(db.Boolean, default=False, index=True)
+    entry_history = db.Column(JSONB)
+    b_title = db.Column(db.String, default="")
+    data = db.Column(JSONB)
+
+blogcomment_boop_table = db.Table('blog_comment_boops', db.metadata,
+    db.Column('blogcomment_id', db.Integer, db.ForeignKey('blog_comment.id',
+        name="fk_boop_blogcomment", ondelete="CASCADE")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_boop_blogcomment_user", ondelete="CASCADE")))
+
+class BlogComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    blog_entry_id = db.Column(db.Integer, db.ForeignKey('blog_entry.id',
+        name="fk_blogcomment_blogentry", ondelete="CASCADE"), index=True)
+    blog_entry = db.relationship("BlogEntry", foreign_keys="BlogComment.blog_entry_id", cascade="delete")
+    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id',
+        name="fk_blogcomment_blog", ondelete="CASCADE"), index=True)
+    blog = db.relationship("Blog", foreign_keys="BlogComment.blog_id", cascade="delete")
+
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_blogcomment_author", ondelete="CASCADE"))
+    author = db.relationship("User", foreign_keys="BlogComment.author_id")
+
+    editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_blogcomment_editor", ondelete="SET NULL"), nullable=True)
+    editor = db.relationship("User", foreign_keys="BlogComment.editor_id")
+
+    boops = db.relationship("User",
+                    secondary=blogcomment_boop_table)
+
+    html = db.Column(db.Text)
+    modified = db.Column(db.DateTime, nullable=True)
+    created = db.Column(db.DateTime, index=True)
+    hidden = db.Column(db.Boolean, default=False, index=True)
+    comment_history = db.Column(JSONB)
+    b_e_title = db.Column(db.String, default="")
+    data = db.Column(JSONB)
+
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -954,74 +1030,3 @@ class Blog(db.Model):
 
     privacy_setting = db.Column(db.String, default="members")
     disabled = db.Column(db.Boolean)
-
-blogentry_boop_table = db.Table('blog_entry_boops', db.metadata,
-    db.Column('blogentry_id', db.Integer, db.ForeignKey('blog_entry.id',
-        name="fk_boop_blogentry", ondelete="CASCADE")),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_boop_blogentry_user", ondelete="CASCADE")))
-
-class BlogEntry(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id',
-        name="fk_blogentry_blog", ondelete="CASCADE"), index=True)
-    blog = db.relationship("Blog", foreign_keys="BlogEntry.blog_id", cascade="delete")
-
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogentry_author", ondelete="CASCADE"))
-    author = db.relationship("User", foreign_keys="BlogEntry.author_id")
-
-    editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogentry_editor", ondelete="SET NULL"), nullable=True)
-    editor = db.relationship("User", foreign_keys="BlogEntry.editor_id")
-
-    boops = db.relationship("User",
-                    secondary=blogentry_boop_table)
-
-    character_id = db.Column(db.Integer, db.ForeignKey('character.id',
-        name="fk_blogentry_character", ondelete="SET NULL"), nullable=True)
-    character = db.relationship("Character", foreign_keys="BlogEntry.character_id", backref="blog_entries")
-
-    avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
-        name="fk_blogentry_avatar", ondelete="SET NULL"), nullable=True)
-    avatar = db.relationship("Attachment", foreign_keys="BlogEntry.avatar_id")
-
-    draft = db.Column(db.Boolean, default=True, index=True)
-    html = db.Column(db.Text)
-    modified = db.Column(db.DateTime, nullable=True)
-    created = db.Column(db.DateTime, index=True)
-    hidden = db.Column(db.Boolean, default=False, index=True)
-    entry_history = db.Column(JSONB)
-    b_title = db.Column(db.String, default="")
-    data = db.Column(JSONB)
-
-blogcomment_boop_table = db.Table('blog_comment_boops', db.metadata,
-    db.Column('blogcomment_id', db.Integer, db.ForeignKey('blog_comment.id',
-        name="fk_boop_blogcomment", ondelete="CASCADE")),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_boop_blogcomment_user", ondelete="CASCADE")))
-
-class BlogComment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    blog_entry_id = db.Column(db.Integer, db.ForeignKey('blog_entry.id',
-        name="fk_blogcomment_blogentry", ondelete="CASCADE"), index=True)
-    blog_entry = db.relationship("BlogEntry", foreign_keys="BlogComment.blog_entry_id", cascade="delete")
-
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogcomment_author", ondelete="CASCADE"))
-    author = db.relationship("User", foreign_keys="BlogComment.author_id")
-
-    editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogcomment_editor", ondelete="SET NULL"), nullable=True)
-    editor = db.relationship("User", foreign_keys="BlogComment.editor_id")
-
-    boops = db.relationship("User",
-                    secondary=blogcomment_boop_table)
-
-    html = db.Column(db.Text)
-    modified = db.Column(db.DateTime, nullable=True)
-    created = db.Column(db.DateTime, index=True)
-    hidden = db.Column(db.Boolean, default=False, index=True)
-    comment_history = db.Column(JSONB)
-    b_e_title = db.Column(db.String, default="")
-    data = db.Column(JSONB)
