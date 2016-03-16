@@ -247,7 +247,7 @@ class ForumHTMLCleaner(object):
         return html
 
 @app.template_filter('humanize_time')
-def humanize(time):
+def humanize(time, format_str="MMM D YYYY, hh:mm a"):
     if time == None:
         return ""
 
@@ -269,7 +269,7 @@ def humanize(time):
         elif a > b and (now.day-1) == a.day:
             return "Yesterday " + a.format("hh:mm a")
         else:
-            return a.format("MMM D YYYY, hh:mm a")
+            return a.format(format_str)
     except:
         return ""
 

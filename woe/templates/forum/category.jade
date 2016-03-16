@@ -28,8 +28,9 @@
                 a(href="{{url_for('category_index', slug=subcategory.slug)}}")= subcategory.name
             .col-sm-6.hidden-xs.hidden-sm
               .subcategory-listing-recent-image
-                a(href="{{url_for('view_profile', login_name=subcategory.recent_post.author.login_name)}}")
-                  img(src="{{subcategory.recent_post.author.get_avatar_url("40")}}", width="{{ subcategory.recent_post.author.avatar_40_x }}", height="{{ subcategory.recent_post.author.avatar_40_y }}")
+                if subcategory.recent_post != None
+                  a(href="{{url_for('view_profile', login_name=subcategory.recent_post.author.login_name)}}")
+                    img(src="{{subcategory.recent_post.author.get_avatar_url("40")}}", width="{{ subcategory.recent_post.author.avatar_40_x }}", height="{{ subcategory.recent_post.author.avatar_40_y }}")
               .subcategory-listing-recent
                 a(href="/t/{{subcategory.recent_topic.slug}}")= subcategory.recent_topic.title
                 br

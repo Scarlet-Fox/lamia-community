@@ -410,7 +410,7 @@ class User(db.Model):
     ipb_salt = db.Column(db.String, nullable=True)
     ipb_hash = db.Column(db.String, nullable=True)
     hidden_last_seen = db.Column(db.DateTime, nullable=True, index=True)
-    last_at = db.Column(db.String, default="")
+    last_seen_at = db.Column(db.String, default="")
     last_at_url = db.Column(db.String, default="")
 
     is_admin = db.Column(db.Boolean, default=False)

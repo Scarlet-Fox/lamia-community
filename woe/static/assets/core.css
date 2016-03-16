@@ -10789,7 +10789,7 @@ a {
     overflow: hidden
 }
 
-#profile-avatar {
+.profile-avatar {
     margin-bottom: 10px;
     box-shadow: 0 2px 2px rgba(0,0,0,0.1);
     padding: 1px;

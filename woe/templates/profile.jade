@@ -1,6 +1,34 @@
 {% extends "base.jade" %}
 
 {% block content %}
+.row
+  .div.popover(style="display:block;")
+    h3.popover-title {{profile.display_name}}
+    .popover-body
+      .media-left(style="min-width:80px;")
+        a(href="/member/{{profile.login_name}}/")
+          img.profile-avatar(src="{{profile.get_avatar_url("60")}}", width="{{profile.avatar_60_x}}", height="{{profile.avatar_60_y}}")
+      .media-body
+        .row
+          .col-xs-5
+            b Group
+          .col-xs-7
+            span(style="color:#F88379;")
+              strong Members
+                br
+        .row
+          .col-xs-5
+            b Joined
+          .col-xs-7 {{profile.joined|humanize_time("MMM D YYYY")}}
+        .row
+          .col-xs-5 
+            b Last Seen
+          .col-xs-7 {{profile.last_seen|humanize_time("MMM D YYYY")}}
+        if profile.last_seen_at
+          .row
+            .col-xs-5
+              b Last Seen At
+            .col-xs-7 {{profile.last_seen_at}}
 .row 
   .col-sm-4
     ul.list-group
@@ -12,9 +40,9 @@
       li.list-group-item
         center
           {% if profile.avatar_extension != "" %}
-          img.center-block.profile-page-avatar#profile-avatar(src="{{profile.get_avatar_url()}}", width="{{profile.avatar_full_x}}", height="{{profile.avatar_full_y}}")
+          img.center-block.profile-page-avatar.profile-avatar(src="{{profile.get_avatar_url()}}", width="{{profile.avatar_full_x}}", height="{{profile.avatar_full_y}}")
           {% else %}
-          img.center-block.profile-page-avatar#profile-avatar(src="", width="200px", height="200px")
+          img.center-block.profile-page-avatar.profile-avatar(src="", width="200px", height="200px")
           {% endif %}
           span.text-muted= profile.title
           for role in profile.roles

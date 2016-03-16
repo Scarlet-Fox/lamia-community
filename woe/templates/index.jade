@@ -28,7 +28,7 @@
                     img(src="{{category.recent_post.author.get_avatar_url("40")}}", width="{{category.recent_post.author.avatar_40_x}}", height="{{category.recent_post.author.avatar_40_y}}", class="avatar-mini")
               .media-body
                 span.subcategory-listing-recent
-                  a(href="/t/{{category.recent_topic.slug}}")= category.recent_topic.title
+                  a(href="/t/{{category.recent_topic.slug}}")= category.recent_topic.title|truncate(40)
                   br
                   a(href="/t/{{category.recent_topic.slug}}/page/1/post/last_seen") {{category.recent_post.created|humanize_time}}
             {% endif %}
@@ -45,7 +45,7 @@
                   a(href="{{url_for('view_profile', login_name=t.author.login_name)}}")
                     img(src="{{t.author.get_avatar_url("40")}}", width="{{t.author.avatar_40_x}}", height="{{t.author.avatar_40_y}}", class="avatar-mini")
               .media-body
-                a(href="/t/{{t.slug}}")= t.title
+                a(href="/t/{{t.slug}}")= t.title|truncate(40)
                 br
                 a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
       .col-md-6
@@ -58,7 +58,7 @@
                   a(href="{{url_for('view_profile', login_name=t.recent_post.author.login_name)}}")
                     img(src="{{t.recent_post.author.get_avatar_url("40")}}", width="{{t.recent_post.author.avatar_40_x}}", height="{{t.recent_post.author.avatar_40_y}}", class="avatar-mini")
               .media-body
-                a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title
+                a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title|truncate(40)
                 br
                 a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
   .col-md-4
