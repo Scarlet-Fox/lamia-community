@@ -728,7 +728,7 @@ a.inherit_colors {
 .popover {
   max-width: 100% !important;
   width: 350px !important;
-  font-size: 12px;
+  font-size: 13px;
   border-radius: 0px;
 }
 .popover-body {

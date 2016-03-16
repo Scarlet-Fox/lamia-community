@@ -240,7 +240,7 @@ def get_user_info_api():
         last_seen=humanize_time(user.last_seen),
         last_seen_at=last_at,
         last_seen_url=last_url,
-        joined=humanize_time(user.joined),
+        joined=humanize_time(user.joined, "MMM D YYYY"),
         roles=user.get_roles()
     )
 

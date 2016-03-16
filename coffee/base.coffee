@@ -1,22 +1,22 @@
 $ ->
   $.ajaxSetup
     cache: false
-  
+
   if not window.my_tz?
     window.my_tz = "US/Pacific"
-  
+
   $(".href_span").click (e) ->
     window.location = $(this).attr("href")
-    
+
   $(".to-top").click (e) ->
     e.preventDefault()
     window.scrollTo 0, 0
-  
+
   $(".sign-out").click (e) ->
     e.preventDefault()
     $.post "/sign-out", (data) ->
       window.location = "/"
-  
+
   window.RegisterAttachmentContainer = (selector) ->
     imgModalHTML = () ->
       return """
@@ -36,7 +36,7 @@ $ ->
         </div>
       </div>
       """
-      
+
     gifModalHTML = () ->
       return """
       <div class="modal-dialog">
@@ -55,7 +55,7 @@ $ ->
         </div>
       </div>
       """
-    
+
     $(selector).delegate ".attachment-image", "click", (e) ->
       e.preventDefault()
       element = $(this)
@@ -82,7 +82,7 @@ $ ->
         $("#img-click-modal").data("original_element", element)
         $("#img-click-modal").modal('show')
         $("#img-click-modal").data("biggif", false)
-      
+
     $("#img-click-modal").delegate "#show-full-image", "click", (e) ->
       e.preventDefault()
       unless $("#img-click-modal").data("biggif")
@@ -92,43 +92,43 @@ $ ->
         element = $("#img-click-modal").data("original_element")
         element.attr("src", element.attr("src").replace(".gif", ".animated.gif"))
         $("#img-click-modal").modal('hide')
-  
+
   if window.logged_in
     socket = io.connect('http://' + document.domain + ':3000' + '')
 
   notificationHTML = """
       <li class="notification-li"><a href="{{url}}" data-notification="{{_id}}" class="notification-link dropdown-notif-{{_id}}-{{category}}">{{text}}</a></li>
       """
-      
+
   notificationTemplate = Handlebars.compile(notificationHTML)
-  
+
   if window.logged_in
     socket.emit "user", {user: window.woe_is_me}
-    
+
     socket.on "notify", (data) ->
       if window.woe_is_me in data.users
         counter_element = $(".notification-counter")
         counter_element.text(data.count)
         counter_element.css("background-color", "#B22222")
         $(".dashboard-counter").text(data.dashboard_count)
-      
+
         title_count = document.title.match(/\(\d+\)/)
         if title_count
-          document.title = document.title.replace(title_count[0], "(#{data.count})")        
+          document.title = document.title.replace(title_count[0], "(#{data.count})")
         else
           document.title = "(#{data.count}) - " + document.title
-      
+
         if $($(".notification-dropdown")[0]).find(".notification-li").length > 14
           $(".notification-dropdown").each () ->
             $(this).find(".notification-li")[$(this).find(".notification-li").length-1].remove()
-      
+
         if $($(".notification-dropdown")[0]).find(".notification-li").length == 0
           $(".notification-dropdown").each () ->
             $(this).append(notificationTemplate(data))
         else
           $(".notification-dropdown").each () ->
             $(this).find(".notification-li").first().before(notificationTemplate(data))
-  
+
   $(".post-link").click (e) ->
     e.preventDefault()
     $.post $(this).attr("href"), (data) ->
@@ -138,7 +138,7 @@ $ ->
     e.preventDefault()
     $.post "/dashboard/ack_notification", JSON.stringify({notification: $(this).data("notification")}), (data) =>
       window.location = $(this).attr("href")
-      
+
   $(".notification-dropdown-toggle").click (e) ->
     $.post "/dashboard/mark_seen", (d) ->
       $(".notification-counter").text("0")
@@ -146,24 +146,24 @@ $ ->
 
   window.setupContent = () ->
     window.addExtraHTML("body")
-  
+
   window.addExtraHTML = (selector) ->
     $(selector).find(".content-spoiler").before """
       <a class="btn btn-info btn-xs toggle-spoiler">Toggle Spoiler</a>
       """
-      
+
     $(selector).find(".toggle-spoiler").click (e) ->
       spoiler = $(this).next(".content-spoiler")
       if spoiler.is(":visible")
         spoiler.hide()
       else
         spoiler.show()
-    
+
     blockquote_attribution_html = """
       {{#if author}}<p>{{#if time}}On {{#if link}}<a href="{{link}}" target="_blank">{{time}}{{/if}}{{#if link}}</a>{{/if}}, {{/if}}{{#if authorlink}}<a href="{{authorlink}}" class="hover_user" target="_blank">{{/if}}<strong>{{author}}</strong>{{#if authorlink}}</a>{{/if}} said:</p>{{/if}}
     """
     blockquote_attribution_template = Handlebars.compile(blockquote_attribution_html)
-    
+
     $(selector).find("blockquote").each () ->
       element = $(this)
       time = moment.unix(element.data("time")).tz(window.my_tz).format("MMMM Do YYYY @ h:mm:ss a")
@@ -182,7 +182,7 @@ $ ->
           time: false
           author: element.data("author")
           authorlink: element.data("authorlink")
-        
+
   $("#new-status").click (e) ->
     e.preventDefault()
     $.post "/create-status", JSON.stringify({message: $("#status-new").val()}), (data) ->
@@ -196,62 +196,51 @@ $ ->
           """
       else
         window.location = data.url
-  
+
   p_html = """
-    <div class="media-left">
-      <a href="/member/{{login_name}}"><img src="{{avatar_image}}" height="{{avatar_y}}" width="{{avatar_x}}"></a>
-    </div>
-    <div class="media-body">
-      <table class="table">
-        <tbody>
-        <tr>
-          <th style="width: 130px;">Group</th>
-          <td><span style="color:#F88379;"><strong>Members</strong></span><br></td>
-        </tr>
-        <tr>
-          <th>Joined</th>
-          <td>{{joined}}</td>
-        </tr>
-        <tr>
-          <th>Login Name</th>
-          <td>{{login_name}}</td>
-        </tr>
-        <tr>
-          <th>Last Seen</th>
-          <td>{{last_seen}}</td>
-        </tr>
-        {{#if last_seen_at}}
-        <tr>
-          <th>Last Seen At</th>
-          <td><a href="{{last_seen_url}}">{{last_seen_at}}</a></td>
-        </tr>
-        {{/if}}
-        {{#if roles}}
-        <tr>
-          <th>Roles</th>
-          <td>
-          {{#each roles}}
-            <b>{{{this}}}</b>{{#unless @last}}, {{/unless}}
-          {{/each}}
-        </tr>
-        {{/if}}
-        </tbody>
-      </table>
-    </div>
+      <div class="popover-body">
+        <div style="min-width:80px;" class="media-left"><a href="/member/{{login_name}}"><img src="{{avatar_image}}" height="{{avatar_y}}" width="{{avatar_x}}" class="profile-avatar"></a>
+        </div>
+        <div class="media-body">
+          <div class="row">
+            <div class="col-xs-5"><b>Group</b>
+            </div>
+            <div class="col-xs-7"><span style="color:#F88379;"><strong>Members<br></strong></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-5"><b>Joined</b>
+            </div>
+            <div class="col-xs-7">{{joined}}</div>
+          </div>
+          <div class="row">
+            <div class="col-xs-5"><b>Last Seen</b>
+            </div>
+            <div class="col-xs-7">{{last_seen}}</div>
+          </div>
+          {{#if last_seen_at}}
+          <div class="row">
+            <div class="col-xs-5"><b>Last Seen At</b>
+            </div>
+            <div class="col-xs-7"><a href="{{last_seen_url}}">{{last_seen_at}}</a></div>
+          </div>
+          {{/if}}
+        </div>
+      </div>
   """
   hoverTemplate = Handlebars.compile(p_html)
-  
+
   window.hover_cache = {}
   $(document).on "mouseover", ".hover_user", (e) ->
     e.preventDefault()
     element = $(this)
-    
+
     timeout = setTimeout () ->
       user = element.attr("href").split("/").slice(-1)[0]
       placement = "bottom"
       if element.data("hplacement")?
         placement = element.data("hplacement")
-    
+
       if window.hover_cache[user]?
         data = window.hover_cache[user]
         _html = hoverTemplate(data)
@@ -291,12 +280,12 @@ $ ->
           checkAndClear(2000)
     , 1000
     element.data("timeout", timeout)
-    
+
   $(document).on "mouseout", ".hover_user", (e) ->
     e.preventDefault()
     element = $(this)
     clearTimeout element.data("timeout")
-    
+
   reportModalHTML = () ->
     return """
     <div class="modal-dialog">
@@ -317,15 +306,15 @@ $ ->
       </div>
     </div>
     """
-  
+
   $(document).on "click", ".report-button", (e) ->
     element = $(this)
     $("#report-click-modal").html reportModalHTML()
     $("#report-click-modal").data("pk", element.data("pk"))
     $("#report-click-modal").data("type", element.data("type"))
-    
+
     $("#modal-submit-report").click (e) ->
-      post_data = 
+      post_data =
         pk: $("#report-click-modal").data("pk")
         content_type: $("#report-click-modal").data("type")
         reason: $(".report-reason").val()
@@ -334,11 +323,11 @@ $ ->
         element.text("Report Submitted")
         element.addClass("btn-success")
         element.addClass("disabled")
-    
+
     $("#report-click-modal").modal("show")
-    
-    
-  
-    
-  
+
+
+
+
+
   return
