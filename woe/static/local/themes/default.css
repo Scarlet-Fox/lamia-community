@@ -843,3 +843,18 @@ td {
 .btn {
   text-shadow: none;
 }
+
+.blog-title {
+  font-size: 18px;
+  /*font-weight: bold;*/
+}
+
+.blog-listing-info {
+  background-color: #eee;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.blog-read-more {
+  font-size: 16px;
+  font-weight: bold;
+}

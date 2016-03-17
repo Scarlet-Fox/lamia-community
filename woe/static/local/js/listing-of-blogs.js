@@ -79,10 +79,10 @@
           }
           $('#blog-container').append(items);
           $('#blog-container').css({
-            height: count / 2 * 200
+            height: count * 2 * 200
           });
           $('.blog-index-panel').dotdotdot({
-            height: 400,
+            height: 200,
             after: ".readmore"
           });
           return setTimeout(function() {
@@ -103,37 +103,7 @@
         authors: authors,
         search: search
       }), function(data) {
-        var blog, i, items, k, len1, ref1;
-        $('#msg-container').html("");
-        if ($('.blog-index-panel').length > 0) {
-          $grid.shuffle("remove", $('.blog-index-panel'));
-        }
-        if (data.blogs.length === 0) {
-          return $('#msg-container').html("<p>No results...</p>");
-        } else {
-          items = [];
-          ref1 = data.blogs;
-          for (i = k = 0, len1 = ref1.length; k < len1; i = ++k) {
-            blog = ref1[i];
-            if (i === 0) {
-              items = $(blogHTML(blog));
-            } else {
-              items = items.add(blogHTML(blog));
-            }
-          }
-          $('#blog-container').append(items);
-          $('#blog-container').css({
-            height: count / 2 * 200
-          });
-          $('.blog-index-panel').dotdotdot({
-            height: 200,
-            after: ".readmore"
-          });
-          return setTimeout(function() {
-            $('#blog-container').shuffle('appended', items);
-            return $('#blog-container').shuffle('update');
-          }, 0);
-        }
+        return $('#msg-container').html("");
       });
     });
     return $(".update-blogs").click();

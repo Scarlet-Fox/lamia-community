@@ -27,6 +27,7 @@ url_re = re.compile(r'\[url=?("?)(.*?)("?)\](.*?)\[\/url\]', re.DOTALL)
 bold_re = re.compile(r'\[b\](.*?)\[\/b\]', re.DOTALL)
 italic_re = re.compile(r'\[i\](.*?)\[\/i\]', re.DOTALL)
 strike_re = re.compile(r'\[s\](.*?)\[\/s\]', re.DOTALL)
+img_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL)
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
 deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\](.*?)\[\/reply\]')
@@ -109,6 +110,13 @@ class ForumPostParser(object):
         pass
 
     def parse(self, html, strip_images=False):
+        # parse images
+        images_found = img_re.findall(html)
+        skiplink = []
+        for image in images_found:
+            html = html.replace("[img]%s[/img]" % image, """<img src="%s" style="max-width: 80%%;">""" % image, 1)
+            skiplink.append(image.strip())
+
         # parse urls
         all_bbcode = bbcode_re.findall(html)
         all_html_links = href_re.findall(html)
@@ -122,6 +130,8 @@ class ForumPostParser(object):
 
         links_in_clean_text = link_re.findall(parse_for_urls)
         for i, link in enumerate(links_in_clean_text):
+            if link[0].strip() in skiplink:
+                continue
             filler = "LINKTEXT+3235763519_"+str(i)
 
             html = html.replace(link[0], """<a href="%s">%s</a>""" % (filler, filler))
@@ -133,8 +143,6 @@ class ForumPostParser(object):
                 link_text = "http://"+link[0]
             else:
                 link_text = link[0]
-
-            print link_text
 
             youtube_match = youtube_re.search(link_text)
             dailymotion_match = dailymotion_re.search(link_text)
@@ -398,18 +406,18 @@ class ForumPostParser(object):
             to_replace = to_replace + "[/quote]"
             html = html.replace(to_replace, """<blockquote data-author="%s" class="blockquote-reply"><div>%s</div></blockquote>""" % (unicode(quote_bbcode[0]), unicode(quote_bbcode[1])), 1)
 
-        url_bbcode_in_post = url_re.findall(html)
-        for url_bbcode in url_bbcode_in_post:
-            if url_bbcode[1] == "":
-                to_replace = "[url]"
-            else:
-                to_replace = "[url=%s]" % (url_bbcode[0]+url_bbcode[1]+url_bbcode[2])
-            to_replace = to_replace + url_bbcode[3]
-            to_replace = to_replace + "[/url]"
-            if url_bbcode[0] == "":
-                html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[3])), 1)
-            else:
-                html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[1])), 1)
+        # url_bbcode_in_post = url_re.findall(html)
+        # for url_bbcode in url_bbcode_in_post:
+        #     if url_bbcode[1] == "":
+        #         to_replace = "[url]"
+        #     else:
+        #         to_replace = "[url=%s]" % (url_bbcode[0]+url_bbcode[1]+url_bbcode[2])
+        #     to_replace = to_replace + url_bbcode[3]
+        #     to_replace = to_replace + "[/url]"
+        #     if url_bbcode[0] == "":
+        #         html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[3])), 1)
+        #     else:
+        #         html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[1])), 1)
 
         # parse spoilers
         spoiler_bbcode_in_post = spoiler_re.findall(html)

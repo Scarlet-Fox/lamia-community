@@ -926,6 +926,7 @@ blogentry_boop_table = db.Table('blog_entry_boops', db.metadata,
 class BlogEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, default="")
+    slug = db.Column(db.String, default="")
     blog_id = db.Column(db.Integer, db.ForeignKey('blog.id',
         name="fk_blogentry_blog", ondelete="CASCADE"), index=True)
     blog = db.relationship("Blog", foreign_keys="BlogEntry.blog_id", cascade="delete")
