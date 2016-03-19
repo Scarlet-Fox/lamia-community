@@ -1,23 +1,28 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.breadcrumb#topic-breadcrumb
-  li
-    a(href="/") Home
-  li 
-    a(href="/blogs") Blogs
-  li.active
-    a(href="/blog/{{blog.slug}}")= blog.name
+.row
+  .col-md-12
+    ul.list-group
+      li.list-group-item.section-header
+        ul.breadcrumb#topic-breadcrumb
+          li
+            a(href="/") Home
+          li 
+            a(href="/blogs") Blogs
+          li.active
+            a(href="/blog/{{blog.slug}}")= blog.name
 .row
   .col-sm-8
     for entry in entries
       ul.list-group
-        li.list-group-item.section-header
-          span(style="font-size: 115%; font-weight: normal;")= entry.title
+        li.list-group-item.section-header= entry.title
         li.list-group-item
           .media-left
             img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
           .media-body
+            a(href="/blog/{{blog.slug}}/{{entry.slug}}")= entry.title
+            br
             | by 
             a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
             br
@@ -25,18 +30,19 @@
           hr
           .blog-entry!= entry.parsed_truncated
           hr
-          a(href="/blog/{{blog.slug}}/{{entry.slug}}") 
+          a(href="/blog/{{blog.slug}}/{{entry.slug}}")
             h4 Read More
-    if entry_count > 10
-      center
-        ul.pagination
-          for page_link in pages
-            if page_link == page
-              li.active
-                a(href="/blog/{{blog.slug}}/page/{{page_link}}")= page_link
-            else
-              li
-                a(href="/blog/{{blog.slug}}/page/{{page_link}}")= page_link
+    .panel
+      if entry_count > 10
+        center
+          ul.pagination
+            for page_link in pages
+              if page_link == page
+                li.active
+                  a(href="/blog/{{blog.slug}}/page/{{page_link}}")= page_link
+              else
+                li
+                  a(href="/blog/{{blog.slug}}/page/{{page_link}}")= page_link
   .col-sm-4
     if blog.description
       ul.list-group

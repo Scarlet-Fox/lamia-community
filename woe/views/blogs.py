@@ -138,6 +138,31 @@ def new_blog():
 
     return render_template("blogs/create_new_blog.jade", form=form, page_title="New Blog - Scarlet's Web")
 
+@app.route('/blog/<slug>/toggle-follow', methods=['POST'])
+@login_required
+def toggle_follow_blog(slug):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if not current_user._get_current_object() in blog.subscribers:
+        blog.subscribers.append(current_user._get_current_object())
+    else:
+        try:
+            blog.subscribers.remove(current_user._get_current_object())
+        except:
+            pass
+
+    try:
+        sqla.session.add(blog)
+        sqla.commit()
+    except:
+        sqla.rollback()
+
+    return app.jsonify(url="/blog/%s" % (blog.slug))
+
 @app.route('/blog/<slug>/edit-blog', methods=['GET', 'POST'])
 @login_required
 def edit_blog(slug):
@@ -166,30 +191,47 @@ def edit_blog(slug):
         form.title.data = blog.name
 
     return render_template("blogs/edit_blog.jade", form=form, blog=blog, page_title="Edit Blog - Scarlet's Web")
-#
-# @app.route('/blog/<slug>', methods=['GET'], defaults={'page': 1})
-# @app.route('/blog/<slug>/page/<page>', methods=['GET'])
-# def blog_index(slug, page):
-#     try:
-#         blog = Blog.objects(slug=slug)[0]
-#     except:
-#         return abort(404)
-#
-#     try:
-#         page = int(page)
-#     except:
-#         return abort(500)
-#
-#     entries = BlogEntry.objects(hidden=False, draft=False, blog=blog).order_by("-created")[(page-1)*10:page*10]
-#     clean_html_parser = ForumPostParser()
-#
-#     for entry in entries:
-#         entry.parsed = clean_html_parser.parse(entry.html)
-#         entry.parsed_truncated = unicode(BeautifulSoup(entry.parsed[:1000]))+"..."
-#
-#     comments = BlogComment.objects(hidden=False, blog=blog).order_by("-created")[0:10]
-#
-#     entry_count = BlogEntry.objects(hidden=False, draft=False, blog=blog).count()
-#     pages = range(1,int(entry_count / 10)+1)
-#
-#     return render_template("blogs/blog_entry_listing.jade", blog=blog, entries=entries, comments=comments, page=page, pages=pages, entry_count=entry_count)
+
+@app.route('/blog/<slug>', methods=['GET'], defaults={'page': 1})
+@app.route('/blog/<slug>/page/<page>', methods=['GET'])
+def blog_index(slug, page):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    try:
+        page = int(page)
+    except:
+        return abort(500)
+
+    if current_user._get_current_object() == blog.author:
+        entries = sqla.session.query(sqlm.BlogEntry) \
+            .filter_by(hidden=False, blog=blog) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[(page-1)*10:page*10]
+        entry_count = sqla.session.query(sqlm.BlogEntry) \
+            .filter_by(hidden=False, blog=blog).count()
+    else:
+        entries = sqla.session.query(sqlm.BlogEntry) \
+            .filter_by(hidden=False, blog=blog) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[(page-1)*10:page*10]
+        entry_count = sqla.session.query(sqlm.BlogEntry) \
+            .filter_by(hidden=False, blog=blog) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)).count()
+
+    clean_html_parser = ForumPostParser()
+
+    for entry in entries:
+        entry.parsed = clean_html_parser.parse(entry.html)
+        entry.parsed_truncated = unicode(BeautifulSoup(entry.parsed[:1000]))+"..."
+
+    # comments = BlogComment.objects(hidden=False, blog=blog).order_by("-created")[0:10]
+
+    comments = []
+    pages = range(1,int(entry_count / 10)+1)
+
+    return render_template("blogs/blog_entry_listing.jade", blog=blog, entries=entries, comments=comments, page=page, pages=pages, entry_count=entry_count)
