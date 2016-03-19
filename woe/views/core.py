@@ -74,7 +74,7 @@ def server_error(e):
     except:
         sqla.session.rollback()
 
-    return render_template('500.jade', page_title="SERVER ERROR! - World of Equestria"), 500
+    return render_template('500.jade', page_title="SERVER ERROR! - Scarlet's Web"), 500
 
 @app.errorhandler(403)
 def unauthorized_access(e):
@@ -115,7 +115,7 @@ def unauthorized_access(e):
     except:
         sqla.session.rollback()
 
-    return render_template('403.jade', page_title="Page Not Found - World of Equestria"), 403
+    return render_template('403.jade', page_title="Page Not Found - Scarlet's Web"), 403
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -156,7 +156,7 @@ def page_not_found(e):
     except:
         sqla.session.rollback()
 
-    return render_template('404.jade', page_title="Page Not Found - World of Equestria"), 404
+    return render_template('404.jade', page_title="Page Not Found - Scarlet's Web"), 404
 
 @app.route('/under-construction')
 def under_construction():
@@ -562,7 +562,7 @@ def password_reset(token):
             )
         return redirect("/")
 
-    return render_template("new_password.jade", page_title="Forgot Password - World of Equestria", form=form, token=token)
+    return render_template("new_password.jade", page_title="Forgot Password - Scarlet's Web", form=form, token=token)
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -577,9 +577,9 @@ def forgot_password():
         form.user.password_forgot_token_date = arrow.utcnow().datetime
         sqla.session.add(form.user)
         sqla.session.commit()
-        return render_template("forgot_password_confirm.jade", page_title="Forgot Password - World of Equestria", profile=form.user)
+        return render_template("forgot_password_confirm.jade", page_title="Forgot Password - Scarlet's Web", profile=form.user)
 
-    return render_template("forgot_password.jade", page_title="Forgot Password - World of Equestria", form=form)
+    return render_template("forgot_password.jade", page_title="Forgot Password - Scarlet's Web", form=form)
 
 @app.route('/hello/<pk>')
 def confirm_register(pk):
@@ -587,7 +587,7 @@ def confirm_register(pk):
         user = sqla.session.query(sqlm.User).filter_by(pk=pk)[0]
     except:
         return abort(404)
-    return render_template("welcome_new_user.jade", page_title="Welcome! - World of Equestria", profile=user)
+    return render_template("welcome_new_user.jade", page_title="Welcome! - Scarlet's Web", profile=user)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -656,7 +656,7 @@ def register():
 
         return redirect('/hello/'+str(new_user.id))
 
-    return render_template("register.jade", page_title="Become One of Us - World of Equestria", form=form)
+    return render_template("register.jade", page_title="Become One of Us - Scarlet's Web", form=form)
 
 @app.route('/sign-in', methods=['GET', 'POST'])
 def sign_in():
@@ -776,7 +776,7 @@ def sign_in():
     else:
         form.redirect_to.data = request.args.get('next', "/")
 
-    return render_template("sign_in.jade", page_title="Sign In - World of Equestria", form=form)
+    return render_template("sign_in.jade", page_title="Sign In - Scarlet's Web", form=form)
 
 @app.route('/banned')
 def banned_user():
@@ -836,7 +836,7 @@ def user_list_api_variant():
 @app.route('/members', methods=["GET",])
 @login_required
 def show_memeber_listing():
-    return render_template("members.jade", page_title="Members - World of Equestria")
+    return render_template("members.jade", page_title="Members - Scarlet's Web")
 
 @app.route('/preview', methods=["POST",])
 @login_required

@@ -600,7 +600,7 @@ def topic_index(slug, page, post):
         rp_topic = "false"
         if topic.category.slug in ["roleplays"]:
             rp_topic = "true"
-        return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
+        return render_template("forum/topic.jade", topic=topic, page_title="%s - Scarlet's Web" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
 
     topic.view_count = topic.view_count + 1
     try:
@@ -615,7 +615,7 @@ def topic_index(slug, page, post):
     if topic.category.slug in ["roleplays", "scenarios"]:
         rp_topic = "true"
 
-    return render_template("forum/topic.jade", topic=topic, page_title="%s - World of Equestria" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
+    return render_template("forum/topic.jade", topic=topic, page_title="%s - Scarlet's Web" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
@@ -933,7 +933,7 @@ def category_index(slug):
 
     print prefixes
 
-    return render_template("forum/category.jade", page_title="%s - World of Equestria" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
+    return render_template("forum/category.jade", page_title="%s - Scarlet's Web" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
 
 @app.route('/')
 def index():

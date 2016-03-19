@@ -53,7 +53,7 @@ def user_moderation_panel(login_name):
     return render_template("profile/mod_panel.jade",
         profile=user,
         recent_ips=last_five_ip_addresses,
-        title="Mod Details for %s - World of Equestria" % (unicode(user.display_name),),
+        title="Mod Details for %s - Scarlet's Web" % (unicode(user.display_name),),
         recent_fingerprints=most_recent_fingerprints,
         top_fingerprint_matches=fingerprints_with_top_matches)
 
@@ -70,7 +70,7 @@ def view_profile(login_name):
         user.about_me = parser.parse(user.about_me)
     except:
         user.about_me = ""
-    return render_template("profile.jade", profile=user, page_title="%s - World of Equestria" % (unicode(user.display_name),))
+    return render_template("profile.jade", profile=user, page_title="%s - Scarlet's Web" % (unicode(user.display_name),))
 
 @app.route('/member/<login_name>/validate-user', methods=['POST'])
 @login_required
@@ -206,7 +206,7 @@ def change_avatar_or_title(login_name):
         filename = None
         form.title.data = user.title
 
-    return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - World of Equestria")
+    return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - Scarlet's Web")
 
 @app.route('/member/<login_name>/change-settings', methods=['GET', 'POST'])
 @login_required
@@ -231,7 +231,7 @@ def change_user_settings(login_name):
         form.time_zone.data = user.time_zone
         form.theme.data = str(user.theme.id)
 
-    return render_template("profile/change_user_settings.jade", profile=user, form=form, page_title="Change Settings - World of Equestria")
+    return render_template("profile/change_user_settings.jade", profile=user, form=form, page_title="Change Settings - Scarlet's Web")
 
 @app.route('/member/<login_name>/change-account', methods=['GET', 'POST'])
 @login_required
@@ -272,7 +272,7 @@ def change_display_name_password(login_name):
         form.display_name.data = user.display_name
         form.email.data = user.email_address
 
-    return render_template("profile/change_account.jade", profile=user, form=form, page_title="Change Account Details - World of Equestria")
+    return render_template("profile/change_account.jade", profile=user, form=form, page_title="Change Account Details - Scarlet's Web")
 
 @app.route('/member/<login_name>/edit-profile', methods=['GET', 'POST'])
 @login_required

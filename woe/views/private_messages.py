@@ -360,7 +360,7 @@ def message_index(pk, page, post):
             .count()
 
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
-        return render_template("core/messages_topic.jade", page_title="%s - World of Equestria" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.id))
+        return render_template("core/messages_topic.jade", page_title="%s - Scarlet's Web" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.id))
 
     try:
         topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
@@ -369,7 +369,7 @@ def message_index(pk, page, post):
     except:
         pass
 
-    return render_template("core/messages_topic.jade", page_title="%s - World of Equestria" % (unicode(topic.title),), topic=topic, initial_page=page,)
+    return render_template("core/messages_topic.jade", page_title="%s - Scarlet's Web" % (unicode(topic.title),), topic=topic, initial_page=page,)
 
 @app.route('/new-message', methods=['POST'])
 @login_required
@@ -467,7 +467,7 @@ def create_message():
 @app.route('/new-message', methods=['GET'])
 @login_required
 def create_message_index():
-    return render_template("core/new_message.jade", page_title="New Private Message - World of Equestria")
+    return render_template("core/new_message.jade", page_title="New Private Message - Scarlet's Web")
 
 @app.route('/message-topics', methods=['POST'])
 @login_required
@@ -532,4 +532,4 @@ def messages_topics():
 @app.route('/messages', methods=['GET'])
 @login_required
 def messages_index():
-    return render_template("core/messages.jade", page_title="Your Private Messages - World of Equestria")
+    return render_template("core/messages.jade", page_title="Your Private Messages - Scarlet's Web")

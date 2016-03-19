@@ -1031,3 +1031,20 @@ class Blog(db.Model):
 
     privacy_setting = db.Column(db.String, default="members")
     disabled = db.Column(db.Boolean)
+
+def find_blog_slug(title):
+    slug = slugify(title, max_length=100, word_boundary=True, save_order=True)
+    if slug.strip() == "":
+        slug="_"
+
+    def try_slug(slug, count=0):
+        new_slug = slug
+        if count > 0:
+            new_slug = slug+"-"+str(count)
+
+        if len(Blog.query.filter_by(slug=new_slug).all()) == 0:
+            return new_slug
+        else:
+            return try_slug(slug, count+1)
+
+    return try_slug(slug)

@@ -65,7 +65,7 @@ def display_status_update(status):
     # if has_viewed == False:
     #     status.viewing.append(StatusViewer(user=current_user._get_current_object(), last_seen=arrow.utcnow().datetime))
 
-    return render_template("status_update.jade", page_title="%s's Status Update - %s - World of Equestria" % (unicode(status.author.display_name), humanize_time(status.created)), status=status, mod=mod)
+    return render_template("status_update.jade", page_title="%s's Status Update - %s - Scarlet's Web" % (unicode(status.author.display_name), humanize_time(status.created)), status=status, mod=mod)
 
 @app.route('/clear-status-updates', methods=['POST',])
 @login_required
@@ -152,7 +152,7 @@ def status_update_index():
             parsed_statuses.append(parsed_status)
         return app.jsonify(status_updates=parsed_statuses)
     else:
-        return render_template("core/status_index.jade", page_title="Status Updates - World of Equestria", status_updates=status_updates, count=count, search=search, authors=json.dumps(authors))
+        return render_template("core/status_index.jade", page_title="Status Updates - Scarlet's Web", status_updates=status_updates, count=count, search=search, authors=json.dumps(authors))
 
 @app.route('/status/<status>/reply', methods=['POST'])
 @login_required

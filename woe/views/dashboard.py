@@ -173,4 +173,4 @@ def dashboard_notifications():
 @app.route('/dashboard')
 @login_required
 def view_dashboard():
-    return render_template("dashboard.jade", page_title="Your Dashboard - World of Equestria")
+    return render_template("dashboard.jade", page_title="Your Dashboard - Scarlet's Web")

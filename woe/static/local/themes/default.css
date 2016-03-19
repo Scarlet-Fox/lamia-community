@@ -263,6 +263,7 @@ color:#a4a4a4;
 .list-group-item {
     padding: 6px 15px;
     border: 1px solid #ddd;
+    border-radius: 0px !important;
 }
 
 .list-group-item:first-child {

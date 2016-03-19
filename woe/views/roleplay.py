@@ -17,7 +17,7 @@ from woe import sqla
 @app.route('/characters')
 @login_required
 def character_database():
-    return render_template("roleplay/characters.jade", page_title="Characters - World of Equestria")
+    return render_template("roleplay/characters.jade", page_title="Characters - Scarlet's Web")
 
 @app.route('/characters/<slug>/gallery', methods=["GET",])
 @login_required
@@ -37,7 +37,7 @@ def character_gallery(slug):
         character_avatar = True
         ).order_by("Attachment.character_gallery_weight").all()
 
-    return render_template("roleplay/character_gallery.jade", character=character, images=images, emotes=emotes, page_title="%s's Gallery - Character Database - World of Equestria" % unicode(character.name))
+    return render_template("roleplay/character_gallery.jade", character=character, images=images, emotes=emotes, page_title="%s's Gallery - Character Database - Scarlet's Web" % unicode(character.name))
 
 @app.route('/characters/<slug>/manage-gallery', methods=["GET",])
 @login_required
@@ -54,7 +54,7 @@ def manage_gallery(slug):
         character = character
         ).order_by("Attachment.character_gallery_weight").all()
 
-    return render_template("roleplay/manage_gallery.jade", character=character, images=images, page_title="Edit %s's Gallery - Character Database - World of Equestria" % unicode(character.name))
+    return render_template("roleplay/manage_gallery.jade", character=character, images=images, page_title="Edit %s's Gallery - Character Database - Scarlet's Web" % unicode(character.name))
 
 @app.route('/characters/new-character', methods=["GET","POST"])
 @login_required
@@ -98,7 +98,7 @@ def create_character():
     else:
         pass
 
-    return render_template("roleplay/new_character.jade", form=form, page_title="Create a Character - World of Equestria")
+    return render_template("roleplay/new_character.jade", form=form, page_title="Create a Character - Scarlet's Web")
 
 @app.route('/characters/<slug>/edit-profile', methods=["GET","POST"])
 @login_required
@@ -180,7 +180,7 @@ def character_edit_profile(slug):
         if character.other != None:
             form.other.data = character.other
 
-    return render_template("roleplay/edit_character_profile.jade", character=character, form=form, page_title="Editing %s - Character Database - World of Equestria" % (unicode(character.name),))
+    return render_template("roleplay/edit_character_profile.jade", character=character, form=form, page_title="Editing %s - Character Database - Scarlet's Web" % (unicode(character.name),))
 
 @app.route('/characters/<slug>/view-posts/character-post-list-api', methods=["GET",])
 @login_required
@@ -228,7 +228,7 @@ def character_recent_activity(slug):
     except IndexError:
         abort(404)
 
-    return render_template("roleplay/character_posts.jade", character=character, page_title="%s - Character Database - World of Equestria" % (unicode(character.name),))
+    return render_template("roleplay/character_posts.jade", character=character, page_title="%s - Character Database - Scarlet's Web" % (unicode(character.name),))
 
 @app.route('/user-characters-api', methods=["POST",])
 @login_required
@@ -381,7 +381,7 @@ def character_basic_profile(slug):
     if character.other:
         character.other = parser.parse(character.other)
 
-    return render_template("roleplay/character_profile.jade", character=character, page_title="%s - Character Database - World of Equestria" % (unicode(character.name),))
+    return render_template("roleplay/character_profile.jade", character=character, page_title="%s - Character Database - Scarlet's Web" % (unicode(character.name),))
 
 @app.route('/characters/<slug>/manage-gallery/toggle-emote', methods=["POST",])
 @login_required
