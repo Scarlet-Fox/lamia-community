@@ -650,6 +650,9 @@ def category_filter_preferences(slug):
 def edit_topic(slug):
     try:
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
+        first_post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+            .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+            .order_by(sqla.desc(sqlm.Post.created))[0]
     except IndexError:
         sqla.session.rollback()
         return abort(404)
@@ -670,12 +673,12 @@ def edit_topic(slug):
         if request_json.get("text", "").strip() == "":
             return app.jsonify(error="Please enter actual text for your topic.")
 
-        if len(category.allowed_prefixes) > 0:
+        if len(category.allowed_labels) > 0:
             if request_json.get("prefix", "").strip() == "":
                 return app.jsonify(error="Please choose a label.")
 
-            if not request_json.get("prefix", "").strip() in category.allowed_prefixes:
-                return app.jsonify(error="Please choose a valid label.")
+            # if not request_json.get("prefix", "").strip() in category.allowed_labels:
+            #     return app.jsonify(error="Please choose a valid label.")
 
         cleaner = ForumHTMLCleaner()
         try:
@@ -686,7 +689,7 @@ def edit_topic(slug):
         try:
             label = sqla.session.query(sqlm.Label).filter_by(label=request_json.get("prefix", "").strip())[0]
         except IndexError:
-            prefix = ""
+            label = ""
 
         history = {}
         history["author"] = current_user._get_current_object().id
@@ -695,6 +698,7 @@ def edit_topic(slug):
         history["data"] = first_post.data
         history["reason"] = request_json.get("edit_reason", "")
 
+        post = first_post
         if post.post_history == None:
             post.post_history = []
 
@@ -705,11 +709,10 @@ def edit_topic(slug):
                 return app.jsonify(error="Please include an edit reason for editing someone else's topic.")
 
         topic.title = request_json.get("title")
-        if prefix != "":
+        if label != "":
             topic.label = label
 
-        first_post = topic.first_post
-        first_post.modified = arrow.utcnow().datetime
+        first_post.modified = arrow.utcnow().datetime.replace(tzinfo=None)
         first_post.html = post_html
 
         sqla.session.add(topic)
@@ -717,7 +720,7 @@ def edit_topic(slug):
         sqla.session.commit()
         return app.jsonify(url="/t/"+topic.slug)
     else:
-        return render_template("forum/edit_topic.jade", page_title="Edit Topic", category=category, topic=topic)
+        return render_template("forum/edit_topic.jade", page_title="Edit Topic", category=category, topic=topic, first_post=first_post)
 
 @app.route('/category/<slug>/new-topic', methods=['GET', 'POST'])
 @login_required
@@ -740,14 +743,14 @@ def new_topic(slug):
             if request_json.get("prefix", "").strip() == "":
                 return app.jsonify(error="Please choose a label.")
 
-            if not current_user._get_current_object().is_admin and not current_user._get_current_object().is_mod:
-                try:
-                    label = sqla.session.query(sqlm.Label).filter_by(label=request_json.get("prefix", "").strip())[0]
+            try:
+                label = sqla.session.query(sqlm.Label).filter_by(label=request_json.get("prefix", "").strip())[0]
 
-                    if not label in category.allowed_labels:
-                        return app.jsonify(error="Please choose a valid label.")
-                except:
-                    return app.jsonify(error="Please choose a valid label.")
+            #     if not label in category.allowed_labels:
+            #         return app.jsonify(error="Please choose a valid label.")
+            except IndexError:
+                sqla.session.rollback()
+                return app.jsonify(error="Please choose a valid label.")
 
         cleaner = ForumHTMLCleaner()
         try:

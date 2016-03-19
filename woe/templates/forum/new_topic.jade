@@ -29,12 +29,12 @@
                 .form-group.col-md-8
                   label(for="title") Title
                   input.form-control#title(value="")
-              if category.allowed_prefixes
+              if category.allowed_labels
                 .row
                   .form-group.col-md-6
                     label(for="title") Prefix
                     select#prefix.form-control
-                      for prefix in category.allowed_prefixes
+                      for prefix in category.allowed_labels
                         option(value="{{prefix}}") {{prefix}}
               .row
                 .form-group.col-md-12

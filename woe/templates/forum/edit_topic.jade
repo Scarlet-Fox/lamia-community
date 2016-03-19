@@ -1,43 +1,49 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.breadcrumb#topic-breadcrumb
-  li
-    a(href="/") Home
-  {% if category.parent != None and category.parent.root_category != True %}
-  li 
-    a(href="{{url_for('category_index', slug=category.parent.slug)}}") {{category.parent.name}}
-  {% endif %}
-  li 
-    a(href="{{url_for('category_index', slug=category.slug)}}") {{category.name}}
-  li 
-    a(href="{{url_for('topic_index', slug=topic.slug)}}") {{topic.name}}
-  li.active
-    b
-      a(href="{{url_for('edit_topic', slug=topic.slug)}}") Edit Topic
 .row
   .col-md-12
-    h2 Edit Topic
-    form#edit-topic-form(method="post", data-slug="{{topic.slug}}")
-      .row
-        .col-md-8
+    ul.list-group
+      li.list-group-item.section-header
+        ul.breadcrumb#topic-breadcrumb
+          li
+            a(href="/") Home
+          {% if category.parent != None and category.parent.root_category != True %}
+          li 
+            a(href="{{url_for('category_index', slug=category.parent.slug)}}") {{category.parent.name}}
+          {% endif %}
+          li 
+            a(href="{{url_for('category_index', slug=category.slug)}}") {{category.name}}
+          li 
+            a(href="{{url_for('topic_index', slug=topic.slug)}}") {{topic.name}}
+          li.active
+            b
+              a(href="{{url_for('edit_topic', slug=topic.slug)}}") Edit Topic
+.row
+  .col-md-12
+    ul.list-group.category
+      li.list-group-item
+        h2 Edit Topic
+        form#edit-topic-form(method="post", data-slug="{{topic.slug}}")
           .row
-            .form-group.col-md-8
-              label(for="title") Title
-              input.form-control#title(value=topic.title)
-          if category.allowed_prefixes
-            .row
-              .form-group.col-md-6
-                label(for="title") Prefix
-                select#prefix.form-control
-                  for prefix in category.allowed_prefixes
-                    if prefix == topic.prefix:
-                      option(value="{{prefix}}", selected) {{prefix}}
-                    else
-                      option(value="{{prefix}}") {{prefix}}
-          .row
-            .form-group.col-md-12
-              #new-post-box {{topic.first_post.html}}
+            .col-md-8
+              .row
+                .form-group.col-md-8
+                  label(for="title") Title
+                  input.form-control#title(value=topic.title)
+              if category.allowed_labels
+                .row
+                  .form-group.col-md-6
+                    label(for="title") Prefix
+                    select#prefix.form-control
+                      for prefix in category.allowed_labels
+                        if prefix.label == topic.label.label:
+                          option(value="{{prefix}}", selected) {{prefix}}
+                        else
+                          option(value="{{prefix}}") {{prefix}}
+              .row
+                .form-group.col-md-12
+                  #new-post-box {{first_post.html}}
 nav.pagination-listing
 {% endblock %}
 

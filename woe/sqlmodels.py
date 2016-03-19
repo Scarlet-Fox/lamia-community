@@ -717,6 +717,7 @@ class Label(db.Model):
     pre_html = db.Column(db.String, default="")
     label = db.Column(db.String, default="")
     post_html = db.Column(db.String, default="")
+    modern = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
         return "%s" % (self.label,)
