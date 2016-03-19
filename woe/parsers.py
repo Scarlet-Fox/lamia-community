@@ -117,6 +117,19 @@ class ForumPostParser(object):
             html = html.replace("[img]%s[/img]" % image, """<img src="%s" style="max-width: 80%%;">""" % image, 1)
             skiplink.append(image.strip())
 
+        url_bbcode_in_post = url_re.findall(html)
+        for url_bbcode in url_bbcode_in_post:
+            if url_bbcode[1] == "":
+                to_replace = "[url]"
+            else:
+                to_replace = "[url=%s]" % (url_bbcode[0]+url_bbcode[1]+url_bbcode[2])
+            to_replace = to_replace + url_bbcode[3]
+            to_replace = to_replace + "[/url]"
+            if url_bbcode[0] == "":
+                html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[3])), 1)
+            else:
+                html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[1])), 1)
+                
         # parse urls
         all_bbcode = bbcode_re.findall(html)
         all_html_links = href_re.findall(html)
@@ -405,19 +418,6 @@ class ForumPostParser(object):
             to_replace = to_replace + quote_bbcode[1]
             to_replace = to_replace + "[/quote]"
             html = html.replace(to_replace, """<blockquote data-author="%s" class="blockquote-reply"><div>%s</div></blockquote>""" % (unicode(quote_bbcode[0]), unicode(quote_bbcode[1])), 1)
-
-        # url_bbcode_in_post = url_re.findall(html)
-        # for url_bbcode in url_bbcode_in_post:
-        #     if url_bbcode[1] == "":
-        #         to_replace = "[url]"
-        #     else:
-        #         to_replace = "[url=%s]" % (url_bbcode[0]+url_bbcode[1]+url_bbcode[2])
-        #     to_replace = to_replace + url_bbcode[3]
-        #     to_replace = to_replace + "[/url]"
-        #     if url_bbcode[0] == "":
-        #         html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[3])), 1)
-        #     else:
-        #         html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[1])), 1)
 
         # parse spoilers
         spoiler_bbcode_in_post = spoiler_re.findall(html)

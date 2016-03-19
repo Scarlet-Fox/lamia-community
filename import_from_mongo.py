@@ -384,14 +384,6 @@ for topic in forum.Topic.objects():
 
     if topic.category.name in ["Commissions", "Requests"]:
         sql_topic.category = sqla.session.query(Category).filter_by(name="Art Show").first()
-    elif topic.category.name == "Scenarios":
-        sql_topic.category = sqla.session.query(Category).filter_by(name="Roleplays").first()
-    elif topic.category.name == "Minecraft Discussion":
-        sql_topic.category = sqla.session.query(Category).filter_by(name="Minecraft").first()
-    elif topic.category.name == "Out of Character Discussion":
-        sql_topic.category = sqla.session.query(Category).filter_by(name="Out of Character").first()
-    elif topic.category.name == "Discussion":
-        sql_topic.category = sqla.session.query(Category).filter_by(name="Chit Chat").first()
     elif topic.prefix == "Anime":
         sql_topic.category = sqla.session.query(Category).filter_by(name="Anime").first()
         topic.prefix = None
@@ -407,6 +399,14 @@ for topic in forum.Topic.objects():
     elif topic.prefix == "Music":
         sql_topic.category = sqla.session.query(Category).filter_by(name="Music").first()
         topic.prefix = None
+    elif topic.category.name == "Discussion":
+        sql_topic.category = sqla.session.query(Category).filter_by(name="Chit Chat").first()
+    elif topic.category.name == "Scenarios":
+        sql_topic.category = sqla.session.query(Category).filter_by(name="Roleplays").first()
+    elif topic.category.name == "Minecraft Discussion":
+        sql_topic.category = sqla.session.query(Category).filter_by(name="Minecraft").first()
+    elif topic.category.name == "Out of Character Discussion":
+        sql_topic.category = sqla.session.query(Category).filter_by(name="Out of Character").first()
     else:
         sql_topic.category = sqla.session.query(Category).filter_by(name=topic.category.name).first()
 
