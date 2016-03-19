@@ -206,6 +206,13 @@ def blog_index(slug, page):
     except:
         return abort(500)
 
+    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+        return abort(404)
+    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author or current_user._get_current_object() not in blog.editors):
+        return abort(404)
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+        return abort(404)
+
     if current_user._get_current_object() == blog.author:
         entries = sqla.session.query(sqlm.BlogEntry) \
             .filter_by(hidden=False, blog=blog) \
@@ -229,9 +236,10 @@ def blog_index(slug, page):
         entry.parsed = clean_html_parser.parse(entry.html)
         entry.parsed_truncated = unicode(BeautifulSoup(entry.parsed[:1000]))+"..."
 
-    # comments = BlogComment.objects(hidden=False, blog=blog).order_by("-created")[0:10]
+    comments = sqla.session.query(sqlm.BlogComment) \
+        .filter_by(hidden=False, blog=blog) \
+        .order_by(sqla.desc(sqlm.BlogComment.created))[0:15]
 
-    comments = []
     pages = range(1,int(entry_count / 10)+1)
 
     return render_template("blogs/blog_entry_listing.jade", blog=blog, entries=entries, comments=comments, page=page, pages=pages, entry_count=entry_count)
