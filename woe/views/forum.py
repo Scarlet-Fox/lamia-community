@@ -651,6 +651,7 @@ def edit_topic(slug):
     try:
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
+        sqla.session.rollback()
         return abort(404)
 
     category = topic.category

@@ -12,7 +12,7 @@
           for blog in my_blogs
             a.btn.btn-default(style="margin: 2px;", href="/blog/{{blog.slug}}") {{blog.name}}
 .row
-  .col-sm-8
+  .col-sm-9
     ul.list-group
       li.list-group-item.section-header Latest Blog Updates
       li.list-group-item
@@ -42,6 +42,29 @@
                 else
                   li
                     a(href="/blogs/page/{{page_link}}")= page_link
+  .col-sm-3
+    ul.list-group
+      li.list-group-item.section-header Featured Posts!
+      for blogentry in featured_blog_entries
+        li.list-group-item(style="padding: 10px;")
+          .media-left 
+            img.avatar-mini(src=blogentry.author.get_avatar_url("40"), width=blogentry.author.avatar_40_x, height=blogentry.author.avatar_40_y)
+          .media-body
+            strong
+              a(href="#")= blogentry.title
+            div= blogentry.blog.name
+            div= blogentry.created|humanize_time("MMM D YYYY")
+    ul.list-group
+      li.list-group-item.section-header Random Blogs
+      for blog in random_blogs
+        li.list-group-item(style="padding: 10px;")
+          .media-left 
+            img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
+          .media-body
+            strong
+              a(href="#")= blog.recent_entry.title
+            div= blog.name
+            div= blog.recent_entry.created|humanize_time("MMM D YYYY")
 {% endblock %}
 
 {% block script %}

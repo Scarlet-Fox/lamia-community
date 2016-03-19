@@ -42,6 +42,29 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "members"
             )) \
             .filter(sqlm.Blog.disabled.isnot(True)).count()
+
+        featured_blog_entries = sqla.session.query(sqlm.BlogEntry) \
+            .join(sqlm.BlogEntry.blog) \
+            .join(sqlm.BlogEntry.author) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.User.banned.isnot(True)) \
+            .filter(sqlm.BlogEntry.featured == True) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+                sqlm.Blog.privacy_setting == "members"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.created)).all()[0:5]
+
+        random_blogs = sqla.session.query(sqlm.Blog) \
+            .join(sqlm.Blog.recent_entry) \
+            .join(sqlm.Blog.author) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.User.banned.isnot(True)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+                sqlm.Blog.privacy_setting == "members"
+            )) \
+            .order_by(sqla.func.random()).all()[0:5]
     else:
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
@@ -55,6 +78,27 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "all"
             )) \
             .filter(sqlm.Blog.disabled.isnot(True)).count()
+
+        featured_blog_entries = sqla.session.query(sqlm.BlogEntry) \
+            .join(sqlm.BlogEntry.blog) \
+            .join(sqlm.BlogEntry.author) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.User.banned.isnot(True)) \
+            .filter(sqlm.BlogEntry.featured == True) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.created)).all()[0:5]
+
+        random_blogs = qla.session.query(sqlm.Blog) \
+            .join(sqlm.Blog.recent_entry) \
+            .join(sqlm.Blog.author) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.User.banned.isnot(True)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all"
+            )) \
+            .order_by(sqla.func.random()).all()[0:5]
 
     pages = int(count)/20
     if pages > 10:
@@ -70,6 +114,8 @@ def blogs_index(page):
     return render_template("blogs/list_of_blogs.jade",
         page_title="Blogs - Scarlet's Web",
         my_blogs=my_blogs,
+        random_blogs=random_blogs,
+        featured_blog_entries=featured_blog_entries,
         blogs=blogs,
         pages=pages,
         page=page
@@ -92,6 +138,34 @@ def new_blog():
 
     return render_template("blogs/create_new_blog.jade", form=form, page_title="New Blog - Scarlet's Web")
 
+@app.route('/blog/<slug>/edit-blog', methods=['GET', 'POST'])
+@login_required
+def edit_blog(slug):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if current_user._get_current_object() != blog.author:
+        if not current_user._get_current_object().is_admin and not current_user._get_current_object().is_mod:
+            if current_user._get_current_object() not in blog.editors:
+                return abort(404)
+
+    form = BlogSettingsForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        blog.name = form.title.data
+        blog.description = form.description.data
+        blog.privacy_setting = form.privacy_setting.data
+        sqla.session.add(blog)
+        sqla.session.commit()
+        return redirect("/blog/"+unicode(blog.slug))
+    else:
+        form.description.data = blog.description
+        form.privacy_setting.data = blog.privacy_setting
+        form.title.data = blog.name
+
+    return render_template("blogs/edit_blog.jade", form=form, blog=blog, page_title="Edit Blog - Scarlet's Web")
 #
 # @app.route('/blog/<slug>', methods=['GET'], defaults={'page': 1})
 # @app.route('/blog/<slug>/page/<page>', methods=['GET'])

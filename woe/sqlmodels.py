@@ -959,6 +959,7 @@ class BlogEntry(db.Model):
     entry_history = db.Column(JSONB)
     b_title = db.Column(db.String, default="")
     data = db.Column(JSONB)
+    featured = db.Column(db.Boolean, default=False)
 
 blogcomment_boop_table = db.Table('blog_comment_boops', db.metadata,
     db.Column('blogcomment_id', db.Integer, db.ForeignKey('blog_comment.id',
