@@ -64,7 +64,7 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "all",
                 sqlm.Blog.privacy_setting == "members"
             )) \
-            .order_by(sqla.func.random()).all()[0:5]
+            .order_by(sqla.func.random()).all()[0:10]
     else:
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
@@ -98,7 +98,7 @@ def blogs_index(page):
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
             )) \
-            .order_by(sqla.func.random()).all()[0:5]
+            .order_by(sqla.func.random()).all()[0:10]
 
     pages = int(count)/20
     if pages > 10:
