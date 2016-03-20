@@ -959,6 +959,12 @@ blogentry_boop_table = db.Table('blog_entry_boops', db.metadata,
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
         name="fk_boop_blogentry_user", ondelete="CASCADE")))
 
+blogentry_subscriber_table = db.Table('blog_entry_subscribers', db.metadata,
+    db.Column('blogentry_id', db.Integer, db.ForeignKey('blog_entry.id',
+        name="fk_subscriber_blog_entry", ondelete="CASCADE")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_subscriber_user_blog_entry", ondelete="CASCADE")))
+
 class BlogEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, default="")
@@ -977,6 +983,9 @@ class BlogEntry(db.Model):
 
     boops = db.relationship("User",
                     secondary=blogentry_boop_table)
+
+    subscribers = db.relationship("User",
+                    secondary=blogentry_subscriber_table)
 
     character_id = db.Column(db.Integer, db.ForeignKey('character.id',
         name="fk_blogentry_character", ondelete="SET NULL"), nullable=True)

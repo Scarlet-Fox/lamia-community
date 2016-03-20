@@ -179,11 +179,49 @@ def toggle_follow_blog(slug):
 
     try:
         sqla.session.add(blog)
-        sqla.commit()
+        sqla.session.commit()
     except:
-        sqla.rollback()
+        sqla.session.rollback()
 
     return app.jsonify(url="/blog/%s" % (blog.slug))
+
+@app.route('/blog/<slug>/e/<entry_slug>/toggle-follow', methods=['POST'])
+@login_required
+def toggle_follow_blog_entry(slug, entry_slug):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    try:
+        entry = sqla.session.query(sqlm.BlogEntry).filter_by(blog=blog, slug=entry_slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+        return abort(404)
+    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
+        return abort(404)
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+        return abort(404)
+
+    if not current_user._get_current_object() in entry.subscribers:
+        entry.subscribers.append(current_user._get_current_object())
+    else:
+        try:
+            entry.subscribers.remove(current_user._get_current_object())
+        except:
+            pass
+
+    try:
+        sqla.session.add(entry)
+        sqla.session.commit()
+    except:
+        sqla.session.rollback()
+
+    return app.jsonify(url="/blog/%s/e/%s" % (blog.slug, entry.slug))
 
 @app.route('/blog/<slug>/edit-blog', methods=['GET', 'POST'])
 @login_required
