@@ -372,7 +372,91 @@ def blog_index(slug, page):
 
     pages = [p+1 for p in range(pages)]
 
-    return render_template("blogs/blog_entry_listing.jade", blog=blog, drafts=drafts, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count)
+    return render_template("blogs/blog_entry_listing.jade", blog=blog, drafts=drafts, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count, page_title=blog.title+" - Scarlet's Web")
+
+@app.route('/blog/<slug>/e/<entry_slug>/toggle-boop', methods=['POST'])
+def boop_blog_entry(slug, entry_slug):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+        return abort(404)
+    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
+        return abort(404)
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+        return abort(404)
+
+    try:
+        entry = sqla.session.query(sqlm.BlogEntry).filter_by(blog=blog, slug=entry_slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if current_user._get_current_object() in entry.boops:
+        entry.boops.remove(current_user._get_current_object())
+    else:
+        entry.boops.append(current_user._get_current_object())
+        # broadcast(
+        #     to=[post.author,],
+        #     category="boop",
+        #     url="/t/%s/page/1/post/%s" % (str(post.topic.slug), str(post.id)),
+        #     title="%s has booped your post in %s!" % (unicode(current_user._get_current_object().display_name), unicode(post.topic.title)),
+        #     description="",
+        #     content=post,
+        #     author=current_user._get_current_object()
+        #     )
+
+    sqla.session.add(entry)
+    sqla.session.commit()
+    return app.jsonify(success=True)
+
+@app.route('/blog/<slug>/e/<entry_slug>/c/<comment_id>/toggle-boop', methods=['POST'])
+def boop_blog_entry_comment(slug, entry_slug, comment_id):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+        return abort(404)
+    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
+        return abort(404)
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+        return abort(404)
+
+    try:
+        entry = sqla.session.query(sqlm.BlogEntry).filter_by(blog=blog, slug=entry_slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    try:
+        comment = sqla.session.query(sqlm.BlogComment).filter_by(blog=blog, id=comment_id, blog_entry=entry)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if current_user._get_current_object() in comment.boops:
+        comment.boops.remove(current_user._get_current_object())
+    else:
+        comment.boops.append(current_user._get_current_object())
+        # broadcast(
+        #     to=[post.author,],
+        #     category="boop",
+        #     url="/t/%s/page/1/post/%s" % (str(post.topic.slug), str(post.id)),
+        #     title="%s has booped your post in %s!" % (unicode(current_user._get_current_object().display_name), unicode(post.topic.title)),
+        #     description="",
+        #     content=post,
+        #     author=current_user._get_current_object()
+        #     )
+
+    sqla.session.add(comment)
+    sqla.session.commit()
+    return app.jsonify(success=True)
 
 @app.route('/blog/<slug>/e/<entry_slug>', methods=['GET'], defaults={'page': 1})
 @app.route('/blog/<slug>/e/<entry_slug>/page/<page>', methods=['GET'])
@@ -423,7 +507,7 @@ def blog_entry_index(slug, entry_slug, page):
 
     pages = [p+1 for p in range(pages)]
 
-    return render_template("blogs/blog_entry_view.jade", blog=blog, entry=entry, comments=comments, page=page, pages=pages)
+    return render_template("blogs/blog_entry_view.jade", blog=blog, entry=entry, comments=comments, page=page, pages=pages, page_title=entry.title+" - Scarlet's Web")
 
 @app.route('/blog/<slug>/e/<entry_slug>/new-comment', methods=['POST'], defaults={'page': 1})
 @app.route('/blog/<slug>/e/<entry_slug>/page/<page>/new-comment', methods=['POST'])

@@ -30,6 +30,30 @@
           span.text-muted {{ entry.published|humanize_time }}
         hr
         .blog-entry!= entry.parsed
+        .blog-options
+          br
+          .row
+            .col-xs-6
+              if entry.author == current_user or current_user in blog.editors
+                a.btn.btn-default(href="/blog/{{blog.slug}}/e/{{entry.slug}}/edit-entry") Edit Entry
+            .col-xs-6.post-likes
+              if entry.author == current_user or not current_user.is_authenticated()
+                span
+                  span.badge {{entry.boops|length}}
+                  | &nbsp;
+                  | boops!
+              else
+                if current_user not in entry.boops
+                  a.btn.btn-default.boop-button.boop-link(data-status="notbooped", data-count="{{entry.boops|length}}", type="button", href="/blog/{{blog.slug}}/e/{{entry.slug}}/toggle-boop")
+                    span.badge(style="background-color: rgb(85, 85, 85);") {{entry.boops|length}}
+                    | &nbsp;
+                    span.boop-text Boop!
+                else
+                  a.btn.btn-default.boop-button.boop-link(data-status="booped", data-count="{{entry.boops|length}}", type="button", href="/blog/{{blog.slug}}/e/{{entry.slug}}/toggle-boop")
+                    span.badge(style="background-color: green;") {{entry.boops|length}}
+                    | &nbsp;
+                    span.boop-text Boop!
+          br
       li.list-group-item.section-header#comments(style="margin-top: 10px;") Comments
       .list-group-item
         #new-post-box    
@@ -41,11 +65,39 @@
                 a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}") {{ comment.author.display_name }}
               .col-sm-10
                 {{ comment.created|humanize_time }}
-          .list-group-item(style="padding: 10px;")
+          .list-group-item(style="padding: 20px;")
             .row
               .col-sm-2.hidden-xs
                 img.media-object(src="{{ comment.author.get_avatar_url() }}", width=comment.author.avatar_full_x*0.70, height=comment.author.avatar_full_y*0.70, class="avatar-mini")
               .col-sm-10.col-xs-12!= comment.parsed
+            .blog-options
+              br
+              .row
+                .col-sm-2.hidden-xs
+                .col-sm-10.col-xs-12
+                  .row
+                    .col-xs-6
+                      if comment.author == current_user
+                        a.btn.btn-default(href="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/edit-comment") Edit Comment
+                    .col-xs-6
+                      .post-likes
+                        if comment.author == current_user or not current_user.is_authenticated()
+                          span
+                            span.badge {{comment.boops|length}}
+                            | &nbsp;
+                            | boops!
+                        else
+                          if current_user not in comment.boops
+                            a.btn.btn-default.boop-button.boop-link(data-status="notbooped", data-count="{{comment.boops|length}}", type="button", href="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/toggle-boop")
+                              span.badge(style="background-color: rgb(85, 85, 85);") {{comment.boops|length}}
+                              | &nbsp;
+                              span.boop-text Boop!
+                          else
+                            a.btn.btn-default.boop-button.boop-link(data-status="booped", data-count="{{comment.boops|length}}", type="button", href="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/toggle-boop")
+                              span.badge(style="background-color: green;") {{comment.boops|length}}
+                              | &nbsp;
+                              span.boop-text Boop!
+                br
       if pages
         .panel
           center
