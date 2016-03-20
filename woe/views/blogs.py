@@ -256,6 +256,60 @@ def new_blog_entry(slug):
 
     return render_template("blogs/new_blog_entry.jade", form=form, blog=blog, page_title="New Blog Entry - Scarlet's Web")
 
+@app.route('/blog/<slug>/e/<entry_slug>/edit-entry', methods=['GET', 'POST'])
+@login_required
+def edit_blog_entry(slug, entry_slug):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if current_user._get_current_object() != blog.author:
+        if current_user._get_current_object() not in blog.editors:
+            return abort(404)
+
+    try:
+        e = sqla.session.query(sqlm.BlogEntry).filter_by(blog=blog, slug=entry_slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    already_published = not e.draft
+
+    form = BlogEntryForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        e.title = form.title.data
+        if current_user._get_current_object() != e.author:
+            e.editor = current_user._get_current_object()
+        e.draft = form.draft.data
+        cleaner = ForumHTMLCleaner()
+        try:
+            e.html = cleaner.clean(form.entry.data)
+        except:
+            return abort(500)
+        e.created = arrow.utcnow().datetime.replace(tzinfo=None)
+        if e.draft == False and already_published == False:
+            e.published = arrow.utcnow().datetime.replace(tzinfo=None)
+            recent_entry = True
+        else:
+            recent_entry = False
+        e.b_title = blog.name
+        sqla.session.add(e)
+        sqla.session.commit()
+
+        if recent_entry:
+            blog.recent_entry = e
+            sqla.session.add(blog)
+            sqla.session.commit()
+        return redirect("/blog/"+unicode(blog.slug))
+    else:
+        form.draft.data = e.draft
+        form.title.data = e.title
+        form.entry.data = e.html
+
+    return render_template("blogs/edit_blog_entry.jade", form=form, blog=blog, entry=e, page_title="Edit Blog Entry - Scarlet's Web")
+
 @app.route('/blog/<slug>', methods=['GET'], defaults={'page': 1})
 @app.route('/blog/<slug>/page/<page>', methods=['GET'])
 def blog_index(slug, page):
@@ -336,7 +390,7 @@ def blog_entry_index(slug, entry_slug, page):
         return abort(404)
 
     try:
-        entry = sqla.session.query(sqlm.BlogEntry).filter_by(slug=entry_slug)[0]
+        entry = sqla.session.query(sqlm.BlogEntry).filter_by(blog=blog, slug=entry_slug)[0]
     except IndexError:
         sqla.session.rollback()
         return abort(404)

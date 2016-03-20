@@ -12,14 +12,16 @@
             a(href="/blogs") Blogs
           li
             a(href="/blog/{{blog.slug}}")= blog.name
+          li
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
           li.active
-            a(href="/blog/{{blog.slug}}/new-entry") New Blogs
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}/edit-entry") Edit Entry
 .row
   .col-md-12
     ul.list-group.category
       li.list-group-item
-        h3 Write a Blog Entry
-        form#new-blog-entry-form(method="post", action="/blog/{{blog.slug}}/new-entry")
+        h3 Edit a Blog Entry
+        form#new-blog-entry-form(method="post", action="/blog/{{blog.slug}}/e/{{entry.slug}}/edit-entry")
           {{ form_errors(form) }}
           .form-group
             {{ form.title.label(class="control-label") }}
