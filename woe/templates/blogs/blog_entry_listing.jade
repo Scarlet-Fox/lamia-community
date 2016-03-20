@@ -20,24 +20,42 @@
     for entry in entries
       ul.list-group
         li.list-group-item.section-header= entry.title
-        li.list-group-item
-          .media-left
-            img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
-          .media-body
-            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
-            br
-            | by 
-            a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
-            br
-            span.text-muted {{ entry.published|humanize_time }}
-          hr
-          .blog-entry!= entry.parsed_truncated
-          hr
-          a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")
-            if entry.comments
-              h4 Read More / Comment ({{entry.comment_count()}})
-            else
-              h4 Read More / Comment
+        if entry.draft
+          li.list-group-item(style="background-color: #FFDCFF;")
+            .media-left
+              img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
+            .media-body
+              em
+                a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
+                br
+                | by 
+                a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
+                br
+                span.text-muted {{ entry.published|humanize_time }}
+            hr
+            .blog-entry!= entry.parsed_truncated
+            hr
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")
+              h4 View/Edit Draft
+        else
+          li.list-group-item
+            .media-left
+              img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
+            .media-body
+              a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
+              br
+              | by 
+              a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
+              br
+              span.text-muted {{ entry.published|humanize_time }}
+            hr
+            .blog-entry!= entry.parsed_truncated
+            hr
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")
+              if entry.comments
+                h4 Read More / Comment ({{entry.comment_count()}})
+              else
+                h4 Read More / Comment
     if entry_count > 10
       .panel
         center
@@ -61,12 +79,14 @@
           .btn-group
             a.btn.btn-default(href="/blog/{{blog.slug}}/new-entry") New Entry
             a.btn.btn-default(href="/blog/{{blog.slug}}/edit-blog") Settings
-    //- if blog.author == current_user
-    //-   ul.list-group
-    //-     li.list-group-item.section-header.panel-title Drafts
-    //-     li.list-group-item(style="padding: 10px;")
-    //-       for draft in drafts
-    //-       
+    if blog.author == current_user and drafts
+      ul.list-group
+        li.list-group-item.section-header.panel-title Drafts
+        for draft in drafts
+          li.list-group-item(style="padding: 10px;")
+            a(href="/blog/{{blog.slug}}/e/{{draft.slug}}")= draft.title
+            &nbsp;
+            a(href="/blog/{{blog.slug}}/e/{{draft.slug}}/edit-entry") (edit)
     if comments
       ul.list-group
         li.list-group-item.section-header.panel-title Recent Comments

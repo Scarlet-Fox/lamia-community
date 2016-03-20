@@ -199,11 +199,18 @@ class BlogEntryView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class BlogCommentView(ModelView):
+    column_list = ("id", "b_e_title")
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 admin.add_view(LabelView(sqlm.Label, sqla.session))
 admin.add_view(CharacterView(sqlm.Character, sqla.session))
 admin.add_view(ReportView(sqlm.Report, sqla.session))
 admin.add_view(BlogView(sqlm.Blog, sqla.session, category='Blog'))
 admin.add_view(BlogEntryView(sqlm.BlogEntry, sqla.session, category='Blog'))
+admin.add_view(BlogCommentView(sqlm.BlogComment, sqla.session, category='Blog'))
 admin.add_view(ThemeView(sqlm.SiteTheme, sqla.session, category='Core'))
 admin.add_view(AttachView(sqlm.Attachment, sqla.session, category='Core'))
 admin.add_view(LogView(sqlm.SiteLog, sqla.session, category='Core'))

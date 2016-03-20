@@ -40,6 +40,7 @@ def blogs_index(page):
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
             .filter(sqlm.BlogEntry.published.isnot(None)) \
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all",
@@ -84,6 +85,7 @@ def blogs_index(page):
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
             .filter(sqlm.BlogEntry.published.isnot(None)) \
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
@@ -326,7 +328,7 @@ def blog_index(slug, page):
 
     if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
         return abort(404)
-    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author or current_user._get_current_object() not in blog.editors):
+    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
         return abort(404)
     elif blog.privacy_setting == "members" and not current_user.is_authenticated():
         return abort(404)
@@ -337,6 +339,9 @@ def blog_index(slug, page):
             .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[(page-1)*10:page*10]
         entry_count = sqla.session.query(sqlm.BlogEntry) \
             .filter_by(hidden=False, blog=blog).count()
+        drafts = sqla.session.query(sqlm.BlogEntry) \
+            .filter_by(hidden=False, blog=blog, draft=True) \
+            .order_by(sqla.desc(sqlm.BlogEntry.created)).all()
     else:
         entries = sqla.session.query(sqlm.BlogEntry) \
             .filter_by(hidden=False, blog=blog) \
@@ -347,6 +352,7 @@ def blog_index(slug, page):
             .filter_by(hidden=False, blog=blog) \
             .filter(sqlm.BlogEntry.published.isnot(None)) \
             .filter(sqlm.BlogEntry.draft.isnot(True)).count()
+        drafts = []
 
     clean_html_parser = ForumPostParser()
 
@@ -366,7 +372,7 @@ def blog_index(slug, page):
 
     pages = [p+1 for p in range(pages)]
 
-    return render_template("blogs/blog_entry_listing.jade", blog=blog, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count)
+    return render_template("blogs/blog_entry_listing.jade", blog=blog, drafts=drafts, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count)
 
 @app.route('/blog/<slug>/e/<entry_slug>', methods=['GET'], defaults={'page': 1})
 @app.route('/blog/<slug>/e/<entry_slug>/page/<page>', methods=['GET'])
@@ -384,7 +390,7 @@ def blog_entry_index(slug, entry_slug, page):
 
     if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
         return abort(404)
-    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author or current_user._get_current_object() not in blog.editors):
+    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
         return abort(404)
     elif blog.privacy_setting == "members" and not current_user.is_authenticated():
         return abort(404)
@@ -393,6 +399,9 @@ def blog_entry_index(slug, entry_slug, page):
         entry = sqla.session.query(sqlm.BlogEntry).filter_by(blog=blog, slug=entry_slug)[0]
     except IndexError:
         sqla.session.rollback()
+        return abort(404)
+
+    if entry.draft == True and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
         return abort(404)
 
     clean_html_parser = ForumPostParser()
@@ -433,7 +442,7 @@ def create_blog_comment(slug, entry_slug, page):
 
     if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
         return abort(404)
-    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author or current_user._get_current_object() not in blog.editors):
+    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
         return abort(404)
     elif blog.privacy_setting == "members" and not current_user.is_authenticated():
         return abort(404)
