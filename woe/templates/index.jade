@@ -86,6 +86,22 @@
             input.form-control#status-new(type="text", maxlength="250")
             br
             button#new-status.btn.btn-primary(type="submit") Create a Status Update
+      if blogs
+        ul.list-group(style="padding-top: 10px;")
+          li.list-group-item.section-header Blogs
+          for blog in blogs
+            li.list-group-item(style="padding: 10px;")
+              .media-left 
+                img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
+              .media-body
+                strong
+                  a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title
+                div
+                  a(href="/blog/{{blog.slug}}")= blog.name
+                div= blog.recent_entry.created|humanize_time("MMM D YYYY")
+          li.list-group-item
+            a.btn.btn-primary(href="/blogs") Browse All Blogs
+
 .row
   .col-md-12
     li.list-group-item.section-header.sidebar-section-header {{online_user_count}} Users Online

@@ -980,8 +980,30 @@ def index():
     status_updates = [result[1] for result in sqla.session.query(sqla.distinct(sqlm.StatusUpdate.author_id), sqlm.StatusUpdate) \
         .order_by(sqla.desc(sqlm.StatusUpdate.created)).limit(5)]
 
+    if current_user.is_authenticated():
+        blogs = sqla.session.query(sqlm.Blog) \
+            .join(sqlm.Blog.recent_entry) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+                sqlm.Blog.privacy_setting == "members"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+    else:
+        blogs = sqla.session.query(sqlm.Blog) \
+            .join(sqlm.Blog.recent_entry) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+
     return render_template("index.jade", page_title="Scarlet's Web",
         sections=sections, sub_categories=sub_categories,
-        categories=categories, status_updates=status_updates, online_users=online_users,
+        categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
         # post_count=post_count, member_count=member_count, newest_member=newest_member,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)
