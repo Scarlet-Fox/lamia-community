@@ -1,0 +1,47 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-md-12
+    ul.list-group
+      li.list-group-item.section-header
+        ul.breadcrumb#topic-breadcrumb
+          li
+            a(href="/") Home
+          li 
+            a(href="/blogs") Blogs
+          li
+            a(href="/blog/{{blog.slug}}")= blog.name
+          li
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
+          li.active
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/edit-comment") Edit Comment
+.row
+  .col-md-12
+    ul.list-group.category
+      li.list-group-item
+        h3 Edit Blog Comment
+        form#new-blog-comment-form(method="post", action="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/edit-comment")
+          {{ form_errors(form) }}
+          .form-group
+            #blog-comment!= form.comment.data
+            {{ form.comment }}
+          .form-group
+            button#commit-edit(type="submit").btn.btn-default Submit
+            &nbsp;
+            &nbsp;
+            a#cancel-edit(href="/blogs").btn.btn-default Cancel
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/edit_blog_comment.js",
+"assets/quill/quill.js", "assets/dropzone/dropzone.js", 
+"assets/select2/select2.full.js", "local/js/inline-editor.js" ,
+"local/js/edit-blog-comment.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+script(type="text/javascript").
+  $(document).ready(function(){  
+  
+  });
+{% endblock %}

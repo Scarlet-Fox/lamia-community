@@ -1,7 +1,7 @@
 from woe import app
 from woe import sqla
 from woe.models.core import User
-from woe.forms.blogs import BlogSettingsForm, BlogEntryForm
+from woe.forms.blogs import BlogSettingsForm, BlogEntryForm, BlogCommentForm
 from woe.parsers import ForumPostParser
 from woe.models.blogs import *
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
@@ -312,6 +312,46 @@ def edit_blog_entry(slug, entry_slug):
 
     return render_template("blogs/edit_blog_entry.jade", form=form, blog=blog, entry=e, page_title="Edit Blog Entry - Scarlet's Web")
 
+@app.route('/blog/<slug>/e/<entry_slug>/c/<comment_id>/edit-comment', methods=['GET', 'POST'])
+@login_required
+def edit_blog_comment(slug, entry_slug, comment_id):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    try:
+        entry = sqla.session.query(sqlm.BlogEntry).filter_by(blog=blog, slug=entry_slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    try:
+        comment = sqla.session.query(sqlm.BlogComment).filter_by(blog=blog, id=comment_id, blog_entry=entry)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if current_user._get_current_object() != comment.author:
+        return abort(404)
+
+    form = BlogCommentForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        print form.comment.data
+        cleaner = ForumHTMLCleaner()
+        try:
+            comment.html = cleaner.clean(form.comment.data)
+        except:
+            return abort(500)
+        sqla.session.add(comment)
+        sqla.session.commit()
+        return redirect("/blog/"+unicode(blog.slug)+"/e/"+unicode(entry_slug))
+    else:
+        form.comment.data = comment.html
+
+    return render_template("blogs/edit_blog_entry_comment.jade", form=form, blog=blog, entry=entry, comment=comment, page_title="Edit Blog Comment - Scarlet's Web")
+
 @app.route('/blog/<slug>', methods=['GET'], defaults={'page': 1})
 @app.route('/blog/<slug>/page/<page>', methods=['GET'])
 def blog_index(slug, page):
@@ -372,7 +412,7 @@ def blog_index(slug, page):
 
     pages = [p+1 for p in range(pages)]
 
-    return render_template("blogs/blog_entry_listing.jade", blog=blog, drafts=drafts, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count, page_title=blog.title+" - Scarlet's Web")
+    return render_template("blogs/blog_entry_listing.jade", blog=blog, drafts=drafts, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count, page_title=blog.name+" - Scarlet's Web")
 
 @app.route('/blog/<slug>/e/<entry_slug>/toggle-boop', methods=['POST'])
 def boop_blog_entry(slug, entry_slug):

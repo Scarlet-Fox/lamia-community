@@ -20,3 +20,6 @@ class BlogEntryForm(Form):
     title = StringField('Title', [validators.InputRequired()], default="")
     entry = HiddenField('Post', [validators.InputRequired()], default="")
     draft = BooleanField('Draft?', default=False)
+
+class BlogCommentForm(Form):
+    comment = HiddenField('Comment', [validators.InputRequired()], default="")
