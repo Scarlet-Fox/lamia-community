@@ -30,10 +30,10 @@
           span.text-muted {{ entry.published|humanize_time }}
         hr
         .blog-entry!= entry.parsed
-      if comments
-        li.list-group-item.section-header#comments(style="margin-top: 10px;") Comments
-        .list-group-item
-          #new-post-box              
+      li.list-group-item.section-header#comments(style="margin-top: 10px;") Comments
+      .list-group-item
+        #new-post-box    
+      if comments          
         for comment in comments
           .list-group-item.post-listing-info
             .row

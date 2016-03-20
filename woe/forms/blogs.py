@@ -15,3 +15,8 @@ class BlogSettingsForm(Form):
             ("editors", "Only Editors"),
             ("you", "Only You")
         ], default="members")
+
+class BlogEntryForm(Form):
+    title = StringField('Title', [validators.InputRequired()], default="")
+    entry = HiddenField('Post', [validators.InputRequired()], default="")
+    draft = BooleanField('Draft?', default=False)

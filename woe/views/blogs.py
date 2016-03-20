@@ -1,7 +1,7 @@
 from woe import app
 from woe import sqla
 from woe.models.core import User
-from woe.forms.blogs import BlogSettingsForm
+from woe.forms.blogs import BlogSettingsForm, BlogEntryForm
 from woe.parsers import ForumPostParser
 from woe.models.blogs import *
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
@@ -40,11 +40,12 @@ def blogs_index(page):
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all",
                 sqlm.Blog.privacy_setting == "members"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.created)).all()[minimum:maximum]
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[minimum:maximum]
         count = sqla.session.query(sqlm.Blog) \
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all",
@@ -61,7 +62,7 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "all",
                 sqlm.Blog.privacy_setting == "members"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.created)).all()[0:5]
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
         random_blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .join(sqlm.Blog.author) \
@@ -83,10 +84,11 @@ def blogs_index(page):
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.created)).all()[minimum:maximum]
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[minimum:maximum]
         count = sqla.session.query(sqlm.Blog) \
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
@@ -101,7 +103,7 @@ def blogs_index(page):
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.created)).all()[0:5]
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
 
         random_blogs = qla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
@@ -213,6 +215,46 @@ def edit_blog(slug):
         form.title.data = blog.name
 
     return render_template("blogs/edit_blog.jade", form=form, blog=blog, page_title="Edit Blog - Scarlet's Web")
+
+@app.route('/blog/<slug>/new-entry', methods=['GET', 'POST'])
+@login_required
+def new_blog_entry(slug):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    if current_user._get_current_object() != blog.author:
+        if current_user._get_current_object() not in blog.editors:
+            return abort(404)
+
+    form = BlogEntryForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        e = sqlm.BlogEntry()
+        e.blog = blog
+        e.title = form.title.data
+        e.author = current_user._get_current_object()
+        e.slug = sqlm.find_blog_entry_slug(e.title, blog)
+        e.draft = form.draft.data
+        cleaner = ForumHTMLCleaner()
+        try:
+            e.html = cleaner.clean(form.entry.data)
+        except:
+            return abort(500)
+        e.created = arrow.utcnow().datetime.replace(tzinfo=None)
+        if e.draft == False:
+            e.published = arrow.utcnow().datetime.replace(tzinfo=None)
+        e.b_title = blog.name
+        sqla.session.add(e)
+        sqla.session.commit()
+        if e.draft == False:
+            blog.recent_entry = e
+            sqla.session.add(blog)
+            sqla.session.commit()
+        return redirect("/blog/"+unicode(blog.slug))
+
+    return render_template("blogs/new_blog_entry.jade", form=form, blog=blog, page_title="New Blog Entry - Scarlet's Web")
 
 @app.route('/blog/<slug>', methods=['GET'], defaults={'page': 1})
 @app.route('/blog/<slug>/page/<page>', methods=['GET'])

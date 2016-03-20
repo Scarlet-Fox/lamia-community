@@ -1054,3 +1054,20 @@ def find_blog_slug(title):
             return try_slug(slug, count+1)
 
     return try_slug(slug)
+
+def find_blog_entry_slug(title, blog):
+    slug = slugify(title, max_length=100, word_boundary=True, save_order=True)
+    if slug.strip() == "":
+        slug="_"
+
+    def try_slug(slug, blog, count=0):
+        new_slug = slug
+        if count > 0:
+            new_slug = slug+"-"+str(count)
+
+        if len(BlogEntry.query.filter_by(slug=new_slug, blog=blog).all()) == 0:
+            return new_slug
+        else:
+            return try_slug(slug, blog, count+1)
+
+    return try_slug(slug, blog)
