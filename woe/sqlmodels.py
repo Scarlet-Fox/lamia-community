@@ -153,7 +153,8 @@ class StatusUpdate(db.Model):
 class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
-    css_file = db.Column(db.String)
+    theme_css = db.Column(db.String)
+    base_css = db.Column(db.String)
     weight = db.Column(db.Integer, default=0)
     created = db.Column(db.DateTime)
 

@@ -1,0 +1,23 @@
+.panel-heading {
+  background: url("/static/local/themes/celestia/celestbar.png");
+}
+
+.section-header {
+  background: url("/static/local/themes/celestia/celestbar.png");
+}
+
+.popover-title {
+  background-image: url("/static/local/themes/celestia/celestbar.png") !important;
+}
+
+.toggle-show-roles-button {
+  background: url("/static/local/themes/celestia/celestbar.png");
+}
+
+.site-background {
+  background: #f8f8f8 url("/static/local/themes/celestia/celest1.png") no-repeat scroll top;
+}
+
+body {
+  background: #f8f8f8;
+}

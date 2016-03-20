@@ -229,7 +229,10 @@ def change_user_settings(login_name):
         return redirect("/member/"+user.login_name)
     else:
         form.time_zone.data = user.time_zone
-        form.theme.data = str(user.theme.id)
+        if user.theme == None:
+            form.theme.data = "1"
+        else:
+            form.theme.data = str(user.theme.id)
 
     return render_template("profile/change_user_settings.jade", profile=user, form=form, page_title="Change Settings - Scarlet's Web")
 
