@@ -153,7 +153,7 @@ def search_lookup():
         query_ = query_.filter(model_.pm_id.in_([t.id for t in topics]))
 
     if authors:
-        query_ = query_.filter(model_.author.id.in_([a.id for a in authors]))
+        query_ = query_.filter(model_.author_id.in_([a.id for a in authors]))
 
     parsed_results = []
     if content_type == "posts":

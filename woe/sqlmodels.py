@@ -368,6 +368,9 @@ class User(db.Model):
     password_hash = db.Column(db.String, default="")
     joined = db.Column(db.DateTime, index=True)
 
+    phrase_last_updated = db.Column(db.DateTime)
+    smileys_last_updated = db.Column(db.DateTime)
+
     how_did_you_find_us = db.Column(db.Text, default="")
     is_allowed_during_construction = db.Column(db.Boolean, default=False)
     my_url = db.Column(db.String, unique=True)

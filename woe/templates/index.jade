@@ -81,11 +81,12 @@
       {% endfor %}
       if current_user.is_authenticated()
         li.list-group-item
-          p
-          form.form-group.status-reply-box
-            input.form-control#status-new(type="text", maxlength="250")
-            br
-            button#new-status.btn.btn-primary(type="submit") Create a Status Update
+          center
+            p
+            form.form-group.status-reply-box
+              input.form-control#status-new(type="text", maxlength="250")
+              br
+              button#new-status.btn.btn-primary(type="submit") Create a Status Update
       if blogs
         ul.list-group(style="padding-top: 10px;")
           li.list-group-item.section-header Blogs
@@ -100,8 +101,8 @@
                   a(href="/blog/{{blog.slug}}")= blog.name
                 div= blog.recent_entry.created|humanize_time("MMM D YYYY")
           li.list-group-item
-            a.btn.btn-primary(href="/blogs") Browse All Blogs
-
+            center
+              a.btn.btn-primary(href="/blogs") Browse All Blogs
 .row
   .col-md-12
     li.list-group-item.section-header.sidebar-section-header {{online_user_count}} Users Online

@@ -12,7 +12,7 @@ settings_file = json.loads(open("config.json").read())
 def process_post(post):
     post_html = post.html
     image_tags_in_post = img_tag_re.findall(post_html)
-    
+
     for image_html in image_tags_in_post:
         image_source = image_html[1]
         try:
@@ -22,7 +22,7 @@ def process_post(post):
             post.update(html=post_html)
         except:
             pass
-        
+
         print "Processing %s" % str(image_html)
         try:
             if image_source.startswith("data"):
@@ -32,7 +32,7 @@ def process_post(post):
             destination_pathname = os.path.join(os.getcwd(),"woe/static/uploads/linked/",image_domain)
             destination_filename = os.path.join(os.getcwd(),"woe/static/uploads/linked/",image_domain,filename)
             extension = filename.split(".")[-1]
-            
+
             if not os.path.exists(destination_filename):
                 image_response = urlopen(image_source, timeout=8)
                 try:
@@ -41,13 +41,13 @@ def process_post(post):
                     continue
             else:
                 image = Image(filename=destination_filename)
-            
+
             attach = Attachment()
             attach.x_size = image.width
             attach.y_size = image.height
             attach.mimetype = mimetypes.guess_type(filename)[0]
             attach.extension = extension
-            
+
             image_bin = image.make_blob()
             attach.size_in_bytes = len(image_bin)
             attach.owner_name = post.author.login_name
@@ -60,15 +60,15 @@ def process_post(post):
             attach.linked = True
             attach.origin_url = image_source
             attach.origin_domain = image_domain
-            
+
             if not os.path.exists(destination_pathname):
                 try:
                     os.makedirs(destination_pathname)
                 except:
                     print "OS Makedirs error : %s" % str(destination_pathname)
-            
+
             image.save(filename=destination_filename)
-            
+
             attach.path = os.path.join("linked/", image_domain, filename)
             attach.save()
             post_html = post_html.replace("".join(image_html), "[attachment=%s:%s]" % (str(attach.pk), attach.x_size),1)
@@ -86,6 +86,6 @@ def process_post(post):
         except:
             print "Skipping %s" % str(image_html)
             continue
-            
-for post in posts_with_images: 
+
+for post in posts_with_images:
     process_post(post)

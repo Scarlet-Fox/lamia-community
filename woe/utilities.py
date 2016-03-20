@@ -7,6 +7,32 @@ from flask.ext.login import current_user
 from mongoengine.queryset import Q
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
+bbcode_re = re.compile("(\[(attachment|spoiler|center|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
+
+from HTMLParser import HTMLParser
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
+
+def strip_tags(html):
+    s = MLStripper()
+    links = link_re.findall(html)
+    for link in links:
+        html = html.replace(link[0], "")
+    bbcode = bbcode_re.findall(html)
+    for code in bbcode:
+        html = html.replace(code[0], "")
+    s.feed(html)
+    temp = s.get_data()
+    words = re.findall("[a-zA-Z]+", temp)
+    return words
 
 def parse_search_string(search_text, model, query_object, fields_to_search):
     if search_text.strip() == "":
