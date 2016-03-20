@@ -43,19 +43,32 @@
                   li
                     a(href="/blogs/page/{{page_link}}")= page_link
   .col-sm-3
+    if featured_blog_entries
+      ul.list-group
+        li.list-group-item.section-header Featured
+        for blogentry in featured_blog_entries
+          li.list-group-item(style="padding: 10px;")
+            .media-left 
+              img.avatar-mini(src=blogentry.author.get_avatar_url("40"), width=blogentry.author.avatar_40_x, height=blogentry.author.avatar_40_y)
+            .media-body
+              strong
+                a(href="#")= blogentry.title
+              div= blogentry.blog.name
+              div= blogentry.created|humanize_time("MMM D YYYY")
     ul.list-group
-      li.list-group-item.section-header Featured Posts!
-      for blogentry in featured_blog_entries
+      li.list-group-item.section-header.panel-title Recent Comments
+      for comment in comments
         li.list-group-item(style="padding: 10px;")
-          .media-left 
-            img.avatar-mini(src=blogentry.author.get_avatar_url("40"), width=blogentry.author.avatar_40_x, height=blogentry.author.avatar_40_y)
+          .media-left
+            img.avatar-mini(src="{{comment.author.get_avatar_url("40")}}", width="{{comment.author.avatar_40_x}}", height="{{comment.author.avatar_40_y}}")
           .media-body
-            strong
-              a(href="#")= blogentry.title
-            div= blogentry.blog.name
-            div= blogentry.created|humanize_time("MMM D YYYY")
+            a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")= comment.author.display_name
+            |  commented on 
+            a(href="/blog/{{comment.blog.slug}}/{{comment.blog_entry.slug}}")= comment.blog_entry.title
+            br
+            span.text-muted {{ comment.created|humanize_time }}
     ul.list-group
-      li.list-group-item.section-header Random Blogs
+      li.list-group-item.section-header Random Stuff
       for blog in random_blogs
         li.list-group-item(style="padding: 10px;")
           .media-left 

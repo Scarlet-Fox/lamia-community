@@ -24,10 +24,18 @@ def blogs_index(page):
         my_blogs = []
 
     page = int(page)
-    minimum = (int(page)-1)*int(20)
-    maximum = int(page)*int(20)
+    minimum = (int(page)-1)*int(10)
+    maximum = int(page)*int(10)
 
     if current_user.is_authenticated():
+        comments = sqla.session.query(sqlm.BlogComment) \
+            .join(sqlm.BlogComment.blog) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+                sqlm.Blog.privacy_setting == "members"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogComment.created)).all()[0:10]
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
@@ -42,7 +50,6 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "members"
             )) \
             .filter(sqlm.Blog.disabled.isnot(True)).count()
-
         featured_blog_entries = sqla.session.query(sqlm.BlogEntry) \
             .join(sqlm.BlogEntry.blog) \
             .join(sqlm.BlogEntry.author) \
@@ -54,7 +61,6 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "members"
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.created)).all()[0:5]
-
         random_blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .join(sqlm.Blog.author) \
@@ -66,6 +72,13 @@ def blogs_index(page):
             )) \
             .order_by(sqla.func.random()).all()[0:10]
     else:
+        comments = sqla.session.query(sqlm.BlogComment) \
+            .join(sqlm.BlogComment.blog) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogComment.created)).all()[0:10]
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
@@ -78,7 +91,6 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "all"
             )) \
             .filter(sqlm.Blog.disabled.isnot(True)).count()
-
         featured_blog_entries = sqla.session.query(sqlm.BlogEntry) \
             .join(sqlm.BlogEntry.blog) \
             .join(sqlm.BlogEntry.author) \
@@ -100,7 +112,7 @@ def blogs_index(page):
             )) \
             .order_by(sqla.func.random()).all()[0:10]
 
-    pages = int(count)/20
+    pages = int(count)/10
     if pages > 10:
         pages = 10
 
@@ -118,6 +130,7 @@ def blogs_index(page):
         featured_blog_entries=featured_blog_entries,
         blogs=blogs,
         pages=pages,
+        comments=comments,
         page=page
     )
 
