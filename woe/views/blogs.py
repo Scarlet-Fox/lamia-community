@@ -12,6 +12,7 @@ import arrow, json
 from woe.views.dashboard import broadcast
 from BeautifulSoup import BeautifulSoup
 import woe.sqlmodels as sqlm
+import math
 
 @app.route('/blogs', methods=['GET'], defaults={'page': 1})
 @app.route('/blogs/page/<page>', methods=['GET'])
@@ -112,7 +113,7 @@ def blogs_index(page):
             )) \
             .order_by(sqla.func.random()).all()[0:10]
 
-    pages = int(count)/10
+    pages = int(math.ceil(float(count)/10.0))
     if pages > 10:
         pages = 10
 
@@ -261,9 +262,13 @@ def blog_index(slug, page):
 
     comments = sqla.session.query(sqlm.BlogComment) \
         .filter_by(hidden=False, blog=blog) \
-        .order_by(sqla.desc(sqlm.BlogComment.created))[0:15]
+        .order_by(sqla.desc(sqlm.BlogComment.created))[0:10]
 
-    pages = range(1,int(entry_count / 10)+1)
+    pages = int(math.ceil(float(entry_count)/10.0))
+    if pages > 10:
+        pages = 10
+
+    pages = [p+1 for p in range(pages)]
 
     return render_template("blogs/blog_entry_listing.jade", blog=blog, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count)
 
@@ -302,15 +307,69 @@ def blog_entry_index(slug, entry_slug, page):
     maximum = int(page)*int(10)
 
     comments = sqla.session.query(sqlm.BlogComment).filter_by(blog_entry=entry, hidden=False).order_by(sqlm.BlogComment.created)[minimum:maximum]
-    count = sqla.session.query(sqlm.BlogComment).filter_by(blog_entry=entry, hidden=False).order_by(sqlm.BlogComment.created).count()
+    count = sqla.session.query(sqlm.BlogComment).filter_by(blog_entry=entry, hidden=False).count()
 
     for comment in comments:
         comment.parsed = clean_html_parser.parse(comment.html)
 
-    pages = int(count)/10
+    pages = int(math.ceil(float(count)/10.0))
     if pages > 10:
         pages = 10
 
     pages = [p+1 for p in range(pages)]
 
     return render_template("blogs/blog_entry_view.jade", blog=blog, entry=entry, comments=comments, page=page, pages=pages)
+
+@app.route('/blog/<slug>/e/<entry_slug>/new-comment', methods=['POST'], defaults={'page': 1})
+@app.route('/blog/<slug>/e/<entry_slug>/page/<page>/new-comment', methods=['POST'])
+@login_required
+def create_blog_comment(slug, entry_slug, page):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    try:
+        page = int(page)
+    except:
+        return abort(500)
+
+    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+        return abort(404)
+    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author or current_user._get_current_object() not in blog.editors):
+        return abort(404)
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+        return abort(404)
+
+    try:
+        entry = sqla.session.query(sqlm.BlogEntry).filter_by(slug=entry_slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    request_json = request.get_json(force=True)
+
+    if request_json.get("text", "").strip() == "":
+        return app.jsonify(no_content=True)
+
+    cleaner = ForumHTMLCleaner()
+    try:
+        post_html = cleaner.clean(request_json.get("post", ""))
+    except:
+        return abort(500)
+
+    new_blog_comment = sqlm.BlogComment()
+    new_blog_comment.blog_entry = entry
+    new_blog_comment.blog = blog
+    new_blog_comment.author = current_user
+    new_blog_comment.html = post_html
+    new_blog_comment.created = arrow.utcnow().datetime.replace(tzinfo=None)
+    new_blog_comment.hidden = False
+    new_blog_comment.b_e_title = entry.title
+    sqla.session.add(new_blog_comment)
+    sqla.session.commit()
+
+    max_pages = int(math.ceil(float(entry.comment_count())/10.0))
+
+    return app.jsonify(success=True, url="""/blog/%s/e/%s/page/%s""" % (slug, entry_slug, max_pages))

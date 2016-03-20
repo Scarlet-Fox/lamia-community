@@ -13,7 +13,7 @@
           li
             a(href="/blog/{{blog.slug}}")= blog.name
           li
-            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
+            a#entry-url(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
 .row
   .col-md-12
     ul.list-group
@@ -31,7 +31,7 @@
         hr
         .blog-entry!= entry.parsed
       if comments
-        li.list-group-item.section-header(style="margin-top: 10px;") Comments
+        li.list-group-item.section-header#comments(style="margin-top: 10px;") Comments
         .list-group-item
           #new-post-box              
         for comment in comments
@@ -44,8 +44,19 @@
           .list-group-item(style="padding: 10px;")
             .row
               .col-sm-2.hidden-xs
-                img.media-object(src="{{ comment.author.get_avatar_url() }}", width="90%", class="avatar-mini")
+                img.media-object(src="{{ comment.author.get_avatar_url() }}", width=comment.author.avatar_full_x*0.70, height=comment.author.avatar_full_y*0.70, class="avatar-mini")
               .col-sm-10.col-xs-12!= comment.parsed
+      if pages
+        .panel
+          center
+            ul.pagination
+              for page_link in pages
+                if page_link == page
+                  li.active
+                    a(href="/blog/{{blog.slug}}/e/{{entry.slug}}/page/{{page_link}}")= page_link
+                else
+                  li
+                    a(href="/blog/{{blog.slug}}/e/{{entry.slug}}/page/{{page_link}}")= page_link
 {% endblock %}
 
 {% block script %}

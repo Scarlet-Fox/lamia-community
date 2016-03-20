@@ -32,7 +32,7 @@
               div!= blog.preview
               br
               if blog.recent_entry.comments
-                a.blog-read-more(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}") Read More / Comment ({{blog.recent_entry.comments|length}})
+                a.blog-read-more(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}") Read More / Comment ({{blog.recent_entry.comment_count()}})
               else
                 a.blog-read-more(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}") Read More
           hr
