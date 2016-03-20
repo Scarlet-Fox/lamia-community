@@ -1,6 +1,6 @@
 $ ->
   class InlineEditor
-    constructor: (element, url = "", cancel_button=false, edit_reason=false) ->
+    constructor: (element, url = "", cancel_button=false, edit_reason=false, height=300) ->
       Dropzone.autoDiscover = false
       @quillID = do @getQuillID
       @element = $(element)
@@ -8,6 +8,7 @@ $ ->
         return false
       @element.data("editor_is_active", true)
       @edit_reason = edit_reason
+      @height="#{height}px"
 
       if url != ""
         $.get url, (data) =>
@@ -114,7 +115,7 @@ $ ->
                 <img src="/static/emoticons/derpy_by_angelishi-d7amv0j.gif" class="emoticon-listing" data-emotecode=":derp:">
                 <img src="/static/emoticons/head_wobble_by_angelishi-d9cwc16.gif" class="emoticon-listing" data-emotecode=":jester:">
                 <img src="/static/emoticons/love_spike_by_angelishi-d7amv0g.gif" class="emoticon-listing" data-emotecode=":love:">
-		<br>               
+		<br>
                 <img src="/static/emoticons/celestia_noapproval_by_angelishi-d9cwc1c.png" class="emoticon-listing" data-emotecode=":unamused:">
                 <img src="/static/emoticons/celestia_playful_by_angelishi-d9cwc1g.gif" class="emoticon-listing" data-emotecode=":playful:">
                 <img src="/static/emoticons/luna_please_by_angelishi-d9cwc1l.gif" class="emoticon-listing" data-emotecode=":plz:">
@@ -374,7 +375,7 @@ $ ->
 
     editordivHTML: () =>
       return """
-        <div id="post-editor-#{@quillID}" class="editor-box" data-placeholder=""></div>
+        <div id="post-editor-#{@quillID}" class="editor-box" style="height: #{@height};" data-placeholder=""></div>
       """
 
     toolbarHTML: () =>

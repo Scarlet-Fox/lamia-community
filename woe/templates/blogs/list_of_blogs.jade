@@ -23,14 +23,18 @@
                 img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("60"), width=blog.recent_entry.author.avatar_60_x, height=blog.recent_entry.author.avatar_60_y)
               .media-body
                 .blog-title
-                  a(href="#")= blog.recent_entry.title
-                div= blog.name
+                  a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title
+                div
+                  a(href="/blog/{{blog.slug}}")= blog.name
                 div= blog.recent_entry.created|humanize_time
           .row
             .col-sm-12
               div!= blog.preview
               br
-              a.blog-read-more(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}") Read More
+              if blog.recent_entry.comments
+                a.blog-read-more(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}") Read More / Comment ({{blog.recent_entry.comments|length}})
+              else
+                a.blog-read-more(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}") Read More
           hr
         li.list-group-item
           center
@@ -64,7 +68,7 @@
           .media-body
             a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")= comment.author.display_name
             |  commented on 
-            a(href="/blog/{{comment.blog.slug}}/{{comment.blog_entry.slug}}")= comment.blog_entry.title
+            a(href="/blog/{{comment.blog.slug}}/e/{{comment.blog_entry.slug}}")= comment.blog_entry.title
             br
             span.text-muted {{ comment.created|humanize_time }}
     ul.list-group

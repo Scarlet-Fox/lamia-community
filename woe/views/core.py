@@ -354,6 +354,7 @@ def create_attachment():
         except:
             pass
 
+        time_snapshot = time.time()
         attach = sqlm.Attachment()
         attach.extension = filename.split(".")[-1]
         attach.x_size = image.width
@@ -365,8 +366,8 @@ def create_attachment():
         attach.created_date = arrow.utcnow().datetime
         attach.file_hash = img_hash
         attach.linked = False
-        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time.time())+"_"+str(current_user.id)+filename)
-        attach.path = str(time.time())+"_"+str(current_user.id)+filename
+        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time_snapshot)+"_"+str(current_user.id)+filename)
+        attach.path = str(time_snapshot)+"_"+str(current_user.id)+filename
 
         sqla.session.add(attach)
         sqla.session.commit()
@@ -399,8 +400,9 @@ def grab_image():
     if resp.code == 500:
         return app.jsonify(error="The server hosting this image seems to be down. Try again later?")
 
+    time_snapshot = time.time()
     image_domain = image_source.split("/")[2]
-    filename = str(time.time())+image_source.split("/")[-1].split("?")[0]
+    filename = str(time_snapshot)+image_source.split("/")[-1].split("?")[0]
     destination_path = os.path.join(os.getcwd(),"woe/static/uploads/linked/",hashlib.md5(image_domain).hexdigest())
     destination_filename = os.path.join(os.getcwd(),"woe/static/uploads/linked/",hashlib.md5(image_domain).hexdigest(),filename)
     extension = filename.split(".")[-1]
@@ -410,8 +412,8 @@ def grab_image():
     try:
         image = Image(file=StringIO.StringIO(image_response))
         if os.path.exists(destination_filename):
-            destination_filename = os.path.join(os.getcwd(),"woe/static/uploads/linked/",hashlib.md5(image_domain).hexdigest(),filename.replace("."+extension, "."+str(time.time())+"."+extension))
-            filename = filename.replace("."+extension, "."+str(time.time())+"."+extension)
+            destination_filename = os.path.join(os.getcwd(),"woe/static/uploads/linked/",hashlib.md5(image_domain).hexdigest(),filename.replace("."+extension, "."+str(time_snapshot)+"."+extension))
+            filename = filename.replace("."+extension, "."+str(time_snapshot)+"."+extension)
     except:
         return app.jsonify(error="There was an error processing this attachment, please verify that this file is an image file.")
 

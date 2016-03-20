@@ -14,6 +14,9 @@
             a(href="/blog/{{blog.slug}}")= blog.name
 .row
   .col-sm-8
+    unless entries
+      ul.list-group
+        li.list-group-item This blog is empty...
     for entry in entries
       ul.list-group
         li.list-group-item.section-header= entry.title
@@ -21,7 +24,7 @@
           .media-left
             img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
           .media-body
-            a(href="/blog/{{blog.slug}}/{{entry.slug}}")= entry.title
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
             br
             | by 
             a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
@@ -30,10 +33,13 @@
           hr
           .blog-entry!= entry.parsed_truncated
           hr
-          a(href="/blog/{{blog.slug}}/{{entry.slug}}")
-            h4 Read More
-    .panel
-      if entry_count > 10
+          a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")
+            if entry.comments
+              h4 Read More / Comment ({{entry.comment_count()}})
+            else
+              h4 Read More / Comment ({{entry.comments|length}})
+    if entry_count > 10
+      .panel
         center
           ul.pagination
             for page_link in pages
@@ -47,8 +53,20 @@
     if blog.description
       ul.list-group
         li.list-group-item.section-header.panel-title Description
-        li.list-group-item
-          p= blog.description
+        li.list-group-item(style="padding: 10px;")!= description
+    if blog.author == current_user
+      ul.list-group
+        li.list-group-item.section-header.panel-title Manage Blog
+        li.list-group-item(style="padding: 10px;")
+          .btn-group
+            a.btn.btn-default(href="/blog/{{blog.slug}}/new-entry") New Entry
+            a.btn.btn-default(href="/blog/{{blog.slug}}/edit-blog") Settings
+    //- if blog.author == current_user
+    //-   ul.list-group
+    //-     li.list-group-item.section-header.panel-title Drafts
+    //-     li.list-group-item(style="padding: 10px;")
+    //-       for draft in drafts
+    //-       
     if comments
       ul.list-group
         li.list-group-item.section-header.panel-title Recent Comments
@@ -59,7 +77,7 @@
             .media-body
               a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")= comment.author.display_name
               |  commented on 
-              a(href="/blog/{{blog.slug}}/{{comment.blog_entry.slug}}")= comment.blog_entry.title
+              a(href="/blog/{{blog.slug}}/e/{{comment.blog_entry.slug}}")= comment.blog_entry.title
               br
               span.text-muted {{ comment.created|humanize_time }}
             | {% if not loop.last %}<hr>{% else %}<br>{% endif %}

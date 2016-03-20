@@ -907,6 +907,40 @@ class Post(db.Model):
     def __repr__(self):
         return "<Post: (author='%s', created='%s', topic='%s')>" % (self.author.display_name, self.created, self.topic.title[0:50])
 
+blogcomment_boop_table = db.Table('blog_comment_boops', db.metadata,
+    db.Column('blogcomment_id', db.Integer, db.ForeignKey('blog_comment.id',
+        name="fk_boop_blogcomment", ondelete="CASCADE")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_boop_blogcomment_user", ondelete="CASCADE")))
+
+class BlogComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    blog_entry_id = db.Column(db.Integer, db.ForeignKey('blog_entry.id',
+        name="fk_blogcomment_blogentry", ondelete="CASCADE"), index=True)
+    blog_entry = db.relationship("BlogEntry", foreign_keys="BlogComment.blog_entry_id", cascade="delete", backref="comments")
+    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id',
+        name="fk_blogcomment_blog", ondelete="CASCADE"), index=True)
+    blog = db.relationship("Blog", foreign_keys="BlogComment.blog_id", cascade="delete")
+
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_blogcomment_author", ondelete="CASCADE"))
+    author = db.relationship("User", foreign_keys="BlogComment.author_id")
+
+    editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_blogcomment_editor", ondelete="SET NULL"), nullable=True)
+    editor = db.relationship("User", foreign_keys="BlogComment.editor_id")
+
+    boops = db.relationship("User",
+                    secondary=blogcomment_boop_table)
+
+    html = db.Column(db.Text)
+    modified = db.Column(db.DateTime, nullable=True)
+    created = db.Column(db.DateTime, index=True)
+    hidden = db.Column(db.Boolean, default=False, index=True)
+    comment_history = db.Column(JSONB)
+    b_e_title = db.Column(db.String, default="")
+    data = db.Column(JSONB)
+
 blog_editor_table = db.Table('blog_editors', db.metadata,
     db.Column('blog_id', db.Integer, db.ForeignKey('blog.id',
         name="fk_editor_blog", ondelete="CASCADE")),
@@ -963,39 +997,8 @@ class BlogEntry(db.Model):
     data = db.Column(JSONB)
     featured = db.Column(db.Boolean, default=False)
 
-blogcomment_boop_table = db.Table('blog_comment_boops', db.metadata,
-    db.Column('blogcomment_id', db.Integer, db.ForeignKey('blog_comment.id',
-        name="fk_boop_blogcomment", ondelete="CASCADE")),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_boop_blogcomment_user", ondelete="CASCADE")))
-
-class BlogComment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    blog_entry_id = db.Column(db.Integer, db.ForeignKey('blog_entry.id',
-        name="fk_blogcomment_blogentry", ondelete="CASCADE"), index=True)
-    blog_entry = db.relationship("BlogEntry", foreign_keys="BlogComment.blog_entry_id", cascade="delete")
-    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id',
-        name="fk_blogcomment_blog", ondelete="CASCADE"), index=True)
-    blog = db.relationship("Blog", foreign_keys="BlogComment.blog_id", cascade="delete")
-
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogcomment_author", ondelete="CASCADE"))
-    author = db.relationship("User", foreign_keys="BlogComment.author_id")
-
-    editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogcomment_editor", ondelete="SET NULL"), nullable=True)
-    editor = db.relationship("User", foreign_keys="BlogComment.editor_id")
-
-    boops = db.relationship("User",
-                    secondary=blogcomment_boop_table)
-
-    html = db.Column(db.Text)
-    modified = db.Column(db.DateTime, nullable=True)
-    created = db.Column(db.DateTime, index=True)
-    hidden = db.Column(db.Boolean, default=False, index=True)
-    comment_history = db.Column(JSONB)
-    b_e_title = db.Column(db.String, default="")
-    data = db.Column(JSONB)
+    def comment_count(self):
+        return BlogComment.query.filter_by(hidden=False, blog_entry=self).count()
 
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)

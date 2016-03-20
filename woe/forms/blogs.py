@@ -7,7 +7,7 @@ import shutil, pytz, arrow
 
 class BlogSettingsForm(Form):
     title = StringField('Blog Name', [validators.InputRequired()], default="")
-    description = TextField('Description', [validators.InputRequired()], default="")
+    description = HiddenField('Description', [validators.InputRequired()], default="")
     privacy_setting = SelectField('Privacy Setting', choices=[
             ("all", "Everyone"),
             ("members", "Only Members"),

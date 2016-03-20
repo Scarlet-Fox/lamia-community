@@ -26,11 +26,12 @@
               {{ form.title.label(class="control-label") }}
               {{ form.title(class="form-control") }}
           .form-group
+              {{ form.description.label(class="control-label") }}
+              #blog-description!= form.description.data
+              {{ form.description }}
+          .form-group
               {{ form.privacy_setting.label(class="control-label") }}
               {{ form.privacy_setting(class="form-control") }}
-          .form-group
-              {{ form.description.label(class="control-label") }}
-              {{ form.description(class="form-control") }}
           button#commit-edit(type="submit").btn.btn-default Submit
           &nbsp;
           &nbsp;
@@ -40,7 +41,8 @@
 {% block script %}
 {% assets filters="rjsmin", output="generated/editor.js",
 "assets/quill/quill.js", "assets/dropzone/dropzone.js", 
-"assets/select2/select2.full.js", "local/js/inline-editor.js" %}
+"assets/select2/select2.full.js", "local/js/inline-editor.js",
+"local/js/edit-blog.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
 script(type="text/javascript").

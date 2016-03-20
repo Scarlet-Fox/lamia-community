@@ -114,7 +114,7 @@ class ForumPostParser(object):
         images_found = img_re.findall(html)
         skiplink = []
         for image in images_found:
-            html = html.replace("[img]%s[/img]" % image, """<img src="%s" style="max-width: 80%%;">""" % image, 1)
+            html = html.replace("[img]%s[/img]" % image, """<img src="%s" style="max-width: 80%%; display: block;">""" % image, 1)
             skiplink.append(image.strip())
 
         url_bbcode_in_post = url_re.findall(html)
@@ -129,7 +129,7 @@ class ForumPostParser(object):
                 html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[3])), 1)
             else:
                 html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[1])), 1)
-                
+
         # parse urls
         all_bbcode = bbcode_re.findall(html)
         all_html_links = href_re.findall(html)

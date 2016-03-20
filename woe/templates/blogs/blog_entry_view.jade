@@ -1,0 +1,62 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-md-12
+    ul.list-group
+      li.list-group-item.section-header
+        ul.breadcrumb#topic-breadcrumb
+          li
+            a(href="/") Home
+          li 
+            a(href="/blogs") Blogs
+          li
+            a(href="/blog/{{blog.slug}}")= blog.name
+          li
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
+.row
+  .col-md-12
+    ul.list-group
+      li.list-group-item.section-header= entry.title
+      li.list-group-item
+        .media-left
+          img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
+        .media-body
+          a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
+          br
+          | by 
+          a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
+          br
+          span.text-muted {{ entry.published|humanize_time }}
+        hr
+        .blog-entry!= entry.parsed
+      if comments
+        li.list-group-item.section-header(style="margin-top: 10px;") Comments
+        .list-group-item
+          #new-post-box              
+        for comment in comments
+          .list-group-item.post-listing-info
+            .row
+              .col-sm-2
+                a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}") {{ comment.author.display_name }}
+              .col-sm-10
+                {{ comment.created|humanize_time }}
+          .list-group-item(style="padding: 10px;")
+            .row
+              .col-sm-2.hidden-xs
+                img.media-object(src="{{ comment.author.get_avatar_url() }}", width="90%", class="avatar-mini")
+              .col-sm-10.col-xs-12!= comment.parsed
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/editor.js",
+"assets/quill/quill.js", "assets/dropzone/dropzone.js", 
+"assets/select2/select2.full.js", "local/js/inline-editor.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+
+{% assets filters="rjsmin", output="generated/blog-entry-view.js",
+"local/js/blog-entry.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+{% endblock %}

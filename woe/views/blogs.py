@@ -141,7 +141,11 @@ def new_blog():
     if form.validate_on_submit():
         b = sqlm.Blog()
         b.name = form.title.data
-        b.description = form.description.data
+        cleaner = ForumHTMLCleaner()
+        try:
+            b.description = cleaner.clean(form.description.data)
+        except:
+            return abort(500)
         b.privacy_setting = form.privacy_setting.data
         b.slug = sqlm.find_blog_slug(b.name)
         b.author = current_user._get_current_object()
@@ -193,7 +197,11 @@ def edit_blog(slug):
     form = BlogSettingsForm(csrf_enabled=False)
     if form.validate_on_submit():
         blog.name = form.title.data
-        blog.description = form.description.data
+        cleaner = ForumHTMLCleaner()
+        try:
+            blog.description = cleaner.clean(form.description.data)
+        except:
+            return abort(500)
         blog.privacy_setting = form.privacy_setting.data
         sqla.session.add(blog)
         sqla.session.commit()
@@ -249,10 +257,60 @@ def blog_index(slug, page):
         entry.parsed = clean_html_parser.parse(entry.html)
         entry.parsed_truncated = unicode(BeautifulSoup(entry.parsed[:1000]))+"..."
 
+    description = clean_html_parser.parse(blog.description)
+
     comments = sqla.session.query(sqlm.BlogComment) \
         .filter_by(hidden=False, blog=blog) \
         .order_by(sqla.desc(sqlm.BlogComment.created))[0:15]
 
     pages = range(1,int(entry_count / 10)+1)
 
-    return render_template("blogs/blog_entry_listing.jade", blog=blog, entries=entries, comments=comments, page=page, pages=pages, entry_count=entry_count)
+    return render_template("blogs/blog_entry_listing.jade", blog=blog, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count)
+
+@app.route('/blog/<slug>/e/<entry_slug>', methods=['GET'], defaults={'page': 1})
+@app.route('/blog/<slug>/e/<entry_slug>/page/<page>', methods=['GET'])
+def blog_entry_index(slug, entry_slug, page):
+    try:
+        blog = sqla.session.query(sqlm.Blog).filter_by(slug=slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    try:
+        page = int(page)
+    except:
+        return abort(500)
+
+    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+        return abort(404)
+    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author or current_user._get_current_object() not in blog.editors):
+        return abort(404)
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+        return abort(404)
+
+    try:
+        entry = sqla.session.query(sqlm.BlogEntry).filter_by(slug=entry_slug)[0]
+    except IndexError:
+        sqla.session.rollback()
+        return abort(404)
+
+    clean_html_parser = ForumPostParser()
+    entry.parsed = clean_html_parser.parse(entry.html)
+
+    page = int(page)
+    minimum = (int(page)-1)*int(10)
+    maximum = int(page)*int(10)
+
+    comments = sqla.session.query(sqlm.BlogComment).filter_by(blog_entry=entry, hidden=False).order_by(sqlm.BlogComment.created)[minimum:maximum]
+    count = sqla.session.query(sqlm.BlogComment).filter_by(blog_entry=entry, hidden=False).order_by(sqlm.BlogComment.created).count()
+
+    for comment in comments:
+        comment.parsed = clean_html_parser.parse(comment.html)
+
+    pages = int(count)/10
+    if pages > 10:
+        pages = 10
+
+    pages = [p+1 for p in range(pages)]
+
+    return render_template("blogs/blog_entry_view.jade", blog=blog, entry=entry, comments=comments, page=page, pages=pages)
