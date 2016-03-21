@@ -93,7 +93,8 @@
           for blog in blogs
             li.list-group-item(style="padding: 10px;")
               .media-left 
-                img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
+                a(href="/member/{{blog.recent_entry.author.login_name}}")
+                  img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
               .media-body
                 strong
                   a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title
