@@ -795,10 +795,13 @@ def sign_out():
 @login_required
 def user_list_api():
     query = request.args.get("q", "")[0:100]
+    print query
+
     if len(query) < 2:
         return app.jsonify(results=[])
 
-    users = parse_search_string(query, sqlm.User, sqla.session.query(sqlm.User), ["display_name", "login_name"]).filter_by(banned=False).all()
+    users = parse_search_string(query, sqlm.User, sqla.session.query(sqlm.User), ["display_name", "login_name"]) \
+        .filter(sqlm.User.banned.isnot(True)).all()
     results = [{"text": unicode(u.display_name), "id": unicode(u.id)} for u in users]
 
     results_starting_ = []

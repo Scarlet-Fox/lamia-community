@@ -3,8 +3,10 @@ import hashlib
 import arrow
 from woe import app
 import cgi, re, pytz, os
+from woe import sqla
 from flask.ext.login import current_user
 from mongoengine.queryset import Q
+from BeautifulSoup import BeautifulSoup
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
@@ -21,17 +23,18 @@ class MLStripper(HTMLParser):
     def get_data(self):
         return ''.join(self.fed)
 
+words_re = re.compile("[a-zA-Z]+")
+
 def strip_tags(html):
-    s = MLStripper()
-    links = link_re.findall(html)
+    links = url_rgx.findall(html)
     for link in links:
         html = html.replace(link[0], "")
     bbcode = bbcode_re.findall(html)
     for code in bbcode:
         html = html.replace(code[0], "")
-    s.feed(html)
-    temp = s.get_data()
-    words = re.findall("[a-zA-Z]+", temp)
+    soup = BeautifulSoup(html)
+    text = soup.getText()
+    words = words_re.findall(text)
     return words
 
 def parse_search_string(search_text, model, query_object, fields_to_search):
@@ -48,6 +51,10 @@ def parse_search_string(search_text, model, query_object, fields_to_search):
     negative = False
     for i, token in enumerate(search_tokens):
         if token.strip() == "":
+            continue
+        if token == "-":
+            continue
+        if token == "\"":
             continue
 
         if token[0] == "-":
@@ -79,19 +86,28 @@ def parse_search_string(search_text, model, query_object, fields_to_search):
                 and_terms.append(token_buffer)
             token_buffer = ""
 
+    or_groups = []
+
     for term in and_terms:
+        and_query = []
         for field in fields_to_search:
             if type(field) is str:
-                query_object = query_object.filter(getattr(model, field).ilike("%%%s%%" % term))
+                and_query.append(getattr(model, field).ilike("%%%s%%" % term.strip()))
             else:
-                query_object = query_object.filter(field.ilike("%%%s%%" % term))
+                and_query.append(field.ilike("%%%s%%" % term.strip()))
+        or_groups.append(and_query)
 
     for term in not_terms:
+        and_query = []
         for field in fields_to_search:
             if type(field) is str:
-                query_object = query_object.filter(~getattr(model, field).ilike("%%%s%%" % term))
+                and_query.append(~getattr(model, field).ilike("%%%s%%" % term.strip()))
             else:
-                query_object = query_object.filter(~field.ilike("%%%s%%" % term))
+                and_query.append(~field.ilike("%%%s%%" % term.strip()))
+        or_groups.append(and_query)
+
+    for or_group in or_groups:
+        query_object = query_object.filter(sqla.or_(*or_group))
 
     return query_object
 
