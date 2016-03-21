@@ -74,11 +74,18 @@ emoticon_codes = {
     ";)" : "twilight_wink_by_angelishi.gif"
 }
 
-def resize_image_save_custom(image_file_location, new_image_file, new_x_size, attachment):
+def resize_image_save_custom(image_file_location, new_image_file, new_x_size, _id):
+    from woe import sqla
+    import woe.sqlmodels as sqlm
+
+    attachment = sqla.session.query(sqlm.Attachment).filter_by(id=_id)[0]
+
     try:
         source_image = Image(filename=image_file_location)
     except:
-        attachment.update(do_not_convert=True)
+        attachment.do_not_convert=True
+        sqla.session.add(attachment)
+        sqla.session.commit()
         return False
 
     original_x = source_image.width
@@ -89,7 +96,10 @@ def resize_image_save_custom(image_file_location, new_image_file, new_x_size, at
         try:
             source_image.resize(int(round(original_x*resize_measure)),int(round(original_y*resize_measure)))
         except:
-            attachment.update(do_not_convert=True)
+            attachment.do_not_convert=True
+            sqla.session.add(attachment)
+            sqla.session.commit()
+            return False
 
     try:
         if attachment.extension == "gif":
@@ -99,7 +109,10 @@ def resize_image_save_custom(image_file_location, new_image_file, new_x_size, at
         else:
             source_image.save(filename=new_image_file)
     except:
-        attachment.update(do_not_convert=True)
+        attachment.do_not_convert=True
+        sqla.session.add(attachment)
+        sqla.session.commit()
+        return False
 
 class ForumPostParser(object):
     def __init__(self):
@@ -228,26 +241,40 @@ class ForumPostParser(object):
                     sqla.session.rollback()
                     continue
 
-            size = attachment_bbcode[1]
-            if int(size) < 5:
-                size = "5"
-            if int(size) > 700:
-                size = "700"
+            try:
+                size = attachment_bbcode[1]
+                if int(size) == int(attachment.x_size):
+                    ignore_size = True
+                else:
+                    ignore_size = False
+                    if int(size) < 5:
+                        size = "5"
+                    if int(size) > 700:
+                        size = "700"
+            except:
+                ignore_size = True
 
             if attachment_bbcode[2] == ":wrap":
                 image_formatting_class = " image-wrap"
             else:
                 image_formatting_class = ""
 
-            if attachment.size_in_bytes < 1024*1024 or attachment.do_not_convert:
+            if attachment.size_in_bytes < 1024*1024*10 or attachment.do_not_convert:
                 url = os.path.join("/static/uploads", attachment.path)
                 show_box = "no"
 
-                image_html = """
-                <img class="attachment-image%s" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                """ % (image_formatting_class, quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
-                html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html, 1)
-                continue
+                if ignore_size:
+                    image_html = """
+                    <img class="attachment-image%s" src="%s" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                    """ % (image_formatting_class, quote(url), show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                    html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html, 1)
+                    continue
+                else:
+                    image_html = """
+                    <img class="attachment-image%s" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+                    """ % (image_formatting_class, quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                    html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html, 1)
+                    continue
 
             filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
             sizepath = os.path.join(os.getcwd(), "woe/static/uploads",
@@ -278,7 +305,7 @@ class ForumPostParser(object):
                     html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
                     continue
             else:
-                thread = Thread(target=resize_image_save_custom, args=(filepath, sizepath, size, attachment, ))
+                thread = Thread(target=resize_image_save_custom, args=(filepath, sizepath, size, attachment.id, ))
                 thread.start()
                 url = os.path.join("/static/uploads", attachment.path)
                 image_html = """
