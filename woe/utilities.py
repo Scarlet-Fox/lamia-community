@@ -2,13 +2,15 @@ from lxml.html.clean import Cleaner
 import hashlib
 import arrow
 from woe import app
-import cgi, re, pytz, os
+import cgi, pytz, os
+import regex as re
 from woe import sqla
 from flask.ext.login import current_user
 from mongoengine.queryset import Q
 from BeautifulSoup import BeautifulSoup
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+spec_characters = re.compile('&[a-z]{2,5};')
 link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 bbcode_re = re.compile("(\[(attachment|spoiler|center|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
 
@@ -26,7 +28,10 @@ class MLStripper(HTMLParser):
 words_re = re.compile("[a-zA-Z]+")
 
 def strip_tags(html):
-    links = url_rgx.findall(html)
+    spc = spec_characters.findall(html)
+    for sp in spc:
+        html = html.replace(sp[0], "")
+    links = link_re.findall(html)
     for link in links:
         html = html.replace(link[0], "")
     bbcode = bbcode_re.findall(html)

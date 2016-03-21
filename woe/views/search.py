@@ -15,10 +15,10 @@ import HTMLParser
 def search_display():
     start_date = session.get("start_date","")
     end_date = session.get("end_date", "")
-    categories = [{"id": unicode(c.id), "text": c.name} for c in session.get("categories", [])]
-    topics = [{"id": unicode(t.id), "text": t.title} for t in session.get("topics", [])]
+    categories = [{"id": unicode(c["id"]), "text": c["name"]} for c in session.get("categories", [])]
+    topics = [{"id": unicode(t["id"]), "text": t["title"]} for t in session.get("topics", [])]
     if session.get("search_authors"):
-        authors = [{"id": unicode(a.id), "text": a.display_name} for a in session.get("search_authors", [])]
+        authors = [{"id": unicode(a["id"]), "text": a["display_name"]} for a in session.get("search_authors", [])]
     else:
         authors = []
     query = session.get("query","")
@@ -83,7 +83,7 @@ def search_lookup():
                     .filter(sqlm.Category.id.in_(request_json.get("categories"))) \
                     .all()
             )
-        session["categories"] = categories
+        session["categories"] = [{"id": c.id, "name": c.name} for c in categories]
     except:
         categories = []
         session["categories"] = []
@@ -101,7 +101,7 @@ def search_lookup():
                     .filter(sqlm.PrivateMessage.id.in_(request_json.get("topics"))) \
                     .all()
             )
-        session["topics"] = topics
+        session["topics"] = [{"id": t.id, "title": t.title} for t in topics]
     except:
         topics = []
         session["topics"] = []
@@ -112,13 +112,17 @@ def search_lookup():
                     .filter(sqlm.User.id.in_(request_json.get("authors"))) \
                     .all()
             )
-        session["search_authors"] = authors
+        session["search_authors"] = [{"id": a.id, "display_name": a.display_name} for a in authors]
     except:
         authors = []
         session["search_authors"] = []
 
     query = request_json.get("q", "")[0:300]
-    session["query"] = query
+    try:
+        session["query"] = query
+    except:
+        pass
+
     pagination = 20
     try:
         page = int(request_json.get("page", 1))
@@ -171,7 +175,6 @@ def search_lookup():
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
-
     elif content_type == "topics":
         query_ = parse_search_string(query, model_, query_, ["title",])
         count = query_.count()
@@ -232,4 +235,5 @@ def search_lookup():
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
 
+    print "here????"
     return app.jsonify(results=parsed_results, count=count, pagination=pagination)

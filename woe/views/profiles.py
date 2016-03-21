@@ -151,7 +151,6 @@ def update_user_last_phrase(user):
         phrase_length = 6
 
         for post in posts:
-            print post.id
             words = strip_tags(post.html)
             phrases_in_post = range(len(words)-phrase_length)
             post_phrases = {}
@@ -178,6 +177,12 @@ def update_user_last_phrase(user):
                 if "url" in phrase_check:
                     continue
                 if "com" in phrase_check:
+                    continue
+                if "cdn" in phrase_check:
+                    continue
+                if "vine" in phrase_check:
+                    continue
+                if "list" in phrase_check:
                     continue
 
                 if post_phrases.has_key(phrase):
