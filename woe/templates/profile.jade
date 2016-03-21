@@ -57,6 +57,7 @@
               br
           if current_user.is_authenticated() and current_user != profile and current_user not in profile.ignored_users
             center
+              br
               .btn-group
                 if current_user not in profile.followed_by()
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Follow
@@ -83,6 +84,14 @@
           .col-xs-6.col-sm-4
             strong Post Count
           .col-xs-6.col-sm-2 {{post_count}}
+        br
+        .row
+          .col-xs-6.col-sm-4
+            strong Boops Given
+          .col-xs-6.col-sm-2 {{boops_given}}
+          .col-xs-6.col-sm-4
+            strong Boops Received
+          .col-xs-6.col-sm-2 {{boops_received}}
         br
         .row
           .col-xs-6.col-sm-4

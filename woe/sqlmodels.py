@@ -867,9 +867,9 @@ def find_topic_slug(title):
 
 post_boop_table = db.Table('post_boops_from_users', db.metadata,
     db.Column('post_id', db.Integer, db.ForeignKey('post.id',
-        name="fk_postboop_post", ondelete="CASCADE")),
+        name="fk_postboop_post", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_postboop_user", ondelete="CASCADE")))
+        name="fk_postboop_user", ondelete="CASCADE"), index=True))
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -878,7 +878,7 @@ class Post(db.Model):
     topic = db.relationship("Topic", foreign_keys="Post.topic_id", cascade="delete")
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_post_author", ondelete="CASCADE"))
+        name="fk_post_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="Post.author_id")
 
     editor_id = db.Column(db.Integer, db.ForeignKey('user.id',

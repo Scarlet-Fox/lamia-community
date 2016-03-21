@@ -235,6 +235,12 @@ def view_profile(login_name):
     thread = Thread(target=update_user_smileys, args=(user,))
     thread.start()
 
+    boops_given = sqla.session.query(sqlm.post_boop_table).filter(sqlm.post_boop_table.c.user_id == user.id).count()
+    boops_received = sqla.session.query(sqlm.post_boop_table) \
+        .join(sqlm.Post) \
+        .filter(sqlm.Post.author == user) \
+        .count()
+
     if user.data != None:
         favorite_phrase = user.data.get("favorite_phrase", [])
         favorite_emotes = ["""<img src="/static/emoticons/%s" />""" % emoticon_codes[emote] for emote in user.data.get("favorite_emotes", [])]
@@ -251,6 +257,8 @@ def view_profile(login_name):
         status_update_count=status_update_created,
         favorite_phrase=favorite_phrase,
         common_emotes=favorite_emotes,
+        boops_given=boops_given,
+        boops_received=boops_received,
         status_update_comments_count=status_update_comments_created
         )
 
