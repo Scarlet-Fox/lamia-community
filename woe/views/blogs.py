@@ -104,7 +104,7 @@ def blogs_index(page):
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
 
-        random_blogs = qla.session.query(sqlm.Blog) \
+        random_blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .join(sqlm.Blog.author) \
             .filter(sqlm.Blog.disabled.isnot(True)) \

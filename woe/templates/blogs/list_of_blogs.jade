@@ -1,16 +1,16 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.row
-  .col-sm-12
-    ul.list-group
-      li.list-group-item.section-header
-        span My Blogs
-      li.list-group-item.body-background
-        a.btn.btn-primary(style="margin: 2px;", href="/blogs/new-blog") New Blog
-        if my_blogs
-          for blog in my_blogs
-            a.btn.btn-default(style="margin: 2px;", href="/blog/{{blog.slug}}") {{blog.name}}
+if my_blogs
+  .row
+    .col-sm-12
+      ul.list-group
+        li.list-group-item.section-header
+          span My Blogs
+        li.list-group-item.body-background
+          a.btn.btn-primary(style="margin: 2px;", href="/blogs/new-blog") New Blog
+            for blog in my_blogs
+              a.btn.btn-default(style="margin: 2px;", href="/blog/{{blog.slug}}") {{blog.name}}
 .row
   .col-sm-9
     ul.list-group

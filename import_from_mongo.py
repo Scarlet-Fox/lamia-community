@@ -103,6 +103,10 @@ for blog in blogs.Blog.objects():
     new_blog = Blog()
     new_blog.name = blog.name
     new_blog.slug = blog.slug
+    if blog.privacy_setting == "members":
+        new_blog.privacy_setting = "all"
+    else:
+        new_blog.privacy_setting = "you"
     new_blog.author = sqla.session.query(User).filter_by(old_mongo_hash=str(blog.creator.pk))[0]
     new_blog.description = blog.description
     new_blog.view_count = blog.views
