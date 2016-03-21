@@ -1,4 +1,3 @@
-from woe import app
 from woe import sqla
 from woe.sqlmodels import *
 import woe.models.core as core

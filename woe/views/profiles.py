@@ -235,16 +235,19 @@ def view_profile(login_name):
     status_update_created = sqlm.StatusUpdate.query.filter_by(hidden=False, author=user).count()
     status_update_comments_created = sqlm.StatusComment.query.filter_by(hidden=False, author=user).count()
 
-    # TODO: THIS IS FOR DEBUG ONLY
-    # if user.phrase_last_updated == None:
-    #     thread = Thread(target=update_user_last_phrase, args=(user,))
-    #     thread.start()
-    # elif arrow.get(user.phrase_last_updated) < arrow.utcnow().replace(days=-1).datetime:
-    thread = Thread(target=update_user_last_phrase, args=(user,))
-    thread.start()
+    if user.phrase_last_updated == None:
+        thread = Thread(target=update_user_last_phrase, args=(user,))
+        thread.start()
+    elif arrow.get(user.phrase_last_updated) < arrow.utcnow().replace(days=-1).datetime:
+        thread = Thread(target=update_user_last_phrase, args=(user,))
+        thread.start()
 
-    thread = Thread(target=update_user_smileys, args=(user,))
-    thread.start()
+    if user.smileys_last_updated == None:
+        thread = Thread(target=update_user_smileys, args=(user,))
+        thread.start()
+    elif arrow.get(user.smileys_last_updated) < arrow.utcnow().replace(days=-1).datetime:
+        thread = Thread(target=update_user_last_phrase, args=(user,))
+        thread.start()
 
     boops_given = sqla.session.query(sqlm.post_boop_table).filter(sqlm.post_boop_table.c.user_id == user.id).count()
     boops_received = sqla.session.query(sqlm.post_boop_table) \

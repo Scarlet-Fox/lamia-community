@@ -1,4 +1,3 @@
-from woe import db
 from woe import app
 from woe import bcrypt
 from woe.utilities import ipb_password_check

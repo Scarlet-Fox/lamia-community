@@ -1,6 +1,5 @@
 from werkzeug.contrib.fixers import ProxyFix
 from flask import Flask
-from flask.ext.mongoengine import MongoEngine, MongoEngineSessionInterface
 from flask_debugtoolbar import DebugToolbarExtension
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.login import LoginManager
@@ -22,7 +21,6 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 login_manager = LoginManager()
 login_manager.init_app(app)
-app.config["MONGODB_SETTINGS"] = {'DB': settings_file["database"]}
 app.config["SECRET_KEY"] = settings_file["secret_key"]
 app.secret_key = settings_file["secret_key"]
 app.config["AVATAR_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'avatars')
@@ -43,7 +41,6 @@ app.config['ASSETS_DEBUG'] = settings_file["asset_debug"]
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 cache.init_app(app)
-db = MongoEngine(app)
 bcrypt = Bcrypt(app)
 if settings_file.get("toolbar", False):
     toolbar = DebugToolbarExtension(app)
@@ -60,32 +57,22 @@ import datetime
 from bson.objectid import ObjectId
 from werkzeug import Response
 
-class MongoJsonEncoder(json.JSONEncoder):
+class SallyJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (datetime.datetime, datetime.date)):
             return obj.isoformat()
-        elif isinstance(obj, ObjectId):
-            return unicode(obj)
-        elif isinstance(obj, DBRef):
-            return unicode(obj.id)
 
         try:
             return json.JSONEncoder.default(self, obj)
         except:
             return ""
-app.MongoJsonEncoder = MongoJsonEncoder
+app.SallyJsonEncoder = SallyJsonEncoder
 def jsonify(*args, **kwargs):
-    """ jsonify with support for MongoDB ObjectId
-    """
-    return Response(json.dumps(dict(*args, **kwargs), cls=MongoJsonEncoder), mimetype='application/json')
+    return Response(json.dumps(dict(*args, **kwargs), cls=SallyJsonEncoder), mimetype='application/json')
 
 app.jsonify = jsonify
 
 # import tasks
-import models.core
-import models.forum
-import models.roleplay
-import models.blogs
 import sqlmodels
 import views.core
 import views.blogs

@@ -1,4 +1,4 @@
-from woe import db
+from mongo_bootstrap import db
 from slugify import slugify
 from woe.models.core import User
 
