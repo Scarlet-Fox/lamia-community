@@ -63,27 +63,8 @@
         _this = this;
         $("#image-link-modal-insert").click(function(e) {
           e.preventDefault();
-          $(".image-link-error").remove();
-          $("#image-link-instructions").text("Processing your image...");
-          $("#image-link-load").show();
-          $("#image-link-modal-insert").addClass("disabled");
-          $("#image-link-select").hide();
-          return $.post("/upload-image", JSON.stringify({
-            image: $("#image-link-select").val()
-          }), function(data) {
-            $("#image-link-instructions").text("Use this to insert images into your post.");
-            $("#image-link-load").hide();
-            $("#image-link-modal-insert").removeClass("disabled");
-            $("#image-link-select").show();
-            if (data.error) {
-              if ($(".image-link-error").length === 0) {
-                return $("#image-link-select").before("<div class=\"image-link-error alert alert-danger alert-dismissible fade in\" role=\"alert\" id=\"create-status-error\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n  " + data.error + "\n</div>");
-              }
-            } else {
-              $("#image-link-modal-" + _this.quillID).modal("hide");
-              return _this.quill.insertText(current_position, "[attachment=" + data.attachment + ":" + data.xsize + "]");
-            }
-          });
+          _this.quill.insertEmbed(current_position, 'image', $("#image-link-select").val());
+          return $("#image-link-modal-" + _this.quillID).modal("hide");
         });
         return $("#image-link-modal-" + this.quillID).modal("show");
       };

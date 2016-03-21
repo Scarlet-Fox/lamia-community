@@ -15,7 +15,7 @@ def send_message(data):
     response = urllib2.urlopen(req, py_json.dumps(data))
 
 def broadcast(to, category, url, title, description, content, author, priority=0):
-    if category not in [x[0] for x in Notification.NOTIFICATION_CATEGORIES]:
+    if category not in [x[0] for x in sqlm.Notification.NOTIFICATION_CATEGORIES]:
         raise TypeError("Category is not defined in NOTIFICATION_CATEGORIES.")
 
     if to == "ALL":

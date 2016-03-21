@@ -49,31 +49,8 @@ $ ->
       _this = this
       $("#image-link-modal-insert").click (e) ->
         e.preventDefault()
-
-        $(".image-link-error").remove()
-        $("#image-link-instructions").text("Processing your image...")
-        $("#image-link-load").show()
-        $("#image-link-modal-insert").addClass("disabled")
-        $("#image-link-select").hide()
-
-        $.post "/upload-image", JSON.stringify({image: $("#image-link-select").val()}), (data) ->
-
-          $("#image-link-instructions").text("Use this to insert images into your post.")
-          $("#image-link-load").hide()
-          $("#image-link-modal-insert").removeClass("disabled")
-          $("#image-link-select").show()
-
-          if data.error
-            if $(".image-link-error").length == 0
-              $("#image-link-select").before """
-              <div class="image-link-error alert alert-danger alert-dismissible fade in" role="alert" id="create-status-error">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                #{data.error}
-              </div>
-              """
-          else
-            $("#image-link-modal-#{_this.quillID}").modal("hide")
-            _this.quill.insertText current_position, "[attachment=#{data.attachment}:#{data.xsize}]"
+        _this.quill.insertEmbed current_position, 'image', $("#image-link-select").val()
+        $("#image-link-modal-#{_this.quillID}").modal("hide")
 
       $("#image-link-modal-#{@quillID}").modal("show")
 
