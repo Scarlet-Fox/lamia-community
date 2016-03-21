@@ -438,6 +438,42 @@ class User(db.Model):
     def is_authenticated(self):
         return True # Will only ever return True.
 
+    def rejected_friends(self):
+        rejected = Friendship.query.filter_by(blocked=True) \
+            .filter(db.or_(Friendship.user == self, Friendship.friend == self)).all()
+
+        result = []
+        for r in rejected:
+            if r.user == self:
+                result.append(r.friend)
+            elif r.friend == self:
+                result.append(r.user)
+        return result
+
+    def pending_friends(self):
+        pending = Friendship.query.filter_by(blocked=False, pending=True) \
+            .filter(db.or_(Friendship.user == self, Friendship.friend == self)).all()
+
+        result = []
+        for r in pending:
+            if r.user == self:
+                result.append(r.friend)
+            elif r.friend == self:
+                result.append(r.user)
+        return result
+
+    def friends(self):
+        friends = Friendship.query.filter_by(blocked=False, pending=False) \
+            .filter(db.or_(Friendship.user == self, Friendship.friend == self)).all()
+
+        result = []
+        for r in friends:
+            if r.user == self:
+                result.append(r.friend)
+            elif r.friend == self:
+                result.append(r.user)
+        return result
+
     def set_password(self, password, rounds=12):
         self.legacy_password = None
         self.password_hash = bcrypt.generate_password_hash(password.strip().encode('utf-8'),rounds).encode('utf-8')

@@ -64,11 +64,15 @@ def update_user_smileys(user):
 
     user_name = user.login_name
 
-    post_count = sqla.session.query(sqlm.Post) \
-        .join(sqlm.Post.topic) \
-        .join(sqlm.Topic.category) \
-        .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
-        .filter(sqlm.Category.slug != "welcome-mat").count()
+    try:
+        post_count = sqla.session.query(sqlm.Post) \
+            .join(sqlm.Post.topic) \
+            .join(sqlm.Topic.category) \
+            .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
+            .filter(sqlm.Category.slug != "welcome-mat").count()
+    except:
+        sqla.session.rollback()
+        return
 
     if post_count < 10:
         return
@@ -123,11 +127,15 @@ def update_user_last_phrase(user):
 
     user_name = user.login_name
 
-    post_count = sqla.session.query(sqlm.Post) \
-        .join(sqlm.Post.topic) \
-        .join(sqlm.Topic.category) \
-        .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
-        .filter(sqlm.Category.slug != "welcome-mat").count()
+    try:
+        post_count = sqla.session.query(sqlm.Post) \
+            .join(sqlm.Post.topic) \
+            .join(sqlm.Topic.category) \
+            .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
+            .filter(sqlm.Category.slug != "welcome-mat").count()
+    except:
+        sqla.session.rollback()
+        return
 
     if post_count < 10:
         return
@@ -293,6 +301,53 @@ def validate_user(login_name):
     sqla.session.commit()
 
     return app.jsonify(url="/member/"+unicode(user.my_url))
+
+@app.route('/member/<login_name>/request-friend', methods=['POST'])
+@login_required
+def request_friendship(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user._get_current_object() == user:
+        return abort(404)
+
+    if not current_user in user.rejected_friends():
+        if current_user not in user.pending_friends() and current_user not in user.friends():
+            friendship = sqlm.Friendship(
+                    user = current_user,
+                    friend = user,
+                    created = arrow.utcnow().datetime.replace(tzinfo=None),
+                )
+            sqla.session.add(friendship)
+            sqla.session.commit()
+
+    return app.jsonify(url="/member/"+unicode(user.my_url))
+
+@app.route('/member/<login_name>/un-friend', methods=['POST'])
+@login_required
+def unfriend(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    # current_user.is_admin = False
+    # sqla.session.add(current_user)
+    # sqla.session.commit()
+
+    if current_user._get_current_object() == user:
+        return abort(404)
+
+    if current_user in user.pending_friends() or current_user in user.friends():
+        friends = sqlm.Friendship.query.filter_by(blocked=False) \
+            .filter(sqla.or_(sqlm.Friendship.user == current_user, sqlm.Friendship.friend == current_user)) \
+            .filter(sqla.or_(sqlm.Friendship.user == user, sqlm.Friendship.friend == user)) \
+            .delete()
+
+    return app.jsonify(url="/member/"+unicode(user.my_url))
+
 
 # @app.route('/member/<login_name>/toggle-ignore', methods=['POST'])
 # @login_required

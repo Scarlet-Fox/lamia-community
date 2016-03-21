@@ -63,8 +63,8 @@
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Follow
                 else
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Unfollow
-                if not current_user in profile.rejected_friends
-                  if current_user not in pending_friends and current_user not in friends
+                if not current_user in profile.rejected_friends()
+                  if current_user not in profile.pending_friends() and current_user not in profile.friends()
                     a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/request-friend") Friend Request
                   else
                     a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/un-friend") Unfriend
@@ -122,12 +122,14 @@
     ul.list-group
       li.list-group-item
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
-          {% if current_user.is_mod or current_user.is_admin  %}
+          {% if current_user.is_admin  %}
           li(role="presentation")
             a(href="/member/{{profile.login_name}}/mod-panel") Moderation
           {% endif %}
           li(role="presentation")
             a(href="/member/{{profile.login_name}}") About Me
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}/friends") Friends
           {% if current_user == profile or current_user.is_admin  %}
           li(role="presentation")
             a(href="/member/{{profile.login_name}}/change-account") Account
