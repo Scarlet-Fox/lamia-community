@@ -1,0 +1,100 @@
+{% extends "profile.jade" %}
+
+{% block profile_content %}
+ul.list-group
+  if current_user == profile
+    li.list-group-item.section-header Your Friends
+  else
+    li.list-group-item.section-header {{profile.display_name}}'s Friends
+  li.list-group-item
+    if profile.friends():
+      .row
+        .col-sm-12
+          for friend in profile.friends()
+            .float-left
+              a.hover_user(href="{{url_for('view_profile', login_name=friend.login_name)}}")
+                img(src="{{friend.get_avatar_url("60")}}", width="{{friend.avatar_60_x}}", height="{{friend.avatar_60_y}}", class="avatar-mini")
+    else
+      center
+        img(src="/static/site_images/so_lonely.gif", style="max-width: 100%;")
+        h3 No friends :(
+  if current_user == profile and profile.pending_friends()
+    li.list-group-item.section-header(style="margin-top: 10px;") Pending Friend Requests
+    li.list-group-item
+      for friend in my_friend_requests
+        .row
+          .col-sm-12
+            .media-left
+              a(href="{{url_for('view_profile', login_name=friend.friend.login_name)}}")
+                img(src="{{friend.friend.get_avatar_url("40")}}", width="{{friend.friend.avatar_40_x}}", height="{{friend.friend.avatar_40_y}}", class="avatar-mini")
+            .media-body
+              a(href="{{url_for('view_profile', login_name=friend.friend.login_name)}}")= friend.friend.display_name
+              div
+                em Waiting for {{friend.friend.display_name}}...
+        unless loop.last
+          hr
+      for friend in incoming_friend_requests
+        .row
+          .col-sm-12
+            .media-left
+              a(href="{{url_for('view_profile', login_name=friend.user.login_name)}}")
+                img(src="{{friend.user.get_avatar_url("40")}}", width="{{friend.user.avatar_40_x}}", height="{{friend.user.avatar_40_y}}", class="avatar-mini")
+            .media-body
+              a(href="{{url_for('view_profile', login_name=friend.user.login_name)}}")= friend.user.display_name
+              .float-right
+                | &nbsp;&nbsp;&nbsp;
+                a.btn.btn-default.post-link(href="/member/{{friend.user.login_name}}/friends/{{friend.friend.login_name}}/approve") Approve
+                | &nbsp;&nbsp;&nbsp;
+                a.btn.btn-default.post-link(href="/member/{{friend.user.login_name}}/friends/{{friend.friend.login_name}}/deny") Deny
+        unless loop.last
+          hr
+  if profile.friends():
+    .row(style="margin-top: 10px;")
+      .col-sm-6
+        ul.list-group
+          li.list-group-item.section-header.sidebar-section-header Friend Status Updates
+          unless friend_status_updates
+            li.list-group-item No status updates from friends...
+          {% for status in friend_status_updates %}
+          li.list-group-item.front-page-status.sidebar-status-section
+            .media-left
+              a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+                img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{ status.author.avatar_40_x }}", height="{{ status.author.avatar_40_y }}", class="avatar-mini")
+            .media-body
+              a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+              span &nbsp;says
+                if status.attached_to_user
+                  | &nbsp;to 
+                  a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
+                  |:
+              span.discuss 
+                a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
+              br
+              p.status-message {{status.message}}
+              span.status-reply-time 
+                a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
+          {% endfor %}
+      .col-sm-6
+        ul.list-group
+          li.list-group-item.section-header.sidebar-section-header Friend Blog Posts
+          unless friend_blog_entries
+            li.list-group-item No blog posts from friends...
+          for blog in friend_blog_entries
+            li.list-group-item(style="padding: 10px;")
+              .media-left 
+                a(href="/member/{{blog.recent_entry.author.login_name}}")
+                  img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
+              .media-body
+                strong
+                  a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title
+                div
+                  a(href="/blog/{{blog.slug}}")= blog.name
+                div= blog.recent_entry.created|humanize_time("MMM D YYYY")
+      
+{% endblock %}
+
+{% block profile_sidebar %}
+{% endblock %}
+
+{% block script %}
+{% endblock %}

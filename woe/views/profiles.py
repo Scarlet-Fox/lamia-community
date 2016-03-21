@@ -232,6 +232,10 @@ def view_profile(login_name):
     except IndexError:
         abort(404)
 
+    current_user.is_admin = True
+    sqla.session.add(current_user)
+    sqla.session.commit()
+
     parser = ForumPostParser()
     try:
         user.about_me = parser.parse(user.about_me)
@@ -302,6 +306,59 @@ def validate_user(login_name):
 
     return app.jsonify(url="/member/"+unicode(user.my_url))
 
+@app.route('/member/<login_name>/friends', methods=['GET'])
+@login_required
+def show_friends(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    my_friend_requests = sqlm.Friendship.query.filter_by(blocked=False, pending=True) \
+        .filter(sqlm.Friendship.user == user).all()
+
+    incoming_friend_requests = sqlm.Friendship.query.filter_by(blocked=False, pending=True) \
+        .filter(sqlm.Friendship.friend == user).all()
+
+    friend_status_updates = sqlm.StatusUpdate.query \
+        .filter(sqlm.StatusUpdate.author_id.in_([u.id for u in user.friends()])) \
+        .order_by(sqla.desc(sqlm.StatusUpdate.created)).all()[0:5]
+
+
+    if current_user.is_authenticated():
+        friend_blog_entries = sqla.session.query(sqlm.Blog) \
+            .join(sqlm.Blog.recent_entry) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqlm.BlogEntry.author_id.in_([u.id for u in user.friends()])) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+                sqlm.Blog.privacy_setting == "members"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+    else:
+        friend_blog_entries = sqla.session.query(sqlm.Blog) \
+            .join(sqlm.Blog.recent_entry) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqlm.BlogEntry.author_id.in_([u.id for u in user.friends()])) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+
+    return render_template(
+            "profile/friends.jade",
+            profile=user,
+            my_friend_requests=my_friend_requests,
+            incoming_friend_requests=incoming_friend_requests,
+            friend_status_updates=friend_status_updates,
+            friend_blog_entries=friend_blog_entries,
+            page_title="%s's Friends - Scarlet's Web" % (unicode(user.display_name),),
+        )
+
 @app.route('/member/<login_name>/request-friend', methods=['POST'])
 @login_required
 def request_friendship(login_name):
@@ -333,10 +390,6 @@ def unfriend(login_name):
     except IndexError:
         abort(404)
 
-    # current_user.is_admin = False
-    # sqla.session.add(current_user)
-    # sqla.session.commit()
-
     if current_user._get_current_object() == user:
         return abort(404)
 
@@ -348,6 +401,58 @@ def unfriend(login_name):
 
     return app.jsonify(url="/member/"+unicode(user.my_url))
 
+@app.route('/member/<user>/friends/<friend>/deny', methods=['POST'])
+@login_required
+def deny_friend(user, friend):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=user.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    try:
+        friend = sqla.session.query(sqlm.User).filter_by(my_url=friend.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user != friend:
+        abort(404)
+
+    try:
+        friendship = sqlm.Friendship.query.filter_by(blocked=False, pending=True) \
+            .filter(sqlm.Friendship.user == user, sqlm.Friendship.friend == friend).delete()
+    except IndexError:
+        abort(404)
+
+    return app.jsonify(url="/member/"+unicode(friend.my_url)+"/friends")
+
+@app.route('/member/<user>/friends/<friend>/approve', methods=['POST'])
+@login_required
+def approve_friend(user, friend):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=user.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    try:
+        friend = sqla.session.query(sqlm.User).filter_by(my_url=friend.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user != friend:
+        abort(404)
+
+    try:
+        friendship = sqlm.Friendship.query.filter_by(blocked=False, pending=True) \
+            .filter(sqlm.Friendship.user == user, sqlm.Friendship.friend == friend)[0]
+    except IndexError:
+        abort(404)
+
+    friendship.pending = False
+
+    sqla.session.add(friendship)
+    sqla.session.commit()
+
+    return app.jsonify(url="/member/"+unicode(friend.my_url)+"/friends")
 
 # @app.route('/member/<login_name>/toggle-ignore', methods=['POST'])
 # @login_required

@@ -64,7 +64,9 @@
                 else
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Unfollow
                 if not current_user in profile.rejected_friends()
-                  if current_user not in profile.pending_friends() and current_user not in profile.friends()
+                  if current_user in profile.pending_friends() 
+                    a.btn.btn-default.post-link(href="#") Waiting
+                  elif current_user not in profile.friends()
                     a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/request-friend") Friend Request
                   else
                     a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/un-friend") Unfriend
@@ -73,6 +75,26 @@
                 else
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Unignore
           br
+    ul.list-group
+      li.list-group-item.section-header Navigation
+      li.list-group-item
+        ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}") About Me
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}/friends") Friends
+          {% if current_user == profile or current_user.is_admin  %}
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}/change-account") Account
+          {% endif %}
+          if current_user == profile or current_user.is_admin
+            li(role="presentation")
+              a(href="/member/{{profile.login_name}}/change-settings") Settings
+          {% if current_user.is_admin  %}
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}/mod-panel") Moderation
+          {% endif %}
+    {% block profile_sidebar %}
     ul.list-group
       li.list-group-item.section-header.category-section-header {{profile.display_name}}'s Stats
       li.list-group-item
@@ -119,24 +141,7 @@
                 if loop.index == 3
                   br
           br
-    ul.list-group
-      li.list-group-item
-        ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
-          {% if current_user.is_admin  %}
-          li(role="presentation")
-            a(href="/member/{{profile.login_name}}/mod-panel") Moderation
-          {% endif %}
-          li(role="presentation")
-            a(href="/member/{{profile.login_name}}") About Me
-          li(role="presentation")
-            a(href="/member/{{profile.login_name}}/friends") Friends
-          {% if current_user == profile or current_user.is_admin  %}
-          li(role="presentation")
-            a(href="/member/{{profile.login_name}}/change-account") Account
-          {% endif %}
-          if current_user == profile or current_user.is_admin
-            li(role="presentation")
-              a(href="/member/{{profile.login_name}}/change-settings") Settings
+    {% endblock %}
   .col-sm-8
     {% block profile_content %}
     ul.list-group

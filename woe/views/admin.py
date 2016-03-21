@@ -91,7 +91,7 @@ class StatusView(ModelView):
     can_delete = False
     column_list = ("id", "author","attached_to_user","created","replies", "hidden", "locked", "muted")
     # column_filters = ["author_name","attached_to_user_name", "hidden", "locked", "muted"]
-    # form_excluded_columns = ("participants", "ignoring","blocked")
+    form_excluded_columns = ("participants", "comments")
 
     column_filters = ["id", ]
     def is_accessible(self):
@@ -201,6 +201,12 @@ class BlogCommentView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class FriendshipView(ModelView):
+    column_list = ("id", "user", "friend")
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 admin.add_view(LabelView(sqlm.Label, sqla.session))
 admin.add_view(CharacterView(sqlm.Character, sqla.session))
 admin.add_view(ReportView(sqlm.Report, sqla.session))
@@ -213,6 +219,7 @@ admin.add_view(LogView(sqlm.SiteLog, sqla.session, category='Core'))
 admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, category='Core'))
 admin.add_view(FingerprintView(sqlm.Fingerprint, sqla.session, category='Core'))
 admin.add_view(UserView(sqlm.User, sqla.session, category='Members'))
+admin.add_view(FriendshipView(sqlm.Friendship, sqla.session, category='Members'))
 admin.add_view(NotificationView(sqlm.Notification, sqla.session, category='Members'))
 admin.add_view(StatusView(sqlm.StatusUpdate, sqla.session, category='Members'))
 admin.add_view(PrivateMessageTopicView(sqlm.PrivateMessage, sqla.session, category='Members'))
