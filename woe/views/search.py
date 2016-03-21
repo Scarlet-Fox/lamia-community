@@ -1,6 +1,4 @@
 from woe import app
-from woe.models.core import User, PrivateMessage, PrivateMessageTopic, StatusUpdate
-from woe.models.forum import Category, Post, Topic
 from flask import request, render_template, session, redirect
 from flask.ext.login import current_user, login_required
 from woe.utilities import humanize_time, parse_search_string_return_q, parse_search_string

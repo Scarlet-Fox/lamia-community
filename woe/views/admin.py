@@ -5,10 +5,6 @@ import flask_admin as admin
 from flask_admin import helpers, expose
 from flask_admin.contrib.sqla import ModelView
 # from flask_admin.contrib.mongoengine import ModelView
-from woe.models.core import *
-from woe.models.forum import *
-from woe.models.roleplay import *
-from woe.models.blogs import *
 from woe import sqla
 import woe.sqlmodels as sqlm
 from jinja2 import Markup

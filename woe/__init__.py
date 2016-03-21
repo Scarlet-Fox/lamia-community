@@ -7,7 +7,6 @@ from flask.ext.login import LoginManager
 from flask.ext.admin import Admin
 from flask.ext.cache import Cache
 from flask.ext.assets import Environment, Bundle
-from flask.ext.redis import FlaskRedis
 from flask_sqlalchemy import SQLAlchemy
 from flask import session
 from flask.ext.session import Session
@@ -16,14 +15,11 @@ from os import path
 import json
 
 settings_file = json.loads(open("config.json").read())
-REDIS_URL = "redis://localhost:6379/0"
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
-redis_store = FlaskRedis(app)
-app.redis_store = redis_store
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config["MONGODB_SETTINGS"] = {'DB': settings_file["database"]}

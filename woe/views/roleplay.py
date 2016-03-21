@@ -1,4 +1,3 @@
-from woe.models.core import User, Attachment
 from woe.parsers import ForumPostParser
 from woe.forms.roleplay import CharacterForm
 from woe import app
@@ -9,7 +8,6 @@ import os
 import arrow, hashlib, mimetypes, time
 from woe.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q, parse_search_string
 from mongoengine.queryset import Q
-from woe.models.roleplay import Character, CharacterHistory, get_character_slug
 from wand.image import Image
 import woe.sqlmodels as sqlm
 from woe import sqla

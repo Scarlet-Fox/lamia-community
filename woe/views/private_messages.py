@@ -1,5 +1,4 @@
 from woe import app
-from woe.models.core import PrivateMessageTopic, PrivateMessageParticipant, User, PrivateMessage
 from woe.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required

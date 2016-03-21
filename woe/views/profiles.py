@@ -1,4 +1,3 @@
-from woe.models.core import User, DisplayNameHistory, IPAddress, Fingerprint
 from woe.parsers import ForumPostParser, emoticon_codes
 from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm
 from woe import app

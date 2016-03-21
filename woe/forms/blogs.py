@@ -1,6 +1,5 @@
 from flask_wtf import Form
 from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField, TextField
-from woe.models.core import User, IPAddress
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wand.image import Image
 import shutil, pytz, arrow
