@@ -489,8 +489,6 @@ class User(db.Model):
             else:
                 return False
         else:
-            print self.password_hash
-            print password.strip()
             return bcrypt.check_password_hash(self.password_hash.encode('utf-8'), password.strip().encode('utf-8'))
 
     def is_anonymous(self):

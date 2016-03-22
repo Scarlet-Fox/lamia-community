@@ -723,7 +723,6 @@ def sign_out():
 @login_required
 def user_list_api():
     query = request.args.get("q", "")[0:100]
-    print query
 
     if len(query) < 2:
         return app.jsonify(results=[])
