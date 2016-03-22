@@ -15,11 +15,26 @@ ul.list-group
             {{ form.theme.label }}
             {{ form.theme(class="form-control") }}
           button(type="submit").btn.btn-default Submit
+ul.list-group
+  li.list-group-item.section-header Change Ignore Settings
+  li.list-group-item
+    .row
+      .col-xs-12
+        .form-group
+          label.control-label.col-sm-2 Ignore User(s)
+          .col-sm-5
+            select#user-ignore-select(multiple="multiple", style="width: 200px;")
+          .col-sm-2
+            .visible-xs-block
+              br
+            a.btn.btn-default#user-ignore-button(href="/member/{{profile.login_name}}/ignore-users") Ignore
+      
+
 {% endblock %}
 
 {% block script %}
 {% assets filters="rjsmin", output="generated/change_user_settings.js",
-"assets/select2/select2.full.js" %}
+"local/js/change-user-settings.js", "assets/select2/select2.full.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
 script(type="text/javascript").
