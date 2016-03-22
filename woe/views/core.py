@@ -163,7 +163,7 @@ if app.settings_file.get("lockout_on", False):
     @app.before_request
     def lockdown_site():
         if not (request.path == "/under-construction" or request.path == "/sign-in" or "/static" in request.path):
-            if current_user.is_authenticated() and (current_user._get_current_object().is_admin or current_user._get_current_object().is_allowed_during_construction):
+            if current_user.is_authenticated() and (current_user.login_name in ["scarlet", "zoop"] or current_user._get_current_object().is_allowed_during_construction):
                 pass
             else:
                 return redirect("/under-construction")
