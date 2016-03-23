@@ -753,7 +753,7 @@ def get_character_slug(name):
 class Label(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pre_html = db.Column(db.String, default="")
-    label = db.Column(db.String, default="")
+    label = db.Column(db.String, default="", index=True)
     post_html = db.Column(db.String, default="")
     modern = db.Column(db.Boolean, default=True)
 
