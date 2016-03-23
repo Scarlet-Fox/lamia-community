@@ -344,12 +344,13 @@ class ForumPostParser(object):
                     except:
                         sqla.session.rollback()
                         return
-
+                
+                _display_name = _replying_to.author.display_name
                 try:
                     if _replying_to.character is not None:
-                        _replying_to.author.display_name = _replying_to.character.name
+                        _display_name = _replying_to.character.name
                 except:
-                    return
+                    pass
 
                 if container:
                     inner_html = reply[3]
@@ -363,7 +364,7 @@ class ForumPostParser(object):
                 """ % (
                     arrow.get(_replying_to.created).timestamp,
                     "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.id),
-                    _replying_to.author.display_name,
+                    _display_name,
                     "/member/%s" % _replying_to.author.login_name,
                     re.sub(reply_re, "", inner_html)
                 ))
