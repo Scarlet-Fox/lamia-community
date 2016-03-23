@@ -391,7 +391,7 @@ def toggle_character_gallery_image_emote(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
         return abort(404)
 
     try:
@@ -422,7 +422,7 @@ def remove_image_from_character_gallery(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
         return abort(404)
 
     try:
@@ -459,7 +459,7 @@ def set_default_character_profile_image(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
         return abort(404)
 
     try:
@@ -488,7 +488,7 @@ def set_default_character_avatar(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
         return abort(404)
 
     try:
@@ -519,7 +519,7 @@ def edit_gallery_image(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
         return abort(404)
 
     try:
@@ -556,7 +556,7 @@ def create_attachment_for_character(slug):
         except IndexError:
             abort(404)
 
-        if current_user._get_current_object() != character.creator and not current_user._get_current_object().is_admin:
+        if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
             return abort(404)
 
         attach = sqlm.Attachment()
