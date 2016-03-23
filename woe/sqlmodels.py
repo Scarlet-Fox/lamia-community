@@ -47,7 +47,7 @@ class PrivateMessage(db.Model):
     participants = db.relationship("User", secondary="private_message_user", backref="private_messages")
 
     created = db.Column(db.DateTime)
-    old_mongo_hash = db.Column(db.String, nullable=True)
+    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
     last_seen_by = db.Column(JSONB)
 
     def participant_objects(self):
@@ -67,7 +67,7 @@ class PrivateMessageReply(db.Model):
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageReply.pm_id")
 
     message = db.Column(db.Text)
-    old_mongo_hash = db.Column(db.String, nullable=True)
+    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime, nullable=True)
@@ -134,7 +134,7 @@ class StatusUpdate(db.Model):
     muted = db.Column(db.Boolean, default=False)
     locked = db.Column(db.Boolean, default=False)
 
-    old_mongo_hash = db.Column(db.String, nullable=True)
+    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     def get_comment_count(self):
         count = db.session.query(StatusComment).filter(StatusComment.status_id==self.id).count()
@@ -424,7 +424,7 @@ class User(db.Model):
     notification_preferences = db.Column(JSONB)
 
     # Migration related
-    old_mongo_hash = db.Column(db.String, nullable=True)
+    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     def __repr__(self):
         return "%s" % (self.display_name)
@@ -594,7 +594,7 @@ class Attachment(db.Model):
     do_not_convert = db.Column(db.Boolean, default=False)
     alt = db.Column(db.String, default="")
 
-    old_mongo_hash = db.Column(db.String, nullable=True)
+    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     x_size = db.Column(db.Integer, default=100)
     y_size = db.Column(db.Integer, default=100)
@@ -684,7 +684,7 @@ class Character(db.Model):
     hidden = db.Column(db.Boolean, default=False)
 
     character_history = db.Column(JSONB)
-    old_mongo_hash = db.Column(db.String, nullable=True)
+    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     default_avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
         name="fk_character_default_avatar", ondelete="SET NULL"))
@@ -938,7 +938,7 @@ class Post(db.Model):
     post_history = db.Column(JSONB)
     t_title = db.Column(db.String, default="")
 
-    old_mongo_hash = db.Column(db.String, nullable=True)
+    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
     data = db.Column(JSONB)
 
     def __repr__(self):

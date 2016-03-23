@@ -109,7 +109,7 @@ def acknowledge_category():
 def mark_all_notifications():
     notifications = sqla.session.query(sqlm.Notification) \
         .filter_by(seen=False, user=current_user._get_current_object()) \
-        .update({seen: True})
+        .update({sqlm.Notification.seen: True})
 
     return app.jsonify(success=True)
 
@@ -118,7 +118,7 @@ def mark_all_notifications():
 def acknowledge_notification():
     notifications = sqla.session.query(sqlm.Notification) \
         .filter_by(seen=False, user=current_user._get_current_object()) \
-        .update({seen: True})
+        .update({sqlm.Notification.seen: True})
 
     request_json = request.get_json(force=True)
     try:
@@ -130,14 +130,14 @@ def acknowledge_notification():
 
         sqla.session.query(sqlm.Notification) \
             .filter_by(id=request_json.get("notification","")) \
-            .update({acknowledged: True})
+            .update({sqlm.Notification.acknowledged: True})
     except:
         return app.jsonify(success=False)
 
     try:
         notifications = sqla.session.query(sqlm.Notification) \
             .filter_by(acknowledged=False, user=current_user._get_current_object(), url=notification.url) \
-            .update({acknowledged: True})
+            .update({sqlm.Notification.acknowledged: True})
     except:
         return app.jsonify(success=False)
 

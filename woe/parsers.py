@@ -360,9 +360,16 @@ class ForumPostParser(object):
                 ))
             if reply[1] == "pm":
                 try:
+                    r_id = int(reply[0])
                     _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=reply[0])[0]
-                except:
+                except ValueError:
                     sqla.session.rollback()
+
+                    try:
+                        _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(old_mongo_hash=reply[0])[0]
+                    except:
+                        sqla.session.rollback()
+                        return
 
                 if container:
                     inner_html = reply[3]
