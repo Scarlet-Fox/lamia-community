@@ -624,22 +624,25 @@ def category_filter_preferences(slug):
         return app.jsonify(preferences={})
 
     if current_user.data is None:
-        current_user.data = {}
+        tmp_data = {}
+    else:
+        tmp_data = current_user.data.copy()
 
     if request.method == 'POST':
         request_json = request.get_json(force=True)
         try:
             if len(request_json.get("preferences")) < 10:
-                current_user.data["category_filter_preference_"+str(category.id)] = request_json.get("preferences")
+                tmp_data["category_filter_preference_"+str(category.id)] = request_json.get("preferences")
         except:
             return app.jsonify(preferences={})
 
+        current_user.data = tmp_data
         sqla.session.add(current_user)
         sqla.session.commit()
-        preferences = current_user.data.get("category_filter_preference_"+str(category.id), {})
+        preferences = tmp_data.get("category_filter_preference_"+str(category.id), {})
         return app.jsonify(preferences=preferences)
     else:
-        preferences = current_user.data.get("category_filter_preference_"+str(category.id), {})
+        preferences = tmp_data.get("category_filter_preference_"+str(category.id), {})
         return app.jsonify(preferences=preferences)
 
 @app.route('/t/<slug>/edit-topic', methods=['GET', 'POST'])
@@ -929,8 +932,11 @@ def category_index(slug):
         return abort(404)
 
     subcategories = sqla.session.query(sqlm.Category).filter_by(parent=category).all()
-    prefixes = sqla.session.query(sqlm.Label.label, sqla.func.count(sqlm.Topic.id)).filter(sqlm.Topic.category==category) \
-            .join(sqlm.Topic.label).group_by(sqlm.Label.label).order_by(sqla.desc(sqla.func.count(sqlm.Topic.id))).all()
+    prefixes = sqla.session.query(sqlm.Label.label, sqla.func.count(sqlm.Topic.id)) \
+        .filter(sqlm.Topic.category==category) \
+        .filter(sqlm.Label.label != "") \
+        .join(sqlm.Topic.label).group_by(sqlm.Label.label) \
+        .order_by(sqla.desc(sqla.func.count(sqlm.Topic.id))).all()
 
     print prefixes
 

@@ -55,13 +55,6 @@
           
   .col-md-4
     ul.list-group.category
-      li.list-group-item.section-header(style="font-size: 14px;") New Status Update
-      li.list-group-item
-        form.form-group.status-reply-box
-          input.form-control#status-new(type="text", maxlength="250", autocomplete="off")
-          br
-          button#new-status.btn.btn-default(type="submit") Create
-    ul.list-group.category
       li.list-group-item.section-header(style="font-size: 14px;") Participants
         for participant in status.participants
           li.list-group-item
@@ -79,6 +72,14 @@
                 else
                   br
                   a.inherit_colors.post-link(href="/status/{{status.pk}}/toggle-silence/{{participant.pk}}") (Permit)
+    ul.list-group.category
+      li.list-group-item.section-header(style="font-size: 14px;") New Status Update
+      li.list-group-item
+        form.form-group.status-reply-box
+          input.form-control#status-new(type="text", maxlength="250", autocomplete="off")
+          br
+          button#new-status.btn.btn-default(type="submit") Create
+
 {% endblock %}
 
 {% block script %}
