@@ -568,6 +568,10 @@ def topic_index(slug, page, post):
     else:
         if post != "":
             try:
+                last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().id), arrow.utcnow().timestamp)).datetime.replace(tzinfo=None)
+            except:
+                last_seen = arrow.get(arrow.utcnow().timestamp).datetime.replace(tzinfo=None)
+            try:
                 post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
                     .filter_by(id=post).filter(sqlm.Post.created < last_seen) \
                     .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
