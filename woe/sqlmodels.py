@@ -22,6 +22,7 @@ class PrivateMessageUser(db.Model):
     pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id',
         name="fk_pm_u_pm", ondelete="CASCADE"))
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageUser.pm_id")
+    __table_args__ = (db.UniqueConstraint('author_id', 'id', name='unique_user_pm_user'),)
 
     ignoring = db.Column(db.Boolean, default=False)
     exited = db.Column(db.Boolean, default=False)
@@ -89,6 +90,7 @@ class StatusUpdateUser(db.Model):
     status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
         name="fk_status_user_status", ondelete="CASCADE"))
     status = db.relationship("StatusUpdate", foreign_keys="StatusUpdateUser.status_id")
+    __table_args__ = (db.UniqueConstraint('author_id', 'id', name='unique_user_status_user'),)
 
     ignoring = db.Column(db.Boolean, default=False)
     blocked = db.Column(db.Boolean, default=False)
@@ -187,6 +189,7 @@ class Fingerprint(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_fingerprint_user", ondelete="CASCADE"))
     user = db.relationship("User")
+    __table_args__ = (db.UniqueConstraint('user_id', 'fingerprint_hash', name='unique_user_hash'),)
 
     def __repr__(self):
         return "<Fingerprint: (factors='%s', user=)>" % (self.factors,)
@@ -838,7 +841,7 @@ topic_banned_table = db.Table('topic_banned_users', db.metadata,
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id',
-        name="fk_topic_category", ondelete="CASCADE"))
+        name="fk_topic_category", ondelete="CASCADE"), index=True)
     category = db.relationship("Category", foreign_keys="Topic.category_id")
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_topic_author", ondelete="CASCADE"))
@@ -867,7 +870,7 @@ class Topic(db.Model):
     slug = db.Column(db.String, unique=True)
     sticky = db.Column(db.Boolean, default=False)
     announcement = db.Column(db.Boolean, default=False)
-    hidden = db.Column(db.Boolean, default=False)
+    hidden = db.Column(db.Boolean, default=False, index=True)
     locked = db.Column(db.Boolean, default=False)
     created = db.Column(db.DateTime, index=True)
     post_count = db.Column(db.Integer, default=0)
@@ -1009,6 +1012,7 @@ class BlogEntry(db.Model):
     blog_id = db.Column(db.Integer, db.ForeignKey('blog.id',
         name="fk_blogentry_blog", ondelete="CASCADE"), index=True)
     blog = db.relationship("Blog", foreign_keys="BlogEntry.blog_id", cascade="delete")
+    __table_args__ = (db.UniqueConstraint('blog_id', 'slug', name='unique_blog_entry_slug'),)
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_blogentry_author", ondelete="CASCADE"))
@@ -1049,7 +1053,7 @@ class BlogEntry(db.Model):
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    slug = db.Column(db.String)
+    slug = db.Column(db.String, unique=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_blog_owner", ondelete="CASCADE"))
     author = db.relationship("User", foreign_keys="Blog.author_id")
