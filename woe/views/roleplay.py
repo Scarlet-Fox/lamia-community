@@ -559,6 +559,8 @@ def create_attachment_for_character(slug):
         if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
             return abort(404)
 
+        _time = time.time()
+
         attach = sqlm.Attachment()
         attach.character = character
         attach.character_gallery = True
@@ -576,8 +578,8 @@ def create_attachment_for_character(slug):
         attach.created_date = arrow.utcnow().datetime
         attach.file_hash = img_hash
         attach.linked = False
-        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time.time())+"_"+str(current_user.pk)+filename)
-        attach.path = str(time.time())+"_"+str(current_user.pk)+filename
+        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(_time)+"_"+str(current_user.id)+filename)
+        attach.path = str(_time)+"_"+str(current_user.id)+filename
 
         sqla.session.add(attach)
         sqla.session.commit()
@@ -593,6 +595,6 @@ def create_attachment_for_character(slug):
         sqla.session.add(character)
         sqla.session.commit()
 
-        return app.jsonify(attachment=str(attach.pk), xsize=attach.x_size)
+        return app.jsonify(attachment=str(attach.id), xsize=attach.x_size)
     else:
         return abort(404)

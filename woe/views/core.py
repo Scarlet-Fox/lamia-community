@@ -607,7 +607,7 @@ def sign_in():
 
         try:
             sqla.session.add(form.user)
-            sqla.commit()
+            sqla.session.commit()
         except:
             sqla.session.rollback()
             pass

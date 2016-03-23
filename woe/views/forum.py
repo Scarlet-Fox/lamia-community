@@ -61,9 +61,9 @@ def toggle_follow_topic(slug):
 
     try:
         sqla.session.add(topic)
-        sqla.commit()
+        sqla.session.commit()
     except:
-        sqla.rollback()
+        sqla.session.rollback()
 
     return app.jsonify(url="/t/"+unicode(topic.slug)+"")
 
