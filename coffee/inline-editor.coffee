@@ -295,6 +295,7 @@ $ ->
       do $("#dropzone-#{@quillID}").remove
       do $("#emoticon-modal-#{@quillID}").remove
       do $("#mention-modal-#{@quillID}").remove
+      do $("#preview-container-#{@quillID}").remove
       do $("#edit-reason-#{@quillID}").parent().parent().remove
 
     editReasonHTML: () =>
@@ -315,7 +316,7 @@ $ ->
 
     previewHTML: () =>
       return """
-          <div class="panel panel-default" style="display: none;">
+          <div class="panel panel-default" id="preview-container-#{@quillID}" style="display: none;">
             <div class="panel-heading">Post Preview (Click Preview Button to Update)</div>
             <div id="preview-box-#{@quillID}" class="panel-body"></div>
           </div>

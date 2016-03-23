@@ -294,6 +294,7 @@
         $("#dropzone-" + this.quillID).remove();
         $("#emoticon-modal-" + this.quillID).remove();
         $("#mention-modal-" + this.quillID).remove();
+        $("#preview-container-" + this.quillID).remove();
         return $("#edit-reason-" + this.quillID).parent().parent().remove();
       };
 
@@ -306,7 +307,7 @@
       };
 
       InlineEditor.prototype.previewHTML = function() {
-        return "<div class=\"panel panel-default\" style=\"display: none;\">\n  <div class=\"panel-heading\">Post Preview (Click Preview Button to Update)</div>\n  <div id=\"preview-box-" + this.quillID + "\" class=\"panel-body\"></div>\n</div>";
+        return "<div class=\"panel panel-default\" id=\"preview-container-" + this.quillID + "\" style=\"display: none;\">\n  <div class=\"panel-heading\">Post Preview (Click Preview Button to Update)</div>\n  <div id=\"preview-box-" + this.quillID + "\" class=\"panel-body\"></div>\n</div>";
       };
 
       InlineEditor.prototype.disableSaveButton = function() {
