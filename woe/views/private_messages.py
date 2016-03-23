@@ -54,6 +54,47 @@ def kick_from_pm_topic(pk, upk):
 
     return json.jsonify(url='/messages/'+str(topic.id))
 
+@app.route('/messages/<pk>/add-to-pm', methods=['POST'])
+@login_required
+def add_to_pm(pk):
+    try:
+        topic = sqla.session.query(sqlm.PrivateMessage).filter_by(id=pk)[0]
+    except IndexError:
+        return abort(404)
+
+    if not current_user._get_current_object() == topic.author:
+        return abort(404)
+
+    request_json = request.get_json(force=True)
+
+    try:
+        to_add = list(
+                sqla.session.query(sqlm.User) \
+                    .filter(sqlm.User.id.in_(request_json.get("authors"))) \
+                    .all()
+            )
+    except:
+        to_add = []
+
+    for user in to_add:
+        try:
+            participant = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+                pm = topic,
+                author = user
+            )[0]
+            continue
+        except IndexError:
+            pass
+
+        participant = sqlm.PrivateMessageUser(
+                author = user,
+                pm = topic
+            )
+        sqla.session.add(participant)
+        sqla.session.commit()
+
+    return app.jsonify(url="/messages/"+str(topic.id))
+
 @app.route('/messages/<pk>/leave-topic', methods=['POST'])
 @login_required
 def leave_pm_topic(pk):

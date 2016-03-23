@@ -18,6 +18,40 @@
         this.is_mod = window._is_topic_mod;
         this.is_logged_in = window._is_logged_in;
         socket = io.connect('http://' + document.domain + ':3000' + '');
+        $("#author-select").select2({
+          ajax: {
+            url: "/user-list-api",
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+              return {
+                q: params.term
+              };
+            },
+            processResults: function(data, page) {
+              return {
+                results: data.results
+              };
+            },
+            cache: true
+          },
+          minimumInputLength: 2
+        });
+        $("#add-to-pm").click((function(_this) {
+          return function(e) {
+            var data;
+            data = {
+              authors: $("#author-select").val()
+            };
+            return $.post("/messages/" + topic.pk + "/add-to-pm", JSON.stringify(data), function(data) {
+              return window.location = data.url;
+            });
+          };
+        })(this));
+        $("form").submit(function(e) {
+          e.preventDefault();
+          return $("#add-to-pm").click();
+        });
         window.onbeforeunload = function() {
           if (topic.inline_editor.quill.getText().trim() !== "") {
             return "It looks like you were typing up a post.";

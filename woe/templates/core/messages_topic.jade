@@ -27,7 +27,7 @@
       for participant in topic.participant_objects()
         li.list-group-item
           .media-left
-            a(href="{{url_for('view_profile', login_name=participant.author.login_name)}}")
+            a.subcategory-listing-recent-image(href="{{url_for('view_profile', login_name=participant.author.login_name)}}")
               img.media-object(src="{{ participant.author.get_avatar_url("40") }}", width="{{ participant.author.avatar_40_x }}", height="{{ participant.author.avatar_40_y }}", class="avatar-mini")
           .media-body
             a.hover_user(href="{{url_for('view_profile', login_name=participant.author.login_name)}}")= participant.author.display_name
@@ -43,6 +43,18 @@
               elif current_user != participant.author and current_user == topic.author
                 br
                 a.inherit_colors.post-link(href="/messages/{{topic.id}}/kick-from-topic/{{participant.author.id}}") (Kick)
+    if current_user == topic.author
+      ul.list-group.category
+        li.list-group-item.sidebar-section-header.section-header Add Participant(s)
+        li.list-group-item
+          form.form-horizontal
+            .form-group
+              .col-sm-8
+                select.form-control#author-select(multiple="multiple")
+                br
+                br
+                button.btn.btn-default#add-to-pm(type="submit") Add
+
             
 nav.pagination-listing
 {% endblock %}
@@ -84,6 +96,11 @@ script(type="text/javascript").
     window._current_user = "{{current_user.display_name}}";
     {% endif %}
   });
+
+{% assets filters="rjsmin", output="generated/select2_only.js",
+"assets/select2/select2.full.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
   
 {% assets filters="rjsmin", output="generated/message-topic.js",
 "local/js/private-message-topic-index.js" %}

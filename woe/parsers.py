@@ -374,7 +374,7 @@ class ForumPostParser(object):
                 if container:
                     inner_html = reply[3]
                 else:
-                    inner_html = _replying_to.html.replace("img", "imgdisabled")
+                    inner_html = _replying_to.message.replace("img", "imgdisabled")
 
                 return html.replace(string_to_replace, """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
@@ -382,7 +382,7 @@ class ForumPostParser(object):
                 </blockquote>
                 """ % (
                     arrow.get(_replying_to.created).timestamp,
-                    "/messages/%s/page/1/post/%s" % (_replying_to.topic.id, _replying_to.id),
+                    "/messages/%s/page/1/post/%s" % (_replying_to.pm.id, _replying_to.id),
                     _replying_to.author.display_name,
                     "/member/%s" % _replying_to.author.login_name,
                     re.sub(reply_re, "", inner_html)

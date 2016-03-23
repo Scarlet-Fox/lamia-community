@@ -14,6 +14,33 @@ $ ->
 
       socket = io.connect('http://' + document.domain + ':3000' + '');
 
+      $("#author-select").select2
+        ajax:
+          url: "/user-list-api",
+          dataType: 'json',
+          delay: 250,
+          data: (params) ->
+            return {
+              q: params.term
+            }
+          processResults: (data, page) ->
+            return {
+              results: data.results
+            }
+          cache: true
+        minimumInputLength: 2
+
+      $("#add-to-pm").click (e) =>
+        data =
+          authors: $("#author-select").val()
+
+        $.post "/messages/#{topic.pk}/add-to-pm", JSON.stringify(data), (data) ->
+          window.location = data.url
+
+      $("form").submit (e) ->
+        e.preventDefault()
+        $("#add-to-pm").click()
+
       window.onbeforeunload = () ->
         if topic.inline_editor.quill.getText().trim() != ""
           return "It looks like you were typing up a post."
