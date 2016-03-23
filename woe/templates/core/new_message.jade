@@ -1,31 +1,37 @@
 {% extends "base.jade" %}
 
 {% block content %}
-.breadcrumb
-  li
-    a(href="/") Home
-  li 
-    a(href="/messages") Private Messages
-  li.active 
-    b
-      a(href="") New Private Message
 .row
   .col-md-12
-    h2 Send a New Private Message
-    form#new-topic-form(method="post")
-      .row
-        .col-md-12
+    ul.list-group
+      li.list-group-item.section-header
+        ul.breadcrumb#topic-breadcrumb
+          li
+            a(href="/") Home
+          li 
+            a(href="/messages") Private Messages
+          li.active 
+            b
+              a(href="") New Private Message
+.row
+  .col-md-12
+    ul.list-group.category
+      li.list-group-item
+        h2 Send a New Private Message
+        form#new-topic-form(method="post")
           .row
-            .form-group.col-md-8
-              label(for="title") Title
-              input.form-control#title(value="")
-          .row
-            .form-group.col-md-6
-              label(for="title") To
-              select#to.form-control(multiple="multiple")
-          .row
-            .form-group.col-md-12
-              #new-post-box
+            .col-md-12
+              .row
+                .form-group.col-md-8
+                  label(for="title") Title
+                  input.form-control#title(value="")
+              .row
+                .form-group.col-md-6
+                  label(for="title") To
+                  select#to.form-control(multiple="multiple")
+              .row
+                .form-group.col-md-12
+                  #new-post-box
 nav.pagination-listing
 {% endblock %}
 
