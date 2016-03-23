@@ -69,6 +69,12 @@ $ ->
               <span class="badge" style=""><a class="inherit_colors" href="/messages/{{_id}}/page/1/post/latest_post">{{last_page}}</a></span>
               {{/if}}
             </span>
+            <br>
+            <span class="topic-author">
+              to:
+              {{#each participants}}
+                <a href="/member/{{0}}" class="topic-listing-username hover_user">{{1}}</a>{{2}}{{/each}}
+            </span>
           </div>
           <div class="col-xs-3 hidden-xs hidden-sm">
             <span class="topic-listing-recent">

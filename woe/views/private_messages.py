@@ -507,6 +507,14 @@ def messages_topics():
 
     for message in messages:
         _parsed = {}
+
+        pm_participants = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+                    pm = message
+                ).filter(sqlm.PrivateMessageUser.author!=current_user).all()
+
+        _parsed["participants"] = [[u.author.login_name, u.author.display_name, ", "] for u in pm_participants]
+        _parsed["participants"][-1][2] = ""
+
         _parsed["creator"] = message.author.display_name
         _parsed["created"] = humanize_time(message.created, "MMM D YYYY")
 
