@@ -195,20 +195,17 @@ body(role='document')
     #content-border
       {% block content %}
       {% endblock %}
-      .row
-        .col-xs-12
-          hr
-      .row
-        .col-xs-12
-          a(href="/t/privacy-policy") Privacy Policy
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          a(href="/t/community-rules-and-terms") Site Rules
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          a.to-top(href="/") Go to Top
-      .row
-        .col-xs-12
-          br
-          br
+      hr
+      center
+        ul.list-group.category
+          li.list-group-item
+            .row
+              .col-xs-12
+                a(href="/t/privacy-policy") Privacy Policy
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                a(href="/t/community-rules-and-terms") Site Rules
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                a.to-top(href="/") Go to Top
   #img-click-modal.modal.fade
   #report-click-modal.modal.fade
   script(src="/static/assets/handlebars.min.js").
