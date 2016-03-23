@@ -9,6 +9,7 @@ import arrow, json
 from woe.views.dashboard import broadcast
 from BeautifulSoup import BeautifulSoup
 import woe.sqlmodels as sqlm
+from woe.forms.blogs import BlogSettingsForm, BlogEntryForm, BlogCommentForm 
 import math
 
 @app.route('/blogs', methods=['GET'], defaults={'page': 1})
