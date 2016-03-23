@@ -104,6 +104,22 @@
           li.list-group-item
             center
               a.btn.btn-primary(href="/blogs") Browse All Blogs
+      if newest_member
+        ul.list-group
+          li.list-group-item.section-header Newest Member
+          li.list-group-item 
+            .media-left 
+              a.subcategory-listing-recent-image(href="/member/{{newest_member.login_name}}")
+                img.avatar-mini(src=newest_member.get_avatar_url("60"), width=newest_member.avatar_60_x, height=newest_member.avatar_60_y)
+            .media-body Our newest member is 
+              a.hover_user(href="{{url_for('view_profile', login_name=newest_member.login_name)}}") {{newest_member.display_name}}
+              if new_member_intro_topic
+                |&nbsp;and they have a 
+                a(href="/t/{{new_member_intro_topic.slug}}") welcome topic.
+                br
+                | Go say hello!
+              else
+                |but they have no welcome topic. :(
 .row
   .col-md-12
     li.list-group-item.section-header.sidebar-section-header {{online_user_count}} Users Online

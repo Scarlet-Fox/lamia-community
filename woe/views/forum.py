@@ -973,8 +973,22 @@ def index():
     # member_count = sqla.session.query(sqlm.User) \
     #     .filter_by(banned=False).count()
     #
-    # newest_member = sqla.session.query(sqlm.User) \
-    #     .order_by(sqla.desc(sqlm.User.joined))[0]
+
+    try:
+        newest_member = sqla.session.query(sqlm.User) \
+            .filter_by(banned=False, validated=True) \
+            .order_by(sqla.desc(sqlm.User.joined))[0]
+    except IndexError:
+        newest_member = None
+
+    try:
+        new_member_intro_topic = sqla.session.query(sqlm.Topic) \
+            .join(sqlm.Topic.category) \
+            .filter(sqlm.Topic.hidden==False, sqlm.Topic.author==newest_member) \
+            .filter(sqlm.Category.slug == "welcome-mat") \
+            .order_by(sqlm.Topic.created.desc())[0]
+    except IndexError:
+        new_member_intro_topic = None
 
     recently_replied_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
@@ -1012,5 +1026,5 @@ def index():
     return render_template("index.jade", page_title="Scarlet's Web",
         sections=sections, sub_categories=sub_categories,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
-        # post_count=post_count, member_count=member_count, newest_member=newest_member,
+        newest_member=newest_member, new_member_intro_topic=new_member_intro_topic,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)
