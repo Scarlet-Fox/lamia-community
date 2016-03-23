@@ -39,6 +39,7 @@ vimeo_re = re.compile("(?:https?:\/\/)?(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\
 soundcloud_re = re.compile("(?:(?:https:\/\/)|(?:http:\/\/)|(?:www.)|(?:\s))+(?:soundcloud.com\/)+([a-zA-Z0-9\-\.]+)(?:\/)+([a-zA-Z0-9\-\.]+)", re.I)
 spotify_re = re.compile("spotify\.com/(album|track|user/[^/]+/playlist)/([a-zA-Z0-9]+)", re.I)
 vine_re = re.compile("(?:vine\.co/v/|www\.vine\.co/v/)(.*)", re.I)
+giphy_re = re.compile("(?:giphy\.com/gifs/|gph\.is/)(.*)", re.I)
 
 emoticon_codes = {
     ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
@@ -172,6 +173,7 @@ class ForumPostParser(object):
             soundcloud_match = soundcloud_re.search(link_text)
             spotify_match = spotify_re.search(link_text)
             vine_match = vine_re.search(link_text)
+            giphy_match = giphy_re.search(link_text)
 
             if youtube_match:
                 video = youtube_match.groups()[0]
@@ -220,6 +222,13 @@ class ForumPostParser(object):
                 html = html.replace(
                     """<a href="%s">%s</a>""" % (filler, filler),
                     """<iframe style="max-width: 100%%" src="https://vine.co/v/%s/embed/simple?autoplay=0" width="400" height="400" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>""" % (video, )
+                )
+            elif giphy_match:
+                giph = giphy_match.groups()[0]
+
+                html = html.replace(
+                    """<a href="%s">%s</a>""" % (filler, filler),
+                    """<iframe src="//giphy.com/embed/%s" width="480" height="460" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="http://giphy.com/gifs/%s">via GIPHY</a></p>""" % (giph, giph)
                 )
             else:
                 html = html.replace(
