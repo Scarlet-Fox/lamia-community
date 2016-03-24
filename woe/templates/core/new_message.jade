@@ -29,6 +29,8 @@
                 .form-group.col-md-6
                   label(for="title") To
                   select#to.form-control(multiple="multiple")
+                    if target_user
+                      option(value="{{target_user.id}}", selected) {{target_user.display_name}}
               .row
                 .form-group.col-md-12
                   #new-post-box

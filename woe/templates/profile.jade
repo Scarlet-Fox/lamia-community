@@ -59,6 +59,7 @@
             center
               br
               .btn-group
+                a.btn.btn-default(href="/new-message/{{profile.login_name}}") PM
                 if current_user not in profile.followed_by()
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Follow
                 else

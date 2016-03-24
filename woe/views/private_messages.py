@@ -504,10 +504,18 @@ def create_message():
 
     return app.jsonify(url="/messages/"+str(topic.id))
 
-@app.route('/new-message', methods=['GET'])
+@app.route('/new-message', methods=['GET'], defaults={'target': False})
+@app.route('/new-message/<target>', methods=['GET'])
 @login_required
-def create_message_index():
-    return render_template("core/new_message.jade", page_title="New Private Message - Scarlet's Web")
+def create_message_index(target):
+    if target:
+        try:
+            target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]
+        except IndexError:
+            target_user = None
+            pass
+
+    return render_template("core/new_message.jade", target_user=target_user, page_title="New Private Message - Scarlet's Web")
 
 @app.route('/message-topics', methods=['POST'])
 @login_required
