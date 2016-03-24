@@ -12,6 +12,7 @@ import woe.sqlmodels as sqlm
 import time
 from threading import Thread
 from multiprocessing import Process, Queue
+from sqlalchemy.orm.attributes import flag_modified
 
 @app.route('/member/<login_name>/mod-panel')
 @login_required
@@ -334,11 +335,19 @@ def view_profile(login_name):
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
+    if user.data.has_key("my_fields"):
+        custom_fields = user.data["my_fields"]
+    else:
+        custom_fields = []
+    available_fields = sqlm.User.AVAILABLE_PROFILE_FIELDS
+
     return render_template(
         "profile.jade",
         profile=user,
         page_title="%s - Scarlet's Web" % (unicode(user.display_name),),
         post_count=post_count,
+        custom_fields=custom_fields,
+        available_fields=available_fields,
         topic_count=topic_count,
         status_update_count=status_update_created,
         favorite_phrase=favorite_phrase,
@@ -638,6 +647,78 @@ def change_avatar_or_title(login_name):
 
     return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - Scarlet's Web")
 
+
+@app.route('/member/<login_name>/add-user-field', methods=['POST'])
+@login_required
+def add_custom_field(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+        abort(404)
+
+    request_json = request.get_json(force=True)
+
+    if request_json.get("field", "") not in sqlm.User.AVAILABLE_PROFILE_FIELDS:
+        abort(404)
+
+    if request_json.get("value", "").strip() == "":
+        abort(404)
+
+    tmp_data = user.data.copy()
+
+    if tmp_data.has_key("my_fields"):
+        tmp_data["my_fields"].append([request_json.get("field", ""), request_json.get("value", "")[:40].strip()])
+    else:
+        tmp_data["my_fields"] = [[request_json.get("field", ""), request_json.get("value", "")[:40].strip()],]
+
+    user.data = tmp_data
+    flag_modified(user, "data")
+
+    sqla.session.add(user)
+    sqla.session.commit()
+
+    return app.jsonify(success=True)
+
+@app.route('/member/<login_name>/remove-user-field', methods=['POST'])
+@login_required
+def remove_custom_field(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+        abort(404)
+
+    request_json = request.get_json(force=True)
+
+    if request_json.get("field", "") not in sqlm.User.AVAILABLE_PROFILE_FIELDS:
+        abort(404)
+
+    if request_json.get("value", "").strip() == "":
+        abort(404)
+
+    tmp_data = user.data.copy()
+
+    if not tmp_data.has_key("my_fields"):
+        abort (404)
+
+    for i, f in enumerate(tmp_data["my_fields"]):
+        if f[0] == request_json.get("field", "") and f[1] == request_json.get("value", ""):
+            tmp_data["my_fields"].pop(i)
+
+    user.data = tmp_data
+    flag_modified(user, "data")
+
+    sqla.session.add(user)
+    sqla.session.commit()
+
+    return app.jsonify(success=True)
+
+
 @app.route('/member/<login_name>/change-settings', methods=['GET', 'POST'])
 @login_required
 def change_user_settings(login_name):
@@ -648,6 +729,15 @@ def change_user_settings(login_name):
 
     if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
         abort(404)
+
+    available_fields = sqlm.User.AVAILABLE_PROFILE_FIELDS
+
+    tmp_data = user.data
+
+    if tmp_data.has_key("my_fields"):
+        current_fields = tmp_data["my_fields"]
+    else:
+        current_fields = []
 
     form = UserSettingsForm(csrf_enabled=False)
 
@@ -664,7 +754,7 @@ def change_user_settings(login_name):
         else:
             form.theme.data = str(user.theme.id)
 
-    return render_template("profile/change_user_settings.jade", profile=user, form=form, page_title="Change Settings - Scarlet's Web")
+    return render_template("profile/change_user_settings.jade", profile=user, available_fields=available_fields, current_fields=current_fields, form=form, page_title="Change Settings - Scarlet's Web")
 
 @app.route('/member/<login_name>/change-account', methods=['GET', 'POST'])
 @login_required

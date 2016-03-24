@@ -352,6 +352,19 @@ class User(db.Model):
 
     data = db.Column(JSONB)
     time_online = db.Column(db.Integer, default=0)
+    AVAILABLE_PROFILE_FIELDS = [
+        "Discord",
+        "DeviantArt",
+        "Youtube",
+        "Twitter",
+        "Skype",
+        "Tumblr",
+        "Steam",
+        "Nintendo Network",
+        "PSN",
+        "XBL",
+        "Twitch"
+    ]
 
     ignored_users = db.relationship("IgnoringUser",
             secondary="ignoring_user",

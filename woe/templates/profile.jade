@@ -141,7 +141,19 @@
                 | &nbsp;
                 if loop.index == 3
                   br
-          br
+          br    
+    if custom_fields
+      ul.list-group
+        li.list-group-item.section-header.category-section-header Other Accounts
+        li.list-group-item
+          ul
+            for field_type in available_fields
+              for field in custom_fields
+                if field[0] == field_type:
+                  li
+                    b= field[0]
+                    |&nbsp;&nbsp;&nbsp;
+                    |{{field[1]}}
     ul.list-group
       li.list-group-item.section-header.category-section-header Recent Visitors
       for visitor in recent_visitors
