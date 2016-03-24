@@ -965,7 +965,7 @@ def index():
 
     online_users = sqla.session.query(sqlm.User) \
         .filter(sqlm.User.hidden_last_seen > arrow.utcnow() \
-        .replace(minutes=-15).datetime).all()
+        .replace(minutes=-15).datetime.replace(tzinfo=None)).all()
 
     # post_count = sqla.session.query(sqlm.Post) \
     #     .filter_by(hidden=False).count()
