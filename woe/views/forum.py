@@ -158,6 +158,7 @@ def new_post_in_topic(slug):
     parsed_post["created"] = humanize_time(new_post.created, "MMM D YYYY")
     parsed_post["modified"] = humanize_time(new_post.modified, "MMM D YYYY")
     parsed_post["html"] = clean_html_parser.parse(new_post.html)
+    parsed_post["_id"] = new_post.id
     parsed_post["user_avatar"] = new_post.author.get_avatar_url()
     parsed_post["user_avatar_x"] = new_post.author.avatar_full_x
     parsed_post["user_avatar_y"] = new_post.author.avatar_full_y
