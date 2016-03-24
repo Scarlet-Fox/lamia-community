@@ -552,6 +552,15 @@ class User(db.Model):
             else:
                 return "/static/avatars/"+str(self.avatar_timestamp)+str(self.id)+size+self.avatar_extension
 
+class Signature(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_user_signature", ondelete="CASCADE"), index=True)
+    owner = db.relationship("User", foreign_keys="Signature.owner_id")
+    name = db.Column(db.String, default="")
+    html = db.Column(db.Text)
+    created = db.Column(db.DateTime)
+
 ############################################################
 # Moderation Models
 ############################################################

@@ -381,6 +381,17 @@ def validate_user(login_name):
 
     return app.jsonify(url="/member/"+unicode(user.my_url))
 
+@app.route('/member/<login_name>/signatures', methods=['GET'])
+@login_required
+def show_signatures(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    signatures = sqla.session.query(sqlm.Signature).filter_by(owner=user) \
+        .order_by(sqla.desc(sqlm.Signature.created)).all()
+
 @app.route('/member/<login_name>/friends', methods=['GET'])
 @login_required
 def show_friends(login_name):
