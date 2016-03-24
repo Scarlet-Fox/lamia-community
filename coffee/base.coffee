@@ -185,7 +185,13 @@ $ ->
 
   $("#new-status").click (e) ->
     e.preventDefault()
-    $.post "/create-status", JSON.stringify({message: $("#status-new").val()}), (data) ->
+    target = $("#new-status").data("target")
+    if target?
+      url = "/create-status/#{target}"
+    else
+      url = "/create-status"
+
+    $.post url, JSON.stringify({message: $("#status-new").val()}), (data) ->
       if data.error?
         $("#create-status-error").remove()
         $("#status-new").parent().prepend """

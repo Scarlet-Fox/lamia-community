@@ -167,6 +167,18 @@
         else
           #user-profile-about-me.post-content!= profile.about_me  
     .row
+      .col-xs-12
+        ul.list-group
+          li.list-group-item.section-header Send Message to {{profile.display_name}}
+          li.list-group-item
+            if current_user.is_authenticated()
+              center
+                p
+                form.form-group.status-reply-box
+                  input.form-control#status-new(type="text", maxlength="250")
+                  br
+                  button#new-status.btn.btn-primary(type="submit", data-target="{{profile.login_name}}") Send to {{profile.display_name}}
+    .row
       .col-sm-6
         if recent_posts
           ul.list-group
@@ -204,7 +216,7 @@
                 a(href="/t/{{topic.slug}}")= topic.title
         if recent_status_updates_to_user
           ul.list-group
-            li.list-group-item.section-header Recent Status Updates
+            li.list-group-item.section-header Messages to {{profile.display_name}}
             for status in recent_status_updates_to_user
               li.list-group-item.front-page-status.sidebar-status-section
                 .media-left
@@ -232,6 +244,7 @@
 "assets/select2/select2.full.js", "local/js/inline-editor.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
+
 script(type="text/javascript").
   $(document).ready(function(){
     {% if current_user.is_authenticated() %}

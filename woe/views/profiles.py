@@ -295,7 +295,7 @@ def view_profile(login_name):
 
     recent_status_updates_to_user = sqla.session.query(sqlm.StatusUpdate) \
         .filter_by(attached_to_user=user) \
-        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:3]
 
     return render_template(
         "profile.jade",

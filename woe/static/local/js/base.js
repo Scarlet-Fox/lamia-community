@@ -180,8 +180,15 @@
       });
     };
     $("#new-status").click(function(e) {
+      var target, url;
       e.preventDefault();
-      return $.post("/create-status", JSON.stringify({
+      target = $("#new-status").data("target");
+      if (target != null) {
+        url = "/create-status/" + target;
+      } else {
+        url = "/create-status";
+      }
+      return $.post(url, JSON.stringify({
         message: $("#status-new").val()
       }), function(data) {
         if (data.error != null) {

@@ -266,9 +266,10 @@ def make_status_update_reply(status):
 
     return app.jsonify(newest_reply=parsed_reply, count=status.get_comment_count(), success=True)
 
-@app.route('/create-status', methods=['POST'])
+@app.route('/create-status', methods=['POST'], defaults={'target': False})
+@app.route('/create-status/<target>', methods=['POST'])
 @login_required
-def create_new_status():
+def create_new_status(target):
     request_json = request.get_json(force=True)
 
     status = sqlm.StatusUpdate()
@@ -287,6 +288,14 @@ def create_new_status():
     status.participants.append(status.author)
     status.created = arrow.utcnow().datetime.replace(tzinfo=None)
     status.replies = 0
+
+    if target:
+        try:
+            target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]
+            status.attached_to_user = target_user
+            status.participants.append(target_user)
+        except IndexError:
+            pass
 
     sqla.session.add(status)
     sqla.session.commit()
