@@ -335,11 +335,15 @@ def view_profile(login_name):
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
-    if user.data.has_key("my_fields"):
-        custom_fields = user.data["my_fields"]
+    if user.data != None:
+        if user.data.has_key("my_fields"):
+            custom_fields = user.data["my_fields"]
+        else:
+            custom_fields = []
+        available_fields = sqlm.User.AVAILABLE_PROFILE_FIELDS
     else:
         custom_fields = []
-    available_fields = sqlm.User.AVAILABLE_PROFILE_FIELDS
+        available_fields = []
 
     return render_template(
         "profile.jade",
@@ -408,7 +412,7 @@ def show_friends(login_name):
 
     friend_status_updates = sqlm.StatusUpdate.query \
         .filter(sqlm.StatusUpdate.author_id.in_([u.id for u in user.friends()])) \
-        .order_by(sqla.desc(sqlm.StatusUpdate.created)).all()[0:5]
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[0:5]
 
 
     if current_user.is_authenticated():
@@ -422,7 +426,7 @@ def show_friends(login_name):
                 sqlm.Blog.privacy_setting == "all",
                 sqlm.Blog.privacy_setting == "members"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
     else:
         friend_blog_entries = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
@@ -433,7 +437,7 @@ def show_friends(login_name):
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
     return render_template(
             "profile/friends.jade",
@@ -678,6 +682,9 @@ def add_custom_field(login_name):
     if request_json.get("value", "").strip() == "":
         abort(404)
 
+    if user.data == None:
+        user.data = {}
+
     tmp_data = user.data.copy()
 
     if tmp_data.has_key("my_fields"):
@@ -743,7 +750,10 @@ def change_user_settings(login_name):
 
     available_fields = sqlm.User.AVAILABLE_PROFILE_FIELDS
 
-    tmp_data = user.data
+    if user.data == None:
+        tmp_data = {}
+    else:
+        tmp_data = user.data
 
     if tmp_data.has_key("my_fields"):
         current_fields = tmp_data["my_fields"]
