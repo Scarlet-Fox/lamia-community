@@ -295,7 +295,44 @@ def view_profile(login_name):
 
     recent_status_updates_to_user = sqla.session.query(sqlm.StatusUpdate) \
         .filter_by(attached_to_user=user) \
-        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:3]
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]
+
+    if current_user in user.friends():
+        recent_blog_entries = sqla.session.query(sqlm.BlogEntry) \
+            .filter(sqlm.BlogEntry.author==user) \
+            .join(sqlm.Blog, sqlm.BlogEntry.blog_id == sqlm.Blog.id) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+                sqlm.Blog.privacy_setting == "members",
+                sqlm.Blog.privacy_setting == "friends"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
+    elif current_user.is_authenticated():
+        recent_blog_entries = sqla.session.query(sqlm.BlogEntry) \
+            .filter(sqlm.BlogEntry.author==user) \
+            .join(sqlm.Blog, sqlm.BlogEntry.blog_id == sqlm.Blog.id) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+                sqlm.Blog.privacy_setting == "members"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
+    else:
+        recent_blog_entries = sqla.session.query(sqlm.BlogEntry) \
+            .filter(sqlm.BlogEntry.author==user) \
+            .join(sqlm.Blog, sqlm.BlogEntry.blog_id == sqlm.Blog.id) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
     return render_template(
         "profile.jade",
@@ -311,6 +348,7 @@ def view_profile(login_name):
         recent_posts=recent_posts,
         recent_topics=recent_topics,
         recent_visitors=recent_visitors,
+        recent_blog_entries=recent_blog_entries,
         recent_status_updates=recent_status_updates,
         recent_status_updates_to_user=recent_status_updates_to_user,
         status_update_comments_count=status_update_comments_created

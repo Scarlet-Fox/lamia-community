@@ -9,7 +9,7 @@ import arrow, json
 from woe.views.dashboard import broadcast
 from BeautifulSoup import BeautifulSoup
 import woe.sqlmodels as sqlm
-from woe.forms.blogs import BlogSettingsForm, BlogEntryForm, BlogCommentForm 
+from woe.forms.blogs import BlogSettingsForm, BlogEntryForm, BlogCommentForm
 import math
 
 @app.route('/blogs', methods=['GET'], defaults={'page': 1})
@@ -34,7 +34,7 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "all",
                 sqlm.Blog.privacy_setting == "members"
             )) \
-            .order_by(sqla.desc(sqlm.BlogComment.created)).all()[0:10]
+            .order_by(sqla.desc(sqlm.BlogComment.created))[0:10]
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
@@ -44,7 +44,7 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "all",
                 sqlm.Blog.privacy_setting == "members"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[minimum:maximum]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[minimum:maximum]
         count = sqla.session.query(sqlm.Blog) \
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all",
@@ -61,7 +61,7 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "all",
                 sqlm.Blog.privacy_setting == "members"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
         random_blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .join(sqlm.Blog.author) \
@@ -71,7 +71,7 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "all",
                 sqlm.Blog.privacy_setting == "members"
             )) \
-            .order_by(sqla.func.random()).all()[0:10]
+            .order_by(sqla.func.random())[0:10]
     else:
         comments = sqla.session.query(sqlm.BlogComment) \
             .join(sqlm.BlogComment.blog) \
@@ -79,7 +79,7 @@ def blogs_index(page):
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
             )) \
-            .order_by(sqla.desc(sqlm.BlogComment.created)).all()[0:10]
+            .order_by(sqla.desc(sqlm.BlogComment.created))[0:10]
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
@@ -88,7 +88,7 @@ def blogs_index(page):
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[minimum:maximum]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[minimum:maximum]
         count = sqla.session.query(sqlm.Blog) \
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
@@ -103,7 +103,7 @@ def blogs_index(page):
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
         random_blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
@@ -113,7 +113,7 @@ def blogs_index(page):
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
             )) \
-            .order_by(sqla.func.random()).all()[0:10]
+            .order_by(sqla.func.random())[0:10]
 
     pages = int(math.ceil(float(count)/10.0))
     if pages > 10:
@@ -412,7 +412,7 @@ def blog_index(slug, page):
     if current_user._get_current_object() == blog.author:
         entries = sqla.session.query(sqlm.BlogEntry) \
             .filter_by(hidden=False, blog=blog) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[(page-1)*10:page*10]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[(page-1)*10:page*10]
         entry_count = sqla.session.query(sqlm.BlogEntry) \
             .filter_by(hidden=False, blog=blog).count()
         drafts = sqla.session.query(sqlm.BlogEntry) \
@@ -423,7 +423,7 @@ def blog_index(slug, page):
             .filter_by(hidden=False, blog=blog) \
             .filter(sqlm.BlogEntry.published.isnot(None)) \
             .filter(sqlm.BlogEntry.draft.isnot(True)) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[(page-1)*10:page*10]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[(page-1)*10:page*10]
         entry_count = sqla.session.query(sqlm.BlogEntry) \
             .filter_by(hidden=False, blog=blog) \
             .filter(sqlm.BlogEntry.published.isnot(None)) \

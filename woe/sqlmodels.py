@@ -1008,14 +1008,14 @@ blogentry_subscriber_table = db.Table('blog_entry_subscribers', db.metadata,
 class BlogEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, default="")
-    slug = db.Column(db.String, default="")
+    slug = db.Column(db.String, default="", index=True)
     blog_id = db.Column(db.Integer, db.ForeignKey('blog.id',
         name="fk_blogentry_blog", ondelete="CASCADE"), index=True)
     blog = db.relationship("Blog", foreign_keys="BlogEntry.blog_id", cascade="delete")
     __table_args__ = (db.UniqueConstraint('blog_id', 'slug', name='unique_blog_entry_slug'),)
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogentry_author", ondelete="CASCADE"))
+        name="fk_blogentry_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="BlogEntry.author_id")
 
     editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
@@ -1085,8 +1085,8 @@ class Blog(db.Model):
         ("you", "Only You")
     )
 
-    privacy_setting = db.Column(db.String, default="members")
-    disabled = db.Column(db.Boolean)
+    privacy_setting = db.Column(db.String, default="members", index=True)
+    disabled = db.Column(db.Boolean, index=True)
 
 def find_blog_slug(title):
     slug = slugify(title, max_length=100, word_boundary=True, save_order=True)

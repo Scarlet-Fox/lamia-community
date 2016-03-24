@@ -1001,6 +1001,7 @@ def index():
 
     status_update_authors = sqla.session.query(sqlm.StatusUpdate.author_id.label("author_id"), sqla.func.max(sqlm.StatusUpdate.created).label("created")) \
         .group_by(sqlm.StatusUpdate.author_id) \
+        .filter(sqlm.StatusUpdate.attached_to_user == None) \
         .order_by(sqla.desc(sqla.func.max(sqlm.StatusUpdate.created))).limit(5).subquery()
 
     status_updates = sqla.session.query(sqlm.StatusUpdate) \
@@ -1019,7 +1020,7 @@ def index():
                 sqlm.Blog.privacy_setting == "all",
                 sqlm.Blog.privacy_setting == "members"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
     else:
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
@@ -1029,7 +1030,7 @@ def index():
             .filter(sqla.or_(
                 sqlm.Blog.privacy_setting == "all"
             )) \
-            .order_by(sqla.desc(sqlm.BlogEntry.published)).all()[0:5]
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
     return render_template("index.jade", page_title="Scarlet's Web",
         sections=sections, sub_categories=sub_categories,

@@ -166,18 +166,28 @@
             p {{profile.display_name|e}} doesn't have an about me...
         else
           #user-profile-about-me.post-content!= profile.about_me  
-    .row
-      .col-xs-12
-        ul.list-group
-          li.list-group-item.section-header Send Message to {{profile.display_name}}
-          li.list-group-item
-            if current_user.is_authenticated()
+    if recent_blog_entries
+      .row
+        .col-xs-12
+          ul.list-group
+            li.list-group-item.section-header {{profile.display_name}}'s Recent Blog Entries
+            for blog_entry in recent_blog_entries
+              li.list-group-item
+                a(href="/blog/{{blog_entry.blog.slug}}")= blog_entry.blog.name
+                |&nbsp;::&nbsp;
+                a(href="/blog/{{blog_entry.blog.slug}}/e/{{blog_entry.slug}}")= blog_entry.title
+    if current_user.is_authenticated()
+      .row
+        .col-xs-12
+          ul.list-group
+            li.list-group-item.section-header {{profile.display_name}}'s Comment Box
+            li.list-group-item
               center
                 p
                 form.form-group.status-reply-box
                   input.form-control#status-new(type="text", maxlength="250")
                   br
-                  button#new-status.btn.btn-primary(type="submit", data-target="{{profile.login_name}}") Send to {{profile.display_name}}
+                  button#new-status.btn.btn-primary(type="submit", data-target="{{profile.login_name}}") Leave Comment for {{profile.display_name}}
     .row
       .col-sm-6
         if recent_posts
