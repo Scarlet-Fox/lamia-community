@@ -999,8 +999,15 @@ def index():
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
         .order_by(sqlm.Topic.created.desc())[:5]
 
-    status_updates = [result[1] for result in sqla.session.query(sqla.distinct(sqlm.StatusUpdate.author_id), sqlm.StatusUpdate) \
-        .order_by(sqla.desc(sqlm.StatusUpdate.created)).limit(5)]
+    status_update_authors = sqla.session.query(sqlm.StatusUpdate.author_id.label("author_id"), sqla.func.max(sqlm.StatusUpdate.created).label("created")) \
+        .group_by(sqlm.StatusUpdate.author_id) \
+        .order_by(sqla.desc(sqla.func.max(sqlm.StatusUpdate.created))).limit(5).subquery()
+
+    status_updates = sqla.session.query(sqlm.StatusUpdate) \
+        .join(status_update_authors, sqla.and_(
+            status_update_authors.c.author_id == sqlm.StatusUpdate.author_id,
+            status_update_authors.c.created == sqlm.StatusUpdate.created
+        ))[:5]
 
     if current_user.is_authenticated():
         blogs = sqla.session.query(sqlm.Blog) \

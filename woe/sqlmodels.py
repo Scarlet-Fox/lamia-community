@@ -214,19 +214,19 @@ class Fingerprint(db.Model):
 class SiteLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     method = db.Column(db.String, default="")
-    path = db.Column(db.String, default="")
+    path = db.Column(db.String, default="", index=True)
     ip_address = db.Column(db.String, default="")
     agent_platform = db.Column(db.String, default="")
     agent_browser = db.Column(db.String, default="")
     agent_browser_version = db.Column(db.String, default="")
     agent = db.Column(db.String, default="")
-    time = db.Column(db.DateTime)
+    time = db.Column(db.DateTime, index=True)
     error = db.Column(db.Boolean, default=False)
     error_name = db.Column(db.String, default="")
     error_code = db.Column(db.String, default="")
     error_description = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_sitelog_user", ondelete="SET NULL"), nullable=True)
+        name="fk_sitelog_user", ondelete="SET NULL"), nullable=True, index=True)
     user = db.relationship("User")
 
     def __repr__(self):
