@@ -72,7 +72,11 @@ $ ->
     isPanelEmpty: () ->
       if $(".dashboard-panel").length == 0
         $("#dashboard-container").before """
-        <p class="nothing-new">No new notifications, yet.</p>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <p class="nothing-new">No new notifications, yet.</p>
+          </li>
+        </ul>
         """
       else
         $(".nothing-new").remove()
