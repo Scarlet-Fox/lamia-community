@@ -274,6 +274,29 @@ def view_profile(login_name):
         favorite_phrase = []
         favorite_emotes = []
 
+    recent_visitor_logs = sqla.session.query(sqlm.SiteLog.user_id, sqla.func.max(sqlm.SiteLog.time).label("time")) \
+        .filter(sqlm.SiteLog.user_id.isnot(None)) \
+        .group_by(sqlm.SiteLog.user_id).order_by(sqla.desc(sqla.func.max(sqlm.SiteLog.time))).limit(3).subquery()
+
+    recent_visitors = sqla.session.query(sqlm.User, recent_visitor_logs.c.time) \
+        .join(recent_visitor_logs, sqla.and_(
+            recent_visitor_logs.c.user_id == sqlm.User.id
+        ))[:3]
+
+    recent_posts = sqla.session.query(sqlm.Post).filter_by(author=user) \
+        .order_by(sqla.desc(sqlm.Post.created))[:5]
+
+    recent_topics = sqla.session.query(sqlm.Topic).filter_by(author=user) \
+        .order_by(sqla.desc(sqlm.Topic.created))[:5]
+
+    recent_status_updates = sqla.session.query(sqlm.StatusUpdate) \
+        .filter_by(author=user) \
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]
+
+    recent_status_updates_to_user = sqla.session.query(sqlm.StatusUpdate) \
+        .filter_by(attached_to_user=user) \
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]
+
     return render_template(
         "profile.jade",
         profile=user,
@@ -285,6 +308,11 @@ def view_profile(login_name):
         common_emotes=favorite_emotes,
         boops_given=boops_given,
         boops_received=boops_received,
+        recent_posts=recent_posts,
+        recent_topics=recent_topics,
+        recent_visitors=recent_visitors,
+        recent_status_updates=recent_status_updates,
+        recent_status_updates_to_user=recent_status_updates_to_user,
         status_update_comments_count=status_update_comments_created
         )
 

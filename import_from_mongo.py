@@ -175,7 +175,7 @@ for status_update in core.StatusUpdate.objects():
 
     try:
         profile_user = sqla.session.query(User).filter_by(old_mongo_hash=str(status_update.attached_to_user.id)).first()
-        new_status_update.attached_to_profile = profile_user
+        new_status_update.attached_to_user = profile_user
     except:
         pass
 
