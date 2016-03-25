@@ -58,7 +58,7 @@ $ ->
         <div class="row">
           <div class="col-xs-12 col-sm-6">
             <span class="topic-listing-name">
-            <a href="/messages/{{_id}}">{{title}}</a><br>
+            {{#if new_messages}}<strong>{{/if}}<a href="/messages/{{_id}}">{{title}}</a>{{#if new_messages}}</strong>{{/if}}<br>
             <span class="topic-author">
               Started by {{creator}}, {{created}}
             </span>

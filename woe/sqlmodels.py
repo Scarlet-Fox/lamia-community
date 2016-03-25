@@ -16,11 +16,11 @@ class PrivateMessageUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_pm_u_author", ondelete="CASCADE"))
+        name="fk_pm_u_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="PrivateMessageUser.author_id")
 
     pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id',
-        name="fk_pm_u_pm", ondelete="CASCADE"))
+        name="fk_pm_u_pm", ondelete="CASCADE"), index=True)
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageUser.pm_id")
     __table_args__ = (db.UniqueConstraint('author_id', 'id', name='unique_user_pm_user'),)
 
@@ -28,10 +28,10 @@ class PrivateMessageUser(db.Model):
     exited = db.Column(db.Boolean, default=False)
     blocked = db.Column(db.Boolean, default=False)
     viewed = db.Column(db.Boolean, default=False)
-    last_viewed = db.Column(db.DateTime)
+    last_viewed = db.Column(db.DateTime, index=True)
 
     def __repr__(self):
-        return "<PrivateMessageUser: (user='%s', pm='%s')>" % (self.user.display_name, self.pm.title)
+        return "<PrivateMessageUser: (user='%s', pm='%s')>" % (self.author.display_name, self.pm.title)
 
 class PrivateMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -42,7 +42,7 @@ class PrivateMessage(db.Model):
     author = db.relationship("User", foreign_keys="PrivateMessage.author_id")
 
     last_reply_id = db.Column(db.Integer, db.ForeignKey('private_message_reply.id',
-        name="fk_pm_lastreply"))
+        name="fk_pm_lastreply"), index=True)
     last_reply = db.relationship("PrivateMessageReply", foreign_keys="PrivateMessage.last_reply_id")
 
     participants = db.relationship("User", secondary="private_message_user", backref="private_messages")
@@ -539,6 +539,15 @@ class User(db.Model):
         followed_me = FollowingUser.query.filter_by(following=self)
         users_following_me = [f.user for f in followed_me]
         return users_following_me
+
+    def unread_private_messages(self):
+        my_unread_messages = PrivateMessageUser.query.filter_by(author=self) \
+            .join(PrivateMessage, PrivateMessageUser.pm_id == PrivateMessage.id) \
+            .join(PrivateMessageReply, PrivateMessage.last_reply_id == PrivateMessageReply.id) \
+            .filter(PrivateMessageUser.last_viewed.isnot(None)) \
+            .filter(PrivateMessageReply.author != self) \
+            .filter(PrivateMessageUser.last_viewed < PrivateMessageReply.created).count()
+        return my_unread_messages
 
     def get_avatar_url(self, size=""):
         if size != "":

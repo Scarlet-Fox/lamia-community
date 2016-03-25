@@ -7,6 +7,7 @@ from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHT
 from woe.views.dashboard import broadcast
 import woe.sqlmodels as sqlm
 from woe import sqla
+from sqlalchemy.orm.attributes import flag_modified
 
 @app.route('/messages/<pk>/edit-post/<post>', methods=['GET'])
 @login_required
@@ -337,11 +338,18 @@ def message_index(pk, page, post):
             pm = topic,
             author = current_user._get_current_object()
         )[0]
+        pm_user.last_viewed = arrow.utcnow().datetime.replace(tzinfo=None)
+
+        sqla.session.add(pm_user)
+        print pm_user.last_viewed
+
+        sqla.session.commit()
 
         if pm_user.exited or pm_user.blocked:
             return abort(404)
 
     except IndexError:
+        sqla.session.rollback()
         if current_user.login_name in ["scarlet", "zoop"]:
             pass
         else:
@@ -352,6 +360,7 @@ def message_index(pk, page, post):
     except:
         page = 1
 
+    flag_modified(topic, "last_seen_by")
     if topic.last_seen_by is None:
         topic.last_seen_by = {}
 
@@ -561,11 +570,23 @@ def messages_topics():
                     pm = message
                 ).filter(sqlm.PrivateMessageUser.author!=current_user).all()
 
+        last_viewed = sqla.session.query(sqlm.PrivateMessageUser.last_viewed).filter_by(
+                    pm = message,
+                    author=current_user
+                )[0]
+
         _parsed["participants"] = [[u.author.login_name, u.author.display_name, ", "] for u in pm_participants]
         _parsed["participants"][-1][2] = ""
 
         _parsed["creator"] = message.author.display_name
         _parsed["created"] = humanize_time(message.created, "MMM D YYYY")
+
+        if last_viewed[0] == None:
+            _parsed["new_messages"] = False
+        elif last_viewed[0] < message.last_reply.created and message.last_reply.author != current_user:
+            _parsed["new_messages"] = True
+        else:
+            _parsed["new_messages"] = False
 
         _parsed["last_post_date"] = humanize_time(message.last_reply.created)
         _parsed["last_post_by"] = message.last_reply.author.display_name

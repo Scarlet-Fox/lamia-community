@@ -75,6 +75,12 @@ body(role='document')
           a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/')
             span.glyphicon.glyphicon-home()
           if current_user.is_authenticated()
+            if current_user.unread_private_messages() > 0
+              a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px; color: #B22222;", href='/messages')
+                span.glyphicon.glyphicon-envelope
+            else
+              a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/messages')
+                span.glyphicon.glyphicon-envelope
             a.button.mini-notification-button.collapsed.dropdown-toggle.notification-dropdown-toggle.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
               if notification_count == 0
                 span.badge.notification-counter {{notification_count}}
@@ -87,7 +93,7 @@ body(role='document')
               li.divider
               for notification in current_user.get_recent_notifications(15)
                 li.notification-li
-                  a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.text
+                  a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
           button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
             span.sr-only Toggle navigation
             span.icon-bar
@@ -177,6 +183,12 @@ body(role='document')
                 a(href='/register')
                   | Register
             if current_user.is_authenticated()
+              if current_user.unread_private_messages() > 0
+                a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; color: #B22222; border: none;", href='/messages')
+                  span.glyphicon.glyphicon-envelope
+              else
+                a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; border: none;", href='/messages')
+                  span.glyphicon.glyphicon-envelope
               li.dropdown#dashboard-li.hidden-xs
                 a.dropdown-toggle.notification-dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
                   if notification_count == 0
@@ -190,7 +202,7 @@ body(role='document')
                   li.divider
                   for notification in current_user.get_recent_notifications(15)
                     li.notification-li
-                      a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.text
+                      a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
                       
     #content-border
       {% block content %}
