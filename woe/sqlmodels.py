@@ -416,6 +416,9 @@ class User(db.Model):
     avatar_40_x = db.Column(db.Integer, default=40)
     avatar_40_y = db.Column(db.Integer, default=40)
     avatar_timestamp = db.Column(db.String, default="")
+    banner_image_custom = db.Column(db.String, default="")
+    title_bar_background_custom = db.Column(db.String, default="")
+    profile_background_custom = db.Column(db.String, default="")
 
     password_forgot_token = db.Column(db.String, default="")
     password_forgot_token_date = db.Column(db.DateTime, nullable=True)

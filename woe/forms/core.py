@@ -152,6 +152,27 @@ class DisplayNamePasswordForm(Form):
         if field.data != self.new_password.data:
             raise validators.ValidationError("Password and confirmation must match.")
 
+class SiteCustomization(Form):
+    banner = FileField('Profile Banner',
+            [FileAllowed(['jpg', 'jpeg', 'png'], 'Only jpg and png allowed.')]
+        )
+    headers = FileField('Profile Header Backgrounds',
+            [FileAllowed(['jpg', 'jpeg', 'png'], 'Only jpg and png allowed.')]
+        )
+    background = StringField('Background Color', [validators.Regexp('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', message="Only valid hexcodes are supported.")])
+
+    def validate_banner(self, field):
+        if not field.data:
+            return
+
+    def validate_headers(self, field):
+        if not field.data:
+            return
+
+    def validate_background(self, field):
+        if not field.data:
+            return
+
 class AvatarTitleForm(Form):
     avatar = FileField('Avatar',
             [FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Only jpg, png, and gifs allowed.')]
