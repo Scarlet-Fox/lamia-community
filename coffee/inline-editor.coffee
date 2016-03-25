@@ -1,6 +1,6 @@
 $ ->
   class InlineEditor
-    constructor: (element, url = "", cancel_button=false, edit_reason=false, height=300) ->
+    constructor: (element, url = "", cancel_button=false, edit_reason=false, height=300, no_image_link=false) ->
       Dropzone.autoDiscover = false
       @quillID = do @getQuillID
       @element = $(element)
@@ -9,6 +9,7 @@ $ ->
       @element.data("editor_is_active", true)
       @edit_reason = edit_reason
       @height="#{height}px"
+      @no_image_link = no_image_link
 
       if url != ""
         $.get url, (data) =>
@@ -197,6 +198,9 @@ $ ->
           'link-tooltip': true
           'toolbar': { container: "#toolbar-#{@quillID}" }
         theme: 'snow'
+
+      if @no_image_link
+        $(".ql-image-link").hide()
 
       quill.setHTML @element.data("editor_initial_html")
       @quill = quill

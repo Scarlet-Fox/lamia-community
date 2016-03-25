@@ -1,5 +1,6 @@
 from woe.parsers import ForumPostParser, emoticon_codes
 from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm
+from woe.forms.signatures import NewSignature
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from flask.ext.login import login_required, current_user
@@ -395,6 +396,41 @@ def show_signatures(login_name):
 
     signatures = sqla.session.query(sqlm.Signature).filter_by(owner=user) \
         .order_by(sqla.desc(sqlm.Signature.created)).all()
+
+    parser = ForumPostParser()
+    for s in signatures:
+        try:
+            s.parsed = parser.parse(s.html)
+        except:
+            s.parsed = ""
+
+    return render_template("profile/view_signatures.jade", signatures=signatures, profile=user, page_title="%s's Signatures - Scarlet's Web" % (unicode(user.display_name),))
+
+@app.route('/member/<login_name>/new-signature', methods=['GET', 'POST'])
+@login_required
+def new_signature(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if user != current_user:
+        abort(404)
+
+    form = NewSignature(csrf_enabled=False)
+    if form.validate_on_submit():
+        signature = sqlm.Signature()
+        signature.name = form.name.data
+        cleaner = ForumHTMLCleaner()
+        signature.html = cleaner.clean(form.html.data)
+        signature.active = form.active.data
+        signature.owner = user
+        signature.created = arrow.utcnow().datetime.replace(tzinfo=None)
+        sqla.session.add(signature)
+        sqla.session.commit()
+        return redirect("/member/"+unicode(user.login_name)+"/signatures")
+
+    return render_template("profile/new_signature.jade", form=form, profile=user, page_title="New Signature - Scarlet's Web")
 
 @app.route('/member/<login_name>/friends', methods=['GET'])
 @login_required

@@ -5,7 +5,7 @@
   $(function() {
     var InlineEditor;
     InlineEditor = (function() {
-      function InlineEditor(element, url, cancel_button, edit_reason, height) {
+      function InlineEditor(element, url, cancel_button, edit_reason, height, no_image_link) {
         if (url == null) {
           url = "";
         }
@@ -17,6 +17,9 @@
         }
         if (height == null) {
           height = 300;
+        }
+        if (no_image_link == null) {
+          no_image_link = false;
         }
         this.toolbarHTML = bind(this.toolbarHTML, this);
         this.editordivHTML = bind(this.editordivHTML, this);
@@ -39,6 +42,7 @@
         this.element.data("editor_is_active", true);
         this.edit_reason = edit_reason;
         this.height = height + "px";
+        this.no_image_link = no_image_link;
         if (url !== "") {
           $.get(url, (function(_this) {
             return function(data) {
@@ -172,6 +176,9 @@
           },
           theme: 'snow'
         });
+        if (this.no_image_link) {
+          $(".ql-image-link").hide();
+        }
         quill.setHTML(this.element.data("editor_initial_html"));
         this.quill = quill;
         this.element.data("_editor", this);

@@ -273,27 +273,27 @@ for attachment in core.Attachment.objects():
     sqla.session.add(sql_attachment)
     sqla.session.commit()
 
-for notification in core.Notification.objects(seen=False):
-    try:
-        sql_user = sqla.session.query(User).filter_by(old_mongo_hash=str(notification.user.id)).first()
-        sql_author = sqla.session.query(User).filter_by(old_mongo_hash=str(notification.author.id)).first()
-    except:
-        continue
-
-    sql_notification = Notification()
-    sql_notification.user = sql_user
-    sql_notification.author = sql_author
-    sql_notification.message = notification.text
-    sql_notification.category = notification.category
-    sql_notification.created = notification.created
-    sql_notification.url = notification.url
-    sql_notification.acknowledged = notification.acknowledged
-    sql_notification.seen = notification.seen
-    sql_notification.emailed = notification.emailed
-    sql_notification.priority = notification.priority
-
-    sqla.session.add(sql_notification)
-    sqla.session.commit()
+# for notification in core.Notification.objects(seen=False):
+#     try:
+#         sql_user = sqla.session.query(User).filter_by(old_mongo_hash=str(notification.user.id)).first()
+#         sql_author = sqla.session.query(User).filter_by(old_mongo_hash=str(notification.author.id)).first()
+#     except:
+#         continue
+#
+#     sql_notification = Notification()
+#     sql_notification.user = sql_user
+#     sql_notification.author = sql_author
+#     sql_notification.message = notification.text
+#     sql_notification.category = notification.category
+#     sql_notification.created = notification.created
+#     sql_notification.url = notification.url
+#     sql_notification.acknowledged = notification.acknowledged
+#     sql_notification.seen = notification.seen
+#     sql_notification.emailed = notification.emailed
+#     sql_notification.priority = notification.priority
+#
+#     sqla.session.add(sql_notification)
+#     sqla.session.commit()
 
 for message_topic in core.PrivateMessageTopic.objects():
     sql_user = sqla.session.query(User).filter_by(old_mongo_hash=str(message_topic.creator.id)).first()

@@ -568,7 +568,8 @@ class Signature(db.Model):
     owner = db.relationship("User", foreign_keys="Signature.owner_id")
     name = db.Column(db.String, default="")
     html = db.Column(db.Text)
-    created = db.Column(db.DateTime)
+    created = db.Column(db.DateTime, index=True)
+    active = db.Column(db.Boolean, index=True)
 
 ############################################################
 # Moderation Models

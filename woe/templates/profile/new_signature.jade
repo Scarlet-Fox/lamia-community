@@ -1,0 +1,40 @@
+{% extends "profile.jade" %}
+
+{% block profile_content %}
+ul.list-group
+  li.list-group-item.section-header Create a New Signature
+  li.list-group-item
+    form#new-signature-form(method="post", action="/member/{{profile.login_name}}/new-signature")
+      {{ form_errors(form) }}
+      .form-group
+        {{ form.name.label(class="control-label") }}
+        {{ form.name(class="form-control") }}
+      .form-group
+        {{ form.html.label(class="control-label") }}
+        #sig-html!= form.html.data
+        {{ form.html }}
+      .form-group
+        {{ form.active.label(class="control-label") }}
+        {{ form.active(class="form-control") }}
+      .form-group
+        button#commit-edit(type="submit").btn.btn-default Submit
+        &nbsp;
+        &nbsp;
+        a#cancel-edit(href="/member/{{profile.login_name}}/signatures").btn.btn-default Cancel
+{% endblock %}
+
+{% block profile_sidebar %}
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/edit_signature.js",
+"assets/quill/quill.js", "assets/dropzone/dropzone.js", 
+"assets/select2/select2.full.js", "local/js/inline-editor.js" ,
+"local/js/new-signatures.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+script(type="text/javascript").
+  $(document).ready(function(){  
+  
+  });
+{% endblock %}
