@@ -11,7 +11,7 @@
     };
     return $("form").submit(function(e) {
       window.save = true;
-      $("#html").val(blog_entry_editor.quill.getHTML());
+      $("#signature").val(blog_entry_editor.quill.getHTML());
       return true;
     });
   });

@@ -2,9 +2,9 @@
 
 {% block profile_content %}
 ul.list-group
-  li.list-group-item.section-header Create a New Signature
+  li.list-group-item.section-header Edit Signature
   li.list-group-item
-    form#new-signature-form(method="post", action="/member/{{profile.login_name}}/new-signature")
+    form#new-signature-form(method="post", action="/member/{{profile.login_name}}/edit-signature/{{signature.id}}")
       {{ form_errors(form) }}
       .form-group
         {{ form.name.label(class="control-label") }}
@@ -12,7 +12,7 @@ ul.list-group
       .form-group
         {{ form.signature.label(class="control-label") }}
         #sig-html!= form.signature.data
-        {{ form.signature }}
+        {{ form.signature(class="form-control") }}
       .form-group
         {{ form.active.label(class="control-label") }}
         {{ form.active(class="form-control") }}

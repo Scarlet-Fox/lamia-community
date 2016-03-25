@@ -7,6 +7,7 @@ from flask import abort, redirect, url_for, request, render_template, make_respo
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time, math
 from threading import Thread
+import random
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
 from woe.views.dashboard import broadcast
 import re, json
@@ -337,6 +338,8 @@ def topic_posts(slug):
         .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
         .order_by(sqlm.Post.created)[0]
 
+    author_signatures = {}
+
     for post in posts:
         clean_html_parser = ForumPostParser()
         parsed_post = {}
@@ -353,6 +356,20 @@ def topic_posts(slug):
         parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
+
+        if author_signatures.has_key(post.author.login_name):
+            parsed_post["signature"] = author_signatures[post.author.login_name]
+        else:
+            signatures = list(sqla.session.query(sqlm.Signature) \
+                .filter_by(owner=post.author, active=True).all())
+
+            try:
+                parsed_post["signature"] = clean_html_parser.parse(random.choice(signatures).html)
+            except IndexError:
+                parsed_post["signature"] = False
+
+            author_signatures[post.author.login_name] = parsed_post["signature"]
+
         if post == first_post:
             parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"
         parsed_post["author_login_name"] = post.author.login_name

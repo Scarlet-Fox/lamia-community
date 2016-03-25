@@ -627,6 +627,9 @@ $ ->
                   </div>
                   <hr>
                   <div class="post-signature">
+                    {{#if signature}}
+                    {{{signature}}}
+                    {{/if}}
                   </div>
                 </div>
       """

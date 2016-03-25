@@ -27,11 +27,11 @@ ul.list-group
           center
             br
             if signature.active
-              a.btn.btn-default.btn-xs.btn-primary.post-link(href="/member/{{profile.display_name}}/toggle-active") Active
+              a.btn.btn-default.btn-xs.btn-primary.post-link(href="/member/{{profile.display_name}}/toggle-active-signature/{{signature.id}}") Make Inactive
             else
-              a.btn.btn-default.btn-xs.post-link(href="/member/{{profile.display_name}}/toggle-active") Off
-            a.btn.btn-default.btn-xs(href="/member/{{profile.display_name}}/edit-signature") Edit
-            a.btn.btn-default.btn-xs.post-link(href="/member/{{profile.display_name}}/delete-signature") Delete
+              a.btn.btn-default.btn-xs.post-link(href="/member/{{profile.display_name}}/toggle-active-signature/{{signature.id}}") Make Active
+            a.btn.btn-default.btn-xs(href="/member/{{profile.display_name}}/edit-signature/{{signature.id}}") Edit
+            a.btn.btn-default.btn-xs.post-link(href="/member/{{profile.display_name}}/delete-signature/{{signature.id}}") Delete
 {% endblock %}
 
 {% block profile_sidebar %}

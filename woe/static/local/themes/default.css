@@ -861,3 +861,7 @@ td {
 .panel {
   border-radius: 0px;
 }
+.post-signature {
+  max-height: 150px;
+  overflow: hidden;
+}

@@ -569,7 +569,7 @@ class Signature(db.Model):
     name = db.Column(db.String, default="")
     html = db.Column(db.Text)
     created = db.Column(db.DateTime, index=True)
-    active = db.Column(db.Boolean, index=True)
+    active = db.Column(db.Boolean, default=True, index=True)
 
 ############################################################
 # Moderation Models

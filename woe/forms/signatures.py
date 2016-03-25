@@ -6,5 +6,5 @@ import shutil, pytz, arrow
 
 class NewSignature(Form):
     name = StringField('Nickname', [validators.InputRequired()], default="")
-    html = HiddenField('Signature', [validators.InputRequired()], default="")
+    signature = HiddenField('Signature', [validators.InputRequired()], default="")
     active = BooleanField('Active?', default=False)

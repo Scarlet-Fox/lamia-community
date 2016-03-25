@@ -406,6 +406,80 @@ def show_signatures(login_name):
 
     return render_template("profile/view_signatures.jade", signatures=signatures, profile=user, page_title="%s's Signatures - Scarlet's Web" % (unicode(user.display_name),))
 
+@app.route('/member/<login_name>/delete-signature/<id>', methods=['POST'])
+@login_required
+def delete_signature(login_name, id):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if user != current_user:
+        abort(404)
+
+    try:
+        signature = sqla.session.query(sqlm.Signature).filter_by(id=id)[0]
+    except IndexError:
+        abort(404)
+
+    sqla.session.query(sqlm.Signature).filter_by(id=id).delete()
+
+    return app.jsonify(url="/member/"+unicode(user.login_name)+"/signatures")
+
+@app.route('/member/<login_name>/toggle-active-signature/<id>', methods=['POST'])
+@login_required
+def toggle_active_signature(login_name, id):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if user != current_user:
+        abort(404)
+
+    try:
+        signature = sqla.session.query(sqlm.Signature).filter_by(id=id)[0]
+    except IndexError:
+        abort(404)
+
+    signature.active = not signature.active
+    sqla.session.add(signature)
+    sqla.session.commit()
+
+    return app.jsonify(url="/member/"+unicode(user.login_name)+"/signatures")
+
+@app.route('/member/<login_name>/edit-signature/<id>', methods=['GET', 'POST'])
+@login_required
+def edit_signature(login_name, id):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if user != current_user:
+        abort(404)
+
+    try:
+        signature = sqla.session.query(sqlm.Signature).filter_by(id=id)[0]
+    except IndexError:
+        abort(404)
+
+    form = NewSignature(csrf_enabled=False)
+    if form.validate_on_submit():
+        signature.name = form.name.data
+        cleaner = ForumHTMLCleaner()
+        signature.html = cleaner.clean(form.signature.data)
+        signature.active = form.active.data
+        sqla.session.add(signature)
+        sqla.session.commit()
+        return redirect("/member/"+unicode(user.login_name)+"/signatures")
+    else:
+        form.active.data = signature.active
+        form.signature.data = signature.html
+        form.name.data = signature.name
+
+    return render_template("profile/edit_signature.jade", form=form, profile=user, signature=signature, page_title="Edit Signature - Scarlet's Web")
+
 @app.route('/member/<login_name>/new-signature', methods=['GET', 'POST'])
 @login_required
 def new_signature(login_name):
@@ -422,7 +496,7 @@ def new_signature(login_name):
         signature = sqlm.Signature()
         signature.name = form.name.data
         cleaner = ForumHTMLCleaner()
-        signature.html = cleaner.clean(form.html.data)
+        signature.html = cleaner.clean(form.signature.data)
         signature.active = form.active.data
         signature.owner = user
         signature.created = arrow.utcnow().datetime.replace(tzinfo=None)
