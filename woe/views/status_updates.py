@@ -2,7 +2,7 @@ from woe import app
 from woe.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_required, current_user
-from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
+from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
 from mongoengine.queryset import Q
 import arrow, json
 from woe.views.dashboard import broadcast
@@ -70,7 +70,7 @@ def display_status_update(status):
 @app.route('/clear-status-updates', methods=['POST',])
 @login_required
 def clear_status_update_parameters():
-    session["count"] = 40
+    session["count"] = 15
     session["authors"] = []
     session["search"] = ""
 
@@ -79,7 +79,7 @@ def clear_status_update_parameters():
 @app.route('/status-updates', methods=['GET', 'POST'])
 @login_required
 def status_update_index():
-    count = session.get("count", 40)
+    count = session.get("count", 15)
     authors = session.get("authors", [])
     search = session.get("search", "")
 
@@ -87,7 +87,7 @@ def status_update_index():
         request_json = request.get_json(force=True)
 
         try:
-            count = int(request_json.get("count"), 10)
+            count = int(request_json.get("count"), 15)
             if count > 1000:
                 count = 1000
             session["count"] = count
@@ -95,10 +95,15 @@ def status_update_index():
             pass
 
         try:
-            authors = request_json.get("authors", [])
-            session["authors"] = authors
+            authors = list(
+                    sqla.session.query(sqlm.User) \
+                        .filter(sqlm.User.id.in_(request_json.get("authors"))) \
+                        .all()
+                )
+            session["authors"] = [{"id": a.id, "display_name": a.display_name} for a in authors]
         except:
-            pass
+            authors = []
+            session["authors"] = []
 
         try:
             search = request_json.get("search", "")[0:100]
@@ -106,38 +111,21 @@ def status_update_index():
         except:
             pass
 
-    query = {}
+    query_ = sqla.session.query(sqlm.StatusUpdate).filter_by(hidden=False)
+    if authors:
+        query_ = query_.filter(sqlm.StatusUpdate.author_id.in_([a.id for a in authors]))
 
-    try:
-        users = User.objects(pk__in=authors)
-        authors = [{"id": unicode(u.id), "text": u.display_name} for u in users]
-    except:
-        users = []
-        authors = []
-
-    user_q_ = Q()
-    if len(users) > 0:
-        user_q_ = Q(author__in=list(users))
-
-    hidden_q_ = Q(hidden=False)
-
-    search_q_ = Q()
-    if search != "":
-        search_q_ = parse_search_string_return_q(search, ["message",])
-
-    status_updates = StatusUpdate.objects(user_q_ & search_q_ & hidden_q_)[:count]
+    query_ = parse_search_string(search, sqlm.StatusUpdate, query_, ["message",])[:count]
+    status_updates = query_
 
     if request.method == 'POST':
         parsed_statuses = []
         for status in status_updates:
-            parsed_status = status.to_mongo().to_dict()
+            parsed_status = {}
+
             parsed_status["profile_address"] = url_for('view_profile', login_name=status.author.login_name)
             parsed_status["user_name"] = status.author.display_name
             parsed_status["message"] = status.message
-            if status.old_ipb_id != None:
-                parsed_status["ipb"] = True
-            else:
-                parsed_status["ipb"] = False
             parsed_status["user_avatar"] = status.author.get_avatar_url("40")
             if status.attached_to_user != None:
                 parsed_status["attached_to_user"] = status.attached_to_user.display_name
@@ -148,7 +136,6 @@ def status_update_index():
             parsed_status["user_avatar_y"] = status.author.avatar_40_y
             parsed_status["created"] = humanize_time(status.created)
             parsed_status["comment_count"] = status.get_comment_count()
-            del parsed_status["comments"]
             parsed_statuses.append(parsed_status)
         return app.jsonify(status_updates=parsed_statuses)
     else:
