@@ -11,29 +11,29 @@
         .btn-group(style="float: right;")
           {% if mod == True %}
           {% if status.hidden %}
-          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-hidden") Show
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-hidden") Show
           {% else %}
-          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-hidden") Hide
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-hidden") Hide
           {% endif %}
           {% endif %}
           {% if mod == True %}
           {% if status.locked %}
-          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-lock") Unlock
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-lock") Unlock
           {% else %}
-          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-lock") Lock
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-lock") Lock
           {% endif %}
           {% endif %}
           {% if current_user == status.author %}
           {% if status.muted %}
-          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-mute") Unmute
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-mute") Unmute
           {% else %}
-          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-mute") Mute
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-mute") Mute
           {% endif %}
           {% endif %}
           {% if current_user in status.ignoring or not current_user in status.participants %}
-          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-ignore") Follow
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-ignore") Follow
           {% else %}
-          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.pk}}/toggle-ignore") Ignore
+          a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-ignore") Ignore
           {% endif %}
       li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}")
         .media-left
@@ -72,10 +72,10 @@
               elif current_user != participant and (current_user == status.author or mod == True) and not status.attached_to_user:
                 if not participant in status.blocked():
                   br
-                  a.inherit_colors.post-link(href="/status/{{status.pk}}/toggle-silence/{{participant.pk}}") (Silence)
+                  a.inherit_colors.post-link(href="/status/{{status.id}}/toggle-silence/{{participant.id}}") (Silence)
                 else
                   br
-                  a.inherit_colors.post-link(href="/status/{{status.pk}}/toggle-silence/{{participant.pk}}") (Permit)
+                  a.inherit_colors.post-link(href="/status/{{status.id}}/toggle-silence/{{participant.id}}") (Permit)
     ul.list-group.category
       li.list-group-item.section-header(style="font-size: 14px;") New Status Update
       li.list-group-item
