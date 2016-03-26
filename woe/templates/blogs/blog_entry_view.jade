@@ -35,6 +35,9 @@
           br
           | by 
           a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
+          if current_user.is_admin
+            a.float-right(href="/admin/blogentry/edit/?id={{entry.id}}", target="_blank")
+              span.glyphicon.glyphicon-cog
           br
           span.text-muted {{ entry.published|humanize_time }}
         hr
@@ -71,13 +74,16 @@
         for comment in comments
           .list-group-item.post-listing-info
             .row
-              .col-sm-2
+              .col-xs-2
                 a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}") {{ comment.author.display_name }}
-              .col-sm-10
+              .col-xs-10
                 {{ comment.created|humanize_time }}
+                if current_user.is_admin
+                  a.float-right(href="/admin/blogcomment/edit/?id={{comment.id}}", target="_blank")
+                    span.glyphicon.glyphicon-cog
           .list-group-item(style="padding: 20px;")
             .row
-              .col-sm-2.hidden-xs
+              .col-sm-2.hidden-xs.hidden-sm
                 img.media-object(src="{{ comment.author.get_avatar_url() }}", width=comment.author.avatar_full_x*0.70, height=comment.author.avatar_full_y*0.70, class="avatar-mini")
               .col-sm-10.col-xs-12!= comment.parsed
             .blog-options

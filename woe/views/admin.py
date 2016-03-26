@@ -191,6 +191,7 @@ class BlogView(ModelView):
 
 class BlogEntryView(ModelView):
     column_list = ("id", "title")
+    form_excluded_columns = ("character", "avatar", "editor")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
