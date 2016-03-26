@@ -274,6 +274,8 @@ def create_new_status(target):
     if target:
         try:
             target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]
+            if target_user == status.author:
+                return app.jsonify(error="No talking to yourself.")
             status.attached_to_user = target_user
             status.participants.append(target_user)
         except IndexError:

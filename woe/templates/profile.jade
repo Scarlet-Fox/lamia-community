@@ -199,7 +199,7 @@ style!= profile.get_custom_css()
                 a(href="/blog/{{blog_entry.blog.slug}}")= blog_entry.blog.name
                 |&nbsp;::&nbsp;
                 a(href="/blog/{{blog_entry.blog.slug}}/e/{{blog_entry.slug}}")= blog_entry.title
-    if current_user.is_authenticated()
+    if current_user.is_authenticated() and current_user != profile
       .row
         .col-xs-12
           ul.list-group

@@ -228,6 +228,13 @@ def get_user_info_api():
     if arrow.get(user.last_seen).datetime < arrow.utcnow().replace(hours=-1).datetime:
         last_at = False
 
+    try:
+        recent_status_update = sqla.session.query(sqlm.StatusUpdate) \
+            .filter_by(author=user) \
+            .order_by(sqla.desc(sqlm.StatusUpdate.created))[0]
+    except IndexError:
+        recent_status_update = False
+
     return app.jsonify(
         avatar_image=user.get_avatar_url("60"),
         avatar_x=user.avatar_60_x,
