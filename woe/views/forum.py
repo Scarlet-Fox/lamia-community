@@ -13,6 +13,7 @@ from woe.views.dashboard import broadcast
 import re, json
 from datetime import datetime
 import woe.sqlmodels as sqlm
+from sqlalchemy.orm.attributes import flag_modified
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
@@ -119,8 +120,6 @@ def new_post_in_topic(slug):
                 .order_by(sqlm.Attachment.character_gallery_weight)[0]
     except:
         avatar = False
-
-    print avatar
 
     new_post = sqlm.Post()
     new_post.html = post_html
@@ -600,6 +599,7 @@ def topic_index(slug, page, post):
         topic.view_count = topic.view_count + 1
         try:
             topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+            flag_modified(topic, "last_seen_by")
             sqla.session.add(topic)
             sqla.session.commit()
         except:
@@ -621,6 +621,7 @@ def topic_index(slug, page, post):
     topic.view_count = topic.view_count + 1
     try:
         topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+        flag_modified(topic, "last_seen_by")
         sqla.session.add(topic)
         sqla.session.commit()
     except:
@@ -956,8 +957,6 @@ def category_index(slug):
         .filter(sqlm.Label.label != "") \
         .join(sqlm.Topic.label).group_by(sqlm.Label.label) \
         .order_by(sqla.desc(sqla.func.count(sqlm.Topic.id))).all()
-
-    print prefixes
 
     return render_template("forum/category.jade", page_title="%s - Scarlet's Web" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
 
