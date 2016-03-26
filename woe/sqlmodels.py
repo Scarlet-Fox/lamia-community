@@ -421,6 +421,7 @@ class User(db.Model):
     profile_background_custom = db.Column(db.String, default="")
     header_background_color = db.Column(db.String, default="")
     header_height = db.Column(db.Integer, default=460)
+    no_images = db.Column(db.Boolean, default=False)
 
     password_forgot_token = db.Column(db.String, default="")
     password_forgot_token_date = db.Column(db.DateTime, nullable=True)

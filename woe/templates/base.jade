@@ -55,9 +55,16 @@ head
       "local/themes/default.css", "local/themes/luna.css" %}
       link(href='{{ASSET_URL}}', rel='stylesheet')
       {% endassets %}
-      
+    
     {% block header %}
     {% endblock %}
+  
+    if current_user.no_images
+      style
+        | img { display: none !important; }
+        | iframe { display: none !important; }
+        | .site-background { background: none !important; height: 100px !important; }
+        | body { background: none !important; }
 body(role='document')
   a(href="/")
     .site-background.hidden-xs

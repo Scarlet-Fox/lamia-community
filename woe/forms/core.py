@@ -30,6 +30,7 @@ class ForgotPasswordForm(Form):
 class UserSettingsForm(Form):
     TIMEZONE_CHOICES = [(z, z) for z in pytz.common_timezones]
     time_zone = SelectField('Time zone', choices=TIMEZONE_CHOICES)
+    no_images = BooleanField("Hide all images (super at-work mode)")
 
     try:
         THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]
@@ -175,7 +176,7 @@ class SiteCustomizationForm(Form):
             self.banner_height = 460
         else:
             self.banner_height = image.height
-            
+
         _blob =  image.make_blob()
         if len(_blob) > 1024*1024*2:
             raise validators.ValidationError("Your banner filesize is too large. Resize to less than 2 MB.")

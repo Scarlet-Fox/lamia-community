@@ -940,10 +940,12 @@ def change_user_settings(login_name):
     if form.validate_on_submit():
         user.time_zone=form.time_zone.data
         user.theme = form.theme_object
+        user.no_images = form.no_images.data
         sqla.session.add(user)
         sqla.session.commit()
         return redirect("/member/"+user.login_name)
     else:
+        form.no_images.data = user.no_images
         form.time_zone.data = user.time_zone
         if user.theme == None:
             form.theme.data = "1"
