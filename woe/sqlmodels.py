@@ -611,7 +611,7 @@ class User(db.Model):
         return Notification.query.filter_by(acknowledged=False, user=self).count()
 
     def get_recent_notifications(self, count=15):
-        return Notification.query.filter_by(acknowledged=False, user=self).order_by(Notification.created)[:15]
+        return Notification.query.filter_by(acknowledged=False, user=self).order_by(db.desc(Notification.created))[:10]
 
     def get_id(self):
         return self.login_name
