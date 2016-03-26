@@ -5,6 +5,7 @@ import requests
 
 _mylookup = TemplateLookup(directories=[app.config['MAKO_EMAIL_TEMPLATE_DIR']])
 _debug = app.config['DEBUG']
+_api = app.config['MGAPI']
 
 def send_mail_w_template(send_to, subject, template, variables):
     _to_email_addresses = []
@@ -23,7 +24,7 @@ def send_mail_w_template(send_to, subject, template, variables):
 
     return requests.post(
         "https://api.mailgun.net/v3/scarletsweb.moe/messages",
-        auth=("api", "key-6177f0597e3e89353dc311acb7eb6570"),
+        auth=("api", _api),
         data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
               "to": _to_email_addresses,
               "subject": subject,

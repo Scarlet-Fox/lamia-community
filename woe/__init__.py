@@ -29,6 +29,7 @@ app.config["CUSTOMIZATIONS_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'cu
 app.config["MAX_CONTENT_LENGTH"] = 1000000000
 app.config['DEBUG'] = settings_file["debug"]
 app.config['BASE'] = settings_file["base_url"]
+app.config['MGAPI'] = settings_file["mailgun_api"]
 app.config['SQLALCHEMY_DATABASE_URI'] = settings_file["alchemy_uri"]
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 sqla = SQLAlchemy(app)
