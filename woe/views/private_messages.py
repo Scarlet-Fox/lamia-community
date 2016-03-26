@@ -517,14 +517,18 @@ def create_message():
 @app.route('/new-message/<target>', methods=['GET'])
 @login_required
 def create_message_index(target):
+    target_user = None
+    
     if target:
         try:
             target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]
         except IndexError:
-            target_user = None
             pass
 
-    return render_template("core/new_message.jade", target_user=target_user, page_title="New Private Message - Scarlet's Web")
+    if target_user:
+        return render_template("core/new_message.jade", target_user=target_user, page_title="New Private Message - Scarlet's Web")
+    else:
+        return render_template("core/new_message.jade", target_user=False, page_title="New Private Message - Scarlet's Web")
 
 @app.route('/message-topics', methods=['POST'])
 @login_required

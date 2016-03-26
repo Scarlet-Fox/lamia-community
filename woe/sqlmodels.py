@@ -254,7 +254,7 @@ class Notification(db.Model):
     snippet = db.Column(db.Text)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_notification_user", ondelete="CASCADE"))
+        name="fk_notification_user", ondelete="CASCADE"), index=True)
     user = db.relationship("User", backref="notifications", foreign_keys="Notification.user_id")
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
@@ -286,9 +286,9 @@ class Notification(db.Model):
     category = db.Column(db.String, default="")
     created = db.Column(db.DateTime)
     url = db.Column(db.String, default="")
-    acknowledged = db.Column(db.Boolean, default=False)
-    seen = db.Column(db.Boolean, default=False)
-    emailed = db.Column(db.Boolean, default=False)
+    acknowledged = db.Column(db.Boolean, default=False, index=True)
+    seen = db.Column(db.Boolean, default=False, index=True)
+    emailed = db.Column(db.Boolean, default=False, index=True)
     priority = db.Column(db.Integer, default=0)
 
     def __repr__(self):
