@@ -123,7 +123,7 @@ class StatusUpdate(db.Model):
         name="fk_status_update_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="StatusUpdate.author_id")
     attached_to_user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_status_update_attachedtouser", ondelete="CASCADE"))
+        name="fk_status_update_attachedtouser", ondelete="CASCADE"), index=True)
     attached_to_user = db.relationship("User", foreign_keys="StatusUpdate.attached_to_user_id")
 
     participants = db.relationship("User", secondary="status_update_user", backref="status_updates")
@@ -147,6 +147,8 @@ class StatusUpdate(db.Model):
 
     def __repr__(self):
         return "<StatusUpdate: (created='%s', author='%s', message='%s')>" % (self.created, self.author.display_name, self.message[0:50])
+
+db.Index('_status_user_created', StatusUpdate.author_id, StatusUpdate.created)
 
 ############################################################
 # Core Site Models
@@ -401,7 +403,7 @@ class User(db.Model):
     theme = db.relationship("SiteTheme")
 
     banned = db.Column(db.Boolean, index=True, default=False)
-    validated = db.Column(db.Boolean, default=False)
+    validated = db.Column(db.Boolean, default=False, index=True)
     over_thirteen = db.Column(db.Boolean, default=True)
 
     emails_muted = db.Column(db.Boolean, default=False)
@@ -959,7 +961,7 @@ class Topic(db.Model):
         name="fk_topic_category", ondelete="CASCADE"), index=True)
     category = db.relationship("Category", foreign_keys="Topic.category_id")
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_topic_author", ondelete="CASCADE"))
+        name="fk_topic_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="Topic.author_id")
 
     editor_id = db.Column(db.Integer, db.ForeignKey('user.id',

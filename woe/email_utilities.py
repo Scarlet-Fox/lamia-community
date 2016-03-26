@@ -19,8 +19,12 @@ def send_notification_emails():
         )
 
     for u in _users_to_check:
+        notifications = sqla.session.query(sqlm.Notification).filter_by(seen=False, acknowledged=False, emailed=False).all()
 
-        print u.login_name
+        if u.login_name == "scarlet":
+            print u.login_name
+            print [i.category for i in notifications]
+
 
 def send_mail_w_template(send_to, subject, template, variables):
     _to_email_addresses = []
