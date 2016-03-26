@@ -53,7 +53,7 @@ if images
                 .col-sm-10
                   input.form-control.caption-for(value=image.alt)
             button.btn.btn-default.btn-xs.save-button Save
-            if not image.character_emote
+            if not image.character_avatar
               button.btn.btn-default.btn-xs.toggle-emote-button(data-status="no") Add to Avatars
             else
               button.btn.btn-success.btn-xs.toggle-emote-button(data-status="yes") Remove from Avatars

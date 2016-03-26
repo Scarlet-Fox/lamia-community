@@ -501,11 +501,12 @@ def set_default_character_avatar(slug):
 
     character.legacy_avatar_field = None
     character.default_avatar = attachment
-    attachment.character_avatar = True
+    # attachment.character_avatar = True
 
     sqla.session.add(character)
-    sqla.session.add(attachment)
     sqla.session.commit()
+    # sqla.session.add(attachment)
+    # sqla.session.commit()
 
     return app.jsonify(success=True)
 

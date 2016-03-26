@@ -471,6 +471,7 @@ def edit_topic_post_html(slug):
     except:
         character = False
 
+    print request_json.get("avatar")
     try:
         avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
             character_gallery=True, character_avatar=True, id=request_json.get("avatar")) \
