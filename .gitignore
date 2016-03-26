@@ -18,3 +18,5 @@ customizations/
 config.json
 versions/
 _todo.txt
+config.json
+node_modules
