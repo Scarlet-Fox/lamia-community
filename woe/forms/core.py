@@ -25,7 +25,7 @@ class ForgotPasswordForm(Form):
         try:
             self.user = sqla.session.query(sqlm.User).filter_by(email_address=field.data)[0]
         except:
-            raise validators.ValidationError("Invalid email address. You may want to contact us at community@worldofequestria.com if you can't remember.")
+            raise validators.ValidationError("Invalid email address. You may want to contact us at sally@scarletsweb.moe if you can't remember.")
 
 class UserSettingsForm(Form):
     TIMEZONE_CHOICES = [(z, z) for z in pytz.common_timezones]
@@ -70,7 +70,7 @@ class RegistrationForm(Form):
         ip_addresses = sqla.session.query(sqlm.IPAddress).filter_by(ip_address=self.ip).all()
         for address in ip_addresses:
             if address.user.banned:
-                raise validators.ValidationError("It looks like your account was banned, please don't re-register. If this is a mistake, contact community-@-worldofequestria.com (remove the dashes).")
+                raise validators.ValidationError("It looks like your account was banned, please don't re-register. If this is a mistake, contact sally-@-scarletsweb.moe (remove the dashes).")
 
         user_count = sqla.session.query(sqlm.User).filter_by(
             login_name=field.data.lower().strip()

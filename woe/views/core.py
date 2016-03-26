@@ -6,6 +6,7 @@ from woe.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, Rese
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
+from woe.email_utilities import send_mail_w_template
 from mongoengine.queryset import Q
 from wand.image import Image
 from werkzeug import secure_filename, urls
@@ -516,7 +517,16 @@ def forgot_password():
         time = str(arrow.utcnow().timestamp)+"THIS IS A POINTLESS BIT OF TEXT LOL"
         token = bcrypt.generate_password_hash(time,10).encode('utf-8').replace("/","_")
         form.user.password_forgot_token = token
-        form.user.password_forgot_token_date = arrow.utcnow().datetime
+        form.user.password_forgot_token_date = arrow.utcnow().datetime.replace(tzinfo=None)
+        send_mail_w_template(
+            send_to=[form.user,],
+            template="password_reset.txt",
+            subject="Password Reset Email - Scarlet's Web",
+            variables={
+                "display_name": unicode(form.user.display_name),
+                "address": app.config['BASE'] + "/password-reset/" + str(token)
+            }
+        )
         sqla.session.add(form.user)
         sqla.session.commit()
         return render_template("forgot_password_confirm.jade", page_title="Forgot Password - Scarlet's Web", profile=form.user)
