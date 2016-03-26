@@ -494,15 +494,6 @@ def password_reset(token):
         sqla.session.add(user)
         sqla.session.commit()
         login_user(user)
-        broadcast(
-            to=[user,],
-            category="other",
-            url="/member/"+unicode(user.login_name),
-            title="Password reset successful! Welcome back %s!" % (unicode(user.display_name),),
-            description="",
-            content=user,
-            author=user
-            )
         return redirect("/")
 
     return render_template("new_password.jade", page_title="Forgot Password - Scarlet's Web", form=form, token=token)

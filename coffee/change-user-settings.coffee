@@ -1,4 +1,18 @@
 $ ->
+  $(".notification-toggle").click (e) ->
+    element = $(this)
+    category = element.data("target")
+    method = element.data("method")
+    on_or_off = element.is(":checked")
+
+    _data =
+      category: category
+      method: method
+      on_or_off: on_or_off
+
+    $.post "/member/#{window.l_name}/toggle-notification-method", JSON.stringify(_data), (data) =>
+      console.log data
+
   $("#add-user-field").click (e) ->
     e.preventDefault()
     field_box = $($(".fields")[0])

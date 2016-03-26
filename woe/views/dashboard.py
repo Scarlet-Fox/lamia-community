@@ -61,10 +61,9 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             created = now.datetime.replace(tzinfo=None),
             url = url,
             message = title,
-            priority = priority
+            priority = priority,
+            snippet = description
         )
-
-        
 
         sqla.session.add(new_notification)
         sqla.session.commit()

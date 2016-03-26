@@ -260,24 +260,26 @@ class Notification(db.Model):
     author = db.relationship("User", foreign_keys="Notification.author_id")
 
     NOTIFICATION_CATEGORIES = (
-        ("topic", "Topics"),
-        ("pm", "Private Messages"),
-        ("mention", "Mentioned"),
-        ("topic_reply", "Topic Replies"),
-        ("boop", "Boops"),
-        ("blog", "Blog"),
-        ("blogcomments", "Blog Comments"),
-        ("mod", "Moderation"),
-        ("status", "Status Updates"),
-        ("new_member", "New Members"),
-        ("announcement", "Announcements"),
-        ("profile_comment","Profile Comments"),
-        ("rules_updated", "Rule Update"),
-        ("faqs", "FAQs Updated"),
-        ("user_activity", "Followed User Activity"),
-        ("streaming", "Streaming"),
-        ("other", "Other")
+        ("blog", "Blog Entries", "new blog entries on subscribed blogs", "detailed"),
+        ("blogcomments", "Blog Comments", "new blog comments on subscribed entries", "detailed"),
+        ("topic", "Topics", "new posts in followed topics", "listed"),
+        ("pm", "Private Messages", "new private messages and replies", "detailed"),
+        ("mention", "Mentioned", "topic mentions", "summarized"),
+        ("topic_reply", "Topic Replies", "replies to you in a topic", "detailed"),
+        ("boop", "Boops", "all boops received", "summarized"),
+        ("mod", "Moderation", "moderation related", "listed"),
+        ("status", "Status Updates", "all status update notifications", "listed"),
+        ("new_member", "New Members", "new member announcements", "listed"),
+        ("user_activity", "Followed User Activity", "new topics and statuses by followed members", "listed"),
+        # ("announcement", "Announcements"),
+        # ("profile_comment","Profile Comments"),
+        # ("rules_updated", "Rule Update"),
+        # ("faqs", "FAQs Updated"),
+        # ("streaming", "Streaming"),
+        # ("other", "Other")
     )
+
+    # TODO: message_frequency = db.Column(db.Integer)
 
     category = db.Column(db.String, default="")
     created = db.Column(db.DateTime)

@@ -772,6 +772,36 @@ def change_avatar_or_title(login_name):
 
     return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - Scarlet's Web")
 
+@app.route('/member/<login_name>/toggle-notification-method', methods=['POST'])
+@login_required
+def toggle_notification_method(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+        abort(404)
+
+    request_json = request.get_json(force=True)
+
+    if request_json.get("category") not in [x[0] for x in sqlm.Notification.NOTIFICATION_CATEGORIES]:
+        abort(404)
+
+    if request_json.get("method") not in ["email", "dashboard"]:
+        abort(404)
+
+    if user.notification_preferences == None:
+        user.notification_preferences = {}
+
+    if not user.notification_preferences.get(request_json.get("category"), False):
+        user.notification_preferences[request_json.get("category")] = {"dashboard": True, "email": True}
+
+    user.notification_preferences[request_json.get("category")][request_json.get("method")] = request_json.get("on_or_off")
+    flag_modified(user, "notification_preferences")
+    sqla.session.add(user)
+    sqla.session.commit()
+    return app.jsonify(success=True)
 
 @app.route('/member/<login_name>/add-user-field', methods=['POST'])
 @login_required
@@ -925,6 +955,9 @@ def change_user_settings(login_name):
 
     available_fields = sqlm.User.AVAILABLE_PROFILE_FIELDS
 
+    if user.notification_preferences == None:
+        user.notification_preferences = {}
+
     if user.data == None:
         tmp_data = {}
     else:
@@ -952,7 +985,7 @@ def change_user_settings(login_name):
         else:
             form.theme.data = str(user.theme.id)
 
-    return render_template("profile/change_user_settings.jade", profile=user, available_fields=available_fields, current_fields=current_fields, form=form, page_title="Change Settings - Scarlet's Web")
+    return render_template("profile/change_user_settings.jade", profile=user, NOTIFICATION_CATEGORIES=sqlm.Notification.NOTIFICATION_CATEGORIES, available_fields=available_fields, current_fields=current_fields, form=form, page_title="Change Settings - Scarlet's Web")
 
 @app.route('/member/<login_name>/change-account', methods=['GET', 'POST'])
 @login_required
