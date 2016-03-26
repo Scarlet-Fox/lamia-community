@@ -862,6 +862,7 @@ def remove_customizations_from_profile(login_name):
     user.title_bar_background_custom = None
     user.profile_background_custom = None
     user.header_background_color = None
+    user.header_height = 460
 
     sqla.session.add(user)
     sqla.session.commit()
@@ -889,6 +890,7 @@ def customize_user_profile(login_name):
             banner_file_name = os.path.join(app.config["CUSTOMIZATIONS_UPLOAD_DIR"], "banner_" + timestamp + str(user.id) + extension)
             form.banner_image.save(filename=banner_file_name)
             user.banner_image_custom = "banner_" + timestamp + str(user.id) + extension
+            user.header_height = form.banner_height
 
         if form.header.data:
             extension = "." + form.header.data.filename.split(".")[-1].lower()

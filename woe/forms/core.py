@@ -170,6 +170,12 @@ class SiteCustomizationForm(Form):
 
         file = field.data
         image = Image(file=file)
+
+        if image.height > 460:
+            self.banner_height = 460
+        else:
+            self.banner_height = image.height
+            
         _blob =  image.make_blob()
         if len(_blob) > 1024*1024*2:
             raise validators.ValidationError("Your banner filesize is too large. Resize to less than 2 MB.")

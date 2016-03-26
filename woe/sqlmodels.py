@@ -420,6 +420,7 @@ class User(db.Model):
     title_bar_background_custom = db.Column(db.String, default="")
     profile_background_custom = db.Column(db.String, default="")
     header_background_color = db.Column(db.String, default="")
+    header_height = db.Column(db.Integer, default=460)
 
     password_forgot_token = db.Column(db.String, default="")
     password_forgot_token_date = db.Column(db.DateTime, nullable=True)
@@ -454,17 +455,25 @@ class User(db.Model):
                     body {
                         background: none;
                     }
-                    body {
+                    .site-background {
+                        background: none;
+                    }
+                    .site-background {
                         background: url("/static/customizations/%s") no-repeat scroll top !important;
-                    }""" % (self.banner_image_custom, )
+                        height: %spx;
+                    }""" % (self.banner_image_custom, self.header_height)
             else:
                 css = css + """
                     body {
                         background: none;
                     }
-                    body {
+                    .site-background {
+                        background: none;
+                    }
+                    .site-background {
                         background: #%s url("/static/customizations/%s") no-repeat scroll top !important;
-                    }""" % (self.profile_background_custom, self.banner_image_custom, )
+                        height: %spx;
+                    }""" % (self.profile_background_custom, self.banner_image_custom, self.header_height)
         if self.title_bar_background_custom:
             if not self.header_background_color:
                 css = css + """
