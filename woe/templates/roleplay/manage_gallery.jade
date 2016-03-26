@@ -32,7 +32,7 @@ if images
     li.list-group-item.section-header Image Gallery
     li.list-group-item
       for image in images
-        .media(data-image="{{image.pk}}")
+        .media(data-image="{{image.id}}")
           .media-left
             img.image-box(src="{{image.get_specific_size(100)}}", style="max-width: 100px;")
           .media-body(style="padding-left: 20px;")

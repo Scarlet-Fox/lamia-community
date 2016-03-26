@@ -72,11 +72,11 @@
                 else
                   span &nbsp;says:
                 span.discuss 
-                  a.status-reply-time.float-right(href="/status/{{status.pk}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
+                  a.status-reply-time.float-right(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
                 br
                 p.status-message {{status.message}}
                 span.status-reply-time 
-                  a(href="/status/{{status.pk}}") {{ status.created|humanize_time }}
+                  a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
         {% endfor %}
 
 {% endblock %}
