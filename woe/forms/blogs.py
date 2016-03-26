@@ -18,7 +18,7 @@ class BlogSettingsForm(Form):
 class BlogEntryForm(Form):
     title = StringField('Title', [validators.InputRequired()], default="")
     entry = HiddenField('Post', [validators.InputRequired()], default="")
-    draft = BooleanField('Draft?', default=False)
+    draft = BooleanField('Draft / Mark as Hidden?', default=False)
 
 class BlogCommentForm(Form):
     comment = HiddenField('Comment', [validators.InputRequired()], default="")

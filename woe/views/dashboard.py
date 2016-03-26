@@ -8,6 +8,7 @@ import json as py_json
 from woe import sqla
 import woe.sqlmodels as sqlm
 import hashlib
+from sqlalchemy.orm.attributes import flag_modified
 
 def send_message(data):
     req = urllib2.Request(app.settings_file["listener"]+"/notify")
@@ -40,6 +41,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
 
         if user.notification_preferences is None:
             user.notification_preferences = {}
+            flag_modified(user, "notification_preferences")
             sqla.session.add(user)
             sqla.session.commit()
 
@@ -61,6 +63,8 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             message = title,
             priority = priority
         )
+
+        
 
         sqla.session.add(new_notification)
         sqla.session.commit()

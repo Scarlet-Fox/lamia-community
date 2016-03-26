@@ -169,14 +169,18 @@
           return text;
         };
         $("#post-container").delegate(".reply-button", "click", function(e) {
-          var element, highlighted_text, my_content, post_object;
+          var element, error, highlighted_text, my_content, post_object;
           e.preventDefault();
-          post_object = getSelectionParentElement().closest(".post-content");
+          try {
+            post_object = getSelectionParentElement().closest(".post-content");
+          } catch (error) {
+            post_object = null;
+          }
           highlighted_text = getSelectionText().trim();
           element = $(this);
           my_content = "";
           return $.get("/t/" + topic.slug + "/edit-post/" + (element.data("pk")), function(data) {
-            var current_position, error, ref, x, y;
+            var current_position, error1, ref, x, y;
             if ((post_object != null) && post_object === $("#post-" + (element.data("pk")))[0]) {
               my_content = "[reply=" + (element.data("pk")) + ":post:" + data.author + "]\n" + highlighted_text + "\n[/reply]";
             } else {
@@ -186,7 +190,7 @@
             y = window.scrollY;
             try {
               topic.inline_editor.quill.focus();
-            } catch (error) {
+            } catch (error1) {
               current_position = 0;
             }
             window.scrollTo(x, y);

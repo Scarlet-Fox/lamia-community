@@ -226,7 +226,10 @@ def make_status_update_reply(status):
         to=send_notify_to_users,
         category="status",
         url="/status/"+str(status.id),
-        title="Reply to %s's Status Update" % (unicode(status.author.display_name),),
+        title="%s replied to %s's status update" % (
+            unicode(current_user._get_current_object().display_name),
+            unicode(status.author.display_name),
+            ),
         description=status.message,
         content=status,
         author=current_user._get_current_object()
@@ -237,7 +240,7 @@ def make_status_update_reply(status):
             to=[status.author],
             category="status",
             url="/status/"+str(status.id),
-            title="Reply to Your Status Update",
+            title="%s replied to your status update" % (unicode(current_user._get_current_object().display_name)),
             description=status.message,
             content=status,
             author=current_user._get_current_object()
@@ -279,22 +282,21 @@ def create_new_status(target):
     sqla.session.add(status)
     sqla.session.commit()
 
-    # TODO: FOLLOW
-    # send_notify_to_users = []
-    # for user in status.author.followed_by:
-    #     if user not in status.author.ignored_users:
-    #         send_notify_to_users.append(user)
-    #
-    # broadcast(
-    #   to=send_notify_to_users,
-    #   category="user_activity",
-    #   url="/status/"+unicode(status.id),
-    #   title="%s created a status update." % (unicode(status.author.display_name),),
-    #   description=status.message,
-    #   content=status,
-    #   author=status.author
-    #   )
-    #
+    send_notify_to_users = []
+    for user in status.author.followed_by():
+        if user not in status.author.ignored_users:
+            send_notify_to_users.append(user)
+
+    broadcast(
+      to=send_notify_to_users,
+      category="user_activity",
+      url="/status/"+unicode(status.id),
+      title="%s created a status update" % (unicode(status.author.display_name),),
+      description=status.message,
+      content=status,
+      author=status.author
+      )
+
     return app.jsonify(url="/status/"+unicode(status.id))
 
 @app.route('/status/<status>/hide-reply/<idx>', methods=['POST'])
@@ -384,7 +386,7 @@ def toggle_status_hide(status):
                 to=[status.author,],
                 category="status",
                 url="/status/"+str(status.id),
-                title="Status update hidden.",
+                title="Your status update was hidden",
                 description=status.message,
                 content=status,
                 author=current_user._get_current_object()
@@ -394,7 +396,7 @@ def toggle_status_hide(status):
             to=list(User.objects(is_admin=True)),
             category="mod",
             url="/status/"+str(status.id),
-            title="%s's status update hidden." % (unicode(status.author.display_name),),
+            title="%s's status update hidden" % (unicode(status.author.display_name),),
             description=status.message,
             content=status,
             author=current_user._get_current_object()

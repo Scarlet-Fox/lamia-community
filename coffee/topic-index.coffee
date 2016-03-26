@@ -143,7 +143,10 @@ $ ->
       $("#post-container").delegate ".reply-button", "click", (e) ->
         e.preventDefault()
 
-        post_object = getSelectionParentElement().closest(".post-content")
+        try
+          post_object = getSelectionParentElement().closest(".post-content")
+        catch
+          post_object = null
         highlighted_text = getSelectionText().trim()
 
         element = $(this)

@@ -301,7 +301,7 @@ def make_report():
         to=list(sqla.session.query(sqlm.User).filter_by(is_admin=True).all()),
         category="mod",
         url=url,
-        title="A %s was reported by %s." % (_type, unicode(current_user._get_current_object().display_name)),
+        title="A %s was reported by %s" % (_type, unicode(current_user._get_current_object().display_name)),
         description=text,
         content=report,
         author=current_user._get_current_object()
@@ -568,7 +568,7 @@ def register():
             to=[new_user,],
             category="new_member",
             url="/category/welcome-mat",
-            title="Welcome to World of Equestria! Click here to introduce yourself!",
+            title="Welcome! Click here to introduce yourself!",
             description="",
             content=new_user,
             author=new_user

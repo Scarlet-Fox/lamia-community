@@ -244,7 +244,7 @@ def new_message_in_pm_topic(pk):
         to=notify_users,
         category="pm",
         url="/messages/%s/page/1/post/%s" % (str(topic.id), str(message.id)),
-        title="%s has replied to %s." % (unicode(message.author.display_name), unicode(topic.title)),
+        title="%s has replied to %s" % (unicode(message.author.display_name), unicode(topic.title)),
         description=message.message,
         content=topic,
         author=message.author

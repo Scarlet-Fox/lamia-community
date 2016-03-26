@@ -90,7 +90,7 @@
           .btn-group
             a.btn.btn-default(href="/blog/{{blog.slug}}/new-entry") New Entry
             a.btn.btn-default(href="/blog/{{blog.slug}}/edit-blog") Settings
-    if blog.author == current_user and drafts
+    if ((blog.author == current_user) or current_user.is_admin) and drafts
       ul.list-group
         li.list-group-item.section-header.panel-title Drafts
         for draft in drafts
@@ -98,6 +98,8 @@
             a(href="/blog/{{blog.slug}}/e/{{draft.slug}}")= draft.title
             &nbsp;
             a(href="/blog/{{blog.slug}}/e/{{draft.slug}}/edit-entry") (edit)
+            &nbsp;
+            a.post-link(href="/blog/{{blog.slug}}/e/{{draft.slug}}/remove-entry") (remove)
     if comments
       ul.list-group
         li.list-group-item.section-header.panel-title Recent Comments

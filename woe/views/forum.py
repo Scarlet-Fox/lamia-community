@@ -201,7 +201,7 @@ def new_post_in_topic(slug):
       to=to_notify_m.values(),
       category="mention",
       url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
-      title="%s mentioned you in %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
+      title="%s mentioned you in %s" % (unicode(new_post.author.display_name), unicode(topic.title)),
       description=new_post.html,
       content=new_post,
       author=new_post.author
@@ -211,7 +211,7 @@ def new_post_in_topic(slug):
     to_notify = {}
     for reply_ in replies:
         try:
-            to_notify[reply_] = sqlm.session.query(sqlm.Post).filter_by(id=reply_[0])[0].author
+            to_notify[reply_] = sqla.session.query(sqlm.Post).filter_by(id=reply_[0])[0].author
         except:
             continue
 
@@ -219,7 +219,7 @@ def new_post_in_topic(slug):
       to=to_notify.values(),
       category="topic_reply",
       url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
-      title="%s replied to you in %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
+      title="%s replied to you in %s" % (unicode(new_post.author.display_name), unicode(topic.title)),
       description=new_post.html,
       content=new_post,
       author=new_post.author
@@ -250,7 +250,7 @@ def new_post_in_topic(slug):
         to=notify_users,
         category="topic",
         url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
-        title="%s has replied to %s." % (unicode(new_post.author.display_name), unicode(topic.title)),
+        title="%s has replied to %s" % (unicode(new_post.author.display_name), unicode(topic.title)),
         description=new_post.html,
         content=topic,
         author=new_post.author
@@ -599,10 +599,8 @@ def topic_index(slug, page, post):
                 last_seen = arrow.get(arrow.utcnow().timestamp).datetime.replace(tzinfo=None)
             try:
                 post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
-                    .filter_by(id=post).filter(sqlm.Post.created < last_seen) \
-                    .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
-                    .order_by(sqlm.Post.created.desc())[0]
-            except:
+                    .filter_by(id=post)[0]
+            except IndexError:
                 return redirect("/t/"+unicode(topic.slug))
         else:
             post = ""
@@ -832,16 +830,15 @@ def new_topic(slug):
         sqla.session.commit()
 
         send_notify_to_users = []
-        # TODO:
-        # for user in new_post.author.followed_by:
-        #     if user not in new_post.author.ignored_users:
-        #         send_notify_to_users.append(user)
+        for user in new_post.author.followed_by():
+            if user not in new_post.author.ignored_users:
+                send_notify_to_users.append(user)
 
         broadcast(
           to=send_notify_to_users,
           category="user_activity",
           url="/t/"+unicode(new_topic.slug),
-          title="%s created a new topic. %s." % (unicode(new_post.author.display_name), unicode(new_topic.title)),
+          title="%s created a new topic %s" % (unicode(new_post.author.display_name), unicode(new_topic.title)),
           description=new_post.html,
           content=new_topic,
           author=new_post.author
@@ -859,7 +856,7 @@ def new_topic(slug):
           to=to_notify.values(),
           category="mention",
           url="/t/"+unicode(new_topic.slug),
-          title="%s mentioned you in new topic %s." % (unicode(new_post.author.display_name), unicode(new_topic.title)),
+          title="%s mentioned you in new topic %s" % (unicode(new_post.author.display_name), unicode(new_topic.title)),
           description=new_post.html,
           content=new_topic,
           author=new_post.author

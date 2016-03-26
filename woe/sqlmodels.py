@@ -249,6 +249,7 @@ class Role(db.Model):
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
+    snippet = db.Column(db.Text)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_notification_user", ondelete="CASCADE"))
@@ -264,6 +265,8 @@ class Notification(db.Model):
         ("mention", "Mentioned"),
         ("topic_reply", "Topic Replies"),
         ("boop", "Boops"),
+        ("blog", "Blog"),
+        ("blogcomments", "Blog Comments"),
         ("mod", "Moderation"),
         ("status", "Status Updates"),
         ("new_member", "New Members"),
