@@ -335,11 +335,13 @@ def topic_posts(slug):
         .order_by(sqlm.Post.created)[0]
 
     author_signatures = {}
+    author_signatures_id = {}
 
     for post in posts:
         clean_html_parser = ForumPostParser()
         parsed_post = {}
         parsed_post["_id"] = post.id
+        parsed_post["_tid"] = topic.id
         parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
         parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
         parsed_post["html"] = clean_html_parser.parse(post.html)
@@ -353,18 +355,28 @@ def topic_posts(slug):
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
 
+        if current_user.is_admin == True:
+            parsed_post["is_admin"] = True
+        else:
+            parsed_post["is_admin"] = False
+
         if author_signatures.has_key(post.author.login_name):
             parsed_post["signature"] = author_signatures[post.author.login_name]
+            parsed_post["signature_id"] = author_signatures_id[post.author.login_name]
         else:
             signatures = list(sqla.session.query(sqlm.Signature) \
                 .filter_by(owner=post.author, active=True).all())
 
             try:
-                parsed_post["signature"] = clean_html_parser.parse(random.choice(signatures).html)
+                signature = random.choice(signatures)
+                parsed_post["signature"] = clean_html_parser.parse(signature.html)
+                parsed_post["signature_id"] = signature.id
             except IndexError:
                 parsed_post["signature"] = False
+                parsed_post["signature_id"] = False
 
             author_signatures[post.author.login_name] = parsed_post["signature"]
+            author_signatures_id[post.author.login_name] = parsed_post["signature_id"]
 
         if post == first_post:
             parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"

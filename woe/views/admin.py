@@ -82,7 +82,7 @@ class TopicView(ModelView):
     column_list = ("id", "title","created")
     column_filters = ["id", "slug", "sticky","hidden","locked","label"]
     # column_searchable_list = ('title',)
-    # form_excluded_columns = ("watchers", "banned_from_topic", "first_post")
+    form_excluded_columns = ("watchers", "moderators", "banned", "recent_post", "editor")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
@@ -112,7 +112,7 @@ class PostView(ModelView):
     can_delete = False
     column_list = ("id", "topic", "created", "author")
     # column_filters = ('topic_name', 'author_name', 'html', 'old_ipb_id', 'hidden')
-    # form_excluded_columns = ("boops", )
+    form_excluded_columns = ("boops", "topic", "editor", "character", "avatar")
 
     column_filters = ["id", ]
 
