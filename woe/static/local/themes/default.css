@@ -713,6 +713,7 @@ a.inherit_colors {
 
 .status-message {
   font-size: 14px;
+  word-break: break-all;
 }
 .post-member-avatar {
   border: 1px solid #d5d5d5;
