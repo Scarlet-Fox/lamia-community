@@ -229,11 +229,14 @@ def get_user_info_api():
         last_at = False
 
     try:
-        recent_status_update = sqla.session.query(sqlm.StatusUpdate) \
+        recent_status = sqla.session.query(sqlm.StatusUpdate) \
             .filter_by(author=user) \
             .order_by(sqla.desc(sqlm.StatusUpdate.created))[0]
+        recent_status_update = recent_status.message
+        recent_status_update_id = recent_status.id
     except IndexError:
         recent_status_update = False
+        recent_status_update_id = False
 
     return app.jsonify(
         avatar_image=user.get_avatar_url("60"),
@@ -244,6 +247,8 @@ def get_user_info_api():
         last_seen=humanize_time(user.last_seen),
         last_seen_at=last_at,
         last_seen_url=last_url,
+        recent_status_message_id=recent_status_update_id,
+        recent_status_message=recent_status_update,
         joined=humanize_time(user.joined, "MMM D YYYY"),
         roles=user.get_roles()
     )

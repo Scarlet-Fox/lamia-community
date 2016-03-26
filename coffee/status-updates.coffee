@@ -85,7 +85,7 @@ $ ->
       if c > 99
         @flashError "This status update is full."
         $("#submit-reply").addClass "disabled"
-      $("#status-status").text "#{c} / 100 Replies"
+      $("#status-status").text "#{c} / 200 Replies"
 
     updateCount: (c) ->
       n = parseInt(c)

@@ -232,6 +232,14 @@ $ ->
           </div>
           {{/if}}
         </div>
+        {{#if recent_status_message}}
+        <div class="row">
+          <div class="col-xs-12 hover-status">
+            <div>{{{recent_status_message}}}</div>
+            <a href="/status/{{recent_status_message_id}}">Recent Status</a>
+          </div>
+        </div>
+        {{/if}}
       </div>
   """
   hoverTemplate = Handlebars.compile(p_html)
