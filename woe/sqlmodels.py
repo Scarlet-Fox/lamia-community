@@ -482,6 +482,19 @@ class User(db.Model):
                         background: #%s url("/static/customizations/%s") no-repeat scroll top !important;
                         height: %spx;
                     }""" % (self.profile_background_custom, self.banner_image_custom, self.header_height)
+        else:
+            if self.profile_background_custom:
+                css = css + """
+                    body {
+                        background: none;
+                    }
+                    .site-background {
+                        background: none;
+                    }
+                    .site-background {
+                        background: #%s !important;
+                        height: %spx;
+                    }""" % (self.profile_background_custom, self.header_height)
         if self.title_bar_background_custom:
             if not self.header_background_color:
                 css = css + """
@@ -507,11 +520,11 @@ class User(db.Model):
             else:
                 css = css + """
                     .panel-heading {
-                      background: %s url("/static/customizations/%s");
+                      background: #%s url("/static/customizations/%s");
                     }
 
                     .section-header {
-                      background: %s url("/static/customizations/%s");
+                      background: #%s url("/static/customizations/%s");
                     }
 
                     .popover-title {
@@ -519,12 +532,34 @@ class User(db.Model):
                     }
 
                     .toggle-show-roles-button {
-                      background: %s url("/static/customizations/%s");
+                      background: #%s url("/static/customizations/%s");
                     }
                     """  % (self.header_background_color, self.title_bar_background_custom,
                             self.header_background_color, self.title_bar_background_custom,
                             self.title_bar_background_custom,
                             self.header_background_color, self.title_bar_background_custom)
+        else:
+            if self.header_background_color:
+                css = css + """
+                    .panel-heading {
+                      background: #%s;
+                    }
+
+                    .section-header {
+                      background: #%s;
+                    }
+
+                    .popover-title {
+                      background: #%s !important;
+                    }
+
+                    .toggle-show-roles-button {
+                      background: #%s;
+                    }
+                    """  % (self.header_background_color,
+                            self.header_background_color,
+                            self.title_bar_background_custom,
+                            self.header_background_color)
         return css
 
     def __repr__(self):

@@ -932,7 +932,7 @@ def customize_user_profile(login_name):
             user.profile_background_custom = form.background.data
 
         if form.header_background.data and form.header_background.data != "FFFFFF":
-            user.profile_background_custom = form.header_background.data
+            user.header_background_color = form.header_background.data
 
         sqla.session.add(user)
         sqla.session.commit()
