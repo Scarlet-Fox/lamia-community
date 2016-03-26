@@ -1,7 +1,7 @@
 {% extends "base.jade" %}
 
 {% block content %}
-if my_blogs
+if current_user.is_authenticated()
   .row
     .col-sm-12
       ul.list-group
@@ -9,8 +9,8 @@ if my_blogs
           span My Blogs
         li.list-group-item.body-background
           a.btn.btn-primary(style="margin: 2px;", href="/blogs/new-blog") New Blog
-            for blog in my_blogs
-              a.btn.btn-default(style="margin: 2px;", href="/blog/{{blog.slug}}") {{blog.name}}
+          for blog in my_blogs
+            a.btn.btn-default(style="margin: 2px;", href="/blog/{{blog.slug}}") {{blog.name}}
 .row
   .col-sm-9
     ul.list-group
