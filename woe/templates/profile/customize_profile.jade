@@ -1,0 +1,53 @@
+{% extends "profile.jade" %}
+
+{% block profile_content %}
+.row
+  .col-xs-12
+    ul.list-group
+      li.list-group-item.section-header Customize Profile
+      li.list-group-item
+        .row
+          .col-lg-6.col-md-6.col-sm-8
+            form(action="/member/{{profile.login_name}}/customize-profile", method="post", enctype="multipart/form-data")
+              {{ form_errors(form) }}
+              .form-group
+                {{ form.banner.label }}
+                {{ form.banner(class="form-control") }}
+              .form-group
+                {{ form.header.label }}
+                {{ form.header(class="form-control") }}
+              .form-group
+                {{ form.background.label }}
+                {{ form.background(class="form-control jscolor") }}
+              .form-group
+                {{ form.header_background.label }}
+                {{ form.header_background(class="form-control jscolor") }}
+              button(type="submit").btn.btn-default Submit
+              &nbsp;
+              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/remove-customizations-profile") Remove Customizations
+      li.list-group-item
+        p If you abuse your customizations, they will be removed. If you post something terrible, we will ban you without a moment's notice. There are no appeals to our bans and there is no arbitration process. Use responsibly. If you want to know if something is acceptable, contact Zoop. :)
+    ul.list-group
+      if profile.banner_image_custom
+        li.list-group-item.section-header Current Banner Image
+        li.list-group-item
+          img(src="/static/customizations/{{profile.banner_image_custom}}", style="max-width: 100%")
+      if profile.title_bar_background_custom
+        li.list-group-item.section-header Current Title Bar Headers
+        li.list-group-item
+          img(src="/static/customizations/{{profile.title_bar_background_custom}}", style="max-width: 100%")
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/customize_user_profile.js",
+"assets/jscolor/jscolor.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+script(type="text/javascript").
+  $(document).ready(function(){
+    window.l_name = "{{profile.login_name}}";
+  });
+{% endblock %}
+
+{% block profile_sidebar %}
+{% endblock %}

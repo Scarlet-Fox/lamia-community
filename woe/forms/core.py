@@ -152,26 +152,41 @@ class DisplayNamePasswordForm(Form):
         if field.data != self.new_password.data:
             raise validators.ValidationError("Password and confirmation must match.")
 
-class SiteCustomization(Form):
-    banner = FileField('Profile Banner',
+class SiteCustomizationForm(Form):
+    banner = FileField('Page Banner Image',
             [FileAllowed(['jpg', 'jpeg', 'png'], 'Only jpg and png allowed.')]
         )
-    headers = FileField('Profile Header Backgrounds',
+    header = FileField('Header Background Image',
             [FileAllowed(['jpg', 'jpeg', 'png'], 'Only jpg and png allowed.')]
         )
-    background = StringField('Background Color', [validators.Regexp('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', message="Only valid hexcodes are supported.")])
+    background = StringField('Page Background Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
+
+    header_background = StringField('Header Background Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
+
 
     def validate_banner(self, field):
         if not field.data:
             return
 
-    def validate_headers(self, field):
+        file = field.data
+        image = Image(file=file)
+        _blob =  image.make_blob()
+        if len(_blob) > 1024*1024*2:
+            raise validators.ValidationError("Your banner filesize is too large. Resize to less than 2 MB.")
+
+        self.banner_image = image
+
+    def validate_header(self, field):
         if not field.data:
             return
 
-    def validate_background(self, field):
-        if not field.data:
-            return
+        file = field.data
+        image = Image(file=file)
+        _blob =  image.make_blob()
+        if len(_blob) > 1024*300:
+            raise validators.ValidationError("Your header filesize is too large. Resize to less than 300 KB.")
+
+        self.header_image = image
 
 class AvatarTitleForm(Form):
     avatar = FileField('Avatar',

@@ -419,6 +419,7 @@ class User(db.Model):
     banner_image_custom = db.Column(db.String, default="")
     title_bar_background_custom = db.Column(db.String, default="")
     profile_background_custom = db.Column(db.String, default="")
+    header_background_color = db.Column(db.String, default="")
 
     password_forgot_token = db.Column(db.String, default="")
     password_forgot_token_date = db.Column(db.DateTime, nullable=True)
@@ -444,6 +445,70 @@ class User(db.Model):
 
     # Migration related
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
+
+    def get_custom_css(self):
+        css = """"""
+        if self.banner_image_custom:
+            if not self.profile_background_custom:
+                css = css + """
+                    body {
+                        background: none;
+                    }
+                    body {
+                        background: url("/static/customizations/%s") no-repeat scroll top !important;
+                    }""" % (self.banner_image_custom, )
+            else:
+                css = css + """
+                    body {
+                        background: none;
+                    }
+                    body {
+                        background: #%s url("/static/customizations/%s") no-repeat scroll top !important;
+                    }""" % (self.profile_background_custom, self.banner_image_custom, )
+        if self.title_bar_background_custom:
+            if not self.header_background_color:
+                css = css + """
+                    .panel-heading {
+                      background: url("/static/customizations/%s");
+                    }
+
+                    .section-header {
+                      background: url("/static/customizations/%s");
+                    }
+
+                    .popover-title {
+                      background-image: url("/static/customizations/%s") !important;
+                    }
+
+                    .toggle-show-roles-button {
+                      background: url("/static/customizations/%s");
+                    }
+                    """ % (self.title_bar_background_custom,
+                            self.title_bar_background_custom,
+                            self.title_bar_background_custom,
+                            self.title_bar_background_custom)
+            else:
+                css = css + """
+                    .panel-heading {
+                      background: %s url("/static/customizations/%s");
+                    }
+
+                    .section-header {
+                      background: %s url("/static/customizations/%s");
+                    }
+
+                    .popover-title {
+                      background-image: url("/static/customizations/%s") !important;
+                    }
+
+                    .toggle-show-roles-button {
+                      background: %s url("/static/customizations/%s");
+                    }
+                    """  % (self.header_background_color, self.title_bar_background_custom,
+                            self.header_background_color, self.title_bar_background_custom,
+                            self.title_bar_background_custom,
+                            self.header_background_color, self.title_bar_background_custom)
+        return css
 
     def __repr__(self):
         return "%s" % (self.display_name)

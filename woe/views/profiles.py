@@ -1,5 +1,5 @@
 from woe.parsers import ForumPostParser, emoticon_codes
-from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm
+from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm, SiteCustomizationForm
 from woe.forms.signatures import NewSignature
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
@@ -846,6 +846,69 @@ def remove_custom_field(login_name):
 
     return app.jsonify(success=True)
 
+@app.route('/member/<login_name>/remove-customizations-profile', methods=['GET', 'POST'])
+@login_required
+def remove_customizations_from_profile(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+        abort(404)
+
+
+    user.banner_image_custom = None
+    user.title_bar_background_custom = None
+    user.profile_background_custom = None
+    user.header_background_color = None
+
+    sqla.session.add(user)
+    sqla.session.commit()
+
+    return app.jsonify(url="/member/"+user.login_name+"/customize-profile")
+
+@app.route('/member/<login_name>/customize-profile', methods=['GET', 'POST'])
+@login_required
+def customize_user_profile(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+        abort(404)
+
+    form = SiteCustomizationForm(csrf_enabled=False)
+
+    if form.validate_on_submit():
+        timestamp = str(time.time())
+
+        if form.banner.data:
+            extension = "." + form.banner.data.filename.split(".")[-1].lower()
+            banner_file_name = os.path.join(app.config["CUSTOMIZATIONS_UPLOAD_DIR"], "banner_" + timestamp + str(user.id) + extension)
+            form.banner_image.save(filename=banner_file_name)
+            user.banner_image_custom = "banner_" + timestamp + str(user.id) + extension
+
+        if form.header.data:
+            extension = "." + form.header.data.filename.split(".")[-1].lower()
+            header_file_name = os.path.join(app.config["CUSTOMIZATIONS_UPLOAD_DIR"], "header_" + timestamp + str(user.id) + extension)
+            form.header_image.save(filename=header_file_name)
+            user.title_bar_background_custom = "header_" + timestamp + str(user.id) + extension
+
+        if form.background.data and form.background.data != "FFFFFF":
+            user.profile_background_custom = form.background.data
+
+        if form.header_background.data and form.header_background.data != "FFFFFF":
+            user.profile_background_custom = form.header_background.data
+
+        sqla.session.add(user)
+        sqla.session.commit()
+    else:
+        form.background.data = user.profile_background_custom
+        form.header_background.data = user.header_background_color
+
+    return render_template("profile/customize_profile.jade", profile=user, form=form, page_title="Customize Profile - Scarlet's Web")
 
 @app.route('/member/<login_name>/change-settings', methods=['GET', 'POST'])
 @login_required

@@ -1,81 +1,68 @@
 {% extends "profile.jade" %}
 
-{% block profile_content %}
-ul.list-group
-  li.list-group-item.section-header Change User Settings
-  li.list-group-item
-    .row
-      .col-lg-6.col-md-6.col-sm-8
-        form(action="/member/{{profile.login_name}}/change-settings", method="post")
-          {{ form_errors(form) }}
-          .form-group
-            {{ form.time_zone.label }}
-            {{ form.time_zone(class="form-control") }}
-          .form-group
-            {{ form.theme.label }}
-            {{ form.theme(class="form-control") }}
-          button(type="submit").btn.btn-default Submit
-//- ul.list-group
-//-   li.list-group-item.section-header Change Ignore Settings
-//-   li.list-group-item
-//-     .row
-//-       .col-xs-12
-//-         .form-group
-//-           label.control-label.col-sm-2 Ignore User(s)
-//-           .col-sm-5
-//-             select#user-ignore-select(multiple="multiple", style="width: 200px;")
-//-           .col-sm-2
-//-             .visible-xs-block
-//-               br
-//-             a.btn.btn-default#user-ignore-button(href="/member/{{profile.login_name}}/ignore-users") Ignore
-ul.list-group
-  li.list-group-item.section-header Custom Profile Fields
-  li.list-group-item
-    .row
-      .col-xs-12
-        .form-inline
-          .form-group
-            label.control-label.col-sm-2 Custom Field
-          .form-group
-            select.form-control#user-field-select()
-              for custom_field in available_fields
-                option(value="{{custom_field}}")= custom_field
-          .form-group
-            input.form-control#user-field-value()
-          .form-group
-            a.btn.btn-default#add-user-field(href="#") Add
-      if current_fields
-        li.list-group-item.fields
-          ul
-            for field_type in available_fields
-              for field in current_fields
-                if field[0] == field_type:
-                  li
-                    b= field[0]
-                    |&nbsp;&nbsp;&nbsp;
-                    |{{field[1]}}&nbsp;&nbsp;&nbsp;
-                    a.remove-user-field(href="#", data-field=field[0], data-value=field[1]) (remove)
-      else
-        li.list-group-item.fields(style="display: none;")
-          ul
-        //- ul
-        //-   li 
-        //-     b Field&nbsp;&nbsp;&nbsp;
-        //-     | Value&nbsp;&nbsp;&nbsp;
-        //-     a(href="#") (remove)
-        //-   li 
-        //-     b Field&nbsp;&nbsp;&nbsp;
-        //-     | Value&nbsp;&nbsp;&nbsp;
-        //-     a(href="#") (remove)
-        //-   li 
-        //-     b Field&nbsp;&nbsp;&nbsp;
-        //-     | Value&nbsp;&nbsp;&nbsp;
-        //-     a(href="#") (remove)
-        //-   li 
-        //-     b Field&nbsp;&nbsp;&nbsp;
-        //-     | Value&nbsp;&nbsp;&nbsp;
-        //-     a(href="#") (remove)
+{% block profile_sidebar %}
+{% endblock %}
 
+{% block profile_content %}
+.row
+  .col-xs-12
+  ul.list-group
+    li.list-group-item.section-header Change User Settings
+    li.list-group-item
+      .row
+        .col-lg-6.col-md-6.col-sm-8
+          form(action="/member/{{profile.login_name}}/change-settings", method="post")
+            {{ form_errors(form) }}
+            .form-group
+              {{ form.time_zone.label }}
+              {{ form.time_zone(class="form-control") }}
+            .form-group
+              {{ form.theme.label }}
+              {{ form.theme(class="form-control") }}
+            button(type="submit").btn.btn-default Submit
+  //- ul.list-group
+  //-   li.list-group-item.section-header Change Ignore Settings
+  //-   li.list-group-item
+  //-     .row
+  //-       .col-xs-12
+  //-         .form-group
+  //-           label.control-label.col-sm-2 Ignore User(s)
+  //-           .col-sm-5
+  //-             select#user-ignore-select(multiple="multiple", style="width: 200px;")
+  //-           .col-sm-2
+  //-             .visible-xs-block
+  //-               br
+  //-             a.btn.btn-default#user-ignore-button(href="/member/{{profile.login_name}}/ignore-users") Ignore
+  ul.list-group
+    li.list-group-item.section-header Custom Profile Fields
+    li.list-group-item
+      .row
+        .col-xs-12
+          .form-inline
+            .form-group
+              label.control-label.col-sm-2 Custom Field
+            .form-group
+              select.form-control#user-field-select()
+                for custom_field in available_fields
+                  option(value="{{custom_field}}")= custom_field
+            .form-group
+              input.form-control#user-field-value()
+            .form-group
+              a.btn.btn-default#add-user-field(href="#") Add
+        if current_fields
+          li.list-group-item.fields
+            ul
+              for field_type in available_fields
+                for field in current_fields
+                  if field[0] == field_type:
+                    li
+                      b= field[0]
+                      |&nbsp;&nbsp;&nbsp;
+                      |{{field[1]}}&nbsp;&nbsp;&nbsp;
+                      a.remove-user-field(href="#", data-field=field[0], data-value=field[1]) (remove)
+        else
+          li.list-group-item.fields(style="display: none;")
+            ul
 {% endblock %}
 
 {% block script %}

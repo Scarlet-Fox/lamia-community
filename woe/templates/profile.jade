@@ -1,5 +1,10 @@
 {% extends "base.jade" %}
 
+{% block header %}
+style!= profile.get_custom_css()
+    
+{% endblock %}
+
 {% block content %}
 //- .row
 //-   .div.popover(style="display:block;")
@@ -88,9 +93,13 @@
           li(role="presentation")
             a(href="/member/{{profile.login_name}}/change-account") Account
           {% endif %}
+          li(role="presentation")
+            a(href="/member/{{profile.login_name}}/signatures") Signatures
           if current_user == profile or current_user.is_admin
             li(role="presentation")
               a(href="/member/{{profile.login_name}}/change-settings") Settings
+            li(role="presentation")
+              a(href="/member/{{profile.login_name}}/customize-profile") Customize
           {% if current_user.is_admin  %}
           li(role="presentation")
             a(href="/member/{{profile.login_name}}/mod-panel") Moderation
