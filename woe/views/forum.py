@@ -108,9 +108,6 @@ def new_post_in_topic(slug):
     except:
         character = False
 
-    print character
-    print request_json.get("avatar")
-
     try:
         avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
             character_gallery=True, character_avatar=True, id=request_json.get("avatar")) \

@@ -56,15 +56,6 @@ def display_status_update(status):
     sqla.session.add(status)
     sqla.session.commit()
 
-    # has_viewed = False
-    # for viewer in status.viewing:
-    #     if viewer.user == current_user._get_current_object():
-    #         viewer.last_seen = arrow.utcnow().datetime
-    #         has_viewed = True
-    #
-    # if has_viewed == False:
-    #     status.viewing.append(StatusViewer(user=current_user._get_current_object(), last_seen=arrow.utcnow().datetime))
-
     return render_template("status_update.jade", page_title="%s's Status Update - %s - Scarlet's Web" % (unicode(status.author.display_name), humanize_time(status.created)), status=status, mod=mod)
 
 @app.route('/clear-status-updates', methods=['POST',])
