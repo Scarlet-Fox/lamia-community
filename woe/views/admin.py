@@ -101,7 +101,7 @@ class StatusCommentView(ModelView):
     can_delete = False
     column_list = ("id", "author","created","status")
     # column_filters = ["author_name","attached_to_user_name", "hidden", "locked", "muted"]
-    # form_excluded_columns = ("participants", "ignoring","blocked")
+    form_excluded_columns = ("status",)
 
     column_filters = ["id", ]
 
@@ -229,6 +229,7 @@ admin.add_view(FriendshipView(sqlm.Friendship, sqla.session, category='Members')
 admin.add_view(SignatureView(sqlm.Signature, sqla.session, category='Members'))
 admin.add_view(NotificationView(sqlm.Notification, sqla.session, category='Members'))
 admin.add_view(StatusView(sqlm.StatusUpdate, sqla.session, category='Members'))
+admin.add_view(StatusCommentView(sqlm.StatusComment, sqla.session, category='Members'))
 admin.add_view(PrivateMessageTopicView(sqlm.PrivateMessage, sqla.session, category='Members'))
 admin.add_view(PostView(sqlm.Post, sqla.session, category='Forum'))
 admin.add_view(TopicView(sqlm.Topic, sqla.session, category='Forum'))

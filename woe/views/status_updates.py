@@ -29,6 +29,7 @@ def status_update_replies(status):
         parsed_reply["user_avatar"] = reply.author.get_avatar_url("40")
         parsed_reply["user_avatar_x"] = reply.author.avatar_40_x
         parsed_reply["user_avatar_y"] = reply.author.avatar_40_y
+        parsed_reply["is_admin"] = current_user.is_admin
         parsed_reply["time"] = humanize_time(reply.created)
         parsed_reply["idx"] = reply.id
         replies.append(parsed_reply)

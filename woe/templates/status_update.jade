@@ -47,6 +47,8 @@
                 a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
                 |:
             span.status-time {{ status.created|humanize_time }} 
+          a.float-right(href="/admin/statusupdate/edit/?id={{status.id}}", target="_blank")
+            span.glyphicon.glyphicon-cog
           p {{status.message}}
       li.list-group-item.status-replies#status-replies
       li.list-group-item.status-reply-form

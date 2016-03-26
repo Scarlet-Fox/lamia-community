@@ -109,6 +109,9 @@ $ ->
         </div>
         <div class="media-body">
           <p><a href="/member/{{author_login_name}}" class="hover_user">{{user_name}}</a><span class="status-mod-controls">{{#if hide_enabled}}<a href="{{idx}}" class="inherit_colors hide-reply">(hide)</a>{{/if}}</span>
+          {{#if is_admin}}
+          <a href="/admin/statuscomment/edit/?id={{idx}}" target="_blank" class="float-right"><span class="glyphicon glyphicon-cog"></span></a>
+          {{/if}}
           <p>{{{text}}}</p>
           <span class="status-reply-time">{{time}}</span></p>
         </div>
