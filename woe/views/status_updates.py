@@ -78,37 +78,27 @@ def status_update_index():
     if request.method == 'POST':
         request_json = request.get_json(force=True)
 
-        try:
-            count = int(request_json.get("count"), 15)
-            if count > 1000:
-                count = 1000
-            session["count"] = count
-        except:
-            pass
+        count = int(request_json.get("count", 15))
+        if count > 1000:
+            count = 1000
+        session["count"] = count
 
-        try:
-            authors = list(
-                    sqla.session.query(sqlm.User) \
-                        .filter(sqlm.User.id.in_(request_json.get("authors"))) \
-                        .all()
-                )
-            session["authors"] = [{"id": a.id, "display_name": a.display_name} for a in authors]
-        except:
-            authors = []
-            session["authors"] = []
+        search = request_json.get("search", "")[0:100]
+        session["search"] = search
 
-        try:
-            search = request_json.get("search", "")[0:100]
-            session["search"] = search
-        except:
-            pass
+        if request_json.get("authors"):
+            author_objects = list(
+                        sqla.session.query(sqlm.User) \
+                            .filter(sqlm.User.id.in_(request_json.get("authors"))) \
+                            .all()
+                    )
+            session["authors"] = [{"id": a.id, "text": a.display_name} for a in author_objects]
+            authors = [{"id": a.id, "text": a.display_name} for a in author_objects]
 
     query_ = sqla.session.query(sqlm.StatusUpdate).filter_by(hidden=False)
     if authors:
-        query_ = query_.filter(sqlm.StatusUpdate.author_id.in_([a.id for a in authors]))
-
-    query_ = parse_search_string(search, sqlm.StatusUpdate, query_, ["message",])[:count]
-    status_updates = query_
+        query_ = query_.filter(sqlm.StatusUpdate.author_id.in_([a["id"] for a in authors]))
+    status_updates = parse_search_string(search, sqlm.StatusUpdate, query_, ["message",])[:count]
 
     if request.method == 'POST':
         parsed_statuses = []

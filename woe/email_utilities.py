@@ -1,11 +1,26 @@
 from woe import app
 from mako.template import Template
 from mako.lookup import TemplateLookup
-import requests
+from woe import sqla
+import woe.sqlmodels as sqlm
+import requests, arrow
 
 _mylookup = TemplateLookup(directories=[app.config['MAKO_EMAIL_TEMPLATE_DIR']])
 _debug = app.config['DEBUG']
 _api = app.config['MGAPI']
+
+def send_notification_emails():
+    _users_to_check = sqla.session.query(sqlm.User) \
+        .filter(
+            sqla.or_(
+                sqlm.User.last_sent_notification_email == None,
+                sqlm.User.last_sent_notification_email < arrow.utcnow().replace(hours=-5).datetime.replace(tzinfo=None)
+            )
+        )
+
+    for u in _users_to_check:
+
+        print u.login_name
 
 def send_mail_w_template(send_to, subject, template, variables):
     _to_email_addresses = []
