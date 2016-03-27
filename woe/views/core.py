@@ -730,7 +730,10 @@ def banned_user():
 @app.route('/sign-out', methods=['POST'])
 def sign_out():
     logout_user()
-    return redirect('/')
+    if app.settings_file.get("lockout_on", False):
+        return redirect('/')
+    else:
+        return redirect('/under_construction')
 
 @app.route('/user-list-api', methods=['GET'])
 @login_required
