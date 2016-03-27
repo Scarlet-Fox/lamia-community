@@ -14,7 +14,6 @@ import arrow, mimetypes, json, os, hashlib, time, StringIO
 from woe.views.dashboard import broadcast
 from ipwhois import IPWhois
 import urllib, urllib2
-import mechanize
 import HTMLParser
 from werkzeug.exceptions import default_exceptions, HTTPException
 from  werkzeug.debug import get_current_traceback
@@ -25,6 +24,7 @@ import pytz
 
 class Anonymouse(AnonymousUserMixin):
     login_name = None
+    is_admin = False
 
 login_manager.login_view = "sign_in"
 login_manager.anonymous_user = Anonymouse

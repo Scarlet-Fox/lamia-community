@@ -1,3 +1,10 @@
+try:
+    from psycopg2cffi import compat
+    compat.register()
+    print "I like to run violently with scissors in my hand."
+except ImportError:
+    pass
+
 from werkzeug.contrib.fixers import ProxyFix
 from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
