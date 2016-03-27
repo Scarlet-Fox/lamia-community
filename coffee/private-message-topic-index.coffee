@@ -12,7 +12,7 @@ $ ->
       @is_mod = window._is_topic_mod
       @is_logged_in = window._is_logged_in
 
-      socket = io.connect('http://' + document.domain + ':3000' + '');
+      socket = io.connect($(".io-class").data("config"));
 
       $("#author-select").select2
         ajax:

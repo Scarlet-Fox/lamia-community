@@ -32,7 +32,7 @@ $ ->
 
       _panel=this
 
-      socket = io.connect('http://' + document.domain + ':3000' + '')
+      socket = io.connect($(".io-class").data("config"))
 
       socket.on "notify", (data) ->
         if data.count_update?

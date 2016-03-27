@@ -14,7 +14,7 @@
         $("#status-comment-count").html("<br><br>\n<div class=\"progress\" style=\"width: 79%;\">\n  <div class=\"progress-bar progress-bar-info\" id=\"status-character-count-bar\" role=\"progressbar\" style=\"width: 0%\">\n    <span id=\"status-character-count-text\"></span>\n  </div>\n</div>");
         this.progress_bar = $("#status-character-count-bar");
         this.progress_text = $("#status-character-count-text");
-        this.socket = io.connect('http://' + document.domain + ':3000' + '');
+        this.socket = io.connect($(".io-class").data("config"));
         this.socket.on("connect", (function(_this) {
           return function() {
             return _this.socket.emit('join', "status--" + _this.id);

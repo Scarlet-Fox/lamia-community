@@ -18,7 +18,7 @@ $ ->
       @selected_character = ""
       @selected_avatar = ""
 
-      socket = io.connect('http://' + document.domain + ':3000' + '')
+      socket = io.connect($(".io-class").data("config"))
 
       window.onbeforeunload = () ->
         if topic.inline_editor.quill.getText().trim() != ""

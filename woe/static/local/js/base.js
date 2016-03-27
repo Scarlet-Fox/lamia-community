@@ -76,7 +76,7 @@
       });
     };
     if (window.logged_in) {
-      socket = io.connect('http://' + document.domain + ':3000' + '');
+      socket = io.connect($(".io-class").data("config"));
     }
     notificationHTML = "<li class=\"notification-li\"><a href=\"{{url}}\" data-notification=\"{{_id}}\" class=\"notification-link dropdown-notif-{{_id}}-{{category}}\">{{text}}</a></li>";
     notificationTemplate = Handlebars.compile(notificationHTML);

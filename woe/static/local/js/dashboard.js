@@ -35,7 +35,7 @@
         };
         this.buildDashboard();
         _panel = this;
-        socket = io.connect('http://' + document.domain + ':3000' + '');
+        socket = io.connect($(".io-class").data("config"));
         socket.on("notify", function(data) {
           var ref;
           if (data.count_update != null) {

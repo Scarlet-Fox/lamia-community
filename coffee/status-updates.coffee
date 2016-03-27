@@ -18,7 +18,7 @@ $ ->
       @progress_bar = $("#status-character-count-bar")
       @progress_text = $("#status-character-count-text")
 
-      @socket = io.connect('http://' + document.domain + ':3000' + '');
+      @socket = io.connect($(".io-class").data("config"));
 
       @socket.on "connect", () =>
         @socket.emit 'join', "status--#{@id}"
