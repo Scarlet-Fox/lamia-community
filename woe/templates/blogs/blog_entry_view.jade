@@ -16,7 +16,7 @@
           li
             a.hidden-sm.hidden-xs#entry-url(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
             a.visible-sm-inline.visible-xs-inline(href="/blog/{{blog.slug}}/e/{{entry.slug}}") This Entry
-        {% if current_user.is_authenticated %}
+        {% if current_user.is_authenticated() %}
         {% if current_user in entry.subscribers %}
         a.btn.btn-xs.btn-default.post-link.float-right(href="/blog/{{blog.slug}}/e/{{entry.slug}}/toggle-follow", style="color: #333;") Unsubscribe
         {% else %}
@@ -49,7 +49,7 @@
               if entry.author == current_user or current_user in blog.editors
                 a.btn.btn-default(href="/blog/{{blog.slug}}/e/{{entry.slug}}/edit-entry") Edit Entry
             .col-xs-6.post-likes
-              if entry.author == current_user or not current_user.is_authenticated
+              if entry.author == current_user or not current_user.is_authenticated()
                 span
                   span.badge {{entry.boops|length}}
                   | &nbsp;
@@ -67,7 +67,7 @@
                     span.boop-text Boop!
           br
       li.list-group-item.section-header#comments(style="margin-top: 10px;") Comments
-      if current_user.is_authenticated
+      if current_user.is_authenticated()
         .list-group-item
           #new-post-box    
       if comments          
@@ -97,7 +97,7 @@
                         a.btn.btn-default(href="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/edit-comment") Edit Comment
                     .col-xs-6
                       .post-likes
-                        if comment.author == current_user or not current_user.is_authenticated
+                        if comment.author == current_user or not current_user.is_authenticated()
                           span
                             span.badge {{comment.boops|length}}
                             | &nbsp;

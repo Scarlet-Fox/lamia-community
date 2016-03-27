@@ -41,7 +41,7 @@
   .col-md-12
     ul.list-group.category
       li.list-group-item.section-header
-        if current_user.is_authenticated
+        if current_user.is_authenticated()
           if prefixes[0]
             .btn-group#prefix-btn-group
                 button.btn.btn-default.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
@@ -74,7 +74,7 @@
             //-     li
             //-       a(href='#') Separated link
             //-   {% endif %}
-      if current_user.is_authenticated
+      if current_user.is_authenticated()
         li.list-group-item.topic-listing(data-pagination='20',data-slug='{{category.slug}}')
       else
         li.list-group-item.topic-listing(data-pagination='20',data-slug='{{category.slug}}')

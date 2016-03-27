@@ -24,7 +24,7 @@
             //-     li
             //-       a(href='#') Separated link
             //-   {% endif %}
-      if current_user.is_authenticated
+      if current_user.is_authenticated()
         li.list-group-item.topic-listing(data-pagination='{{current_user.topic_pagination}}')
       else
         li.list-group-item.topic-listing(data-pagination='20')

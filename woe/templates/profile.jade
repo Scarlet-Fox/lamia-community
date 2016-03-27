@@ -55,12 +55,12 @@ style!= profile.get_custom_css()
             span
               strong
                 | {{role.pre_html+role.role+role.post_html}}
-          if current_user.is_authenticated and current_user.is_admin and not profile.validated
+          if current_user.is_authenticated() and current_user.is_admin and not profile.validated
             center
               a.btn.btn-warning.post-link(href="/member/{{profile.login_name}}/validate-user") Validate User
               br
               br
-          if current_user.is_authenticated and current_user != profile and current_user not in profile.ignored_users
+          if current_user.is_authenticated() and current_user != profile and current_user not in profile.ignored_users
             center
               br
               .btn-group
@@ -199,7 +199,7 @@ style!= profile.get_custom_css()
                 a(href="/blog/{{blog_entry.blog.slug}}")= blog_entry.blog.name
                 |&nbsp;::&nbsp;
                 a(href="/blog/{{blog_entry.blog.slug}}/e/{{blog_entry.slug}}")= blog_entry.title
-    if current_user.is_authenticated and current_user != profile
+    if current_user.is_authenticated() and current_user != profile
       .row
         .col-xs-12
           ul.list-group
@@ -280,7 +280,7 @@ script(type="text/javascript", src="{{ASSET_URL}}").
 
 script(type="text/javascript").
   $(document).ready(function(){
-    {% if current_user.is_authenticated %}
+    {% if current_user.is_authenticated() %}
     $("#about-me-cog-icon").click(function(e) {
       e.preventDefault();
       var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.login_name}}/edit-profile", true);

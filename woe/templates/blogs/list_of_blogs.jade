@@ -1,7 +1,7 @@
 {% extends "base.jade" %}
 
 {% block content %}
-if current_user.is_authenticated
+if current_user.is_authenticated()
   .row
     .col-sm-12
       ul.list-group

@@ -383,12 +383,12 @@ def topic_posts(slug):
         parsed_post["author_login_name"] = post.author.login_name
         parsed_post["has_booped"] = current_user._get_current_object() in post.boops
         parsed_post["boop_count"] = len(post.boops)
-        if current_user.is_authenticated:
+        if current_user.is_authenticated():
             parsed_post["can_boop"] = current_user._get_current_object() != post.author
         else:
             parsed_post["can_boop"] = False
 
-        if current_user.is_authenticated:
+        if current_user.is_authenticated():
             if post.author.id == current_user.id:
                 parsed_post["is_author"] = True
             else:
@@ -652,7 +652,7 @@ def category_filter_preferences(slug):
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
-    if not current_user.is_authenticated:
+    if not current_user.is_authenticated():
         return app.jsonify(preferences={})
 
     if current_user.data is None:
@@ -880,7 +880,7 @@ def category_topics(slug):
     except IndexError:
         return abort(404)
 
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         preferences = current_user.data.get("category_filter_preference_"+str(category.id), {})
         prefixes = preferences.keys()
     else:
@@ -921,7 +921,7 @@ def category_topics(slug):
         if topic.last_seen_by is None:
             topic.last_seen_by = {}
 
-        if current_user.is_authenticated:
+        if current_user.is_authenticated():
             if topic.last_seen_by.get(str(current_user._get_current_object().id)) != None:
                 if arrow.get(topic.recent_post.created).timestamp > topic.last_seen_by.get(str(current_user._get_current_object().id)):
                     parsed_topic["updated"] = True
@@ -1034,7 +1034,7 @@ def index():
             status_update_authors.c.created == sqlm.StatusUpdate.created
         ))[:5]
 
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \

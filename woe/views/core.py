@@ -47,7 +47,7 @@ def server_error(e):
     l.time = arrow.utcnow().datetime
 
     try:
-        if current_user.is_authenticated:
+        if current_user.is_authenticated():
             l.user = current_user._get_current_object()
     except:
         pass
@@ -88,7 +88,7 @@ def unauthorized_access(e):
     l.time = arrow.utcnow().datetime
 
     try:
-        if current_user.is_authenticated:
+        if current_user.is_authenticated():
             l.user = current_user._get_current_object()
     except:
         pass
@@ -129,7 +129,7 @@ def page_not_found(e):
     l.time = arrow.utcnow().datetime
 
     try:
-        if current_user.is_authenticated:
+        if current_user.is_authenticated():
             l.user = current_user._get_current_object()
     except:
         pass
@@ -164,14 +164,14 @@ if app.settings_file.get("lockout_on", False):
     @app.before_request
     def lockdown_site():
         if not (request.path == "/under-construction" or request.path == "/sign-in" or "/static" in request.path):
-            if current_user.is_authenticated and (current_user.is_admin or current_user._get_current_object().is_allowed_during_construction):
+            if current_user.is_authenticated() and (current_user.is_admin or current_user._get_current_object().is_allowed_during_construction):
                 pass
             else:
                 return redirect("/under-construction")
 
 @app.before_request
 def intercept_banned():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         if current_user._get_current_object().banned and not (request.path == "/banned" or request.path == "/sign-out" or "/static" in request.path):
             return redirect("/banned")
 
@@ -179,7 +179,7 @@ def intercept_banned():
 def inject_notification_count():
     c = current_user
     try:
-        if c.is_authenticated:
+        if c.is_authenticated():
             return dict(notification_count=c._get_current_object().get_notification_count())
         else:
             return dict(notification_count=0)
@@ -200,7 +200,7 @@ def log_request():
         l.time = arrow.utcnow().datetime.replace(tzinfo=None)
 
         try:
-            if current_user.is_authenticated:
+            if current_user.is_authenticated():
                 l.user = current_user._get_current_object()
             sqla.session.add(l)
             sqla.session.commit()
@@ -477,7 +477,7 @@ def load_user(login_name):
 
 @app.route('/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         return abort(404)
 
     try:
@@ -500,7 +500,7 @@ def password_reset(token):
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         return abort(404)
 
     form = ForgotPasswordForm(csrf_enabled=False)
@@ -534,7 +534,7 @@ def confirm_register(pk):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         return abort(404)
 
     form = RegistrationForm(csrf_enabled=False)
@@ -603,7 +603,7 @@ def register():
 
 @app.route('/sign-in', methods=['GET', 'POST'])
 def sign_in():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         return abort(404)
 
     form = LoginForm(csrf_enabled=False)
