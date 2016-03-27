@@ -1,0 +1,43 @@
+Hello ${_user.display_name},
+
+Here are your most recent notifications. To change your notification preferences, go to your settings area on your Scarlet's Web profile page - ${_base}/member/${_user.login_name}/change-settings - and you can unsubscribe from all emails using the link at the bottom of this message.
+
+% for category in _summaries:
+    % if _summaries_k[category] == 1:
+- You have received 1 ${_notification_names[category][0].lower()}.
+    % else:
+- You have received ${_summaries_k[category]} ${_notification_names[category][1].lower()}.
+    % endif
+% endfor
+% if len(_summaries) > 0:
+
+You can find more details about these summarized items on your dashboard, when you login.
+% endif
+
+% for category in _list:
+${_notification_names[category][1].capitalize()}
+============================
+    % for item in _list_k[category]:
+        % if _list_url[item["url"]] == 1:
+- ${item["message"]} ${item["url"]}
+        % else:
+- ${item["message"]} (with ${_list_url[item["url"]]} other replies) ${item["url"]}
+        % endif
+    % endfor
+% if category != _list[-1]:
+
+% endif
+% endfor
+
+% for category in _details:
+${_notification_names[category][1].capitalize()}
+============================
+    % for item in _details_k[category]:
+- ${item["message"]} (${item["url"]})
+"${item["description"]}"
+
+    % endfor
+% if category != _details[-1]:
+% endif
+% endfor
+To unsubscribe from all future messages from Scarlet's Web, go to this page - ${_base}/member/${_user.id}/${_user.email_address}/unsubscribe

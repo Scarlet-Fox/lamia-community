@@ -942,6 +942,25 @@ def customize_user_profile(login_name):
 
     return render_template("profile/customize_profile.jade", profile=user, form=form, page_title="Customize Profile - Scarlet's Web")
 
+@app.route('/unsubscribe-confirm', methods=['GET'])
+def confirm_unsubscribe_from_all_emails():
+    return render_template("unsubscribe_confirm.jade", page_title="Unsubscribed - Scarlet's Web")
+
+@app.route('/member/<id>/<email>/unsubscribe', methods=['GET', 'POST'])
+def unsubscribe_from_all_emails(id, email):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(id=id, email_address=email)[0]
+    except IndexError:
+        abort(404)
+
+    if request.method == 'POST':
+        user.emails_muted = True
+        sqla.session.add(user)
+        sqla.session.commit()
+        return app.jsonify(url="/unsubscribe-confirm")
+    else:
+        return render_template("unsubscribe.jade", profile=user, page_title="Unsubscribe - Scarlet's Web")
+
 @app.route('/member/<login_name>/change-settings', methods=['GET', 'POST'])
 @login_required
 def change_user_settings(login_name):
@@ -974,12 +993,18 @@ def change_user_settings(login_name):
         user.time_zone=form.time_zone.data
         user.theme = form.theme_object
         user.no_images = form.no_images.data
+        user.emails_muted = form.no_emails.data
+        user.minimum_notifications_for_email = form.minimum_notifications_for_email.data
+        user.minimum_time_between_emails = form.minimum_time_between_emails.data
         sqla.session.add(user)
         sqla.session.commit()
         return redirect("/member/"+user.login_name)
     else:
         form.no_images.data = user.no_images
         form.time_zone.data = user.time_zone
+        form.no_emails.data = user.emails_muted
+        form.minimum_time_between_emails.data = user.minimum_time_between_emails
+        form.minimum_notifications_for_email.data = user.minimum_notifications_for_email
         if user.theme == None:
             form.theme.data = "1"
         else:

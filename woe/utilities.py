@@ -42,6 +42,22 @@ def strip_tags(html):
     words = words_re.findall(text)
     return words
 
+def get_preview_for_email(html):
+    spc = spec_characters.findall(html)
+    for sp in spc:
+        html = html.replace(sp[0], "")
+    links = link_re.findall(html)
+    for link in links:
+        html = html.replace(link[0], "")
+    bbcode = bbcode_re.findall(html)
+    for code in bbcode:
+        html = html.replace(code[0], "")
+    soup = BeautifulSoup(html)
+    text = soup.getText()
+    if len(text) > 100:
+        text = text[:100] + "..."
+    return text
+
 def parse_search_string(search_text, model, query_object, fields_to_search):
     if search_text.strip() == "":
         return query_object

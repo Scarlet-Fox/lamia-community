@@ -519,7 +519,7 @@ label_colors = [
     "#ff7f00",
     "#cab2d6",
     "#6a3d9a",
-    "#ffff99",
+    "#FFD700",
     "#b15928"
 ]
 

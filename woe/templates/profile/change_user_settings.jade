@@ -22,6 +22,15 @@
               .form-group
                 {{ form.no_images.label }}
                 {{ form.no_images(class="form-control") }}
+              .form-group
+                {{ form.no_emails.label }}
+                {{ form.no_emails(class="form-control") }}
+              .form-group
+                {{ form.minimum_time_between_emails.label }}
+                {{ form.minimum_time_between_emails(class="form-control") }}
+              .form-group
+                {{ form.minimum_notifications_for_email.label }}
+                {{ form.minimum_notifications_for_email(class="form-control") }}
               button(type="submit").btn.btn-default Submit
     //- ul.list-group
     //-   li.list-group-item.section-header Change Ignore Settings

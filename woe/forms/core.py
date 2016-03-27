@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField
+from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField, IntegerField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wand.image import Image
 import shutil, pytz, arrow
@@ -31,6 +31,13 @@ class UserSettingsForm(Form):
     TIMEZONE_CHOICES = [(z, z) for z in pytz.common_timezones]
     time_zone = SelectField('Time zone', choices=TIMEZONE_CHOICES)
     no_images = BooleanField("Hide all images (super at-work mode)")
+    no_emails = BooleanField("Mute all emails (no email notifications)")
+    minimum_time_between_emails = IntegerField("Minimum time between notification emails (in minutes, no less than 30 and no more than 1440)",
+            [validators.InputRequired(), validators.NumberRange(30,1440)]
+        )
+    minimum_notifications_for_email = IntegerField("Minimum notifications to send in an email (pick a number between 1 and 50)",
+            [validators.InputRequired(), validators.NumberRange(1,50)]
+        )
 
     try:
         THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]

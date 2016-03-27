@@ -105,6 +105,7 @@ def status_update_index():
         for status in status_updates:
             parsed_status = {}
 
+            parsed_status["_id"] = status.id
             parsed_status["profile_address"] = url_for('view_profile', login_name=status.author.login_name)
             parsed_status["user_name"] = status.author.display_name
             parsed_status["message"] = status.message

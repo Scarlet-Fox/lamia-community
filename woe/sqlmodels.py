@@ -262,17 +262,17 @@ class Notification(db.Model):
     author = db.relationship("User", foreign_keys="Notification.author_id")
 
     NOTIFICATION_CATEGORIES = (
-        ("blog", "Blog Entries", "new blog entries on subscribed blogs", "detailed"),
-        ("blogcomments", "Blog Comments", "new blog comments on subscribed entries", "detailed"),
-        ("topic", "Topics", "new posts in followed topics", "listed"),
-        ("pm", "Private Messages", "new private messages and replies", "detailed"),
-        ("mention", "Mentioned", "topic mentions", "summarized"),
-        ("topic_reply", "Topic Replies", "replies to you in a topic", "detailed"),
-        ("boop", "Boops", "all boops received", "summarized"),
-        ("mod", "Moderation", "moderation related", "listed"),
-        ("status", "Status Updates", "all status update notifications", "listed"),
-        ("new_member", "New Members", "new member announcements", "listed"),
-        ("user_activity", "Followed User Activity", "new topics and statuses by followed members", "listed"),
+        ("blog", "Blog Entries", "new blog entries on subscribed blogs", "detailed", "blog entry", "blog entries"),
+        ("blogcomments", "Blog Comments", "new blog comments on subscribed entries", "detailed", "blog comment", "blog comments"),
+        ("topic", "Topics", "new posts in followed topics", "listed", "topic", "topics"),
+        ("pm", "Private Messages", "new private messages and replies", "detailed", "private message", "private messages"),
+        ("mention", "Mentioned", "topic mentions", "listed", "mention", "mentions"),
+        ("topic_reply", "Topic Replies", "replies to you in a topic", "detailed", "topic reply", "topic replies"),
+        ("boop", "Boops", "all boops received", "summarized", "boop", "boops"),
+        ("mod", "Moderation", "moderation related", "listed", "mod action", "mod actions"),
+        ("status", "Status Updates", "all status update notifications", "listed", "status", "statuses"),
+        ("new_member", "New Members", "new member announcements", "listed", "new member", "new members"),
+        ("user_activity", "Followed User Activity", "new topics and statuses by followed members", "listed", "followed activity", "followed activities"),
         # ("announcement", "Announcements"),
         # ("profile_comment","Profile Comments"),
         # ("rules_updated", "Rule Update"),
@@ -408,6 +408,8 @@ class User(db.Model):
 
     emails_muted = db.Column(db.Boolean, default=False)
     last_sent_notification_email = db.Column(db.DateTime, nullable=True)
+    minimum_notifications_for_email = db.Column(db.Integer, default=3)
+    minimum_time_between_emails = db.Column(db.Integer, default=360)
 
     title = db.Column(db.String, default="")
     minecraft = db.Column(db.String, default="")
@@ -473,7 +475,7 @@ class User(db.Model):
             else:
                 css = css + """
                     body {
-                        background: none;
+                        background: #%s;
                     }
                     .site-background {
                         background: none;
@@ -481,12 +483,12 @@ class User(db.Model):
                     .site-background {
                         background: #%s url("/static/customizations/%s") no-repeat scroll top !important;
                         height: %spx;
-                    }""" % (self.profile_background_custom, self.banner_image_custom, self.header_height)
+                    }""" % (self.profile_background_custom, self.profile_background_custom, self.banner_image_custom, self.header_height)
         else:
             if self.profile_background_custom:
                 css = css + """
                     body {
-                        background: none;
+                        background: #%s;
                     }
                     .site-background {
                         background: none;
@@ -494,7 +496,7 @@ class User(db.Model):
                     .site-background {
                         background: #%s !important;
                         height: %spx;
-                    }""" % (self.profile_background_custom, self.header_height)
+                    }""" % (self.profile_background_custom, self.profile_background_custom, self.header_height)
         if self.title_bar_background_custom:
             if not self.header_background_color:
                 css = css + """
