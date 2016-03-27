@@ -246,7 +246,7 @@
               quill_id = inline_editor.quillID;
               characterPickerTemplate = "<!-- <label style=\"margin-left: 10px;\">Character Picker: </label> -->\n<select id=\"character-picker-{{quill_id}}\" style=\"margin-left: 5px; width: 300px;\">\n  <option value=\"\" selected></option>\n  {{#each characters}}\n  <option value=\"{{slug}}\" data-image=\"{{default_avvie}}\" {{#if default}}selected{{/if}}>\n      {{name}}\n  </option>\n  {{/each}}\n</select>";
               characterPickerHTML = Handlebars.compile(characterPickerTemplate);
-              avatarPickerTemplate = "<!-- <label style=\"margin-left: 10px;\">Character Picker: </label> -->\n<select id=\"avatar-picker-{{quill_id}}\" style=\"margin-left: 5px; width: 80px;\">\n  <option value=\"\" selected></option>\n  {{#each avatars}}\n  <option value=\"{{@index}}\" data-count=\"{{@index}}\" data-image=\"{{url}}\" {{#if @first}}selected{{/if}}>\n  </option>\n  {{/each}}\n</select>";
+              avatarPickerTemplate = "<!-- <label style=\"margin-left: 10px;\">Character Picker: </label> -->\n<select id=\"avatar-picker-{{quill_id}}\" style=\"margin-left: 5px; width: 80px;\">\n  <option value=\"\" selected></option>\n  {{#each avatars}}\n  <option value=\"{{id}}\" data-count=\"{{@index}}\" data-image=\"{{url}}\" {{#if @first}}selected{{/if}}>\n  </option>\n  {{/each}}\n</select>";
               avatarPickerHTML = Handlebars.compile(avatarPickerTemplate);
               ref = topic.characters;
               for (j = 0, len = ref.length; j < len; j++) {
@@ -278,11 +278,13 @@
                 return function(e) {
                   var error, k, len1, ref1, selected;
                   topic["selected_character_" + quill_id] = $("#character-picker-" + quill_id).val();
-                  try {
-                    $("#avatar-picker-" + quill_id).select2("destroy");
-                    $("#avatar-picker-" + quill_id).remove();
-                  } catch (error) {
+                  if ($("#avatar-picker-" + quill_id).length > 0) {
+                    try {
+                      $("#avatar-picker-" + quill_id).select2("destroy");
+                      $("#avatar-picker-" + quill_id).remove();
+                    } catch (error) {
 
+                    }
                   }
                   selected = {};
                   ref1 = topic.characters;
@@ -449,11 +451,13 @@
               return $("#character-picker-" + quill_id).on("select2:select", function(e) {
                 var character, error1, j, len, ref, selected;
                 _this.selected_character = $("#character-picker-" + quill_id).val();
-                try {
-                  $("#avatar-picker-" + quill_id).select2("destroy");
-                  $("#avatar-picker-" + quill_id).remove();
-                } catch (error1) {
+                if ($("#avatar-picker-" + quill_id).length > 0) {
+                  try {
+                    $("#avatar-picker-" + quill_id).select2("destroy");
+                    $("#avatar-picker-" + quill_id).remove();
+                  } catch (error1) {
 
+                  }
                 }
                 selected = {};
                 ref = _this.characters;

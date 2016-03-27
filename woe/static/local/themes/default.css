@@ -264,9 +264,10 @@ color:#a4a4a4;
     padding: 6px 15px;
     border: 1px solid #ddd;
     border-radius: 0px !important;
+}
+.blog-description {
     overflow: hidden;
 }
-
 .list-group-item:first-child {
   border-radius:0px;
 }

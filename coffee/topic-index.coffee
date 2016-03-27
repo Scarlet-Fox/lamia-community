@@ -228,7 +228,7 @@ $ ->
             <select id="avatar-picker-{{quill_id}}" style="margin-left: 5px; width: 80px;">
               <option value="" selected></option>
               {{#each avatars}}
-              <option value="{{@index}}" data-count="{{@index}}" data-image="{{url}}" {{#if @first}}selected{{/if}}>
+              <option value="{{id}}" data-count="{{@index}}" data-image="{{url}}" {{#if @first}}selected{{/if}}>
               </option>
               {{/each}}
             </select>
@@ -258,10 +258,11 @@ $ ->
 
             $("#character-picker-#{quill_id}").on "select2:select", (e) =>
               topic["selected_character_#{quill_id}"] = $("#character-picker-#{quill_id}").val()
-              try
-                $("#avatar-picker-#{quill_id}").select2("destroy")
-                $("#avatar-picker-#{quill_id}").remove()
-              catch
+              if $("#avatar-picker-#{quill_id}").length > 0
+                try
+                  $("#avatar-picker-#{quill_id}").select2("destroy")
+                  $("#avatar-picker-#{quill_id}").remove()
+                catch
 
               selected = {}
               for character in topic.characters
@@ -413,10 +414,11 @@ $ ->
 
           $("#character-picker-#{quill_id}").on "select2:select", (e) =>
             @selected_character = $("#character-picker-#{quill_id}").val()
-            try
-              $("#avatar-picker-#{quill_id}").select2("destroy")
-              $("#avatar-picker-#{quill_id}").remove()
-            catch
+            if $("#avatar-picker-#{quill_id}").length > 0
+              try
+                $("#avatar-picker-#{quill_id}").select2("destroy")
+                $("#avatar-picker-#{quill_id}").remove()
+              catch
 
             selected = {}
             for character in @characters

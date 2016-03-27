@@ -82,7 +82,7 @@
     if blog.description
       ul.list-group
         li.list-group-item.section-header.panel-title Description
-        li.list-group-item(style="padding: 10px;")!= description
+        li.list-group-item.blog-description(style="padding: 10px;")!= description
     if blog.author == current_user
       ul.list-group
         li.list-group-item.section-header.panel-title Manage Blog

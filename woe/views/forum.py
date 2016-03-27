@@ -470,11 +470,12 @@ def edit_topic_post_html(slug):
             sqlm.Character.hidden == None))[0]
     except:
         character = False
+    print character
 
     try:
         avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
-            character_gallery=True, character_avatar=True, id=request_json.get("avatar")) \
-            .order_by(character_gallery_weight).first()
+            id=request_json.get("avatar")) \
+            .first()
 
         if avatar == None:
             avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \
@@ -507,14 +508,15 @@ def edit_topic_post_html(slug):
             post.character = character
         else:
             try:
-                post.character == None
+                post.character = None
             except:
                 pass
+
         if avatar:
-            post.avatar == avatar
+            post.avatar = avatar
         else:
             try:
-                post.avatar == None
+                post.avatar = None
             except:
                 pass
 
