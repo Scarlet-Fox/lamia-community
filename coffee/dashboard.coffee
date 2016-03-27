@@ -35,6 +35,9 @@ $ ->
       socket = io.connect('http://' + document.domain + ':3000' + '')
 
       socket.on "notify", (data) ->
+        if data.count_update?
+          return
+
         if window.woe_is_me in data.users
           $(".nothing-new").remove()
           _panel.addToPanel(data, true)

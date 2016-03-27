@@ -10,7 +10,7 @@ socketList = new Array()
 
 app.get "/", (req, res) ->
   res.send ''
-  
+
 app.post "/notify", (req, res) ->
   for client in socketList
     try
@@ -26,10 +26,10 @@ io.on 'connection', (client) ->
     if socketList.length > 10000
       socketList.shift()
     client.user = data.user
-    
+
   client.on "join", (data) ->
     client.join data
-    
+
   client.on "disconnect", () ->
     for socket, i in socketList
       try
@@ -37,11 +37,11 @@ io.on 'connection', (client) ->
           socketList.splice(i, 1)
       catch
         continue
-      
+
   client.on "event", (data) ->
     room = data.room
     client.broadcast.to(room).emit("event", data)
-    
+
 server.listen 3000, () ->
   host = server.address().address
   port = server.address().port

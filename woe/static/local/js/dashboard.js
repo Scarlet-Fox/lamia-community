@@ -38,6 +38,9 @@
         socket = io.connect('http://' + document.domain + ':3000' + '');
         socket.on("notify", function(data) {
           var ref;
+          if (data.count_update != null) {
+            return;
+          }
           if (ref = window.woe_is_me, indexOf.call(data.users, ref) >= 0) {
             $(".nothing-new").remove();
             _panel.addToPanel(data, true);

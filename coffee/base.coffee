@@ -106,28 +106,44 @@ $ ->
     socket.emit "user", {user: window.woe_is_me}
 
     socket.on "notify", (data) ->
-      if window.woe_is_me in data.users
+      if data.count_update?
         counter_element = $(".notification-counter")
-        counter_element.text(data.count)
-        counter_element.css("background-color", "#B22222")
-        $(".dashboard-counter").text(data.dashboard_count)
-
-        title_count = document.title.match(/\(\d+\)/)
-        if title_count
-          document.title = document.title.replace(title_count[0], "(#{data.count})")
+        counter_element.text(data.count_update)
+        if data.count_update == 0
+          title_count = document.title.match(/\(\d+\)/)
+          if title_count
+            document.title = document.title.replace("#{title_count[0]} - ", "")
+          counter_element.css("background-color", "#777")
         else
-          document.title = "(#{data.count}) - " + document.title
+          title_count = document.title.match(/\(\d+\)/)
+          if title_count
+            document.title = document.title.replace(title_count[0], "(#{data.count_update})")
+          else
+            document.title = "(#{data.count_update}) - " + document.title
+          counter_element.css("background-color", "#B22222")
+      else
+        if window.woe_is_me in data.users
+          counter_element = $(".notification-counter")
+          counter_element.text(data.count)
+          counter_element.css("background-color", "#B22222")
+          $(".dashboard-counter").text(data.dashboard_count)
 
-        if $($(".notification-dropdown")[0]).find(".notification-li").length > 14
-          $(".notification-dropdown").each () ->
-            $(this).find(".notification-li")[$(this).find(".notification-li").length-1].remove()
+          title_count = document.title.match(/\(\d+\)/)
+          if title_count
+            document.title = document.title.replace(title_count[0], "(#{data.count})")
+          else
+            document.title = "(#{data.count}) - " + document.title
 
-        if $($(".notification-dropdown")[0]).find(".notification-li").length == 0
-          $(".notification-dropdown").each () ->
-            $(this).append(notificationTemplate(data))
-        else
-          $(".notification-dropdown").each () ->
-            $(this).find(".notification-li").first().before(notificationTemplate(data))
+          if $($(".notification-dropdown")[0]).find(".notification-li").length > 14
+            $(".notification-dropdown").each () ->
+              $(this).find(".notification-li")[$(this).find(".notification-li").length-1].remove()
+
+          if $($(".notification-dropdown")[0]).find(".notification-li").length == 0
+            $(".notification-dropdown").each () ->
+              $(this).append(notificationTemplate(data))
+          else
+            $(".notification-dropdown").each () ->
+              $(this).find(".notification-li").first().before(notificationTemplate(data))
 
   $(".post-link").click (e) ->
     e.preventDefault()

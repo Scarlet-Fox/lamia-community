@@ -105,7 +105,10 @@ def acknowledge_category():
         .filter_by(acknowledged=False, user=current_user._get_current_object(), category=request_json.get("category","")) \
         .update({sqlm.Notification.acknowledged: True})
 
-    return app.jsonify(success=True, count=current_user._get_current_object().get_dashboard_notifications())
+    _count = current_user._get_current_object().get_dashboard_notifications()
+    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().login_name, ], "count_update": _count}, ))
+    thread.start()
+    return app.jsonify(success=True, count=_count)
 
 @app.route('/dashboard/mark_seen', methods=["POST",])
 @login_required
@@ -113,6 +116,10 @@ def mark_all_notifications():
     notifications = sqla.session.query(sqlm.Notification) \
         .filter_by(seen=False, user=current_user._get_current_object()) \
         .update({sqlm.Notification.seen: True})
+
+    _count = current_user._get_current_object().get_dashboard_notifications()
+    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().login_name, ], "count_update": _count}, ))
+    thread.start()
 
     return app.jsonify(success=True)
 
@@ -144,7 +151,10 @@ def acknowledge_notification():
     except:
         return app.jsonify(success=False)
 
-    return app.jsonify(success=True, count=current_user._get_current_object().get_dashboard_notifications())
+    _count = current_user._get_current_object().get_dashboard_notifications()
+    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().login_name, ], "count_update": _count}, ))
+    thread.start()
+    return app.jsonify(success=True, count=_count)
 
 @app.route('/dashboard/notifications', methods=["POST",])
 @login_required
