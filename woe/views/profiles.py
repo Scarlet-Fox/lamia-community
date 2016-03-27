@@ -234,10 +234,6 @@ def view_profile(login_name):
     except IndexError:
         abort(404)
 
-    current_user.is_admin = True
-    sqla.session.add(current_user)
-    sqla.session.commit()
-
     parser = ForumPostParser()
     try:
         user.about_me = parser.parse(user.about_me)
