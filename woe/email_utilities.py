@@ -29,10 +29,19 @@ def send_notification_emails():
         notification_full_names[t[0]] = (t[4], t[5])
 
     for u in _users_to_check:
+        if u.banned:
+            continue
+
         notifications = sqla.session.query(sqlm.Notification) \
             .filter_by(seen=False, acknowledged=False, emailed=False) \
+            .filter_by(user=u) \
             .order_by(sqla.desc(sqlm.Notification.created)).all()
         notifications_count = len(notifications)
+
+        # if notifications_count > 0:
+        #     print notifications
+        #     print notifications_count
+        # continue
 
         try:
             if u.last_sent_notification_email > arrow.utcnow().replace(minutes=-u.minimum_time_between_emails).datetime.replace(tzinfo=None):
@@ -157,6 +166,7 @@ def send_notification_emails():
 
             notifications_update = sqla.session.query(sqlm.Notification) \
                 .filter_by(seen=False, acknowledged=False, emailed=False) \
+                .filter_by(user=u) \
                 .all()
             for n in notifications_update:
                 n.emailed=True
