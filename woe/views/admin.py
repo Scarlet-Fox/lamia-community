@@ -12,7 +12,7 @@ from jinja2 import Markup
 class AuthAdminIndexView(admin.AdminIndexView):
     @expose('/')
     def index(self):
-        if not (current_user.is_authenticated() and current_user.is_admin) and not current_user.login_name == "scarlet":
+        if not (current_user.is_authenticated and current_user.is_admin) and not current_user.login_name == "scarlet":
             return redirect("/")
         return super(AuthAdminIndexView, self).index()
 
@@ -33,7 +33,7 @@ class LabelView(ModelView):
     column_filters = ["id", ]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class UserView(ModelView):
     can_create = False
@@ -46,7 +46,7 @@ class UserView(ModelView):
     form_excluded_columns = ["status_updates", "private_messages", "notifications", "booped_posts"]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class NotificationView(ModelView):
     can_delete = False
@@ -61,7 +61,7 @@ class NotificationView(ModelView):
     column_filters = ("acknowledged", "id")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class CategoryView(ModelView):
     can_delete = False
@@ -75,7 +75,7 @@ class CategoryView(ModelView):
 
     column_filters = ["id", ]
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class TopicView(ModelView):
     can_delete = False
@@ -85,7 +85,7 @@ class TopicView(ModelView):
     form_excluded_columns = ("watchers", "moderators", "banned", "recent_post", "editor")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class StatusView(ModelView):
     can_delete = False
@@ -95,7 +95,7 @@ class StatusView(ModelView):
 
     column_filters = ["id", ]
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class StatusCommentView(ModelView):
     can_delete = False
@@ -106,7 +106,7 @@ class StatusCommentView(ModelView):
     column_filters = ["id", ]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class PostView(ModelView):
     can_delete = False
@@ -117,7 +117,7 @@ class PostView(ModelView):
     column_filters = ["id", ]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class AttachView(ModelView):
     can_delete = False
@@ -127,7 +127,7 @@ class AttachView(ModelView):
     column_filters = ["id", ]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated and current_user.is_admin) or current_user.login_name == "scarlet"
 
 class PrivateMessageTopicView(ModelView):
     can_delete = False
@@ -145,21 +145,21 @@ class IPAddressView(ModelView):
     column_filters = ("ip_address", "user_id")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class LogView(ModelView):
     column_list = ("id", "user", "ip_address", "time", "method", "path", "error", "error_code")
     column_filters = ("user_id", "ip_address", "time", "path", "method", "error", "error_code")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class FingerprintView(ModelView):
     column_list = ("id", "user", "fingerprint_hash", "factors", "last_seen")
     column_filters = ("user_id", "fingerprint_hash", "factors", "last_seen")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class CharacterView(ModelView):
     can_delete = False
@@ -168,51 +168,51 @@ class CharacterView(ModelView):
     column_searchable_list = ("name", "appearance", "personality", "backstory", "other")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class ReportView(ModelView):
     column_list = ("id", "author", "url", "status", "created")
     column_filters = ("url",)
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class ThemeView(ModelView):
     column_list = ("id", "name")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class BlogView(ModelView):
     column_list = ("id", "name")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class BlogEntryView(ModelView):
     column_list = ("id", "title")
     form_excluded_columns = ("character", "avatar", "editor")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class BlogCommentView(ModelView):
     column_list = ("id", "b_e_title")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class FriendshipView(ModelView):
     column_list = ("id", "user", "friend")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 class SignatureView(ModelView):
     column_list = ("id", "user")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin)
+        return (current_user.is_authenticated and current_user.is_admin)
 
 admin.add_view(LabelView(sqlm.Label, sqla.session))
 admin.add_view(CharacterView(sqlm.Character, sqla.session))
@@ -243,7 +243,7 @@ admin.add_view(CategoryView(sqlm.Category, sqla.session, category='Forum'))
 #     column_searchable_list = ("name", "description")
 #
 #     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.is_admin)
+#         return (current_user.is_authenticated and current_user.is_admin)
 #
 # class BlogEntryView(ModelView):
 #     column_list = ("author_name", "title", "blog_name", "created", "draft", "locked", "hidden")
@@ -251,7 +251,7 @@ admin.add_view(CategoryView(sqlm.Category, sqla.session, category='Forum'))
 #     column_searchable_list = ("title", "html")
 #
 #     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.is_admin)
+#         return (current_user.is_authenticated and current_user.is_admin)
 #
 # class BlogCommentView(ModelView):
 #     column_list = ("author_name", "blog_entry_name", "blog_name", "created", "hidden")
@@ -259,4 +259,4 @@ admin.add_view(CategoryView(sqlm.Category, sqla.session, category='Forum'))
 #     column_searchable_list = ("html",)
 #
 #     def is_accessible(self):
-#         return (current_user.is_authenticated() and current_user.is_admin)
+#         return (current_user.is_authenticated and current_user.is_admin)

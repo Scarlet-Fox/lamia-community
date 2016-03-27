@@ -4,6 +4,8 @@ For PyPy:
 
 * gunicorn --worker-class sync --workers 8 --error-logfile=- --access-logfile=- woe:app  -b 0.0.0.0:5000
 
+gunicorn --worker-class gevent --workers 8 --error-logfile=- --access-logfile=- woe:app  -b 0.0.0.0:5000
+
 For fonts:
 
 * http://www.fontsquirrel.com/
@@ -15,7 +17,7 @@ For Mongo:
 
 CRON JOBS:
 
-* mongodump --db woe_main --out /home/worldofequestria/backups/mongo_`date "+%Y.%m.%d-%H.%M.%S"`;tar -zcvf /home/worldofequestria/backups/mongo-`date "+%Y.%m.%d-%H.%M.%S"`.tar.gz /home/worldofequestria/backups/mongo_*;rm -rf /home/worldofequestria/backups/mongo_* 
+* mongodump --db woe_main --out /home/worldofequestria/backups/mongo_`date "+%Y.%m.%d-%H.%M.%S"`;tar -zcvf /home/worldofequestria/backups/mongo-`date "+%Y.%m.%d-%H.%M.%S"`.tar.gz /home/worldofequestria/backups/mongo_*;rm -rf /home/worldofequestria/backups/mongo_*
 * /home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload -s /home/worldofequestria/backups/ /;rm /home/worldofequestria/backups/mongo-*
 * /home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload -s /home/worldofequestria/woe/woe/static/ /
 * rm /home/worldofequestria/backups/*

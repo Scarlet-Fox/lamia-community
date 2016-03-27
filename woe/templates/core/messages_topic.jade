@@ -19,7 +19,7 @@
       #post-container(data-pk="{{topic.id}}")
       li.list-group-item(style="overflow: hidden;")
         #new-post-box
-          if current_user.is_authenticated() == False:
+          if current_user.is_authenticated == False:
             p.text-muted Please login to make a reply to this topic.
   .col-md-3
     ul.list-group.category
@@ -69,7 +69,7 @@ script(type="text/javascript", src="{{ASSET_URL}}").
 
 script(type="text/javascript").
   $(document).ready(function(){  
-    {% if current_user.is_authenticated() == True %}
+    {% if current_user.is_authenticated == True %}
     window._pagination=20;//{{current_user.post_pagination}};
     {% if current_user == topic.creator %}
     window._is_topic_mod=true;
@@ -91,7 +91,7 @@ script(type="text/javascript").
     window._initial_post="{{initial_post}}";
     {% endif %}
     
-    {% if current_user.is_authenticated() == True %}
+    {% if current_user.is_authenticated == True %}
     window._can_edit = true;
     window._current_user = "{{current_user.display_name}}";
     {% endif %}

@@ -79,7 +79,7 @@
           span.status-reply-time 
             a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
       {% endfor %}
-      if current_user.is_authenticated()
+      if current_user.is_authenticated
         li.list-group-item
           center
             p

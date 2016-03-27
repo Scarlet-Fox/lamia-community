@@ -312,7 +312,7 @@ def view_profile(login_name):
                 sqlm.Blog.privacy_setting == "friends"
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
-    elif current_user.is_authenticated():
+    elif current_user.is_authenticated:
         recent_blog_entries = sqla.session.query(sqlm.BlogEntry) \
             .filter(sqlm.BlogEntry.author==user) \
             .join(sqlm.Blog, sqlm.BlogEntry.blog_id == sqlm.Blog.id) \
@@ -525,7 +525,7 @@ def show_friends(login_name):
         .order_by(sqla.desc(sqlm.StatusUpdate.created))[0:5]
 
 
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         friend_blog_entries = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
