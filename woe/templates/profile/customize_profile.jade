@@ -22,6 +22,18 @@
               .form-group
                 {{ form.header_background.label }}
                 {{ form.header_background(class="form-control jscolor") }}
+              .form-group
+                {{ form.header_text_color.label }}
+                {{ form.header_text_color(class="form-control jscolor") }}
+              .form-group
+                {{ form.header_text_shadow_color.label }}
+                {{ form.header_text_shadow_color(class="form-control jscolor") }}
+              .form-group
+                {{ form.full_page_image.label }}
+                {{ form.full_page_image(class="form-control") }}
+              .form-group
+                {{ form.use_text_shadow.label }}
+                {{ form.use_text_shadow(class="form-control") }}
               button(type="submit").btn.btn-default Submit
               &nbsp;
               a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/remove-customizations-profile") Remove Customizations

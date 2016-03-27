@@ -7,6 +7,10 @@ from flask.ext.login import current_user
 from wand.image import Image
 from threading import Thread
 import arrow, re, os, math
+from mako.template import Template
+from mako.lookup import TemplateLookup
+
+_mylookup = TemplateLookup(directories=['woe/templates/mako'])
 
 ############################################################
 # Private Message Models
@@ -429,6 +433,10 @@ class User(db.Model):
     title_bar_background_custom = db.Column(db.String, default="")
     profile_background_custom = db.Column(db.String, default="")
     header_background_color = db.Column(db.String, default="")
+    header_text_color = db.Column(db.String, default="")
+    full_page_image = db.Column(db.Boolean, default=False)
+    use_text_shadow = db.Column(db.Boolean, default=False)
+    text_shadow_color = db.Column(db.String, default="")
     header_height = db.Column(db.Integer, default=460)
     no_images = db.Column(db.Boolean, default=False)
 
@@ -458,6 +466,19 @@ class User(db.Model):
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     def get_custom_css(self):
+        _template = _mylookup.get_template("profile.css")
+        _rendered = _template.render(
+                _banner_image=self.banner_image_custom,
+                _header_height=self.header_height,
+                _site_background_color=self.profile_background_custom,
+                _section_image=self.title_bar_background_custom,
+                _section_background_color=self.header_background_color,
+                _section_text_color=self.header_text_color,
+                _full_page_image=self.full_page_image,
+                _use_text_shadow=self.use_text_shadow,
+                _text_shadow_color=self.text_shadow_color
+            )
+        return _rendered
         css = """"""
         if self.banner_image_custom:
             if not self.profile_background_custom:

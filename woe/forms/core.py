@@ -170,7 +170,10 @@ class SiteCustomizationForm(Form):
     background = StringField('Page Background Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
 
     header_background = StringField('Header Background Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
-
+    header_text_color = StringField('Header Text Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
+    header_text_shadow_color = StringField('Header Text Shadow Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
+    full_page_image = BooleanField('Use Full Page')
+    use_text_shadow = BooleanField('Use Header Text Shadow')
 
     def validate_banner(self, field):
         if not field.data:

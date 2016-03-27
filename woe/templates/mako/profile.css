@@ -1,0 +1,72 @@
+% if _banner_image or _site_background_color:
+body {
+    background: none;
+}
+.site-background {
+    background: none;
+}
+% if not _full_page_image:
+.site-background {
+    background: ${"#"+_site_background_color if _site_background_color else ''} ${"url(\"/static/customizations/"+_banner_image+"\") no-repeat scroll top !important" if _banner_image else ''};
+    height: ${_header_height}px;
+}
+    % if _site_background_color:
+body {
+    background: #${_site_background_color};
+}
+    % endif
+% else:
+body {
+    background: ${"#"+_site_background_color if _site_background_color else ''} ${"url(\"/static/customizations/"+_banner_image+"\") no-repeat scroll top !important" if _banner_image else ''};
+}
+% endif
+% endif
+% if _section_image or _section_background_color:
+.panel-heading {
+    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") no-repeat scroll top !important" if _section_image else ''};
+    % if _section_text_color:
+    color: #${_section_text_color};
+    % endif
+    % if _use_text_shadow and _text_shadow_color:
+    text-shadow: #${_text_shadow_color} 0 1px 2px!important;
+    % elif not _use_text_shadow:
+    text-shadow: none !important;
+    % endif
+}
+
+.section-header {
+    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") no-repeat scroll top !important" if _section_image else ''};
+    % if _section_text_color:
+    color: #${_section_text_color};
+    % endif
+    % if _use_text_shadow and _text_shadow_color:
+    text-shadow: #${_text_shadow_color} 0 1px 2px!important;
+    % elif not _use_text_shadow:
+    text-shadow: none !important;
+    % endif
+}
+
+.popover-title {
+    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") no-repeat scroll top !important" if _section_image else ''} !important;
+    % if _section_text_color:
+    color: #${_section_text_color};
+    % endif
+    % if _use_text_shadow and _text_shadow_color:
+    text-shadow: #${_text_shadow_color} 0 1px 2px!important;
+    % elif not _use_text_shadow:
+    text-shadow: none !important;
+    % endif
+}
+
+.toggle-show-roles-button {
+    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") no-repeat scroll top !important" if _section_image else ''};
+    % if _section_text_color:
+    color: #${_section_text_color};
+    % endif
+    % if _use_text_shadow and _text_shadow_color:
+    text-shadow: #${_text_shadow_color} 0 1px 2px!important;
+    % elif not _use_text_shadow:
+    text-shadow: none !important;
+    % endif
+}
+% endif
