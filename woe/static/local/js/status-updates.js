@@ -4,7 +4,7 @@
     var Status;
     Status = (function() {
       function Status() {
-        var socket, status;
+        var status;
         this.id = $("#status").attr("data-id");
         this.max_length = 250;
         status = this;
@@ -15,11 +15,11 @@
         this.progress_bar = $("#status-character-count-bar");
         this.progress_text = $("#status-character-count-text");
         if ($(".io-class").data("path") !== "/") {
-          socket = io.connect($(".io-class").data("config"), {
+          this.socket = io.connect($(".io-class").data("config"), {
             path: $(".io-class").data("path") + "/socket.io"
           });
         } else {
-          socket = io.connect($(".io-class").data("config"));
+          this.socket = io.connect($(".io-class").data("config"));
         }
         this.socket.on("connect", (function(_this) {
           return function() {
