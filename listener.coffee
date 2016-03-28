@@ -12,7 +12,7 @@ config = JSON.parse(fs.readFileSync('config.json', 'utf8'))
 server = require('http').createServer(app)
 io = require('socket.io')(server, {path: config.listener_path})
 
-app.get "/", (req, res) ->
+app.get config.listener_path, (req, res) ->
   res.send ''
 
 app.post "/notify", (req, res) ->
