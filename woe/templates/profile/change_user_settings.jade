@@ -32,19 +32,28 @@
                 {{ form.minimum_notifications_for_email.label }}
                 {{ form.minimum_notifications_for_email(class="form-control") }}
               button(type="submit").btn.btn-default Submit
-    //- ul.list-group
-    //-   li.list-group-item.section-header Change Ignore Settings
-    //-   li.list-group-item
-    //-     .row
-    //-       .col-xs-12
-    //-         .form-group
-    //-           label.control-label.col-sm-2 Ignore User(s)
-    //-           .col-sm-5
-    //-             select#user-ignore-select(multiple="multiple", style="width: 200px;")
-    //-           .col-sm-2
-    //-             .visible-xs-block
-    //-               br
-    //-             a.btn.btn-default#user-ignore-button(href="/member/{{profile.login_name}}/ignore-users") Ignore
+    ul.list-group
+      li.list-group-item.section-header Change Ignore Settings
+      li.list-group-item
+        .row
+          .col-xs-12
+            .form-group
+              label.control-label.col-sm-2 Ignore User(s)
+              .col-sm-5
+                select#user-ignore-select(multiple="multiple", style="width: 200px;")
+              .col-sm-2
+                .visible-xs-block
+                  br
+                a.btn.btn-default#user-ignore-button(href="/member/{{profile.login_name}}/ignore-users") Ignore
+      if profile.ignored_users
+        for _i in profile.ignored_users
+          li.list-group-item
+            .row
+              .col-xs-3 
+                a(href="/member/{{_i.ignoring.login_name}}") {{_i.ignoring.display_name}}
+              .col-xs-9
+                a.post-link(href="/member/{{profile.login_name}}/unignore-user/{{_i.ignoring.login_name}}") (unignore)
+              
     ul.list-group
       li.list-group-item.section-header Notification Settings
       li.list-group-item

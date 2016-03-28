@@ -465,6 +465,9 @@ class User(db.Model):
     # Migration related
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
+    def ignoring(self):
+        return [u.ignoring for u in self.ignored_users]
+
     def get_custom_css(self):
         if current_user.no_images:
             return ""

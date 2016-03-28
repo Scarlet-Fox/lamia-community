@@ -60,7 +60,7 @@ style!= profile.get_custom_css()
               a.btn.btn-warning.post-link(href="/member/{{profile.login_name}}/validate-user") Validate User
               br
               br
-          if current_user.is_authenticated() and current_user != profile and current_user not in profile.ignored_users
+          if current_user.is_authenticated() and current_user != profile and current_user not in profile.ignoring()
             center
               br
               .btn-group
@@ -76,7 +76,7 @@ style!= profile.get_custom_css()
                     a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/request-friend") Friend Request
                   else
                     a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/un-friend") Unfriend
-                if profile not in current_user.ignored_users
+                if profile not in current_user.ignoring()
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Ignore
                 else
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Unignore

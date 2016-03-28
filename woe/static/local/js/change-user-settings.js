@@ -53,7 +53,7 @@
         };
       })(this));
     });
-    return $("#user-ignore-select").select2({
+    $("#user-ignore-select").select2({
       ajax: {
         url: "/user-list-api",
         dataType: 'json',
@@ -74,6 +74,18 @@
         cache: true
       },
       minimumInputLength: 2
+    });
+    return $("#user-ignore-button").click(function(e) {
+      var data;
+      e.preventDefault();
+      data = $("#user-ignore-select").val();
+      return $.post("/member/" + window.l_name + "/ignore-users", JSON.stringify({
+        data: data
+      }), (function(_this) {
+        return function(data) {
+          return window.location = data.url;
+        };
+      })(this));
     });
   });
 

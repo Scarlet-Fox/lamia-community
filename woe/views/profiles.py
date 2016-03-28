@@ -650,44 +650,94 @@ def approve_friend(user, friend):
 
     return app.jsonify(url="/member/"+unicode(friend.my_url)+"/friends")
 
-# @app.route('/member/<login_name>/toggle-ignore', methods=['POST'])
-# @login_required
-# def toggle_ignore_user(login_name):
-#     try:
-#         user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
-#     except IndexError:
-#         abort(404)
-#
-#     if current_user._get_current_object() == user:
-#         return abort(404)
-#
-#     try:
-#         ignore_setting = sqla.session.query(sqlm.IgnoringUser) \
-#             .filter_by(
-#                     user=current_user._get_current_object(),
-#                     ignoring=user
-#                 )
-#     except IndexError:
-#         ignore_setting = sqlm.IgnoringUser(
-#             user=current_user._get_current_object(),
-#             ignoring=user,
-#             created=arrow.utcnow().datetime.replace(tzinfo=None)
-#         )
-#
-#     currently_ignored = ignore_setting.distort_posts or ignore_setting.block_sigs or ignore_setting.block_pms or ignore_setting.block_blogs or ignore_setting.block_status
-#
-#     if user in current_user._get_current_object().ignored_users:
-#         c = current_user._get_current_object()
-#         c.ignored_users.remove(user)
-#         sqla.session.add(c)
-#         sqla.session.commit()
-#     else:
-#         c = current_user._get_current_object()
-#         c.ignored_users.append(user)
-#         sqla.session.add(c)
-#         sqla.session.commit()
-#
-#     return app.jsonify(url="/member/"+unicode(login_name))
+@app.route('/member/<login_name>/unignore-user/<target_name>', methods=['POST'])
+@login_required
+def unignore_user(login_name, target_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    try:
+        target = sqla.session.query(sqlm.User).filter_by(my_url=target_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    try:
+        ignore_del = sqla.session.query(sqlm.IgnoringUser).filter_by(user=user, ignoring=target).delete()
+    except:
+        abort(404)
+
+    return app.jsonify(url="/member/"+unicode(user.my_url)+"/change-settings")
+
+@app.route('/member/<login_name>/ignore-users', methods=['POST'])
+@login_required
+def ignore_users(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    request_json = request.get_json(force=True)
+    try:
+        to_ignore = list(
+                sqla.session.query(sqlm.User) \
+                    .filter(sqlm.User.id.in_(request_json.get("data"))) \
+                    .all()
+            )
+    except:
+        pass
+
+    for user_ in to_ignore:
+        if user_ in [u.ignoring for u in user.ignored_users]:
+            continue
+
+        if user_ == user:
+            continue
+
+        new_ignore = sqlm.IgnoringUser()
+        new_ignore.user = user
+        new_ignore.ignoring = user_
+        new_ignore.created = arrow.utcnow().datetime.replace(tzinfo=None)
+        sqla.session.add(new_ignore)
+        sqla.session.commit()
+
+    return app.jsonify(url="/member/"+unicode(user.my_url)+"/change-settings")
+
+@app.route('/member/<login_name>/toggle-ignore', methods=['POST'])
+@login_required
+def toggle_ignore_user(login_name):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user._get_current_object() == user:
+        return abort(404)
+
+    existed = False
+    try:
+        ignore_setting = sqla.session.query(sqlm.IgnoringUser) \
+            .filter_by(
+                    user=current_user._get_current_object(),
+                    ignoring=user
+                )[0]
+        existed = True
+    except IndexError:
+        ignore_setting = sqlm.IgnoringUser(
+            user=current_user._get_current_object(),
+            ignoring=user,
+            created=arrow.utcnow().datetime.replace(tzinfo=None)
+        )
+
+    if existed:
+        sqla.session.delete(ignore_setting)
+        sqla.session.commit()
+    else:
+        sqla.session.add(ignore_setting)
+        sqla.session.commit()
+
+    return app.jsonify(url="/member/"+unicode(login_name))
 
 @app.route('/member/<login_name>/toggle-follow', methods=['POST'])
 @login_required

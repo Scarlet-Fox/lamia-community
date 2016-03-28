@@ -57,3 +57,10 @@ $ ->
         }
       cache: true
     minimumInputLength: 2
+
+  $("#user-ignore-button").click (e) ->
+    e.preventDefault()
+    data = $("#user-ignore-select").val()
+
+    $.post "/member/#{window.l_name}/ignore-users", JSON.stringify({data: data}), (data) =>
+      window.location = data.url
