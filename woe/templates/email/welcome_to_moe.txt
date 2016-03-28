@@ -1,0 +1,15 @@
+Hello ${_user.display_name},
+
+Our administrators have reviewed and approved your account. Welcome to Scarlet's Web! It is great to have you as a member of our community.
+
+Please review the following links when you get a chance:
+
+- Our community rules can be found at https://scarletsweb.moe/t/community-rules-and-terms
+- A useful guide on online etiquette is available here http://scarletsweb.moe/t/how-can-i-be-a-nice-person-online
+
+Besides those two pages, you should introduce yourself to the rest of the community! The Welcome Board is here https://scarletsweb.moe/category/welcome-mat and you can post your own introduction topic whenever you feel like it.
+
+To unsubscribe from all future messages from Scarlet's Web, go to this page - https://scarletsweb.moe/member/${_user.id}/${_user.email_address}/unsubscribe
+
+Take care!
+- Scarlet's Web

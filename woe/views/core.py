@@ -528,7 +528,7 @@ def forgot_password():
 @app.route('/hello/<pk>')
 def confirm_register(pk):
     try:
-        user = sqla.session.query(sqlm.User).filter_by(pk=pk)[0]
+        user = sqla.session.query(sqlm.User).filter_by(id=pk)[0]
     except:
         return abort(404)
     return render_template("welcome_new_user.jade", page_title="Welcome! - Scarlet's Web", profile=user)
@@ -543,6 +543,7 @@ def register():
     if form.validate_on_submit():
         new_user = sqlm.User(
             login_name = form.username.data.strip().lower(),
+            my_url = form.username.data.strip().lower(),
             display_name = form.username.data.strip(),
             email_address = form.email.data.strip().lower()
         )
@@ -553,6 +554,15 @@ def register():
 
         sqla.session.add(new_user)
         sqla.session.commit()
+
+        send_mail_w_template(
+            send_to=[new_user,],
+            template="pending_validation.txt",
+            subject="Your Account is Being Reviewed - Scarlet's Web",
+            variables={
+                "_user": new_user,
+            }
+        )
 
         broadcast(
             to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
@@ -567,8 +577,8 @@ def register():
         broadcast(
             to=sqla.session.query(sqlm.User).filter_by(
                 banned=False,
-                login_name__ne=new_user.login_name,
-                ).filter(hidden_last_seen > arrow.utcnow().replace(hours=-24).datetime.replace(tzinfo=None)) \
+                ).filter(sqlm.User.login_name != new_user.login_name) \
+                .filter(sqlm.User.hidden_last_seen > arrow.utcnow().replace(hours=-24).datetime.replace(tzinfo=None)) \
                 .all(),
             category="new_member",
             url="/member/"+unicode(new_user.login_name),

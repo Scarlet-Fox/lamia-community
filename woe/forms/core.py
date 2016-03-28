@@ -82,7 +82,7 @@ class RegistrationForm(Form):
         user_count = sqla.session.query(sqlm.User).filter_by(
             login_name=field.data.lower().strip()
         ).count() + sqla.session.query(sqlm.User).filter(
-            sqla.func.lower(sqlm.User.display_name) == func.lower(field.data.lower().strip())
+            sqla.func.lower(sqlm.User.display_name) == sqla.func.lower(field.data.lower().strip())
         ).count()
 
         if user_count > 0:

@@ -14,6 +14,7 @@ import time
 from threading import Thread
 from multiprocessing import Process, Queue
 from sqlalchemy.orm.attributes import flag_modified
+from woe.email_utilities import send_mail_w_template
 
 @app.route('/member/<login_name>/mod-panel')
 @login_required
@@ -379,6 +380,15 @@ def validate_user(login_name):
 
     sqla.session.add(user)
     sqla.session.commit()
+
+    send_mail_w_template(
+        send_to=[user,],
+        template="welcome_to_moe.txt",
+        subject="Welcome - Scarlet's Web",
+        variables={
+            "_user": user,
+        }
+    )
 
     return app.jsonify(url="/member/"+unicode(user.my_url))
 
