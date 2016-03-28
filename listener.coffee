@@ -12,10 +12,15 @@ config = JSON.parse(fs.readFileSync('config.json', 'utf8'))
 server = require('http').createServer(app)
 io = require('socket.io')(server, {path: config.listener_path})
 
-app.get config.listener_path, (req, res) ->
+app.use (req, res, next) ->
+  console.log "Real Connection"
+  #console.log req
+  do next
+
+app.get config.talker_path, (req, res) ->
   res.send ''
 
-app.post "/notify", (req, res) ->
+app.post config.talker_path+"/notify", (req, res) ->
   for client in socketList
     try
       if client.user in req.body.users
@@ -25,6 +30,7 @@ app.post "/notify", (req, res) ->
   res.send 'ok'
 
 io.on 'connection', (client) ->
+  #console.log client
   client.on "user", (data) ->
     socketList.push client
     if socketList.length > 10000
@@ -45,6 +51,9 @@ io.on 'connection', (client) ->
   client.on "event", (data) ->
     room = data.room
     client.broadcast.to(room).emit("event", data)
+
+app.listen 3001, () ->
+  console.log('Server on sidecar.')
 
 server.listen 3000, () ->
   host = server.address().address
