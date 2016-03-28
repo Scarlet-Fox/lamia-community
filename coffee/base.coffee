@@ -94,7 +94,11 @@ $ ->
         $("#img-click-modal").modal('hide')
 
   if window.logged_in
-    socket = io.connect($(".io-class").data("config"))
+    if $(".io-class").data("path") != "/"
+      socket = io.connect($(".io-class").data("config"), {path: $(".io-class").data("path")+"/socket.io"})
+      console.log $(".io-class").data("path")+"socket.io"
+    else
+      socket = io.connect($(".io-class").data("config"))
 
   notificationHTML = """
       <li class="notification-li"><a href="{{url}}" data-notification="{{_id}}" class="notification-link dropdown-notif-{{_id}}-{{category}}">{{text}}</a></li>

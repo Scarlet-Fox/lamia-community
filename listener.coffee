@@ -1,12 +1,16 @@
 express = require 'express'
 app = express()
-server = require('http').createServer(app)
-io = require('socket.io')(server)
+fs = require 'fs'
 bodyParser = require('body-parser')
 app.use(bodyParser.json())
 
 key = "32932mklfdsy972@212278"
 socketList = new Array()
+
+config = JSON.parse(fs.readFileSync('config.json', 'utf8'))
+
+server = require('http').createServer(app)
+io = require('socket.io')(server, {path: config.listener_path})
 
 app.get "/", (req, res) ->
   res.send ''

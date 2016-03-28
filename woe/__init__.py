@@ -38,6 +38,7 @@ app.config['DEBUG'] = settings_file["debug"]
 app.config['BASE'] = settings_file["base_url"]
 app.config['MGAPI'] = settings_file["mailgun_api"]
 app.config['LISTENER'] = settings_file["listener"]
+app.config['LISTENER_PATH'] = settings_file["listener_path"]
 app.config['SQLALCHEMY_DATABASE_URI'] = settings_file["alchemy_uri"]
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 sqla = SQLAlchemy(app)
