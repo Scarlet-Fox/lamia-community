@@ -11,7 +11,7 @@ import hashlib
 from sqlalchemy.orm.attributes import flag_modified
 
 def send_message(data):
-    req = urllib2.Request(app.settings_file["listener"]+"/notify")
+    req = urllib2.Request(app.settings_file["listener"]+app.settings_file["talker_path"]+"/notify")
     req.add_header('Content-Type', 'application/json')
     response = urllib2.urlopen(req, py_json.dumps(data))
 
