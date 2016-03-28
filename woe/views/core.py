@@ -25,6 +25,7 @@ import pytz
 class Anonymouse(AnonymousUserMixin):
     login_name = None
     is_admin = False
+    no_images = False
 
 login_manager.login_view = "sign_in"
 login_manager.anonymous_user = Anonymouse

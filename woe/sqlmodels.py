@@ -466,6 +466,9 @@ class User(db.Model):
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     def get_custom_css(self):
+        if current_user.no_images:
+            return ""
+
         _template = _mylookup.get_template("profile.css")
         _rendered = _template.render(
                 _banner_image=self.banner_image_custom,
@@ -588,6 +591,9 @@ class User(db.Model):
         return my_unread_messages
 
     def get_avatar_url(self, size=""):
+        if current_user.no_images:
+            return ""
+
         if size != "":
             size = "_"+size
 
@@ -770,6 +776,9 @@ class Character(db.Model):
     legacy_gallery_field = db.Column(db.String)
 
     def get_avatar(self, size=200):
+        if current_user.no_images:
+            return ""
+
         all_avatars = Attachment.query.filter_by(
             character = self,
             character_avatar = True
@@ -785,6 +794,9 @@ class Character(db.Model):
             return ""
 
     def get_portrait(self, size=250):
+        if current_user.no_images:
+            return ""
+
         all_portraits = Attachment.query.filter_by(
             character = self,
             character_avatar = False

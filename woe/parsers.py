@@ -33,6 +33,7 @@ list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL)
 link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 bbcode_re = re.compile("(\[(attachment|spoiler|center|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
 href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
+raw_image_re = re.compile("(<img src=\"(.*?)\"(?:.*)>)")
 youtube_re = re.compile("https?://(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?", re.I)
 dailymotion_re = re.compile("(?:dailymotion\.com(?:\/video|\/hub)|dai\.ly)\/([0-9a-z]+)(?:[\-_0-9a-zA-Z]+#video=([a-z0-9]+))?", re.I)
 vimeo_re = re.compile("(?:https?:\/\/)?(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|)(\d+)(?:$|\/|\?)", re.I)
@@ -178,24 +179,46 @@ class ForumPostParser(object):
             if youtube_match:
                 video = youtube_match.groups()[0]
 
-                html = html.replace(
-                    """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe style="max-width: 100%%" width="560" height="315" src="https://www.youtube.com/embed/%s" frameborder="0" allowfullscreen></iframe>""" % (video, )
-                )
+                if not current_user.no_images:
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        """<iframe style="max-width: 100%%" width="560" height="315" src="https://www.youtube.com/embed/%s" frameborder="0" allowfullscreen></iframe>""" % (video, )
+                    )
+                else:
+                    link_ = """<a href="https://www.youtube.com/watch?v=%s" target="_blank">Youtube Link (Embed)</a>""" % (video,)
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        link_
+                    )
+
             elif dailymotion_match:
                 video = dailymotion_match.groups()[0]
 
-                html = html.replace(
-                    """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe style="max-width: 100%%" frameborder="0" width="480" height="270" src="//www.dailymotion.com/embed/video/%s" allowfullscreen></iframe>""" % (video, )
-                )
+                if not current_user.no_images:
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        """<iframe style="max-width: 100%%" frameborder="0" width="480" height="270" src="//www.dailymotion.com/embed/video/%s" allowfullscreen></iframe>""" % (video, )
+                    )
+                else:
+                    link_ = """<a href="http://www.dailymotion.com/video/%s" target="_blank">Dailymotion Link (Embed)</a>""" % (video,)
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        link_
+                    )
             elif vimeo_match:
                 video = vimeo_match.groups()[0]
 
-                html = html.replace(
-                    """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe style="max-width: 100%%" src="https://player.vimeo.com/video/%s?color=ffffff&title=0&byline=0&portrait=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""" % (video, )
-                )
+                if not current_user.no_images:
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        """<iframe style="max-width: 100%%" src="https://player.vimeo.com/video/%s?color=ffffff&title=0&byline=0&portrait=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""" % (video, )
+                    )
+                else:
+                    link_ = """<a href="https://vimeo.com/%s" target="_blank">Vimeo Link (Embed)</a>""" % (video,)
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        link_
+                    )
             elif soundcloud_match:
                 sound_user = soundcloud_match.groups()[0]
                 sound_track = soundcloud_match.groups()[1]
@@ -203,33 +226,55 @@ class ForumPostParser(object):
                     "url": "https://soundcloud.com/"+sound_user+"/"+sound_track
                     })
 
-                html = html.replace(
-                    """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe style="max-width: 100%%" width="100%%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?%s&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"></iframe>""" % (options,)
-                )
+                if not current_user.no_images:
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        """<iframe style="max-width: 100%%" width="100%%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?%s&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"></iframe>""" % (options,)
+                    )
+                else:
+                    link_ = """<a href="https://soundcloud.com/%s/%s" target="_blank">Soundcloud Link (%s/%s)</a>""" % (sound_user,sound_track,sound_user,sound_track)
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        link_
+                    )
             elif spotify_match:
                 uri = spotify_match.groups()[0]
                 track = spotify_match.groups()[1]
                 uri = "spotify:"+uri.replace("/", ":")+":"+track
 
-                html = html.replace(
-                    """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe style="max-width: 100%%" src="https://embed.spotify.com/?uri=%s" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>""" % (uri,)
-                )
+                if not current_user.no_images:
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        """<iframe style="max-width: 100%%" src="https://embed.spotify.com/?uri=%s" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>""" % (uri,)
+                    )
             elif vine_match:
                 video = vine_match.groups()[0]
 
-                html = html.replace(
-                    """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe style="max-width: 100%%" src="https://vine.co/v/%s/embed/simple?autoplay=0" width="400" height="400" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>""" % (video, )
-                )
+                if not current_user.no_images:
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        """<iframe style="max-width: 100%%" src="https://vine.co/v/%s/embed/simple?autoplay=0" width="400" height="400" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>""" % (video, )
+                    )
+                else:
+                    link_ = """<a href="https://vine.co/v/%s" target="_blank">Vine Link (Embed)</a>""" % (video,)
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        link_
+                    )
             elif giphy_match:
                 giph = giphy_match.groups()[0]
 
-                html = html.replace(
-                    """<a href="%s">%s</a>""" % (filler, filler),
-                    """<iframe src="//giphy.com/embed/%s" width="480" height="460" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="http://giphy.com/gifs/%s">via GIPHY</a></p>""" % (giph, giph)
-                )
+                if not current_user.no_images:
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        """<iframe src="//giphy.com/embed/%s" width="480" height="460" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="http://giphy.com/gifs/%s">via GIPHY</a></p>""" % (giph, giph)
+                    )
+                else:
+                    link_ = """<a href="http://giphy.com/gifs/%s" target="_blank">Giphy Link (Embed)</a>""" % (giph,)
+                    html = html.replace(
+                        """<a href="%s">%s</a>""" % (filler, filler),
+                        link_
+                    )
             else:
                 html = html.replace(
                     """<a href="%s">%s</a>""" % (filler, filler),
@@ -249,6 +294,11 @@ class ForumPostParser(object):
                 except:
                     sqla.session.rollback()
                     continue
+
+            if current_user.no_images:
+                link_html = """<a href="/static/uploads/%s" target="_blank">View Attachment.%s (%sKB)</a>""" % (quote(attachment.path), attachment.extension, int(float(attachment.size_in_bytes)/1024))
+                html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), link_html, 1)
+                continue
 
             try:
                 size = attachment_bbcode[1]
@@ -344,7 +394,7 @@ class ForumPostParser(object):
                     except:
                         sqla.session.rollback()
                         return
-                
+
                 _display_name = _replying_to.author.display_name
                 try:
                     if _replying_to.character is not None:
@@ -445,9 +495,10 @@ class ForumPostParser(object):
             html = html.replace(replace_, """%s""" % (font_bbcode[1],))
 
         # parse smileys
-        for smiley in emoticon_codes.keys():
-            img_html = """<img src="%s" />""" % (os.path.join("/static/emoticons",emoticon_codes[smiley]),)
-            html = html.replace(smiley, img_html)
+        if not current_user.no_images:
+            for smiley in emoticon_codes.keys():
+                img_html = """<img src="%s" />""" % (os.path.join("/static/emoticons",emoticon_codes[smiley]),)
+                html = html.replace(smiley, img_html)
 
         quote_bbcode_in_post = quote_re.findall(html)
         for quote_bbcode in quote_bbcode_in_post:
@@ -499,4 +550,10 @@ class ForumPostParser(object):
                 list_contents += """<li>%s</li>""" % list_item
             html = html.replace("[list]%s[/list]" % list_bbcode, """<ul> <!-- list -->%s</ul>""" % list_contents, 1)
 
+        if current_user.no_images:
+            for plain_jane_image in raw_image_re.findall(html):
+                html = html.replace(
+                    "%s" % plain_jane_image[0],
+                    """<a href="%s" target="_blank">View External Image : <br>%s.</a>""" % (plain_jane_image[1], plain_jane_image[1])
+                )
         return html
