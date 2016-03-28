@@ -667,6 +667,9 @@ def create_blog_comment(slug, entry_slug, page):
         sqla.session.rollback()
         return abort(404)
 
+    if (current_user in [u.ignoring for u in entry.author.ignored_users]) and not current_user.is_admin:
+        return app.jsonify(error="You cannot comment on this entry.")
+
     request_json = request.get_json(force=True)
 
     if request_json.get("text", "").strip() == "":

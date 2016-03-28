@@ -138,6 +138,9 @@ def make_status_update_reply(status):
     if status.muted and current_user._get_current_object() != status.author:
         return app.jsonify(error="This status update is silenced. Shhh!")
 
+    if (current_user in [u.ignoring for u in status.author.ignored_users]) and not current_user.is_admin:
+        return app.jsonify(error="User has blocked you.")
+
     try:
         if not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod) and \
                 (sqla.session.query(sqlm.StatusUpdateUser). \
@@ -245,6 +248,20 @@ def make_status_update_reply(status):
 def create_new_status(target):
     request_json = request.get_json(force=True)
 
+    if target:
+        try:
+            target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]
+            if target_user == current_user._get_current_object():
+                return app.jsonify(error="No talking to yourself.")
+
+            if (current_user in [u.ignoring for u in target_user.ignored_users]) and not current_user.is_admin:
+                return app.jsonify(error="User has blocked you.")
+
+            status.attached_to_user = target_user
+            status.participants.append(target_user)
+        except IndexError:
+            pass
+
     status = sqlm.StatusUpdate()
     status.author = current_user._get_current_object()
 
@@ -261,24 +278,12 @@ def create_new_status(target):
     status.participants.append(status.author)
     status.created = arrow.utcnow().datetime.replace(tzinfo=None)
     status.replies = 0
-
-    if target:
-        try:
-            target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]
-            if target_user == status.author:
-                return app.jsonify(error="No talking to yourself.")
-            status.attached_to_user = target_user
-            status.participants.append(target_user)
-        except IndexError:
-            pass
-
     sqla.session.add(status)
     sqla.session.commit()
 
     send_notify_to_users = []
     for user in status.author.followed_by():
-        if user not in status.author.ignored_users:
-            send_notify_to_users.append(user)
+        send_notify_to_users.append(user)
 
     broadcast(
       to=send_notify_to_users,

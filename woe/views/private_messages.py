@@ -478,7 +478,7 @@ def create_message():
                         ignoring = current_user._get_current_object()
                     )[0]
 
-                if ignore_setting.block_pms:
+                if ignore_setting.block_pms and not current_user._get_current_object().is_admin:
                     return app.jsonify(error="You can not send a message to %s." % (u.display_name,))
             except IndexError:
                 pass
@@ -518,7 +518,7 @@ def create_message():
 @login_required
 def create_message_index(target):
     target_user = None
-    
+
     if target:
         try:
             target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]

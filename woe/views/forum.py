@@ -833,8 +833,7 @@ def new_topic(slug):
 
         send_notify_to_users = []
         for user in new_post.author.followed_by():
-            if user not in new_post.author.ignored_users:
-                send_notify_to_users.append(user)
+            send_notify_to_users.append(user)
 
         broadcast(
           to=send_notify_to_users,
