@@ -96,7 +96,6 @@ $ ->
   if window.logged_in
     if $(".io-class").data("path") != "/"
       socket = io.connect($(".io-class").data("config"), {path: $(".io-class").data("path")+"/socket.io"})
-      console.log $(".io-class").data("path")+"socket.io"
     else
       socket = io.connect($(".io-class").data("config"))
 

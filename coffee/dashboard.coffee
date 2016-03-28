@@ -32,7 +32,10 @@ $ ->
 
       _panel=this
 
-      socket = io.connect($(".io-class").data("config"))
+      if $(".io-class").data("path") != "/"
+        socket = io.connect($(".io-class").data("config"), {path: $(".io-class").data("path")+"/socket.io"})
+      else
+        socket = io.connect($(".io-class").data("config"))
 
       socket.on "notify", (data) ->
         if data.count_update?

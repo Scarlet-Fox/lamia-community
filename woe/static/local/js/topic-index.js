@@ -24,7 +24,13 @@
         this.is_logged_in = window._is_logged_in;
         this.selected_character = "";
         this.selected_avatar = "";
-        socket = io.connect($(".io-class").data("config"));
+        if ($(".io-class").data("path") !== "/") {
+          socket = io.connect($(".io-class").data("config"), {
+            path: $(".io-class").data("path") + "/socket.io"
+          });
+        } else {
+          socket = io.connect($(".io-class").data("config"));
+        }
         window.onbeforeunload = function() {
           if (topic.inline_editor.quill.getText().trim() !== "") {
             return "It looks like you were typing up a post.";

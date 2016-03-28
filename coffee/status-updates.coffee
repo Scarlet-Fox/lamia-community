@@ -18,7 +18,10 @@ $ ->
       @progress_bar = $("#status-character-count-bar")
       @progress_text = $("#status-character-count-text")
 
-      @socket = io.connect($(".io-class").data("config"));
+      if $(".io-class").data("path") != "/"
+        socket = io.connect($(".io-class").data("config"), {path: $(".io-class").data("path")+"/socket.io"})
+      else
+        socket = io.connect($(".io-class").data("config"))
 
       @socket.on "connect", () =>
         @socket.emit 'join', "status--#{@id}"
