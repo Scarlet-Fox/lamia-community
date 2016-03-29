@@ -8,4 +8,5 @@ body {
     background-repeat: no-repeat, no-repeat;
     background-position: top left, top right;
     background-color: #A89898;
+    background-attachment: fixed;
 }
