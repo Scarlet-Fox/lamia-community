@@ -181,6 +181,10 @@ def new_message_in_pm_topic(pk):
     except IndexError:
         return abort(404)
 
+    difference = (arrow.utcnow().datetime - arrow.get(topic.last_reply.created).datetime).seconds
+    if difference < 10:
+        return app.jsonify(error="Please wait %s seconds before you can reply again." % (10 - difference))
+
     request_json = request.get_json(force=True)
 
     if request_json.get("text", "").strip() == "":
