@@ -71,7 +71,7 @@ $ ->
             </span>
             <br>
             <span class="topic-author">
-              to:
+              with:
               {{#each participants}}
                 <a href="/member/{{0}}" class="topic-listing-username hover_user">{{1}}</a>{{2}}{{/each}}
             </span>

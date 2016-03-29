@@ -66,7 +66,7 @@
       li.list-group-item.section-header.sidebar-section-header Status Updates
       {% for status in status_updates %}
       li.list-group-item.front-page-status.sidebar-status-section
-        .media-left
+        .media-left.subcategory-listing-recent-image
           a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
             img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{ status.author.avatar_40_x }}", height="{{ status.author.avatar_40_y }}", class="avatar-mini")
         .media-body
@@ -92,7 +92,7 @@
           li.list-group-item.section-header Blogs
           for blog in blogs
             li.list-group-item(style="padding: 10px;")
-              .media-left 
+              .media-left.subcategory-listing-recent-image
                 a(href="/member/{{blog.recent_entry.author.login_name}}")
                   img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
               .media-body

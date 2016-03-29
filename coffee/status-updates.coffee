@@ -107,7 +107,7 @@ $ ->
       return """
       {{#unless hidden}}
       <div class="status-reply" id="reply-{{idx}}" data-idx="{{idx}}">
-        <div class="media-left">
+        <div class="media-left subcategory-listing-recent-image">
           <a href="/member/{{author_login_name}}"><img src="{{user_avatar}}" class="avatar-mini" width="{{user_avatar_x}}px" height="{{user_avatar_y}}px"></a>
         </div>
         <div class="media-body">

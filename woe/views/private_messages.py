@@ -579,8 +579,11 @@ def messages_topics():
                     author=current_user
                 )[0]
 
-        _parsed["participants"] = [[u.author.login_name, u.author.display_name, ", "] for u in pm_participants]
-        _parsed["participants"][-1][2] = ""
+        try:
+            _parsed["participants"] = [[u.author.login_name, u.author.display_name, ", "] for u in pm_participants]
+            _parsed["participants"][-1][2] = ""
+        except:
+            continue
 
         _parsed["creator"] = message.author.display_name
         _parsed["created"] = humanize_time(message.created, "MMM D YYYY")
