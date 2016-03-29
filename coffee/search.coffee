@@ -21,6 +21,9 @@ $ ->
       $(".topics-option").show()
     else if content_type == "status"
       $(".variable-option").hide()
+    else if content_type == "blogs"
+      $(".variable-option").hide()
+      $(".blogs-option").show()
     else if content_type == "messages"
       $(".variable-option").hide()
       $(".messages-option").show()
@@ -84,6 +87,25 @@ $ ->
   $("#category-select").select2
     ajax:
       url: "/category-list-api",
+      dataType: 'json',
+      delay: 250,
+      data: (params) ->
+        return {
+          q: params.term
+        }
+      processResults: (data, page) ->
+        console.log {
+          results: data.results
+        }
+        return {
+          results: data.results
+        }
+      cache: true
+    minimumInputLength: 2
+
+  $("#blog-select").select2
+    ajax:
+      url: "/blog-list-api",
       dataType: 'json',
       delay: 250,
       data: (params) ->
@@ -202,6 +224,9 @@ $ ->
 
     if content_type == "topics"
       data["categories"] = $("#category-select").val()
+
+    if content_type == "blogs"
+      data["blogs"] = $("#blog-select").val()
 
     $.post "/search", JSON.stringify(data), (data) ->
       console.log data

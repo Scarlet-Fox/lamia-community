@@ -7,7 +7,7 @@
       li.list-group-item.section-header Followed Content
       if not followed_topics and not followed_blogs
         li.list-group-item You have not followed any blogs or topics.
-      if followed_blogs
+      if followed_topics
         li.list-group-item.section-header Followed Topics
         for topic in followed_topics
           li.list-group-item(style="padding: 10px;")

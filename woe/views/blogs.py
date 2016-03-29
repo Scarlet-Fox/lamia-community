@@ -732,3 +732,15 @@ def create_blog_comment(slug, entry_slug, page):
             )
 
     return app.jsonify(success=True, url="""/blog/%s/e/%s/page/%s""" % (slug, entry_slug, max_pages))
+
+@app.route('/blog-list-api', methods=['GET'])
+@login_required
+def blog_list_api():
+    query = request.args.get("q", "")[0:300]
+    if len(query) < 2:
+        return app.jsonify(results=[])
+
+    q_ = parse_search_string(query, sqlm.Blog, sqla.session.query(sqlm.Blog), ["name",])
+    blogs = q_.all()
+    results = [{"text": unicode(b.name), "id": str(b.id)} for b in blogs]
+    return app.jsonify(results=results)

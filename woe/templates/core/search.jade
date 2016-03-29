@@ -14,12 +14,17 @@
               select.form-control#content-search
                 option(value="posts") Posts
                 option(value="topics") Topics
+                option(value="blogs") Blog Entries
                 option(value="status") Status Updates
                 option(value="messages") My Private Messages
           .form-group.variable-option.topics-option
             label.control-label.col-sm-4 Categories
             .col-sm-8
               select.form-control#category-select(multiple="multiple")
+          .form-group.variable-option.blogs-option
+            label.control-label.col-sm-4 Blogs
+            .col-sm-8
+              select.form-control#blog-select(multiple="multiple")
           .form-group.variable-option.messages-option
             label.control-label.col-sm-4 Message Topic
             .col-sm-8

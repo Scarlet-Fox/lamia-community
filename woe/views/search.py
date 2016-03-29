@@ -39,7 +39,7 @@ def clear_search_lookup():
     session["end_date"] = ""
     session["categories"] = []
     session["topics"] = []
-    session["content_type"] = "topics"
+    session["content_type"] = "posts"
     session["search_authors"] = []
     session["query"] = ""
 
@@ -49,7 +49,7 @@ def clear_search_lookup():
 @login_required
 def search_lookup():
     request_json = request.get_json(force=True)
-    content_type = request_json.get("content_type", "topics")
+    content_type = request_json.get("content_type", "posts")
     session["content_type"] = content_type
 
     try:
@@ -85,6 +85,17 @@ def search_lookup():
     except:
         categories = []
         session["categories"] = []
+
+    try: # category
+        blogs = list(
+                sqla.session.query(sqlm.Blog) \
+                    .filter(sqlm.Blog.id.in_(request_json.get("blogs"))) \
+                    .all()
+            )
+        # session["categories"] = [{"id": c.id, "name": c.name} for c in categories]
+    except:
+        blogs = []
+        # session["categories"] = []
 
     try:
         if content_type == "posts":
@@ -139,6 +150,9 @@ def search_lookup():
     elif content_type == "messages":
         query_ = sqla.session.query(sqlm.PrivateMessageReply)
         model_ = sqlm.PrivateMessageReply
+    elif content_type == "blogs":
+        query_ = sqla.session.query(sqlm.BlogEntry)
+        model_ = sqlm.BlogEntry
 
     if start_date:
         query_ = query_.filter(model_.created >= start_date)
@@ -148,6 +162,9 @@ def search_lookup():
 
     if categories and content_type == "topics":
         query_ = query_.filter(model_.category_id.in_([c.id for c in categories]))
+
+    if blogs and content_type == "blogs":
+        query_ = query_.filter(model_.blog_id.in_([b.id for b in blogs]))
 
     if topics and content_type == "posts":
         query_ = query_.filter(model_.topic_id.in_([t.id for t in topics]))
@@ -190,6 +207,31 @@ def search_lookup():
             parsed_result["author_profile_link"] = result.author.login_name
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = False
+            parsed_results.append(parsed_result)
+    elif content_type == "blogs":
+        query_ = parse_search_string(query, model_, query_, ["html","title"])
+        count = query_.count()
+
+        results = query_ \
+            .join(sqlm.BlogEntry.blog) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+                sqlm.Blog.privacy_setting == "members"
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published))[(page-1)*pagination:pagination*page]
+
+        for result in results:
+            parsed_result = {}
+            parsed_result["time"] = humanize_time(result.created)
+            parsed_result["title"] = result.title
+            parsed_result["url"] = "/blog/"+unicode(result.blog.slug)+"/e/"+unicode(result.slug)
+            parsed_result["description"] = result.html
+            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_name"] = result.author.display_name
+            parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
 
     elif content_type == "status":

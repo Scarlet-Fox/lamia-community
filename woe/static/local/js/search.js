@@ -25,6 +25,9 @@
         return $(".topics-option").show();
       } else if (content_type === "status") {
         return $(".variable-option").hide();
+      } else if (content_type === "blogs") {
+        $(".variable-option").hide();
+        return $(".blogs-option").show();
       } else if (content_type === "messages") {
         $(".variable-option").hide();
         return $(".messages-option").show();
@@ -124,6 +127,28 @@
       },
       minimumInputLength: 2
     });
+    $("#blog-select").select2({
+      ajax: {
+        url: "/blog-list-api",
+        dataType: 'json',
+        delay: 250,
+        data: function(params) {
+          return {
+            q: params.term
+          };
+        },
+        processResults: function(data, page) {
+          console.log({
+            results: data.results
+          });
+          return {
+            results: data.results
+          };
+        },
+        cache: true
+      },
+      minimumInputLength: 2
+    });
     $("#pm-topic-select").select2({
       ajax: {
         url: "/pm-topic-list-api",
@@ -181,6 +206,9 @@
       }
       if (content_type === "topics") {
         data["categories"] = $("#category-select").val();
+      }
+      if (content_type === "blogs") {
+        data["blogs"] = $("#blog-select").val();
       }
       return $.post("/search", JSON.stringify(data), function(data) {
         var _html, l, len3, m, n, o, p, pages, pagination_html, ref3, ref4, ref5, ref6, ref7, ref8, result, results, results1, results2, results3;
