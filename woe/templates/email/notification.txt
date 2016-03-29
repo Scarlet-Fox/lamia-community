@@ -15,7 +15,7 @@ You can find more details about these summarized items on your dashboard, when y
 % endif
 
 % for category in _list:
-${_notification_names[category][0].capitalize()} Notifications
+${_notification_names[category][0].capitalize()} Notification(s)
 =======================================
     % for item in _list_k[category]:
         % if _list_url[item["url"]] == 1:
@@ -30,7 +30,7 @@ ${_notification_names[category][0].capitalize()} Notifications
 % endfor
 
 % for category in _details:
-${_notification_names[category][0].capitalize()} Notifications
+${_notification_names[category][0].capitalize()} Notification(s)
 =======================================
     % for item in _details_k[category]:
 - ${item["message"]} (${item["url"]})

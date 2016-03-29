@@ -62,6 +62,19 @@
                 br
                 a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
   .col-md-4
+    if announcements
+      ul.list-group
+        li.list-group-item.section-header.sidebar-section-header Announcements
+        for announcement in announcements
+          li.list-group-item(style="padding: 10px;")
+            .media-left 
+              a(href="/member/{{announcement.author.login_name}}")
+                img.avatar-mini(src=announcement.author.get_avatar_url("40"), width=announcement.author.avatar_40_x, height=announcement.author.avatar_40_y)
+            .media-body
+              strong
+                a(href="/t/{{announcement.slug}}")= announcement.title
+              div= announcement.created|humanize_time("MMM D YYYY")
+    
     ul.list-group
       li.list-group-item.section-header.sidebar-section-header Status Updates
       {% for status in status_updates %}

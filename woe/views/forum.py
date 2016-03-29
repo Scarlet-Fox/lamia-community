@@ -1088,6 +1088,10 @@ def index():
             status_update_authors.c.created == sqlm.StatusUpdate.created
         ))[:5]
 
+    announcements = sqla.session.query(sqlm.Topic) \
+        .filter_by(announcement=True, hidden=False) \
+        .order_by(sqlm.Topic.created.desc())[:3]
+
     if current_user.is_authenticated():
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
@@ -1111,7 +1115,7 @@ def index():
             .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
     return render_template("index.jade", page_title="Scarlet's Web",
-        sections=sections, sub_categories=sub_categories,
+        sections=sections, sub_categories=sub_categories,announcements=announcements,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)
