@@ -163,6 +163,8 @@ body(role='document')
               li.hidden-sm.hidden-md.hidden-lg
                 a(href='/messages') Messages
               li.hidden-sm.hidden-md.hidden-lg
+                a(href='/member/{{current_user.login_name}}/change-settings') Settings
+              li.hidden-sm.hidden-md.hidden-lg
                 a(href='/member/{{current_user.login_name}}') Profile
               li.hidden-sm.hidden-md.hidden-lg
                 a.sign-out(href='#') Sign Out
@@ -180,6 +182,8 @@ body(role='document')
                       a(href='/dashboard') Dashboard
                     li
                       a(href='/messages') Messages
+                    li
+                      a(href='/member/{{current_user.login_name}}/change-settings') Settings
                     li
                       a(href='/member/{{current_user.login_name}}') Profile
                     li.divider

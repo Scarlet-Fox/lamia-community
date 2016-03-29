@@ -18,6 +18,12 @@ themes = [
         "created": datetime.now().replace(tzinfo=None)
     },
     {
+        "name": "Half and Half",
+        "css": "local/themes/halfnhalf.css",
+        "base": "local/themes/default.css",
+        "created": datetime.now().replace(tzinfo=None)
+    },
+    {
         "name": "Luna",
         "css": "local/themes/luna.css",
         "base": "local/themes/default.css",

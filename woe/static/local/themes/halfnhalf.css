@@ -1,0 +1,11 @@
+.site-background {
+    height: 400px;
+    background: transparent;
+}
+
+body {
+    background: url('/static/local/themes/halfnhalf/sallyleft.png'), url('/static/local/themes/halfnhalf/sallyright.png');
+    background-repeat: no-repeat, no-repeat;
+    background-position: top left, top right;
+    background-color: #A89898;
+}
