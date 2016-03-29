@@ -32,6 +32,12 @@ def send_notification_emails():
         if u.banned:
             continue
 
+        if u.minimum_notifications_for_email == None:
+            u.minimum_notifications_for_email = 5
+
+        if u.minimum_time_between_emails == None:
+            u.minimum_time_between_emails = 360
+
         notifications = sqla.session.query(sqlm.Notification) \
             .filter_by(seen=False, acknowledged=False, emailed=False) \
             .filter_by(user=u) \

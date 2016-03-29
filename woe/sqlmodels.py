@@ -412,7 +412,7 @@ class User(db.Model):
 
     emails_muted = db.Column(db.Boolean, default=False)
     last_sent_notification_email = db.Column(db.DateTime, nullable=True)
-    minimum_notifications_for_email = db.Column(db.Integer, default=3)
+    minimum_notifications_for_email = db.Column(db.Integer, default=5)
     minimum_time_between_emails = db.Column(db.Integer, default=360)
 
     title = db.Column(db.String, default="")
@@ -869,6 +869,12 @@ allowed_label_table = db.Table('category_allowed_labels', db.metadata,
     db.Column('label_id', db.Integer, db.ForeignKey('label.id',
         name="fk_allowedcategorylabel_label", ondelete="CASCADE")))
 
+category_watchers_table = db.Table('category_watchers', db.metadata,
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id',
+        name="fk_categorywatchers_category", ondelete="CASCADE")),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_categorywatchers_user", ondelete="CASCADE")))
+
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -880,6 +886,8 @@ class Category(db.Model):
         name="fk_category_section", ondelete="SET NULL"))
     section = db.relationship("Section")
 
+    watchers = db.relationship("User",
+                    secondary=category_watchers_table)
     allowed_users = db.relationship("User",
                     secondary=allowed_user_table)
     allowed_labels = db.relationship("Label",

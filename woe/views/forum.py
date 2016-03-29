@@ -42,6 +42,30 @@ def topic_list_api():
     results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
     return app.jsonify(results=results)
 
+@app.route('/c/<slug>/toggle-follow', methods=['POST'])
+@login_required
+def toggle_follow_category(slug):
+    try:
+        category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+
+    if not current_user._get_current_object() in category.watchers:
+        category.watchers.append(current_user._get_current_object())
+    else:
+        try:
+            category.watchers.remove(current_user._get_current_object())
+        except:
+            pass
+
+    try:
+        sqla.session.add(category)
+        sqla.session.commit()
+    except:
+        sqla.session.rollback()
+
+    return app.jsonify(url="/category/"+unicode(category.slug)+"")
+
 @app.route('/t/<slug>/toggle-follow', methods=['POST'])
 @login_required
 def toggle_follow_topic(slug):
@@ -858,6 +882,37 @@ def new_topic(slug):
           category="mention",
           url="/t/"+unicode(new_topic.slug),
           title="%s mentioned you in new topic %s" % (unicode(new_post.author.display_name), unicode(new_topic.title)),
+          description=new_post.html,
+          content=new_topic,
+          author=new_post.author
+          )
+
+        notify_users = []
+        for u in category.watchers:
+          if u == new_post.author:
+              continue
+
+          skip_user = False
+          for _u in to_notify.values():
+              if _u.id == u.id:
+                  skip_user = True
+                  break
+
+          for _u in send_notify_to_users:
+              if _u.id == u.id:
+                  skip_user = True
+                  break
+
+          if skip_user:
+              continue
+
+          notify_users.append(u)
+
+        broadcast(
+          to=notify_users,
+          category="topic",
+          url="/t/%s" % (str(new_topic.slug),),
+          title="Topic posted in %s : %s" % (unicode(category.name), unicode(new_topic.title)),
           description=new_post.html,
           content=new_topic,
           author=new_post.author

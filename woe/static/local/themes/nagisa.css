@@ -1,20 +1,25 @@
 .panel-heading {
   background: url("/static/local/themes/nagisa/nagisabar.png");
+  background-attachment: fixed;
 }
 
 .section-header {
   background: url("/static/local/themes/nagisa/nagisabar.png");
+  background-attachment: fixed;
 }
 
 .popover-title {
   background-image: url("/static/local/themes/nagisa/nagisabar.png") !important;
+  background-attachment: fixed;
 }
 
 .toggle-show-roles-button {
   background: url("/static/local/themes/nagisa/nagisabar.png");
+  background-attachment: fixed;
 }
 
 .site-background {
+  height: 460px;
   background: none !important;
 }
 
