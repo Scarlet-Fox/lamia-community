@@ -50,7 +50,7 @@ def send_notification_emails():
         # continue
 
         try:
-            if u.last_sent_notification_email > arrow.utcnow().replace(minutes=-u.minimum_time_between_emails).datetime.replace(tzinfo=None):
+            if u.last_sent_notification_email < arrow.utcnow().replace(minutes=-u.minimum_time_between_emails).datetime.replace(tzinfo=None):
                 continue
         except:
             pass
