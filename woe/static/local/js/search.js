@@ -186,7 +186,13 @@
         var _html, l, len3, m, n, o, p, pages, pagination_html, ref3, ref4, ref5, ref6, ref7, ref8, result, results, results1, results2, results3;
         console.log(data);
         if (data.count === 0) {
-          return $("#search-results").html("<p>No results...</p>");
+          $("#search-results").html("<p>No results...</p>");
+          pagination_html = paginationTemplate({
+            pages: 0
+          });
+          $("#results-header")[0].scrollIntoView();
+          $(".search-pagination").html(pagination_html);
+          return $("#results-header").text(data.count + " Search Results");
         } else {
           _html = "";
           ref3 = data.results;
