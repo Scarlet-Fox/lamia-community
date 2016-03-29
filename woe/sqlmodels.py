@@ -633,6 +633,7 @@ class Report(db.Model):
     author = db.relationship("User")
 
     report = db.Column(db.Text)
+    content_html = db.Column(db.Text)
 
     STATUS_CHOICES = (
         ('ignored', 'Ignored'),

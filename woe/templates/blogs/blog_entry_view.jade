@@ -46,6 +46,7 @@
           br
           .row
             .col-xs-6
+              a.btn.btn-default.report-button(data-pk=entry.id, data-type="blogentry") Report
               if entry.author == current_user or current_user in blog.editors
                 a.btn.btn-default(href="/blog/{{blog.slug}}/e/{{entry.slug}}/edit-entry") Edit Entry
             .col-xs-6.post-likes
@@ -93,6 +94,7 @@
                 .col-sm-10.col-xs-12
                   .row
                     .col-xs-6
+                      a.btn.btn-default.report-button(data-pk=comment.id, data-type="blogcomment") Report
                       if comment.author == current_user
                         a.btn.btn-default(href="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/edit-comment") Edit Comment
                     .col-xs-6

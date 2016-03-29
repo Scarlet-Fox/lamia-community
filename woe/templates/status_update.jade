@@ -9,6 +9,8 @@
       li.list-group-item.section-header.sidebar-status-section(style="font-size: 14px;")
         span#status-status
         .btn-group(style="float: right;")
+          a.btn.btn-xs.btn-default.report-button(data-pk=status.id, data-type="status")
+            span.glyphicon.glyphicon-exclamation-sign
           {% if mod == True %}
           {% if status.hidden %}
           a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-hidden") Show

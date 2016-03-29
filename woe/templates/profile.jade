@@ -80,6 +80,10 @@ style!= profile.get_custom_css()
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Ignore
                 else
                   a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Unignore
+                br
+                br
+                center
+                  a.btn.btn-default.report-button(data-pk=profile.id, data-type="profile") Report
           br
     ul.list-group
       li.list-group-item.section-header Navigation

@@ -271,6 +271,30 @@ def make_report():
         content_id = content.id
         content_html = content.html
         url = "/t/%s/page/1/post/%s" % (content.topic.slug, content.id)
+    elif _type == "status":
+        try:
+            content = sqla.session.query(sqlm.StatusUpdate).filter_by(id=request_json.get("pk"))[0]
+        except:
+            return abort(500)
+        content_id = content.id
+        content_html = content.message
+        url = "/status/%s" % (content.id,)
+    elif _type == "blogentry":
+        try:
+            content = sqla.session.query(sqlm.BlogEntry).filter_by(id=request_json.get("pk"))[0]
+        except:
+            return abort(500)
+        content_id = content.id
+        content_html = content.html
+        url = "/blog/%s/e/%s" % (content.blog.slug,content.slug)
+    elif _type == "blogcomment":
+        try:
+            content = sqla.session.query(sqlm.BlogComment).filter_by(id=request_json.get("pk"))[0]
+        except:
+            return abort(500)
+        content_id = content.id
+        content_html = content.html
+        url = "/blog/%s/e/%s" % (content.blog.slug,content.blog_entry.slug)
     elif _type == "pm":
         try:
             content = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=request_json.get("pk"))[0]
@@ -278,7 +302,7 @@ def make_report():
             return abort(500)
         content_id = content.id
         content_html = content.message
-        url = "/messages/%s/page/1/post/%s" % (content.topic.id, content.id)
+        url = "/messages/%s/page/1/post/%s" % (content.pm.id, content.id)
     elif _type == "profile":
         try:
             content = sqla.session.query(sqlm.User).filter_by(id=request_json.get("pk"))[0]
@@ -296,6 +320,7 @@ def make_report():
             .filter(sqlm.Report.created > arrow.utcnow().datetime.replace(tzinfo=None))[0]
         return app.jsonify(status="reported")
     except:
+        sqla.session.rollback()
         pass
 
     report = sqlm.Report(
@@ -305,7 +330,8 @@ def make_report():
         content_id = content_id,
         author = current_user._get_current_object(),
         report = text,
-        status = "open"
+        status = "open",
+        content_html = content_html
     )
 
     sqla.session.add(report)
