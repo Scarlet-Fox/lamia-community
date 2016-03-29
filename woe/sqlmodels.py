@@ -277,6 +277,7 @@ class Notification(db.Model):
         ("status", "Status Updates", "all status update notifications", "listed", "status", "statuses"),
         ("new_member", "New Members", "new member announcements", "listed", "new member", "new members"),
         ("user_activity", "Followed User Activity", "new topics and statuses by followed members", "listed", "followed activity", "followed activities"),
+        ("friend", "Friend Requests", "new friend requests and approvals", "listed", "friend", "friends"),
         # ("announcement", "Announcements"),
         # ("profile_comment","Profile Comments"),
         # ("rules_updated", "Rule Update"),

@@ -4,9 +4,9 @@ Here are your most recent notifications. To change your notification preferences
 
 % for category in _summaries:
     % if _summaries_k[category] == 1:
-- You have received 1 ${_notification_names[category][0].lower()}.
+- You have received 1 ${_notification_names[category][0].lower()} notification.
     % else:
-- You have received ${_summaries_k[category]} ${_notification_names[category][1].lower()}.
+- You have received ${_summaries_k[category]} ${_notification_names[category][0].lower()} notifications.
     % endif
 % endfor
 % if len(_summaries) > 0:
@@ -15,8 +15,8 @@ You can find more details about these summarized items on your dashboard, when y
 % endif
 
 % for category in _list:
-${_notification_names[category][1].capitalize()}
-============================
+${_notification_names[category][0].capitalize()} Notifications
+=======================================
     % for item in _list_k[category]:
         % if _list_url[item["url"]] == 1:
 - ${item["message"]} ${item["url"]}
@@ -30,8 +30,8 @@ ${_notification_names[category][1].capitalize()}
 % endfor
 
 % for category in _details:
-${_notification_names[category][1].capitalize()}
-============================
+${_notification_names[category][0].capitalize()} Notifications
+=======================================
     % for item in _details_k[category]:
 - ${item["message"]} (${item["url"]})
 "${item["description"]}"

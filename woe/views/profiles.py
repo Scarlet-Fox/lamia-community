@@ -11,6 +11,7 @@ from woe.utilities import ForumHTMLCleaner, strip_tags
 from woe import sqla
 import woe.sqlmodels as sqlm
 import time
+from woe.views.dashboard import broadcast
 from threading import Thread
 from multiprocessing import Process, Queue
 from sqlalchemy.orm.attributes import flag_modified
@@ -586,6 +587,16 @@ def request_friendship(login_name):
             sqla.session.add(friendship)
             sqla.session.commit()
 
+            broadcast(
+              to=[user,],
+              category="friend",
+              url="/member/%s/friends" % (str(user.my_url)),
+              title="%s has sent you a friend request" % (unicode(current_user.display_name),),
+              description="",
+              content=current_user,
+              author=current_user
+              )
+
     return app.jsonify(url="/member/"+unicode(user.my_url))
 
 @app.route('/member/<login_name>/un-friend', methods=['POST'])
@@ -654,6 +665,16 @@ def approve_friend(user, friend):
         abort(404)
 
     friendship.pending = False
+
+    broadcast(
+      to=[user,],
+      category="friend",
+      url="/member/%s/friends" % (str(user.my_url)),
+      title="%s has approved your friend request" % (unicode(friend.display_name),),
+      description="",
+      content=friend,
+      author=friend
+      )
 
     sqla.session.add(friendship)
     sqla.session.commit()
