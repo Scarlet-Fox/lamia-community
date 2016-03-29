@@ -123,6 +123,23 @@ def mark_all_notifications():
 
     return app.jsonify(success=True)
 
+@app.route('/dashboard/acknowledge_all', methods=["POST",])
+@login_required
+def ack_all_notifications():
+    notifications = sqla.session.query(sqlm.Notification) \
+        .filter_by(user=current_user._get_current_object()) \
+        .update({
+            sqlm.Notification.acknowledged: True,
+            sqlm.Notification.seen: True,
+            sqlm.Notification.emailed: True,
+            })
+
+    _count = 0
+    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().login_name, ], "count_update": _count}, ))
+    thread.start()
+
+    return app.jsonify(success=True, url="/dashboard")
+
 @app.route('/dashboard/ack_notification', methods=["POST",])
 @login_required
 def acknowledge_notification():

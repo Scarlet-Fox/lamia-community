@@ -199,7 +199,7 @@
       };
 
       Dashboard.prototype.panelHTML = function() {
-        return "<div class=\"col-sm-6 col-md-4 dashboard-panel\" id=\"{{panel_id}}\">\n  <div class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n      <span>{{panel_title}}</span>\n      <button class=\"close ack_all\" data-panel=\"{{panel_id}}\">&times;</button>\n    </div>\n    <ul class=\"list-group panel-body\" id=\"notifs-{{panel_id}}\">\n    </ul>\n  </div>\n</div>";
+        return "<div class=\"col-sm-6 col-md-6 dashboard-panel\" id=\"{{panel_id}}\"  style=\"margin-bottom: 10px;\">\n    <div class=\"list-group-item section-header\">\n      <span>{{panel_title}}</span>\n      <button class=\"close ack_all\" data-panel=\"{{panel_id}}\">&times;</button>\n    </div>\n    <div class=\"\" id=\"notifs-{{panel_id}}\">\n    </div>\n</div>";
       };
 
       return Dashboard;

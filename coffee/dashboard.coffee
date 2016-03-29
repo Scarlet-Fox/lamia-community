@@ -156,15 +156,13 @@ $ ->
 
     panelHTML: () ->
       return """
-      <div class="col-sm-6 col-md-4 dashboard-panel" id="{{panel_id}}">
-        <div class="panel panel-default">
-          <div class="panel-heading">
+      <div class="col-sm-6 col-md-6 dashboard-panel" id="{{panel_id}}"  style="margin-bottom: 10px;">
+          <div class="list-group-item section-header">
             <span>{{panel_title}}</span>
             <button class="close ack_all" data-panel="{{panel_id}}">&times;</button>
           </div>
-          <ul class="list-group panel-body" id="notifs-{{panel_id}}">
-          </ul>
-        </div>
+          <div class="" id="notifs-{{panel_id}}">
+          </div>
       </div>
       """
 
