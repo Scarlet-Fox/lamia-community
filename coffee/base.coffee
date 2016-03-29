@@ -160,8 +160,9 @@ $ ->
 
   $(".notification-dropdown-toggle").click (e) ->
     $.post "/dashboard/mark_seen", (d) ->
-      $(".notification-counter").text("0")
-      $(".notification-counter").css("background-color", "#777")
+      return
+      # $(".notification-counter").text("0")
+      # $(".notification-counter").css("background-color", "#777")
 
   window.setupContent = () ->
     window.addExtraHTML("body")

@@ -157,10 +157,7 @@
       })(this));
     });
     $(".notification-dropdown-toggle").click(function(e) {
-      return $.post("/dashboard/mark_seen", function(d) {
-        $(".notification-counter").text("0");
-        return $(".notification-counter").css("background-color", "#777");
-      });
+      return $.post("/dashboard/mark_seen", function(d) {});
     });
     window.setupContent = function() {
       return window.addExtraHTML("body");

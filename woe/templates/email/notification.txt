@@ -21,7 +21,7 @@ ${_notification_names[category][1].capitalize()}
         % if _list_url[item["url"]] == 1:
 - ${item["message"]} ${item["url"]}
         % else:
-- ${item["message"]} (with ${_list_url[item["url"]]} other replies) ${item["url"]}
+- ${item["message"]} with ${_list_url[item["url"]]-1} other notification(s) ${item["url"]}
         % endif
     % endfor
 % if category != _list[-1]:
