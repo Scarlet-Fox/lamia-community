@@ -202,4 +202,26 @@ def dashboard_notifications():
 @app.route('/dashboard')
 @login_required
 def view_dashboard():
-    return render_template("dashboard.jade", page_title="Your Dashboard - Scarlet's Web")
+    _followed_topics = sqla.session.query(sqlm.Topic) \
+        .join(sqlm.topic_watchers_table) \
+        .join(sqlm.Topic.recent_post) \
+        .filter(sqlm.topic_watchers_table.c.user_id == current_user.id) \
+        .order_by(sqlm.Post.created.desc())[:5]
+
+    _followed_blogs = sqla.session.query(sqlm.Blog) \
+        .join(sqlm.blog_subscriber_table) \
+        .join(sqlm.Blog.recent_entry) \
+        .filter(sqlm.Blog.disabled.isnot(True)) \
+        .filter(sqlm.BlogEntry.draft.isnot(True)) \
+        .filter(sqlm.BlogEntry.published.isnot(None)) \
+        .filter(sqla.or_(
+            sqlm.Blog.privacy_setting == "all",
+            sqlm.Blog.privacy_setting == "members"
+        )) \
+        .order_by(sqla.desc(sqlm.BlogEntry.published))[:5]
+
+    return render_template("dashboard.jade",
+        followed_topics = _followed_topics,
+        followed_blogs = _followed_blogs,
+        page_title="Your Dashboard - Scarlet's Web"
+        )

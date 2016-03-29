@@ -5,6 +5,32 @@
   .col-md-4.col-xs-12
     ul.list-group
       li.list-group-item.section-header Followed Content
+      if not followed_topics and not followed_blogs
+        li.list-group-item You have not followed any blogs or topics.
+      if followed_blogs
+        li.list-group-item.section-header Followed Topics
+        for topic in followed_topics
+          li.list-group-item(style="padding: 10px;")
+            .media-left 
+              a(href="/member/{{topic.recent_post.author.login_name}}")
+                img.avatar-mini(src=topic.recent_post.author.get_avatar_url("40"), width=topic.recent_post.author.avatar_40_x, height=topic.recent_post.author.avatar_40_y)
+            .media-body
+              strong
+                a(href="/t/{{topic.slug}}")= topic.title
+              div= topic.recent_post.created|humanize_time("MMM D YYYY")
+      if followed_blogs
+        li.list-group-item.section-header Followed Blogs
+        for blog in followed_blogs
+          li.list-group-item(style="padding: 10px;")
+            .media-left 
+              a(href="/member/{{blog.recent_entry.author.login_name}}")
+                img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
+            .media-body
+              strong
+                a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title
+              div
+                a(href="/blog/{{blog.slug}}")= blog.name
+              div= blog.recent_entry.created|humanize_time("MMM D YYYY")
   
   .col-md-8.col-xs-12
     ul.list-group
