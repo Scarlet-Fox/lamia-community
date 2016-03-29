@@ -82,7 +82,7 @@ class TopicView(ModelView):
     column_list = ("id", "title","created")
     column_filters = ["id", "slug", "sticky","hidden","locked","label"]
     # column_searchable_list = ('title',)
-    form_excluded_columns = ("watchers", "moderators", "banned", "recent_post", "editor")
+    form_excluded_columns = ("moderators", "recent_post", "editor")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"

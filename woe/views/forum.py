@@ -75,7 +75,7 @@ def toggle_follow_topic(slug):
         return abort(404)
 
     if current_user._get_current_object() in topic.banned:
-        return abort(404)
+        return abort(403)
 
     if not current_user._get_current_object() in topic.watchers:
         topic.watchers.append(current_user._get_current_object())
@@ -102,7 +102,7 @@ def new_post_in_topic(slug):
         return abort(404)
 
     if current_user._get_current_object() in topic.banned:
-        return abort(404)
+        return abort(403)
 
     if topic.locked or topic.hidden:
         return app.jsonify(closed_topic=True, closed_message=topic.close_message)
@@ -322,7 +322,7 @@ def topic_posts(slug):
         return abort(404)
 
     if current_user._get_current_object() in topic.banned:
-        return abort(404)
+        return abort(403)
 
     if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
         return abort(404)
@@ -577,7 +577,7 @@ def topic_index(slug, page, post):
     pagination = 20
 
     if current_user._get_current_object() in topic.banned:
-        return abort(404)
+        return abort(403)
 
     if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
         return abort(404)
