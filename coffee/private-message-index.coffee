@@ -82,7 +82,7 @@ $ ->
             </span>
           </div>
           <div class="col-xs-6 col-sm-3 hidden-xs">
-            <span class="topic-listing-recent-image">
+            <span class="topic-listing-recent-image subcategory-listing-recent-image">
               <img src="{{last_post_author_avatar}}" width="{{last_post_x}}px" height="{{last_post_y}}px" class="avatar-mini">
             </span>
             <span class="topic-listing-recent">
