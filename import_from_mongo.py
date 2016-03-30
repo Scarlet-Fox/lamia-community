@@ -323,7 +323,7 @@ for message_topic in core.PrivateMessageTopic.objects():
     sqla.session.commit()
 
 celestial_hub_categories = ["Latest News","Welcome Mat","Help Lab","Frequently Asked Questions"]
-starlight_amphitheater = ["Anime", "Manga", "World of Equestria", "Western Animation", "Music", "Other Media"]
+starlight_amphitheater = ["Anime", "Manga", "Ponies", "Western Animation", "Music", "Other Media"]
 moonlight_symposium = ["Chit Chat", "Interrogations", "Games", "Nintendo", "Art Show"]
 sunlight_homestead = ["Super Party Palace", "Roleplays", "Out of Character", "Meta Lounge", "Minecraft"]
 
@@ -429,7 +429,7 @@ for topic in forum.Topic.objects():
         sql_topic.category = sqla.session.query(Category).filter_by(name="Games").first()
         topic.prefix = None
     elif topic.prefix == "Ponies":
-        sql_topic.category = sqla.session.query(Category).filter_by(name="World of Equestria").first()
+        sql_topic.category = sqla.session.query(Category).filter_by(name="Ponies").first()
         topic.prefix = None
     elif topic.prefix == "Media":
         sql_topic.category = sqla.session.query(Category).filter_by(name="Other Media").first()
@@ -583,7 +583,7 @@ label_matrix = {
         "Romance",
         "General"
     ],
-    "World of Equestria": [
+    "Ponies": [
         "Show",
         "Comic",
         "Fandom",

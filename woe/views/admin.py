@@ -35,6 +35,20 @@ class LabelView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
 
+class RoleView(ModelView):
+    can_create = True
+    can_delete = True
+    column_list = ("id", "role",)
+
+    column_formatters = {
+        'role': _label_formatter_
+    }
+
+    column_filters = ["id", ]
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+
 class UserView(ModelView):
     can_create = False
     can_delete = False
@@ -226,6 +240,7 @@ admin.add_view(LogView(sqlm.SiteLog, sqla.session, category='Core'))
 admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, category='Core'))
 admin.add_view(FingerprintView(sqlm.Fingerprint, sqla.session, category='Core'))
 admin.add_view(UserView(sqlm.User, sqla.session, category='Members'))
+admin.add_view(RoleView(sqlm.Role, sqla.session, category='Members'))
 admin.add_view(FriendshipView(sqlm.Friendship, sqla.session, category='Members'))
 admin.add_view(SignatureView(sqlm.Signature, sqla.session, category='Members'))
 admin.add_view(NotificationView(sqlm.Notification, sqla.session, category='Members'))
