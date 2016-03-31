@@ -62,6 +62,15 @@ class UserView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
 
+class FollowView(ModelView):
+    can_create = False
+    can_delete = False
+    column_list = ("id", "user", "following")
+    column_sortable_list = (('following',sqlm.FollowingUser.following_id),)
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+
 class NotificationView(ModelView):
     can_delete = False
     column_list = (
@@ -240,6 +249,7 @@ admin.add_view(LogView(sqlm.SiteLog, sqla.session, category='Core'))
 admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, category='Core'))
 admin.add_view(FingerprintView(sqlm.Fingerprint, sqla.session, category='Core'))
 admin.add_view(UserView(sqlm.User, sqla.session, category='Members'))
+admin.add_view(FollowView(sqlm.FollowingUser, sqla.session, category='Members'))
 admin.add_view(RoleView(sqlm.Role, sqla.session, category='Members'))
 admin.add_view(FriendshipView(sqlm.Friendship, sqla.session, category='Members'))
 admin.add_view(SignatureView(sqlm.Signature, sqla.session, category='Members'))
