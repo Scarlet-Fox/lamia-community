@@ -176,6 +176,21 @@ for mongo_user in core.User.objects():
             sqla.session.rollback()
             continue
 
+for mongo_user in core.User.objects():
+    for user in mongo_user.followed_by:
+        try:
+            user = sqla.session.query(User).filter_by(old_mongo_hash=str(user.id)).first()
+            following = sqla.session.query(User).filter_by(old_mongo_hash=str(mongo_user.id)).first()
+            new_follow = FollowingUser()
+            new_follow.user = user
+            new_follow.following = following
+
+            sqla.session.add(new_follow)
+            sqla.session.commit()
+        except:
+            sqla.session.rollback()
+            continue
+
 for status_update in core.StatusUpdate.objects():
     new_status_update = StatusUpdate()
 
@@ -454,6 +469,13 @@ for topic in forum.Topic.objects():
 
     sql_topic.post_count = topic.post_count
     sql_topic.view_count = topic.view_count
+
+    sqla.session.add(sql_topic)
+    sqla.session.commit()
+
+    for _user in sql_topic.watchers:
+        _watcher = sqla.session.query(User).filter_by(old_mongo_hash=str(_user.id)).first()
+        sql_topic.watchers.append(_user)
 
     sqla.session.add(sql_topic)
     sqla.session.commit()
