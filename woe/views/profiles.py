@@ -276,12 +276,12 @@ def view_profile(login_name):
 
     recent_visitor_logs = sqla.session.query(sqlm.SiteLog.user_id, sqla.func.max(sqlm.SiteLog.time).label("time")) \
         .filter(sqlm.SiteLog.user_id.isnot(None)) \
-        .filter(sqlm.SiteLog.user_id.isnot(current_user.id)) \
         .group_by(sqlm.SiteLog.user_id).order_by(sqla.desc(sqla.func.max(sqlm.SiteLog.time))).limit(3).subquery()
 
     recent_visitors = sqla.session.query(sqlm.User, recent_visitor_logs.c.time) \
         .join(recent_visitor_logs, sqla.and_(
-            recent_visitor_logs.c.user_id == sqlm.User.id
+            recent_visitor_logs.c.user_id == sqlm.User.id,
+            recent_visitor_logs.c.user_id != user.id
         ))[:3]
 
     recent_posts = sqla.session.query(sqlm.Post).filter_by(author=user) \
