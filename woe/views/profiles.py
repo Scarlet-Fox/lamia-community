@@ -281,7 +281,8 @@ def view_profile(login_name):
     recent_visitors = sqla.session.query(sqlm.User, recent_visitor_logs.c.time) \
         .join(recent_visitor_logs, sqla.and_(
             recent_visitor_logs.c.user_id == sqlm.User.id
-        ))[:3]
+        )) \
+        .filter(recent_visitor_logs.c.user_id != sqlm.User.id)[:3]
 
     recent_posts = sqla.session.query(sqlm.Post).filter_by(author=user) \
         .order_by(sqla.desc(sqlm.Post.created))[:5]
