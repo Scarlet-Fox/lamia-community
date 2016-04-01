@@ -148,6 +148,13 @@ class DisplayNamePasswordForm(Form):
             ).count()
             if user_count > 0:
                 raise validators.ValidationError("That name is already taken.")
+                
+    def validate_email(self, field):
+        user_count = sqla.session.query(sqlm.User).filter_by(
+            email_address=field.data.strip().lower()
+        ).count()
+        if user_count > 0:
+            raise validators.ValidationError("Your email address is already in use by another account.")
 
     def validate_current_password(self, field):
         if not self.user_object.check_password(field.data) and self.current_user.is_admin == False:
