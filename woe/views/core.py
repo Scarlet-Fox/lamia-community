@@ -234,6 +234,7 @@ def get_user_info_api():
     try:
         recent_status = sqla.session.query(sqlm.StatusUpdate) \
             .filter_by(author=user) \
+            .filter(sqlm.StatusUpdate.attached_to_user == None) \
             .order_by(sqla.desc(sqlm.StatusUpdate.created))[0]
         recent_status_update = recent_status.message
         recent_status_update_id = recent_status.id
