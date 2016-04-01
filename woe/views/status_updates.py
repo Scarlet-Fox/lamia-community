@@ -248,6 +248,9 @@ def make_status_update_reply(status):
 def create_new_status(target):
     request_json = request.get_json(force=True)
 
+    status = sqlm.StatusUpdate()
+    status.author = current_user._get_current_object()
+
     if target:
         try:
             target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]
@@ -261,9 +264,6 @@ def create_new_status(target):
             status.participants.append(target_user)
         except IndexError:
             pass
-
-    status = sqlm.StatusUpdate()
-    status.author = current_user._get_current_object()
 
     if len(request_json.get("message", "")) == 0:
         return app.jsonify(error="Your status update is empty.")

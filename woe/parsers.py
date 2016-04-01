@@ -24,6 +24,7 @@ bold_re = re.compile(r'\[b\](.*?)\[\/b\]', re.DOTALL)
 italic_re = re.compile(r'\[i\](.*?)\[\/i\]', re.DOTALL)
 strike_re = re.compile(r'\[s\](.*?)\[\/s\]', re.DOTALL)
 img_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL)
+html_img_re = re.compile(r'<img src=\"(.*?)\">', re.I)
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
 deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\](.*?)\[\/reply\]')
@@ -126,6 +127,10 @@ class ForumPostParser(object):
         skiplink = []
         for image in images_found:
             html = html.replace("[img]%s[/img]" % image, """<img src="%s" style="max-width: 80%%; display: block;">""" % image, 1)
+            skiplink.append(image.strip())
+
+        html_images_found = html_img_re.findall(html)
+        for image in html_images_found:
             skiplink.append(image.strip())
 
         url_bbcode_in_post = url_re.findall(html)
