@@ -56,7 +56,7 @@ class UserView(ModelView):
     # column_searchable_list = ('login_name', 'display_name','about_me')
     # form_excluded_columns = ("ignored_users", "ignored_user_signatures","followed_by", "pending_friends", "rejected_friends", "friends")
 
-    column_filters = ["id", "login_name"]
+    column_filters = ["id", "login_name", "email_address", "display_name", "banned", "validated"]
     form_excluded_columns = ["status_updates", "private_messages", "notifications", "booped_posts"]
 
     def is_accessible(self):
