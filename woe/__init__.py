@@ -35,6 +35,7 @@ app.config["MAKO_EMAIL_TEMPLATE_DIR"] = path.join(app.root_path, 'templates', 'e
 app.config["CUSTOMIZATIONS_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'customizations')
 app.config["MAX_CONTENT_LENGTH"] = 1000000000
 app.config['DEBUG'] = settings_file["debug"]
+# app.config['SQLALCHEMY_ECHO'] = settings_file["debug"]
 app.config['BASE'] = settings_file["base_url"]
 app.config['MGAPI'] = settings_file["mailgun_api"]
 app.config['LISTENER'] = settings_file["listener"]
