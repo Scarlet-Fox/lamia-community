@@ -264,6 +264,8 @@ def create_new_status(target):
             status.participants.append(target_user)
         except IndexError:
             target_user = None
+    else:
+        target_user = None
 
     if len(request_json.get("message", "")) == 0:
         return app.jsonify(error="Your status update is empty.")
