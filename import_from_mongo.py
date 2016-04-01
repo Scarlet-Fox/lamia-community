@@ -473,7 +473,7 @@ for topic in forum.Topic.objects():
     sqla.session.add(sql_topic)
     sqla.session.commit()
 
-    for _user in sql_topic.watchers:
+    for _user in topic.watchers:
         _watcher = sqla.session.query(User).filter_by(old_mongo_hash=str(_user.id)).first()
         sql_topic.watchers.append(_user)
 
