@@ -263,7 +263,7 @@ def create_new_status(target):
             status.attached_to_user = target_user
             status.participants.append(target_user)
         except IndexError:
-            target = None
+            target_user = None
 
     if len(request_json.get("message", "")) == 0:
         return app.jsonify(error="Your status update is empty.")
@@ -281,9 +281,9 @@ def create_new_status(target):
     sqla.session.add(status)
     sqla.session.commit()
 
-    if target:
+    if target_user:
         broadcast(
-          to=[target,],
+          to=[target_user,],
           category="user_activity",
           url="/status/"+unicode(status.id),
           title="%s has commented on your profile" % (unicode(status.author.display_name),),
@@ -294,8 +294,8 @@ def create_new_status(target):
 
     send_notify_to_users = []
     for user in status.author.followed_by():
-        if target:
-            if user == target:
+        if target_user:
+            if user == target_user:
                 continue
         send_notify_to_users.append(user)
 
