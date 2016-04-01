@@ -25,7 +25,7 @@ class MLStripper(HTMLParser):
     def get_data(self):
         return ''.join(self.fed)
 
-words_re = re.compile("[a-zA-Z]+")
+words_re = re.compile("[a-zA-Z0-9']+")
 
 def strip_tags(html):
     spc = spec_characters.findall(html)

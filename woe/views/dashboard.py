@@ -212,6 +212,7 @@ def view_dashboard():
     _followed_blogs = sqla.session.query(sqlm.Blog) \
         .join(sqlm.blog_subscriber_table) \
         .join(sqlm.Blog.recent_entry) \
+        .filter(sqlm.blog_subscriber_table.c.user_id == current_user.id) \
         .filter(sqlm.Blog.disabled.isnot(True)) \
         .filter(sqlm.BlogEntry.draft.isnot(True)) \
         .filter(sqlm.BlogEntry.published.isnot(None)) \
