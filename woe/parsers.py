@@ -556,4 +556,4 @@ class ForumPostParser(object):
                     "%s" % plain_jane_image[0],
                     """<a href="%s" target="_blank">View External Image : <br>%s.</a>""" % (plain_jane_image[1], plain_jane_image[1])
                 )
-        return html
+        return "<div>"+html+"</div>"
