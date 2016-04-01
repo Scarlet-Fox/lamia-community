@@ -31,8 +31,7 @@ ul.list-group
               a(href="{{url_for('view_profile', login_name=friend.friend.login_name)}}")= friend.friend.display_name
               div
                 em Waiting for {{friend.friend.display_name}}...
-        unless loop.last
-          hr
+        hr
       for friend in incoming_friend_requests
         .row
           .col-sm-12
@@ -46,8 +45,7 @@ ul.list-group
                 a.btn.btn-default.post-link(href="/member/{{friend.user.login_name}}/friends/{{friend.friend.login_name}}/approve") Approve
                 | &nbsp;&nbsp;&nbsp;
                 a.btn.btn-default.post-link(href="/member/{{friend.user.login_name}}/friends/{{friend.friend.login_name}}/deny") Deny
-        unless loop.last
-          hr
+        hr
   if profile.friends():
     .row(style="margin-top: 10px;")
       .col-sm-6
