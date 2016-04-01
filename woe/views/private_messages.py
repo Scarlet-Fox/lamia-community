@@ -182,7 +182,7 @@ def new_message_in_pm_topic(pk):
         return abort(404)
 
     difference = (arrow.utcnow().datetime - arrow.get(topic.last_reply.created).datetime).seconds
-    if difference < 10:
+    if difference < 10 and topic.last_reply.author == current_user._get_current_object():
         return app.jsonify(error="Please wait %s seconds before you can reply again." % (10 - difference))
 
     request_json = request.get_json(force=True)
