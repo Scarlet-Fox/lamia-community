@@ -85,7 +85,8 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             "stamp": arrow.get(new_notification.created).timestamp,
             "text": title,
             "priority": priority,
-            "_id": str(new_notification.id)
+            "_id": str(new_notification.id),
+            "id": str(new_notification.id)
         }
         data["reference"] = reference
 
