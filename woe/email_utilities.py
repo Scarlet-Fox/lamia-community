@@ -14,13 +14,7 @@ _api = app.config['MGAPI']
 _base_url = app.config['BASE']
 
 def send_notification_emails():
-    _users_to_check = sqla.session.query(sqlm.User) \
-        .filter(
-            sqla.or_(
-                sqlm.User.last_sent_notification_email == None,
-                sqlm.User.last_sent_notification_email < arrow.utcnow().replace(minutes=-30).datetime.replace(tzinfo=None)
-            )
-        ).all()
+    _users_to_check = sqla.session.query(sqlm.User).all()
 
     notification_formats = {}
     notification_full_names = {}
