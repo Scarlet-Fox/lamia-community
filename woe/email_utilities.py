@@ -175,13 +175,24 @@ def send_notification_emails():
 
             print _rendered
 
-            return requests.post(
+            result = requests.post(
                 "https://api.mailgun.net/v3/scarletsweb.moe/messages",
                 auth=("api", _api),
                 data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
                       "to": _to_email_address,
                       "subject": "You have %s notifications at Scarletsweb.moe" % (_total,),
                       "text": _rendered})
+
+            new_email_log = sqlm.EmailLog()
+            new_email_log.to = u
+            new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
+            new_email_log.subject = "You have %s notifications at Scarletsweb.moe" % (_total,)
+            new_email_log.body = _rendered
+            new_email_log.result = str(result)
+            sqla.session.add(new_email_log)
+            sqla.session.commit()
+
+            return result
 
 def send_mail_w_template(send_to, subject, template, variables):
     _to_email_addresses = []
@@ -198,7 +209,7 @@ def send_mail_w_template(send_to, subject, template, variables):
     print _to_email_addresses
     print template
     print variables
-    print _template.render(**variables)
+    _rendered = _template.render(**variables)
 
     response = requests.post(
         "https://api.mailgun.net/v3/scarletsweb.moe/messages",
@@ -207,5 +218,42 @@ def send_mail_w_template(send_to, subject, template, variables):
               "to": _to_email_addresses,
               "subject": subject,
               "text": _template.render(**variables)})
+
+    new_email_log = sqlm.EmailLog()
+    new_email_log.to = send_to[0]
+    new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
+    new_email_log.subject = "You have %s notifications at Scarletsweb.moe" % (_total,)
+    new_email_log.body = _rendered
+    new_email_log.result = str(result)
+    sqla.session.add(new_email_log)
+    sqla.session.commit()
+
     print response
     return response
+
+def send_announcement_emails():
+    for announcement in sqla.session.query(sqlm.Announcement).filter_by(draft=False).all():
+        for user in sqla.session.query(sqlm.User).all():
+            print announcement.body
+            _template = _mylookup.get_template("announcement.txt")
+            _rendered = _template.render(
+                message = announcement.body,
+                _user = user,
+                _base = _base_url
+            )
+
+            response = 200
+
+            if not user.emails_muted:
+                new_email_log = sqlm.EmailLog()
+                new_email_log.to = user
+                new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
+                new_email_log.subject = announcement.subject
+                new_email_log.body = _rendered
+                new_email_log.result = str(response)
+                sqla.session.add(new_email_log)
+                sqla.session.commit()
+
+        announcement.sent = arrow.utcnow().datetime.replace(tzinfo=None)
+        sqla.session.add(announcement)
+        sqla.session.commit()

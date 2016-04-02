@@ -238,6 +238,22 @@ class SiteLog(db.Model):
     def __repr__(self):
         return "%s %s %s %s :: %s %s %s %s" % (self.time.isoformat(), self.method, self.path, self.ip_address, self.agent, self.agent_browser, self.agent_browser_version, self.agent_platform)
 
+class EmailLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    to_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_sitelog_user", ondelete="SET NULL"), nullable=True, index=True)
+    to = db.relationship("User")
+    sent = db.Column(db.DateTime, index=True)
+    subject = db.Column(db.Text)
+    body = db.Column(db.Text)
+    result = db.Column(db.Text)
+
+class Announcement(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.Text)
+    body = db.Column(db.Text)
+    draft = db.Column(db.Boolean, default=True)
+    sent = db.Column(db.DateTime, index=True)
 
 ############################################################
 # Core User Models

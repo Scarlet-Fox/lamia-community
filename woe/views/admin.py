@@ -177,6 +177,13 @@ class LogView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class EmailLogView(ModelView):
+    column_list = ("id", "to", "sent", "subject",)
+    column_filters = ("id", "to_id", "sent", "subject", )
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 class FingerprintView(ModelView):
     column_list = ("id", "user", "fingerprint_hash", "factors", "last_seen")
     column_filters = ("user_id", "fingerprint_hash", "factors", "last_seen")
@@ -237,6 +244,10 @@ class SignatureView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class AnnouncementView(ModelView):
+    column_list = ("id", "subject", "draft")
+
+
 admin.add_view(LabelView(sqlm.Label, sqla.session))
 admin.add_view(CharacterView(sqlm.Character, sqla.session))
 admin.add_view(ReportView(sqlm.Report, sqla.session))
@@ -246,6 +257,8 @@ admin.add_view(BlogCommentView(sqlm.BlogComment, sqla.session, category='Blog'))
 admin.add_view(ThemeView(sqlm.SiteTheme, sqla.session, category='Core'))
 admin.add_view(AttachView(sqlm.Attachment, sqla.session, category='Core'))
 admin.add_view(LogView(sqlm.SiteLog, sqla.session, category='Core'))
+admin.add_view(EmailLogView(sqlm.EmailLog, sqla.session, category='Core'))
+admin.add_view(AnnouncementView(sqlm.Announcement, sqla.session, category='Core'))
 admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, category='Core'))
 admin.add_view(FingerprintView(sqlm.Fingerprint, sqla.session, category='Core'))
 admin.add_view(UserView(sqlm.User, sqla.session, category='Members'))

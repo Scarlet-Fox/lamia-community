@@ -22,3 +22,50 @@ CRON JOBS:
 * /home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload -s /home/worldofequestria/woe/woe/static/ /
 * rm /home/worldofequestria/backups/*
 * tar -zcvf /home/worldofequestria/static-`date "+%Y.%m.%d-%H.%M.%S"`.tar.gz /home/worldofequestria/woe/woe/static/;/home/worldofequestria/Dropbox-Uploader/dropbox_uploader.sh upload /home/worldofequestria/static-* /;rm /home/worldofequestria/static-*
+
+
+APF:
+
+# Common inbound (ingress) TCP ports
+IG_TCP_CPORTS="21,22,25,53,80,110,143,443,465,587,995,993,3000,6000_7000,8123,10000,25565"
+
+# Common inbound (ingress) UDP ports
+IG_UDP_CPORTS="20,21,53"
+
+# Common ICMP inbound (ingress) types
+# 'internals/icmp.types' for type definition; 'all' is wildcard for any
+IG_ICMP_TYPES="3,5,11,0,30,8"
+
+DNS:
+
+$ttl 38400
+scarletsweb.moe.	IN	SOA	ns1.scarletsweb.moe. scarletsweb.outlook.com. (
+			1458578826
+			10800
+			3600
+			604800
+			38400 )
+scarletsweb.moe.	IN	A	45.79.147.19
+www.scarletsweb.moe.	IN	A	45.79.147.19
+ns1.scarletsweb.moe.	IN	A	45.79.147.19
+ns2.scarletsweb.moe.	IN	A	45.79.147.19
+scarletsweb.moe.	IN	NS	ns1.scarletsweb.moe.
+scarletsweb.moe.	IN	NS	ns2.scarletsweb.moe.
+email.scarletsweb.moe.	IN	CNAME	mailgun.org.
+scarletsweb.moe.	IN	TXT	"v=spf1 include:mailgun.org ~all"
+k1._domainkey.scarletsweb.moe.	IN	TXT	"k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDeUD3OcDms8z2no6Lbln+pNnCXIVEzZ2DGXb1zvuVqVeZlokeEoOT334WOGuJO0uXtePs3gtAEimkUHoaal908Cx+gr0GTUNl+V1WzEHNKPIb13JM432eI0CShQNYy+k/npnT3Uk1wZWeqTb4YbjRs5ks9Y5Tw+woJUzyEjqrK+QIDAQAB"
+@	IN	MX	1	aspmx.l.google.com.
+@	IN	MX	5	alt1.aspmx.l.google.com.
+@	IN	MX	5	alt2.aspmx.l.google.com.
+@	IN	MX	10	alt3.aspmx.l.google.com.
+@	IN	MX	10	alt4.aspmx.l.google.com.
+
+[program:listener]
+command=/usr/bin/coffee listener.coffee
+directory = /home/sally/Sally
+user = sally
+
+[program:scarletsweb]
+command=/home/sally/SallyEnv/bin/gunicorn --worker-class gevent --workers 5 --error-logfile=/home/sally/logs/error.log --access-logfile=/home/sally/logs/access.log woe:app -b 0.0.0.0:5001
+directory = /home/sally/Sally
+user = sally
