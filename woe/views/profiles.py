@@ -72,9 +72,9 @@ def view_profile(login_name):
 
     parser = ForumPostParser()
     try:
-        user.about_me = parser.parse(user.about_me)
+        user.parsed_about_me = parser.parse(user.about_me)
     except:
-        user.about_me = ""
+        user.parsed_about_me = ""
 
     post_count = sqlm.Post.query.filter_by(hidden=False, author=user).count()
     topic_count = sqlm.Topic.query.filter_by(hidden=False, author=user).count()
@@ -602,7 +602,6 @@ def toggle_follow_user(login_name):
     if current_user._get_current_object() == user:
         return abort(404)
 
-
     try:
         follow_preference = sqla.session.query(sqlm.FollowingUser) \
             .filter_by(
@@ -988,8 +987,8 @@ def edit_profile(login_name):
         sqla.session.add(user)
         sqla.session.commit()
         parser = ForumPostParser()
-        user.about_me = parser.parse(user.about_me)
-        return json.jsonify(about_me=user.about_me)
+        # user.about_me = parser.parse(user.about_me)
+        return json.jsonify(about_me=parser.parse(user.about_me))
     else:
         return json.jsonify(content=user.about_me)
 

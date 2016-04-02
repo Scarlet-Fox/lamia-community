@@ -192,7 +192,7 @@ style!= profile.get_custom_css()
           #user-profile-about-me.post-content
             p {{profile.display_name|e}} doesn't have an about me...
         else
-          #user-profile-about-me.post-content!= profile.about_me  
+          #user-profile-about-me.post-content!= profile.parsed_about_me  
     if recent_blog_entries
       .row
         .col-xs-12
@@ -288,7 +288,9 @@ script(type="text/javascript").
     $("#about-me-cog-icon").click(function(e) {
       e.preventDefault();
       var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.login_name}}/edit-profile", true);
-      editor.setElementHtml($("#user-profile-about-me").html());
+      $.get("/member/{{profile.login_name}}/edit-profile", {}, function(data) {
+        editor.setElementHtml(data.content);
+      });
       editor.onSave(function (html) {
         $.post("/member/{{profile.login_name}}/edit-profile", {"about_me": html},function(data) {
           $("#user-profile-about-me").html(data.about_me);
