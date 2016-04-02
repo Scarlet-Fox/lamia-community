@@ -45,7 +45,7 @@ for user in User.query.filter_by(banned=False, validated=True).all():
         try:
             favorite_emotes = emotes[:6]
         except IndexError:
-            continue
+            return
 
         user = sqlm.User.query.filter_by(login_name=user_name)[0]
         if user.data == None:
@@ -140,7 +140,7 @@ for user in User.query.filter_by(banned=False, validated=True).all():
         try:
             favorite_phrase = phrases[0]
         except IndexError:
-            continue
+            return
 
         user = sqlm.User.query.filter_by(login_name=user_name)[0]
         if user.data == None:
