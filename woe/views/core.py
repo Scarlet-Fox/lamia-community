@@ -421,7 +421,10 @@ def static_from_root():
 
 @login_manager.user_loader
 def load_user(login_name):
-    user = sqla.session.query(sqlm.User).filter_by(login_name=login_name)[0]
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(login_name=login_name)[0]
+    except IndexError:
+        return None
 
     if user.hidden_last_seen is not None:
         is_recently_active = user.hidden_last_seen > arrow.utcnow().replace(minutes=-5).datetime.replace(tzinfo=None)
