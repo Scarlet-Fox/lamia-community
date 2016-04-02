@@ -14,7 +14,7 @@ _api = app.config['MGAPI']
 _base_url = app.config['BASE']
 
 def send_notification_emails():
-    _users_to_check = sqla.session.query(sqlm.User).all()
+    _users_to_check = sqla.session.query(sqlm.User).filter_by(banned=False, validated=True).all()
 
     notification_formats = {}
     notification_full_names = {}
@@ -233,7 +233,7 @@ def send_mail_w_template(send_to, subject, template, variables):
 
 def send_announcement_emails():
     for announcement in sqla.session.query(sqlm.Announcement).filter_by(draft=False).all():
-        for user in sqla.session.query(sqlm.User).all():
+        for user in sqla.session.query(sqlm.User).filter_by(banned=False, validated=True).all():
             print announcement.body
             _template = _mylookup.get_template("announcement.txt")
             _rendered = _template.render(
