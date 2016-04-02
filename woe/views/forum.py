@@ -1003,6 +1003,8 @@ def category_topics(slug):
         parsed_topic["last_pages"] = parsed_topic["last_page"] > 1
         parsed_topic["closed"] = topic.locked
         parsed_topic["title"] = topic.title
+        parsed_topic["sticky"] = topic.sticky
+        parsed_topic["closed"] = topic.locked
         parsed_topic["slug"] = topic.slug
 
         parsed_topics.append(parsed_topic)
