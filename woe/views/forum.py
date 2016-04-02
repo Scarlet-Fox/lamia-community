@@ -708,7 +708,7 @@ def edit_topic(slug):
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
         first_post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
             .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
-            .order_by(sqla.desc(sqlm.Post.created))[0]
+            .order_by(sqlm.Post.created)[0]
     except IndexError:
         sqla.session.rollback()
         return abort(404)
