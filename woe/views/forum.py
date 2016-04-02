@@ -850,6 +850,7 @@ def new_topic(slug):
         category.post_count = category.post_count + 1
         category.topic_count = category.topic_count + 1
         new_topic.recent_post = new_post
+        new_topic.watchers.append(new_topic.author)
 
         sqla.session.add(category)
         sqla.session.add(new_topic)
