@@ -18,7 +18,7 @@ def send_notification_emails():
     for _u in __banned_users_to_check:
         notifications = sqla.session.query(sqlm.Notification) \
             .filter_by(seen=False, acknowledged=False, emailed=False) \
-            .filter_by(user=u) \
+            .filter_by(user=_u) \
             .order_by(sqla.desc(sqlm.Notification.created)).all()
         for n in notifications:
             n.emailed=True
