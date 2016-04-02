@@ -81,7 +81,7 @@ class NotificationView(ModelView):
         "user",
         "message",
     )
-    column_filters = ("acknowledged", "id")
+    column_filters = ("acknowledged", "id", "seen", "acknowledged", "emailed")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
