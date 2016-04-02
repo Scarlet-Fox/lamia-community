@@ -455,6 +455,9 @@ class User(db.Model):
     def ignoring(self):
         return [u.ignoring for u in self.ignored_users]
 
+    def __repr__(self):
+        return str(self.login_name)
+
     def get_custom_css(self):
         if current_user.no_images:
             return ""
