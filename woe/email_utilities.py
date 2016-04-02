@@ -203,7 +203,7 @@ def send_notification_emails():
             # sqla.session.add(new_email_log)
             # sqla.session.commit()
 
-            return result
+            # return result
 
 def send_mail_w_template(send_to, subject, template, variables):
     _to_email_addresses = []
