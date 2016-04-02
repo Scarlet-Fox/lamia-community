@@ -171,39 +171,39 @@ def send_notification_emails():
 
             # print _rendered
 
-            # u.last_sent_notification_email = arrow.utcnow().datetime.replace(tzinfo=None)
-            # sqla.session.add(u)
-            # sqla.session.commit()
+            u.last_sent_notification_email = arrow.utcnow().datetime.replace(tzinfo=None)
+            sqla.session.add(u)
+            sqla.session.commit()
 
-            # notifications_update = sqla.session.query(sqlm.Notification) \
-            #     .filter_by(seen=False, acknowledged=False, emailed=False) \
-            #     .filter_by(user=u) \
-            #     .all()
-            # for n in notifications_update:
-            #     n.emailed=True
-            #     sqla.session.add(n)
-            # sqla.session.commit()
+            notifications_update = sqla.session.query(sqlm.Notification) \
+                .filter_by(seen=False, acknowledged=False, emailed=False) \
+                .filter_by(user=u) \
+                .all()
+            for n in notifications_update:
+                n.emailed=True
+                sqla.session.add(n)
+            sqla.session.commit()
 
             print _rendered
 
-            # result = requests.post(
-            #     "https://api.mailgun.net/v3/scarletsweb.moe/messages",
-            #     auth=("api", _api),
-            #     data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
-            #           "to": _to_email_address,
-            #           "subject": "You have %s notifications at Scarletsweb.moe" % (_total,),
-            #           "text": _rendered})
-            #
-            # new_email_log = sqlm.EmailLog()
-            # new_email_log.to = u
-            # new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
-            # new_email_log.subject = "You have %s notifications at Scarletsweb.moe" % (_total,)
-            # new_email_log.body = _rendered
-            # new_email_log.result = str(result)
-            # sqla.session.add(new_email_log)
-            # sqla.session.commit()
+            result = requests.post(
+                "https://api.mailgun.net/v3/scarletsweb.moe/messages",
+                auth=("api", _api),
+                data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
+                      "to": _to_email_address,
+                      "subject": "You have %s notifications at Scarletsweb.moe" % (_total,),
+                      "text": _rendered})
 
-            # return result
+            new_email_log = sqlm.EmailLog()
+            new_email_log.to = u
+            new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
+            new_email_log.subject = "You have %s notifications at Scarletsweb.moe" % (_total,)
+            new_email_log.body = _rendered
+            new_email_log.result = str(result)
+            sqla.session.add(new_email_log)
+            sqla.session.commit()
+
+            return result
 
 def send_mail_w_template(send_to, subject, template, variables):
     _to_email_addresses = []
