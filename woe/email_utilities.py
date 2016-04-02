@@ -224,7 +224,7 @@ def send_mail_w_template(send_to, subject, template, variables):
     new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
     new_email_log.subject = "You have %s notifications at Scarletsweb.moe" % (_total,)
     new_email_log.body = _rendered
-    new_email_log.result = str(result)
+    new_email_log.result = str(response)
     sqla.session.add(new_email_log)
     sqla.session.commit()
 
@@ -245,12 +245,20 @@ def send_announcement_emails():
             response = 200
 
             if not user.emails_muted:
+                result = requests.post(
+                    "https://api.mailgun.net/v3/scarletsweb.moe/messages",
+                    auth=("api", _api),
+                    data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
+                          "to": user.email_address,
+                          "subject": announcement.subject,
+                          "text": _rendered})
+
                 new_email_log = sqlm.EmailLog()
                 new_email_log.to = user
                 new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
                 new_email_log.subject = announcement.subject
                 new_email_log.body = _rendered
-                new_email_log.result = str(response)
+                new_email_log.result = str(result)
                 sqla.session.add(new_email_log)
                 sqla.session.commit()
 
