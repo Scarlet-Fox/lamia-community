@@ -21,7 +21,7 @@ def status_update_replies(status):
         return abort(404)
 
     replies = []
-    for reply in sqla.session.query(sqlm.StatusComment).filter_by(status=status, hidden=False):
+    for reply in sqla.session.query(sqlm.StatusComment).filter_by(status=status, hidden=False).order_by(sqlm.StatusComment.created):
         parsed_reply = {}
         parsed_reply["text"] = reply.message
         parsed_reply["user_name"] = reply.author.display_name
