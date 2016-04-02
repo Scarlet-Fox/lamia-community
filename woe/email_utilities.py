@@ -25,6 +25,17 @@ def send_notification_emails():
             sqla.session.add(n)
             sqla.session.commit()
 
+    __muted_users_to_check = sqla.session.query(sqlm.User).filter_by(emails_muted=True).all()
+    for _u in __muted_users_to_check:
+        notifications = sqla.session.query(sqlm.Notification) \
+            .filter_by(seen=False, acknowledged=False, emailed=False) \
+            .filter_by(user=_u) \
+            .order_by(sqla.desc(sqlm.Notification.created)).all()
+        for n in notifications:
+            n.emailed=True
+            sqla.session.add(n)
+            sqla.session.commit()
+
     _users_to_check = sqla.session.query(sqlm.User).filter_by(banned=False, validated=True).all()
 
     notification_formats = {}
