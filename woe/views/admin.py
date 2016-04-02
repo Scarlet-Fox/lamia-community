@@ -52,11 +52,11 @@ class RoleView(ModelView):
 class UserView(ModelView):
     can_create = False
     can_delete = False
-    column_list = ("id", "login_name", "display_name", "email_address", "banned", "validated", "hidden_last_seen")
+    column_list = ("id", "login_name", "display_name", "email_address", "banned", "validated", "emails_muted", "hidden_last_seen")
     # column_searchable_list = ('login_name', 'display_name','about_me')
     # form_excluded_columns = ("ignored_users", "ignored_user_signatures","followed_by", "pending_friends", "rejected_friends", "friends")
 
-    column_filters = ["id", "login_name", "email_address", "display_name", "banned", "validated"]
+    column_filters = ["id", "login_name", "email_address", "display_name", "banned", "validated", "emails_muted"]
     form_excluded_columns = ["status_updates", "private_messages", "notifications", "booped_posts"]
 
     def is_accessible(self):
