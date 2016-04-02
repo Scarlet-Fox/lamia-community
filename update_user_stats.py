@@ -1,5 +1,6 @@
 from woe import sqla
 from woe.sqlmodels import *
+from sqlalchemy.orm.attributes import flag_modified
 
 for user in User.query.filter_by(banned=False, validated=True).all():
     def update_user_smileys(user):
@@ -52,6 +53,7 @@ for user in User.query.filter_by(banned=False, validated=True).all():
 
         user.smileys_last_updated = arrow.utcnow().datetime.replace(tzinfo=None)
 
+        flag_modified(user, "data")
         sqla.session.add(user)
         sqla.session.commit()
 
@@ -146,7 +148,8 @@ for user in User.query.filter_by(banned=False, validated=True).all():
         user.data = new_data
 
         user.phrase_last_updated = arrow.utcnow().datetime.replace(tzinfo=None)
-
+        
+        flag_modified(user, "data")
         sqla.session.add(user)
         sqla.session.commit()
 
