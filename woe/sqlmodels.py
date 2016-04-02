@@ -34,9 +34,6 @@ class PrivateMessageUser(db.Model):
     viewed = db.Column(db.Boolean, default=False)
     last_viewed = db.Column(db.DateTime, index=True)
 
-    def __repr__(self):
-        return "<PrivateMessageUser: (user='%s', pm='%s')>" % (self.author.display_name, self.pm.title)
-
 class PrivateMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
@@ -58,9 +55,6 @@ class PrivateMessage(db.Model):
     def participant_objects(self):
         return PrivateMessageUser.query.filter_by(pm=self).all()
 
-    def __repr__(self):
-        return "<PrivateMessage: (title='%s')>" % (self.title, )
-
 class PrivateMessageReply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
@@ -77,9 +71,6 @@ class PrivateMessageReply(db.Model):
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime, nullable=True)
     pm_title = db.Column(db.String, default="")
-
-    def __repr__(self):
-        return "<PrivateMessageReply: (created='%s', user='%s', pm='%s')>" % (self.created, self.user.display_name, self.pm.title)
 
 ############################################################
 # Status Update Models
@@ -101,9 +92,6 @@ class StatusUpdateUser(db.Model):
     viewed = db.Column(db.Integer, default=0)
     last_viewed = db.Column(db.DateTime)
 
-    def __repr__(self):
-        return "<StatusUpdateUser: (user='%s', status='%s')>" % (self.user.display_name, self.status.message[0:50])
-
 class StatusComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
@@ -116,9 +104,6 @@ class StatusComment(db.Model):
     status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
         name="fk_status_comment_status", ondelete="CASCADE"))
     status = db.relationship("StatusUpdate", backref="comments")
-
-    def __repr__(self):
-        return "<StatusComment: (created='%s', author='%s')>" % (self.created, self.author.display_name)
 
 class StatusUpdate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -148,9 +133,6 @@ class StatusUpdate(db.Model):
 
     def blocked(self):
         return db.session.query(StatusUpdateUser).filter(StatusComment.status_id==self.id).filter_by(blocked=True).all()
-
-    def __repr__(self):
-        return "<StatusUpdate: (created='%s', author='%s', message='%s')>" % (self.created, self.author.display_name, self.message[0:50])
 
 db.Index('_status_user_created', StatusUpdate.author_id, StatusUpdate.created)
 
@@ -312,9 +294,6 @@ class Notification(db.Model):
     emailed = db.Column(db.Boolean, default=False, index=True)
     priority = db.Column(db.Integer, default=0)
 
-    def __repr__(self):
-        return "<Notification: (user='%s', message='%s')>" % (self.user.display_name, self.message)
-
 class IgnoringUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
@@ -332,9 +311,6 @@ class IgnoringUser(db.Model):
     block_blogs = db.Column(db.Boolean, default=True)
     block_status = db.Column(db.Boolean, default=True)
 
-    def __repr__(self):
-        return "<IgnoredUser: (user='%s', ignoring='%s')>" % (self.user.display_name, self.ignoring.display_name)
-
 class FollowingUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
@@ -345,9 +321,6 @@ class FollowingUser(db.Model):
     following = db.relationship("User", foreign_keys="FollowingUser.following_id")
     __table_args__ = (db.UniqueConstraint('user_id', 'following_id', name='unique_user_following'),)
     created = db.Column(db.DateTime)
-
-    def __repr__(self):
-        return "<FollowingUser: (user='%s', following='%s')>" % (self.user.display_name, self.following.display_name)
 
 class Friendship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -362,9 +335,6 @@ class Friendship(db.Model):
 
     pending = db.Column(db.Boolean, default=True)
     blocked = db.Column(db.Boolean, default=False)
-
-    def __repr__(self):
-        return "<Friendship: (user='%s', friend='%s', pending='%s', blocked='%s')>" % (self.user.display_name, self.friend.display_name, self.pending, self.blocked)
 
 user_role_table = db.Table('user_roles', db.metadata,
     db.Column('role_id', db.Integer, db.ForeignKey('role.id',
@@ -502,9 +472,6 @@ class User(db.Model):
                 _text_shadow_color=self.text_shadow_color
             )
         return _rendered
-
-    def __repr__(self):
-        return "%s" % (self.display_name)
 
     def get_text_id(self):
         return "%s" % (self.id, )
@@ -1054,9 +1021,6 @@ class Post(db.Model):
 
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
     data = db.Column(JSONB)
-
-    def __repr__(self):
-        return "<Post: (author='%s', created='%s', topic='%s')>" % (self.author.display_name, self.created, self.topic.title[0:50])
 
 blogcomment_boop_table = db.Table('blog_comment_boops', db.metadata,
     db.Column('blogcomment_id', db.Integer, db.ForeignKey('blog_comment.id',
