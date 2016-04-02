@@ -4,7 +4,8 @@
 .member-page(style="background: #fff; padding: 20px;")
   .row
     .col-md-12
-      a.btn.btn-xs.btn-default.btn-primary.float-right(href="/characters/new-character") Create a New Character
+      if current_user.is_authenticated():
+        a.btn.btn-xs.btn-default.btn-primary.float-right(href="/characters/new-character") Create a New Character
       br
       br
       table.table#character-table

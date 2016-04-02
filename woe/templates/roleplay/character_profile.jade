@@ -64,25 +64,25 @@
           {% endif %}
           h3!= character.name
         hr(style="margin-bottom: 0px !important;")
-        if character.appearance and not character.appearance == "<div><br></div>"
+        if character.appearance and not character.appearance.replace("<div>","").replace("</div>","").strip() == "<br>"
           center
             br
             h4 Appearance
           span!= character.appearance
           br
-        if character.personality and not character.personality == "<div><br></div>"
+        if character.personality and not character.personality.replace("<div>","").replace("</div>","").strip() == "<br>"
           center
             br
             h4 Personality
           span!= character.personality
           br
-        if character.backstory and not character.backstory == "<div><br></div>"
+        if character.backstory and not character.backstory.replace("<div>","").replace("</div>","").strip() == "<br>"
           center
             br
             h4 Backstory
           span!= character.backstory
           br
-        if character.other and not character.other == "<div><br></div>"
+        if character.other and not character.other.replace("<div>","").replace("</div>","").strip() == "<br>"
           center
             br
             h4 Other
