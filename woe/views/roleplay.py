@@ -13,12 +13,10 @@ import woe.sqlmodels as sqlm
 from woe import sqla
 
 @app.route('/characters')
-@login_required
 def character_database():
     return render_template("roleplay/characters.jade", page_title="Characters - Scarlet's Web")
 
 @app.route('/characters/<slug>/gallery', methods=["GET",])
-@login_required
 def character_gallery(slug):
     try:
         character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
@@ -181,7 +179,6 @@ def character_edit_profile(slug):
     return render_template("roleplay/edit_character_profile.jade", character=character, form=form, page_title="Editing %s - Character Database - Scarlet's Web" % (unicode(character.name),))
 
 @app.route('/characters/<slug>/view-posts/character-post-list-api', methods=["GET",])
-@login_required
 def character_recent_activity_api(slug):
     try:
         character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
@@ -219,7 +216,6 @@ def character_recent_activity_api(slug):
     return app.jsonify(data)
 
 @app.route('/characters/<slug>/view-posts', methods=["GET",])
-@login_required
 def character_recent_activity(slug):
     try:
         character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
@@ -261,7 +257,6 @@ def send_user_characters():
     return app.jsonify(characters=character_data)
 
 @app.route('/character-list-api', methods=["GET",])
-@login_required
 def character_list_api():
     try:
         current = int(request.args.get("start"))
@@ -359,7 +354,6 @@ def toggle_hide_character(slug):
     return app.jsonify(url="/characters/"+unicode(character.slug))
 
 @app.route('/characters/<slug>', methods=["GET",])
-@login_required
 def character_basic_profile(slug):
     try:
         character = sqla.session.query(sqlm.Character).filter_by(slug=slug.strip().lower())[0]
