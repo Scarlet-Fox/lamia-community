@@ -1,20 +1,23 @@
 from woe import sqla
 from woe.sqlmodels import *
+import woe.sqlmodels as sqlm
 from sqlalchemy.orm.attributes import flag_modified
+from woe.parsers import emoticon_codes
+from woe.utilities import strip_tags
 
 for user in User.query.filter_by(banned=False, validated=True).all():
     def update_user_smileys(user):
         user_name = user.login_name
 
-        try:
-            post_count = sqla.session.query(sqlm.Post) \
-                .join(sqlm.Post.topic) \
-                .join(sqlm.Topic.category) \
-                .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
-                .filter(sqlm.Category.slug != "welcome-mat").count()
-        except:
-            sqla.session.rollback()
-            return
+        # try:
+        post_count = sqla.session.query(sqlm.Post) \
+            .join(sqlm.Post.topic) \
+            .join(sqlm.Topic.category) \
+            .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
+            .filter(sqlm.Category.slug != "welcome-mat").count()
+        # except:
+        #     sqla.session.rollback()
+        #     return
 
         if post_count < 10:
             return
@@ -24,8 +27,6 @@ for user in User.query.filter_by(banned=False, validated=True).all():
             .join(sqlm.Topic.category) \
             .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
             .all())
-        sqla.session.expunge_all()
-        sqla.session.close()
 
         emote_frequency = {}
         emotes = []
@@ -60,15 +61,15 @@ for user in User.query.filter_by(banned=False, validated=True).all():
     def update_user_last_phrase(user):
         user_name = user.login_name
 
-        try:
-            post_count = sqla.session.query(sqlm.Post) \
-                .join(sqlm.Post.topic) \
-                .join(sqlm.Topic.category) \
-                .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
-                .filter(sqlm.Category.slug != "welcome-mat").count()
-        except:
-            sqla.session.rollback()
-            return
+        # try:
+        post_count = sqla.session.query(sqlm.Post) \
+            .join(sqlm.Post.topic) \
+            .join(sqlm.Topic.category) \
+            .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
+            .filter(sqlm.Category.slug != "welcome-mat").count()
+        # except:
+        #     sqla.session.rollback()
+        #     return
 
         if post_count < 10:
             return
@@ -80,10 +81,6 @@ for user in User.query.filter_by(banned=False, validated=True).all():
             .filter(sqlm.Category.slug != "welcome-mat") \
             .filter(sqlm.Category.slug != "art-show") \
             .all())
-        sqla.session.expunge_all()
-        sqla.session.close()
-
-        q = Queue()
 
         phrase_frequency = {}
         phrases = []
@@ -148,7 +145,7 @@ for user in User.query.filter_by(banned=False, validated=True).all():
         user.data = new_data
 
         user.phrase_last_updated = arrow.utcnow().datetime.replace(tzinfo=None)
-        
+
         flag_modified(user, "data")
         sqla.session.add(user)
         sqla.session.commit()
