@@ -42,7 +42,10 @@ for user in User.query.filter_by(banned=False, validated=True).all():
         emotes = emote_frequency.keys()
         emotes = sorted(emotes, key=lambda x: emote_frequency[x], reverse=True)
 
-        favorite_emotes = emotes[:6]
+        try:
+            favorite_emotes = emotes[:6]
+        except IndexError:
+            continue
 
         user = sqlm.User.query.filter_by(login_name=user_name)[0]
         if user.data == None:
@@ -134,7 +137,10 @@ for user in User.query.filter_by(banned=False, validated=True).all():
         phrases = phrase_frequency.keys()
         phrases = sorted(phrases, key=lambda x: phrase_frequency[x], reverse=True)
 
-        favorite_phrase = phrases[0]
+        try:
+            favorite_phrase = phrases[0]
+        except IndexError:
+            continue
 
         user = sqlm.User.query.filter_by(login_name=user_name)[0]
         if user.data == None:
