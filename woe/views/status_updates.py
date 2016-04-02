@@ -98,7 +98,7 @@ def status_update_index():
     query_ = sqla.session.query(sqlm.StatusUpdate).filter_by(hidden=False)
     if authors:
         query_ = query_.filter(sqlm.StatusUpdate.author_id.in_([a["id"] for a in authors]))
-    status_updates = parse_search_string(search, sqlm.StatusUpdate, query_, ["message",])[:count]
+    status_updates = parse_search_string(search, sqlm.StatusUpdate, query_, ["message",]).order_by(sqla.desc(sqlm.StatusUpdate.created))[:count]
 
     if request.method == 'POST':
         parsed_statuses = []
