@@ -10,8 +10,8 @@ class BlogSettingsForm(Form):
     privacy_setting = SelectField('Privacy Setting', choices=[
             ("all", "Everyone"),
             ("members", "Only Members"),
-            ("friends", "Only Friends"),
-            ("editors", "Only Editors"),
+            #("friends", "Only Friends"),
+            #("editors", "Only Editors"),
             ("you", "Only You")
         ], default="members")
 
