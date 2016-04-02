@@ -222,7 +222,7 @@ def send_mail_w_template(send_to, subject, template, variables):
     new_email_log = sqlm.EmailLog()
     new_email_log.to = send_to[0]
     new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
-    new_email_log.subject = "You have %s notifications at Scarletsweb.moe" % (_total,)
+    new_email_log.subject = subject
     new_email_log.body = _rendered
     new_email_log.result = str(response)
     sqla.session.add(new_email_log)
