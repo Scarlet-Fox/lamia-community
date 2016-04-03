@@ -36,6 +36,7 @@
         });
         this.inline_editor.onSave(function(html, text) {
           var prefix, title, to;
+          window.save = true;
           title = $("#title").val();
           prefix = $("#prefix").val();
           to = $("#to").val();

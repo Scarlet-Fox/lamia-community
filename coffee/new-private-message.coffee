@@ -28,6 +28,7 @@ $ ->
         minimumInputLength: 2
 
       @inline_editor.onSave (html, text) ->
+        window.save = true
         title = $("#title").val()
         prefix = $("#prefix").val()
         to = $("#to").val()

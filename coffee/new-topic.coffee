@@ -2,7 +2,7 @@ $ ->
   window.onbeforeunload = () ->
      if not window.save
        return "You haven't saved your changes."
-       
+
   class NewTopic
     constructor: (slug) ->
       @slug = slug
@@ -12,6 +12,7 @@ $ ->
       new_topic = self
 
       @inline_editor.onSave (html, text) ->
+        window.save = true
         title = $("#title").val()
         prefix = $("#prefix").val()
         meta = new_topic.meta

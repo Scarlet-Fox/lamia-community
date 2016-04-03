@@ -17,6 +17,7 @@
         new_topic = self;
         this.inline_editor.onSave(function(html, text) {
           var meta, poll, prefix, title;
+          window.save = true;
           title = $("#title").val();
           prefix = $("#prefix").val();
           meta = new_topic.meta;
