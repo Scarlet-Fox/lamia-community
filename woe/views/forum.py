@@ -494,7 +494,6 @@ def edit_topic_post_html(slug):
             sqlm.Character.hidden == None))[0]
     except:
         character = False
-    print character
 
     try:
         avatar = sqla.session.query(sqlm.Attachment).filter_by(character=character, \

@@ -275,5 +275,4 @@ def search_lookup():
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
 
-    print "here????"
     return app.jsonify(results=parsed_results, count=count, pagination=pagination)

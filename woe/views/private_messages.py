@@ -345,7 +345,6 @@ def message_index(pk, page, post):
         pm_user.last_viewed = arrow.utcnow().datetime.replace(tzinfo=None)
 
         sqla.session.add(pm_user)
-        print pm_user.last_viewed
 
         sqla.session.commit()
 
