@@ -293,6 +293,11 @@ def new_blog_entry(slug):
             sqla.session.add(blog)
             sqla.session.commit()
 
+            for subscriber in blog.subscribers:
+                e.subscribers.append(subscriber)
+            sqla.session.add(e)
+            sqla.session.commit()
+
             if entry.author != blog.author:
                 broadcast(
                     to=[blog.author,],
@@ -383,6 +388,11 @@ def edit_blog_entry(slug, entry_slug):
         if e.draft == False and already_published == False:
             e.published = arrow.utcnow().datetime.replace(tzinfo=None)
             recent_entry = True
+
+            for subscriber in blog.subscribers:
+                e.subscribers.append(subscriber)
+            sqla.session.add(e)
+            sqla.session.commit()
         else:
             recent_entry = False
         e.b_title = blog.name
