@@ -82,6 +82,9 @@ def send_notification_emails():
                 sqla.session.commit()
 
             if not u.notification_preferences.get(n.category, {"email": True}).get("email"):
+                n.emailed = True
+                sqla.session.add(n)
+                sqla.session.commit()
                 continue
             else:
                 _total += 1
@@ -181,13 +184,16 @@ def send_notification_emails():
                 sqla.session.add(n)
             sqla.session.commit()
 
-            result = requests.post(
-                "https://api.mailgun.net/v3/scarletsweb.moe/messages",
-                auth=("api", _api),
-                data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
-                      "to": _to_email_address,
-                      "subject": "You have %s notifications at Scarletsweb.moe" % (_total,),
-                      "text": _rendered})
+            if not app.settings_file.get("lockout_on", False):
+                result = requests.post(
+                    "https://api.mailgun.net/v3/scarletsweb.moe/messages",
+                    auth=("api", _api),
+                    data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
+                          "to": _to_email_address,
+                          "subject": "You have %s notifications at Scarletsweb.moe" % (_total,),
+                          "text": _rendered})
+            else:
+                result = "LOCKDOWN ON"
 
             new_email_log = sqlm.EmailLog()
             new_email_log.to = u
@@ -212,13 +218,16 @@ def send_mail_w_template(send_to, subject, template, variables):
 
     _rendered = _template.render(**variables)
 
-    response = requests.post(
-        "https://api.mailgun.net/v3/scarletsweb.moe/messages",
-        auth=("api", _api),
-        data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
-              "to": _to_email_addresses,
-              "subject": subject,
-              "text": _template.render(**variables)})
+    if not app.settings_file.get("lockout_on", False):
+        response = requests.post(
+            "https://api.mailgun.net/v3/scarletsweb.moe/messages",
+            auth=("api", _api),
+            data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
+                  "to": _to_email_addresses,
+                  "subject": subject,
+                  "text": _template.render(**variables)})
+    else:
+        response = "LOCKDOWN ON"
 
     new_email_log = sqlm.EmailLog()
     new_email_log.to = send_to[0]
@@ -244,13 +253,16 @@ def send_announcement_emails():
             response = 200
 
             if not user.emails_muted:
-                result = requests.post(
-                    "https://api.mailgun.net/v3/scarletsweb.moe/messages",
-                    auth=("api", _api),
-                    data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
-                          "to": user.email_address,
-                          "subject": announcement.subject,
-                          "text": _rendered})
+                if not app.settings_file.get("lockout_on", False):
+                    result = requests.post(
+                        "https://api.mailgun.net/v3/scarletsweb.moe/messages",
+                        auth=("api", _api),
+                        data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
+                              "to": user.email_address,
+                              "subject": announcement.subject,
+                              "text": _rendered})
+                else:
+                    result = "LOCKDOWN ON"
 
                 new_email_log = sqlm.EmailLog()
                 new_email_log.to = user

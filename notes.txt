@@ -76,3 +76,5 @@ user = sally
 	/home/sally/Sally
 
 tarsnap --dry-run --no-default-config --print-stats --humanize-numbers -c /home/sally/Sally
+
+cd /root;pg_dump -U postgres sally > sally.sql;/usr/local/bin/tarsnap -c -v --print-stats --humanize-numbers -f `uname -n`-moe_database-`date +%Y-%m-%d_%H-%M-%S` /root/sally.sql
