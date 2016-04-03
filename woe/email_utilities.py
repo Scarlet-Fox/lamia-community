@@ -48,9 +48,6 @@ def send_notification_emails():
         if u.banned:
             continue
 
-        if u.minimum_notifications_for_email == None:
-            u.minimum_notifications_for_email = 1
-
         if u.minimum_time_between_emails == None:
             u.minimum_time_between_emails = 360
 
@@ -153,12 +150,6 @@ def send_notification_emails():
                 _to_email_address = u.email_address
 
             if len(_list) == 0 and len(_details) == 0 and len(_summaries) == 0:
-                continue
-
-            try:
-                if _total < u.minimum_notifications_for_email:
-                    continue
-            except:
                 continue
 
             _template = _mylookup.get_template("notification.txt")

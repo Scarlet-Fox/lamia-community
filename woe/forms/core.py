@@ -35,9 +35,6 @@ class UserSettingsForm(Form):
     minimum_time_between_emails = IntegerField("Minimum time between notification emails (in minutes, no less than 30 and no more than 1440)",
             [validators.InputRequired(), validators.NumberRange(30,1440)]
         )
-    minimum_notifications_for_email = IntegerField("Minimum notifications to send in an email (pick a number between 1 and 50)",
-            [validators.InputRequired(), validators.NumberRange(1,50)]
-        )
 
     THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]
     theme = SelectField('Theme', choices=THEME_CHOICES)
