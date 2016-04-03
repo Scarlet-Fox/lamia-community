@@ -96,8 +96,9 @@ def view_profile(login_name):
 
     recent_visitor_logs = sqla.session.query(sqlm.SiteLog.user_id, sqla.func.max(sqlm.SiteLog.time).label("time")) \
         .filter(sqlm.SiteLog.user_id.isnot(None)) \
+        .filter(sqlm.SiteLog.path.like("/member/"+unicode(user.my_url))) \
         .group_by(sqlm.SiteLog.user_id).order_by(sqla.desc(sqla.func.max(sqlm.SiteLog.time))).limit(5).subquery()
-
+    
     recent_visitors = sqla.session.query(sqlm.User, recent_visitor_logs.c.time) \
         .join(recent_visitor_logs, sqla.and_(
             recent_visitor_logs.c.user_id == sqlm.User.id,
@@ -918,7 +919,7 @@ def change_user_settings(login_name):
         if user.minimum_time_between_emails == None:
             user.minimum_time_between_emails = 360
         form.minimum_time_between_emails.data = user.minimum_time_between_emails
-        
+
         if user.theme == None:
             form.theme.data = "1"
         else:
