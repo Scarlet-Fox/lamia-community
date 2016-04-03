@@ -286,7 +286,7 @@ def create_new_status(target):
     if target_user:
         broadcast(
           to=[target_user,],
-          category="user_activity",
+          category="profile_comment",
           url="/status/"+unicode(status.id),
           title="%s has commented on your profile" % (unicode(status.author.display_name),),
           description=status.message,

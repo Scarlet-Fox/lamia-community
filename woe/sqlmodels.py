@@ -273,11 +273,12 @@ class Notification(db.Model):
         ("boop", "Boops", "all boops received", "summarized", "boop", "boops"),
         ("mod", "Moderation", "moderation related", "listed", "mod action", "mod actions"),
         ("status", "Status Updates", "all status update notifications", "listed", "status", "statuses"),
+        ("profile_comment","Profile Comments", "comments on your profile", "detailed", "comment", "comments"),
         ("new_member", "New Members", "new member announcements", "listed", "new member", "new members"),
         ("user_activity", "Followed User Activity", "new topics and statuses by followed members", "listed", "followed activity", "followed activities"),
         ("friend", "Friend Requests", "new friend requests and approvals", "listed", "friend", "friends"),
+        ("followed", "Followed", "when your blog, status, profile or topics are followed", "listed", "followed", "followed")
         # ("announcement", "Announcements"),
-        # ("profile_comment","Profile Comments"),
         # ("rules_updated", "Rule Update"),
         # ("faqs", "FAQs Updated"),
         # ("streaming", "Streaming"),
@@ -287,7 +288,7 @@ class Notification(db.Model):
     # TODO: message_frequency = db.Column(db.Integer)
 
     category = db.Column(db.String, default="")
-    created = db.Column(db.DateTime)
+    created = db.Column(db.DateTime, index=True)
     url = db.Column(db.String, default="")
     acknowledged = db.Column(db.Boolean, default=False, index=True)
     seen = db.Column(db.Boolean, default=False, index=True)

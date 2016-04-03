@@ -876,3 +876,6 @@ td {
   max-height: 150px;
   overflow: hidden;
 }
+.go-to-profile {
+  cursor: pointer;
+}

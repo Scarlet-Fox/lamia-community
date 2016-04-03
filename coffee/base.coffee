@@ -12,6 +12,10 @@ $ ->
     e.preventDefault()
     window.scrollTo 0, 0
 
+  $(".go-to-profile").click (e) ->
+    if window.logged_in
+      window.location = "/member/"+window.woe_is_me
+
   $(".sign-out").click (e) ->
     e.preventDefault()
     $.post "/sign-out", (data) ->

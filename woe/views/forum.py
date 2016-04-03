@@ -79,6 +79,16 @@ def toggle_follow_topic(slug):
 
     if not current_user._get_current_object() in topic.watchers:
         topic.watchers.append(current_user._get_current_object())
+        if topic.author in topic.watchers:
+            broadcast(
+              to=[topic.author,],
+              category="followed",
+              url="/t/%s" % (str(topic.slug),),
+              title="%s followed topic %s" % (unicode(current_user.display_name), unicode(topic.title)),
+              description="",
+              content=topic,
+              author=current_user
+              )
     else:
         try:
             topic.watchers.remove(current_user._get_current_object())

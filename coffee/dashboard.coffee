@@ -24,8 +24,10 @@ $ ->
         profile_comment: "Profile Comments"
         rules_updated: "Rule Update"
         faqs: "FAQs Updated"
-        user_activity: "Followed:User Activity"
+        user_activity: "Followed User Activity"
         streaming: "Streaming"
+        friend: "Friend Requests"
+        followed: "Followed"
         other: "Other"
 
       do @buildDashboard

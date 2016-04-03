@@ -98,7 +98,7 @@ def view_profile(login_name):
         .filter(sqlm.SiteLog.user_id.isnot(None)) \
         .filter(sqlm.SiteLog.path.like("/member/"+unicode(user.my_url))) \
         .group_by(sqlm.SiteLog.user_id).order_by(sqla.desc(sqla.func.max(sqlm.SiteLog.time))).limit(5).subquery()
-    
+
     recent_visitors = sqla.session.query(sqlm.User, recent_visitor_logs.c.time) \
         .join(recent_visitor_logs, sqla.and_(
             recent_visitor_logs.c.user_id == sqlm.User.id,
@@ -619,6 +619,15 @@ def toggle_follow_user(login_name):
         )
         sqla.session.add(follow_preference)
         sqla.session.commit()
+        broadcast(
+          to=[user,],
+          category="followed",
+          url="/member/%s" % (str(user.my_url)),
+          title="%s followed your profile" % (unicode(current_user.display_name),),
+          description="",
+          content=user,
+          author=current_user
+          )
 
     return app.jsonify(url="/member/"+unicode(login_name))
 

@@ -169,6 +169,15 @@ def toggle_follow_blog(slug):
 
     if not current_user._get_current_object() in blog.subscribers:
         blog.subscribers.append(current_user._get_current_object())
+        broadcast(
+          to=[blog.author,],
+          category="followed",
+          url="/blog/%s" % (str(blog.slug),),
+          title="%s followed blog %s" % (unicode(current_user.display_name), unicode(blog.name)),
+          description="",
+          content=blog,
+          author=current_user
+          )
     else:
         try:
             blog.subscribers.remove(current_user._get_current_object())
@@ -207,6 +216,15 @@ def toggle_follow_blog_entry(slug, entry_slug):
 
     if not current_user._get_current_object() in entry.subscribers:
         entry.subscribers.append(current_user._get_current_object())
+        broadcast(
+          to=[entry.author,],
+          category="followed",
+          url="/blog/%s/e/%s" % (str(blog.slug),str(entry.slug)),
+          title="%s followed blog entry %s" % (unicode(current_user.display_name), unicode(entry.title)),
+          description="",
+          content=entry,
+          author=current_user
+          )
     else:
         try:
             entry.subscribers.remove(current_user._get_current_object())

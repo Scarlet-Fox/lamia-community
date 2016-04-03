@@ -177,7 +177,11 @@ def acknowledge_notification():
 @app.route('/dashboard/notifications', methods=["POST",])
 @login_required
 def dashboard_notifications():
-    notifications = sqla.session.query(sqlm.Notification).filter_by(user=current_user._get_current_object(), acknowledged=False).all()
+    notifications = sqla.session.query(sqlm.Notification) \
+        .filter_by(
+            user=current_user._get_current_object(),
+            acknowledged=False) \
+        .order_by(sqla.desc(sqlm.Notification.created)).all()
     parsed_notifications = []
 
     for notification in notifications:
