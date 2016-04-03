@@ -49,7 +49,7 @@ def send_notification_emails():
             continue
 
         if u.minimum_notifications_for_email == None:
-            u.minimum_notifications_for_email = 5
+            u.minimum_notifications_for_email = 1
 
         if u.minimum_time_between_emails == None:
             u.minimum_time_between_emails = 360
