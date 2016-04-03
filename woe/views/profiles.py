@@ -918,7 +918,7 @@ def change_user_settings(login_name):
         if user.minimum_time_between_emails == None:
             user.minimum_time_between_emails = 360
         form.minimum_time_between_emails.data = user.minimum_time_between_emails
-        form.minimum_notifications_for_email.data = user.minimum_notifications_for_email
+        
         if user.theme == None:
             form.theme.data = "1"
         else:
