@@ -2,6 +2,11 @@
 (function() {
   $(function() {
     var NewTopic;
+    window.onbeforeunload = function() {
+      if (!window.save) {
+        return "You haven't saved your changes.";
+      }
+    };
     NewTopic = (function() {
       function NewTopic(slug) {
         var new_topic;

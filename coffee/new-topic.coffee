@@ -1,4 +1,8 @@
 $ ->
+  window.onbeforeunload = () ->
+     if not window.save
+       return "You haven't saved your changes."
+       
   class NewTopic
     constructor: (slug) ->
       @slug = slug
@@ -6,7 +10,7 @@ $ ->
       @meta = {}
       @poll = {}
       new_topic = self
-      
+
       @inline_editor.onSave (html, text) ->
         title = $("#title").val()
         prefix = $("#prefix").val()
@@ -17,5 +21,5 @@ $ ->
             topic.inline_editor.flashError data.error
           else
             window.location = data.url
-      
+
   window.topic = new NewTopic($("#new-topic-form").data("slug"))
