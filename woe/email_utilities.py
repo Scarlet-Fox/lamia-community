@@ -60,11 +60,6 @@ def send_notification_emails():
             .order_by(sqla.desc(sqlm.Notification.created)).all()
         notifications_count = len(notifications)
 
-        # if notifications_count > 0:
-        #     print notifications
-        #     print notifications_count
-        # continue
-
         try:
             if u.last_sent_notification_email > arrow.utcnow().replace(minutes=-u.minimum_time_between_emails).datetime.replace(tzinfo=None):
                 continue

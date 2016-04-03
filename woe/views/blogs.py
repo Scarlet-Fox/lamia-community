@@ -427,7 +427,6 @@ def edit_blog_comment(slug, entry_slug, comment_id):
 
     form = BlogCommentForm(csrf_enabled=False)
     if form.validate_on_submit():
-        print form.comment.data
         cleaner = ForumHTMLCleaner()
         try:
             comment.html = cleaner.clean(form.comment.data)
