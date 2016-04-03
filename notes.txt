@@ -69,3 +69,10 @@ user = sally
 command=/home/sally/SallyEnv/bin/gunicorn --worker-class gevent --workers 5 --error-logfile=/home/sally/logs/error.log --access-logfile=/home/sally/logs/access.log woe:app -b 0.0.0.0:5001
 directory = /home/sally/Sally
 user = sally
+
+#!/bin/sh
+/usr/local/bin/tarsnap -c \
+	-f `uname -n`-moe_goodness_and_static_files-`date +%Y-%m-%d_%H-%M-%S` \
+	/home/sally/Sally
+
+tarsnap --dry-run --no-default-config --print-stats --humanize-numbers -c /home/sally/Sally

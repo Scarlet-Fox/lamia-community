@@ -195,8 +195,6 @@ def send_notification_emails():
                 sqla.session.add(n)
             sqla.session.commit()
 
-            print _rendered
-
             result = requests.post(
                 "https://api.mailgun.net/v3/scarletsweb.moe/messages",
                 auth=("api", _api),
@@ -226,9 +224,6 @@ def send_mail_w_template(send_to, subject, template, variables):
             _to_email_addresses.append(user.email_address)
     _template = _mylookup.get_template(template)
 
-    print _to_email_addresses
-    print template
-    print variables
     _rendered = _template.render(**variables)
 
     response = requests.post(
@@ -248,13 +243,11 @@ def send_mail_w_template(send_to, subject, template, variables):
     sqla.session.add(new_email_log)
     sqla.session.commit()
 
-    print response
     return response
 
 def send_announcement_emails():
     for announcement in sqla.session.query(sqlm.Announcement).filter_by(draft=False).all():
         for user in sqla.session.query(sqlm.User).filter_by(banned=False, validated=True).all():
-            print announcement.body
             _template = _mylookup.get_template("announcement.txt")
             _rendered = _template.render(
                 message = announcement.body,
