@@ -16,6 +16,8 @@ $ ->
         pm: "Private Messages"
         mention: "Mentioned"
         topic_reply: "Topic Replies"
+        blog: "Blogs"
+        blogcomments: "Blog Comments"
         boop: "Boops"
         mod: "Moderation"
         status: "Status Updates"
@@ -27,7 +29,7 @@ $ ->
         user_activity: "Followed User Activity"
         streaming: "Streaming"
         friend: "Friend Requests"
-        followed: "Followed"
+        followed: "Following"
         other: "Other"
 
       do @buildDashboard
