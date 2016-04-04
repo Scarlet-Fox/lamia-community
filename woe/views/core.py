@@ -875,8 +875,6 @@ def member_list_api():
 
     query = request.args.get("search[value]", "")[0:100]
 
-
-
     member_count = parse_search_string(query,
         sqlm.User,
         sqla.session.query(sqlm.User),
@@ -888,14 +886,14 @@ def member_list_api():
             sqlm.User,
             sqla.session.query(sqlm.User),
             ["display_name", "login_name"]
-        ).filter_by(banned=False) \
+        ).filter_by(banned=False, validated=True) \
         .order_by(sqla.desc(getattr(sqlm.User, order)))[current:current+length]
     else:
         users = parse_search_string(query,
             sqlm.User,
             sqla.session.query(sqlm.User),
             ["display_name", "login_name"]
-        ).filter_by(banned=False) \
+        ).filter_by(banned=False, validated=True) \
         .order_by(getattr(sqlm.User, order))[current:current+length]
 
     table_data = []
@@ -914,7 +912,9 @@ def member_list_api():
 
         if i > 7:
             extra = """data-hplacement=\"top\""""
-
+        last_seen = arrow.get(user.hidden_last_seen).timestamp
+        if last_seen == arrow.get(0).datetime.replace(tzinfo=None):
+            last_seen = ""
         table_data.append(
             [
                 """<a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a>
@@ -929,7 +929,7 @@ def member_list_api():
                 humanize_time(user.hidden_last_seen),
                 roles_template,
                 arrow.get(user.joined).timestamp,
-                arrow.get(user.hidden_last_seen).timestamp
+                last_seen
             ]
         )
     data = {
