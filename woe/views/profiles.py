@@ -105,18 +105,18 @@ def view_profile(login_name):
             recent_visitor_logs.c.user_id != user.id
         ))[:5]
 
-    recent_posts = sqla.session.query(sqlm.Post).filter_by(author=user) \
+    recent_posts = sqla.session.query(sqlm.Post).filter_by(author=user, hidden=False) \
         .order_by(sqla.desc(sqlm.Post.created))[:5]
 
-    recent_topics = sqla.session.query(sqlm.Topic).filter_by(author=user) \
+    recent_topics = sqla.session.query(sqlm.Topic).filter_by(author=user, hidden=False) \
         .order_by(sqla.desc(sqlm.Topic.created))[:5]
 
     recent_status_updates = sqla.session.query(sqlm.StatusUpdate) \
-        .filter_by(author=user) \
+        .filter_by(author=user, hidden=False) \
         .order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]
 
     recent_status_updates_to_user = sqla.session.query(sqlm.StatusUpdate) \
-        .filter_by(attached_to_user=user) \
+        .filter_by(attached_to_user=user, hidden=False) \
         .order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]
 
     if current_user in user.friends():
