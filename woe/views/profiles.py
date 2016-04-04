@@ -488,6 +488,36 @@ def approve_friend(user, friend):
 
     friendship.pending = False
 
+    try:
+        follow_preference = sqla.session.query(sqlm.FollowingUser) \
+            .filter_by(
+                    user=user,
+                    following=friend
+                )[0]
+    except IndexError:
+        follow_preference = sqlm.FollowingUser(
+            user=user,
+            following=friend,
+            created=arrow.utcnow().datetime.replace(tzinfo=None)
+        )
+        sqla.session.add(follow_preference)
+        sqla.session.commit()
+
+    try:
+        follow_preference = sqla.session.query(sqlm.FollowingUser) \
+            .filter_by(
+                    user=friend,
+                    following=user
+                )[0]
+    except IndexError:
+        follow_preference = sqlm.FollowingUser(
+            user=friend,
+            following=user,
+            created=arrow.utcnow().datetime.replace(tzinfo=None)
+        )
+        sqla.session.add(follow_preference)
+        sqla.session.commit()
+
     broadcast(
       to=[user,],
       category="friend",
