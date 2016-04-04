@@ -63,7 +63,6 @@ def user_moderation_panel(login_name):
         top_fingerprint_matches=fingerprints_with_top_matches)
 
 @app.route('/member/<login_name>')
-@login_required
 def view_profile(login_name):
     try:
         user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
@@ -336,7 +335,6 @@ def new_signature(login_name):
     return render_template("profile/new_signature.jade", form=form, profile=user, page_title="New Signature - Scarlet's Web")
 
 @app.route('/member/<login_name>/friends', methods=['GET'])
-@login_required
 def show_friends(login_name):
     try:
         user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]

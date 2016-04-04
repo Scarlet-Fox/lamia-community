@@ -97,8 +97,9 @@ style!= profile.get_custom_css()
           li(role="presentation")
             a(href="/member/{{profile.login_name}}/change-account") Account
           {% endif %}
-          li(role="presentation")
-            a(href="/member/{{profile.login_name}}/signatures") Signatures
+          if current_user == profile or current_user.is_admin
+            li(role="presentation")
+              a(href="/member/{{profile.login_name}}/signatures") Signatures
           if current_user == profile or current_user.is_admin
             li(role="presentation")
               a(href="/member/{{profile.login_name}}/change-settings") Settings
