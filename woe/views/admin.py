@@ -77,6 +77,7 @@ class FollowView(ModelView):
     can_delete = False
     column_list = ("id", "user", "following")
     column_sortable_list = (('following',sqlm.FollowingUser.following_id),)
+    column_filters = ("user_id", "following_id")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
@@ -243,7 +244,8 @@ class BlogCommentView(ModelView):
         return (current_user.is_authenticated() and current_user.is_admin)
 
 class FriendshipView(ModelView):
-    column_list = ("id", "user", "friend")
+    column_list = ("id", "user", "friend", "blocked", "pending")
+    column_filters = ("user_id", "friend_id", "blocked", "pending")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
