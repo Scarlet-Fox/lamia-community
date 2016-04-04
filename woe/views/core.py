@@ -929,7 +929,7 @@ def member_list_api():
                                                                         unicode(user.login_name),
                                                                         unicode(user.display_name)),
                 humanize_time(user.joined),
-                humanize_time(user.hidden_last_seen),
+                human_last_seen,
                 roles_template,
                 arrow.get(user.joined).timestamp,
                 last_seen
