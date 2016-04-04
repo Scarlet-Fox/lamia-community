@@ -632,7 +632,7 @@ def register():
         broadcast(
             to=[new_user,],
             category="new_member",
-            url="/t/community-rules-and-terms",
+            url="/t/scarlet-s-web-rules",
             title="Make sure to read the rules.",
             description="",
             content=new_user,
