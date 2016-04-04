@@ -21,6 +21,9 @@ admin = admin.Admin(app, index_view=AuthAdminIndexView())
 def _label_formatter_(view, context, model, name):
     return Markup("""%s%s%s""" % (model.pre_html, model.label, model.post_html))
 
+def _role_formatter_(view, context, model, name):
+    return Markup("""%s%s%s""" % (model.pre_html, model.role, model.post_html))
+
 class LabelView(ModelView):
     can_create = True
     can_delete = True
@@ -41,7 +44,7 @@ class RoleView(ModelView):
     column_list = ("id", "role",)
 
     column_formatters = {
-        'role': _label_formatter_
+        'role': _role_formatter_
     }
 
     column_filters = ["id", ]
