@@ -74,7 +74,6 @@ class UserView(ModelView):
 
 class FollowView(ModelView):
     can_create = False
-    can_delete = False
     column_list = ("id", "user", "following")
     column_sortable_list = (('following',sqlm.FollowingUser.following_id),)
     column_filters = ("user_id", "following_id")
