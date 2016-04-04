@@ -24,6 +24,9 @@ def _label_formatter_(view, context, model, name):
 def _role_formatter_(view, context, model, name):
     return Markup("""%s%s%s""" % (model.pre_html, model.role, model.post_html))
 
+def _time_online_formatter_(view, context, model, name):
+    return Markup("%.2f" % (float(model.time_online)/60.0/60.0))
+
 class LabelView(ModelView):
     can_create = True
     can_delete = True
@@ -55,9 +58,13 @@ class RoleView(ModelView):
 class UserView(ModelView):
     can_create = False
     can_delete = False
-    column_list = ("id", "login_name", "display_name", "email_address", "banned", "validated", "emails_muted", "hidden_last_seen")
+    column_list = ("id", "login_name", "display_name", "email_address", "banned", "validated", "emails_muted", "hidden_last_seen", "time_online")
     # column_searchable_list = ('login_name', 'display_name','about_me')
     # form_excluded_columns = ("ignored_users", "ignored_user_signatures","followed_by", "pending_friends", "rejected_friends", "friends")
+
+    column_formatters = {
+        'time_online': _time_online_formatter_
+    }
 
     column_filters = ["id", "login_name", "email_address", "display_name", "banned", "validated", "emails_muted"]
     form_excluded_columns = ["status_updates", "private_messages", "notifications", "booped_posts"]
