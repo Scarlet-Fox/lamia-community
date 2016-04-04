@@ -913,8 +913,11 @@ def member_list_api():
         if i > 7:
             extra = """data-hplacement=\"top\""""
         last_seen = arrow.get(user.hidden_last_seen).timestamp
-        if last_seen == arrow.get(0).datetime.replace(tzinfo=None):
-            last_seen = ""
+        if arrow.get(user.hidden_last_seen).datetime.replace(tzinfo=None) == arrow.get(0).datetime.replace(tzinfo=None):
+            human_last_seen = ""
+        else:
+            human_last_seen = humanize_time(user.hidden_last_seen)
+
         table_data.append(
             [
                 """<a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a>
