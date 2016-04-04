@@ -1053,6 +1053,15 @@ def index():
             categories[section].append(category)
             if len(category.children) > 0:
                 sub_categories[category] = category.children
+                recent_post = category.recent_post
+                for category_child in category.children:
+                    try:
+                        if category_child.recent_post.created > recent_post.created:
+                            recent_post = category_child.recent_post
+                    except:
+                        pass
+                category.recent_post = recent_post
+                category.recent_topic = recent_post.topic
 
     online_users = sqla.session.query(sqlm.User) \
         .filter(sqlm.User.hidden_last_seen > arrow.utcnow() \
