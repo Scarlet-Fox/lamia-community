@@ -427,7 +427,7 @@ class ForumPostParser(object):
                 try:
                     r_id = int(reply[0])
                     _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=reply[0])[0]
-                except ValueError:
+                except:
                     sqla.session.rollback()
 
                     try:

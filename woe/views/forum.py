@@ -115,7 +115,7 @@ def new_post_in_topic(slug):
         return abort(403)
 
     if topic.locked or topic.hidden:
-        return app.jsonify(closed_topic=True, closed_message=topic.close_message)
+        return app.jsonify(closed_topic=True, closed_message="This topic is closed.")
 
     request_json = request.get_json(force=True)
 

@@ -626,7 +626,7 @@ def blog_entry_index(slug, entry_slug, page):
     try:
         page = int(page)
     except:
-        return abort(500)
+        page = 1
 
     if not current_user.is_admin:
         if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
