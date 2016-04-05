@@ -85,7 +85,7 @@ $ ->
               </div>"""
 
     updateReplyCount: (c) ->
-      if c > 99
+      if c > 199
         @flashError "This status update is full."
         $("#submit-reply").addClass "disabled"
       $("#status-status").text "#{c} / 200 Replies"

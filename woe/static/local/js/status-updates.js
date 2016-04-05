@@ -99,7 +99,7 @@
       };
 
       Status.prototype.updateReplyCount = function(c) {
-        if (c > 99) {
+        if (c > 199) {
           this.flashError("This status update is full.");
           $("#submit-reply").addClass("disabled");
         }
