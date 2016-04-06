@@ -10,7 +10,7 @@ from mongoengine.queryset import Q
 from BeautifulSoup import BeautifulSoup
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
-spec_characters = re.compile('&[a-z]{2,5};')
+spec_characters = re.compile('&[a-z0-9]{2,5};')
 link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 bbcode_re = re.compile("(\[(attachment|custompostcaracter|postcharacter|spoiler|center|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
 
