@@ -208,9 +208,6 @@ $ ->
       @element.data("_editor", this)
       @element.data("editor", quill)
 
-      $("#toolbar").on 'click mousedown mousemove', (e) ->
-        e.preventDefault()
-
       $("#dropzone-#{@quillID}").dropzone
         url: "/attach"
         dictDefaultMessage: "Click here or drop a file in to upload (image files only)."
