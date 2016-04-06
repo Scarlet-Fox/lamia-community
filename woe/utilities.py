@@ -30,7 +30,7 @@ words_re = re.compile("[a-zA-Z0-9']+")
 def strip_tags(html):
     spc = spec_characters.findall(html)
     for sp in spc:
-        html = html.replace(sp[0], "")
+        html = html.replace(sp, "")
     links = link_re.findall(html)
     for link in links:
         html = html.replace(link[0], "")
@@ -45,7 +45,7 @@ def strip_tags(html):
 def get_preview_for_email(html):
     spc = spec_characters.findall(html)
     for sp in spc:
-        html = html.replace(sp[0], "")
+        html = html.replace(sp, "")
     links = link_re.findall(html)
     for link in links:
         html = html.replace(link[0], "")
