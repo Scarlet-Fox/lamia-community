@@ -176,7 +176,7 @@ def search_lookup():
 
     parsed_results = []
     if content_type == "posts":
-        query_ = parse_search_string(query, model_, query_, ["html",])
+        query_ = parse_search_string(query, model_, query_, ["html",]).filter(model_.hidden==False)
         count = query_.count()
 
         results = query_.order_by(sqla.desc(model_.created))[(page-1)*pagination:pagination*page]
