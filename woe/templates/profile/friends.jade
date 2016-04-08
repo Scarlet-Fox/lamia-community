@@ -31,6 +31,10 @@ ul.list-group
               a(href="{{url_for('view_profile', login_name=friend.friend.login_name)}}")= friend.friend.display_name
               div
                 em Waiting for {{friend.friend.display_name}}...
+            .media-body
+              .float-right
+                | &nbsp;&nbsp;&nbsp;
+                a.btn.btn-default.post-link(href="/member/{{friend.user.login_name}}/friends/{{friend.friend.login_name}}/cancel") Cancel
         hr
       for friend in incoming_friend_requests
         .row

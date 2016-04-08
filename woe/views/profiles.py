@@ -462,6 +462,30 @@ def deny_friend(user, friend):
 
     return app.jsonify(url="/member/"+unicode(friend.my_url)+"/friends")
 
+@app.route('/member/<user>/friends/<friend>/cancel', methods=['POST'])
+@login_required
+def cancel_friend(user, friend):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(my_url=user.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    try:
+        friend = sqla.session.query(sqlm.User).filter_by(my_url=friend.strip().lower())[0]
+    except IndexError:
+        abort(404)
+
+    if current_user != user:
+        abort(404)
+
+    try:
+        friendship = sqlm.Friendship.query.filter_by(blocked=False, pending=True) \
+            .filter(sqlm.Friendship.user == user, sqlm.Friendship.friend == friend).delete()
+    except IndexError:
+        abort(404)
+
+    return app.jsonify(url="/member/"+unicode(user.my_url)+"/friends")
+
 @app.route('/member/<user>/friends/<friend>/approve', methods=['POST'])
 @login_required
 def approve_friend(user, friend):
