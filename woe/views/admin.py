@@ -145,7 +145,7 @@ class PostView(ModelView):
     can_delete = False
     column_list = ("id", "topic", "created", "author")
     # column_filters = ('topic_name', 'author_name', 'html', 'old_ipb_id', 'hidden')
-    form_excluded_columns = ("boops", "topic", "editor", "character", "avatar")
+    form_excluded_columns = ("topic", "editor", "character", "avatar")
 
     column_filters = ["id", ]
 
