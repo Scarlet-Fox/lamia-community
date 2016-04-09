@@ -27,7 +27,7 @@ img_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL)
 html_img_re = re.compile(r'<img src=\"(.*?)\">', re.I)
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 mention_re = re.compile("\[@(.*?)\]")
-deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\](.*?)(?:\[\/reply\]|\[reply)', re.DOTALL)
+deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\](.*?\[\/reply\])', re.DOTALL)
 reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
 legacy_postcharacter_re = re.compile(r'\[(post)?character=.*?\]')
 list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL)
@@ -383,7 +383,7 @@ class ForumPostParser(object):
 
         def process_reply(reply, html, container=False):
             if container:
-                string_to_replace = "[reply=%s:%s%s]%s[/reply]" % (reply[0],reply[1],reply[2], reply[3])
+                string_to_replace = "[reply=%s:%s%s]%s" % (reply[0],reply[1],reply[2], reply[3])
             else:
                 string_to_replace = "[reply=%s:%s%s]" % (reply[0],reply[1],reply[2])
 
@@ -391,7 +391,7 @@ class ForumPostParser(object):
                 try:
                     r_id = int(reply[0])
                     _replying_to = sqla.session.query(sqlm.Post).filter_by(id=r_id)[0]
-                except ValueError:
+                except:
                     sqla.session.rollback()
 
                     try:
@@ -453,9 +453,19 @@ class ForumPostParser(object):
                     re.sub(reply_re, "", inner_html)
                 ))
 
-        replies = deluxe_reply_re.findall(html)
-        for reply in replies:
-            html = process_reply(reply, html, container=True)
+        def _look_for_quote_replies(reply, html):
+            interior_replies = deluxe_reply_re.findall(reply)
+
+            if len(interior_replies) > 0:
+                for reply in interior_replies:
+                    _interior_interior_replies = deluxe_reply_re.findall(reply[3])
+                    if len(_interior_interior_replies) > 0:
+                        html = _look_for_quote_replies(reply[3], html)
+                    else:
+                        html = process_reply(reply, html, container=True)
+            return html
+
+        html = _look_for_quote_replies(html, html)
 
         replies = reply_re.findall(html)
         for reply in replies:
