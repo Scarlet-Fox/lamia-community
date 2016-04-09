@@ -408,7 +408,7 @@ class ForumPostParser(object):
                     pass
 
                 if container:
-                    inner_html = reply[3]
+                    inner_html = reply[3].replace("[/reply]","")
                 else:
                     inner_html = _replying_to.html.replace("img", "imgdisabled")
 
