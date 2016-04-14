@@ -1044,8 +1044,6 @@ def index():
     categories = {}
     sub_categories = {}
 
-    t = time.time()
-
     for section in sqla.session.query(sqlm.Section).order_by(sqlm.Section.weight).all():
         sections.append(section)
 
@@ -1066,8 +1064,6 @@ def index():
                         pass
                 category.recent_post = recent_post
                 category.recent_topic = recent_post.topic
-
-    print "Sections - %.5f" % (time.time()-t,)
 
     online_users = sqla.session.query(sqlm.User) \
         .filter(sqlm.User.hidden_last_seen > arrow.utcnow() \
@@ -1096,8 +1092,6 @@ def index():
     except IndexError:
         new_member_intro_topic = None
 
-    print "Online & new members - %.5f" % (time.time()-t,)
-
     recently_replied_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
         .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:8]
@@ -1105,8 +1099,6 @@ def index():
     recently_created_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
         .order_by(sqlm.Topic.created.desc())[:8]
-
-    print "Recently replied & created topics - %.5f" % (time.time()-t,)
 
     status_update_authors = sqla.session.query(sqlm.StatusUpdate.author_id.label("author_id"), sqla.func.max(sqlm.StatusUpdate.created).label("created")) \
         .group_by(sqlm.StatusUpdate.author_id) \
@@ -1119,8 +1111,6 @@ def index():
             status_update_authors.c.author_id == sqlm.StatusUpdate.author_id,
             status_update_authors.c.created == sqlm.StatusUpdate.created
         ))[:5]
-
-    print "Status updates - %.5f" % (time.time()-t,)
 
     announcements = sqla.session.query(sqlm.Topic) \
         .filter_by(announcement=True, hidden=False) \
@@ -1148,14 +1138,10 @@ def index():
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
-    print "Blog entries - %.5f" % (time.time()-t,)
-
     render = render_template("index.jade", page_title="Scarlet's Web",
         sections=sections, sub_categories=sub_categories,announcements=announcements,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)
-
-    print "template rendering - %.5f" % (time.time()-t,)
 
     return render
