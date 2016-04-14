@@ -26,6 +26,7 @@ app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
+app.jinja_env.cache = {}
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config["SECRET_KEY"] = settings_file["secret_key"]
