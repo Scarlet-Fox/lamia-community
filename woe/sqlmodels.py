@@ -28,18 +28,18 @@ class PrivateMessageUser(db.Model):
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageUser.pm_id")
     __table_args__ = (db.UniqueConstraint('author_id', 'id', name='unique_user_pm_user'),)
 
-    ignoring = db.Column(db.Boolean, default=False)
-    exited = db.Column(db.Boolean, default=False)
-    blocked = db.Column(db.Boolean, default=False)
-    viewed = db.Column(db.Boolean, default=False)
-    last_viewed = db.Column(db.DateTime, index=True)
+    ignoring = db.Column(db.Boolean, default=False, index=True)
+    exited = db.Column(db.Boolean, default=False, index=True)
+    blocked = db.Column(db.Boolean, default=False, index=True)
+    viewed = db.Column(db.Boolean, default=False, index=True)
+    last_viewed = db.Column(db.DateTime, index=True,)
 
 class PrivateMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String)
+    title = db.Column(db.String, index=True)
     count = db.Column(db.Integer, default=0)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_pm_author", ondelete="CASCADE"))
+        name="fk_pm_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="PrivateMessage.author_id")
 
     last_reply_id = db.Column(db.Integer, db.ForeignKey('private_message_reply.id',
@@ -48,7 +48,7 @@ class PrivateMessage(db.Model):
 
     participants = db.relationship("User", secondary="private_message_user", backref="private_messages")
 
-    created = db.Column(db.DateTime)
+    created = db.Column(db.DateTime, index=True)
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
     last_seen_by = db.Column(JSONB)
 
@@ -58,19 +58,19 @@ class PrivateMessage(db.Model):
 class PrivateMessageReply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_pm_r_author", ondelete="CASCADE"))
+        name="fk_pm_r_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="PrivateMessageReply.author_id")
 
     pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id',
-        name="fk_pm_r_pm", ondelete="CASCADE"))
+        name="fk_pm_r_pm", ondelete="CASCADE"), index=True)
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageReply.pm_id")
 
     message = db.Column(db.Text)
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
-    created = db.Column(db.DateTime)
-    modified = db.Column(db.DateTime, nullable=True)
-    pm_title = db.Column(db.String, default="")
+    created = db.Column(db.DateTime, index=True)
+    modified = db.Column(db.DateTime, nullable=True, index=True)
+    pm_title = db.Column(db.String, default="", index=True)
 
 ############################################################
 # Status Update Models
@@ -79,16 +79,16 @@ class PrivateMessageReply(db.Model):
 class StatusUpdateUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_status_user_author", ondelete="CASCADE"))
+        name="fk_status_user_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="StatusUpdateUser.author_id")
 
     status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
-        name="fk_status_user_status", ondelete="CASCADE"))
+        name="fk_status_user_status", ondelete="CASCADE"), index=True)
     status = db.relationship("StatusUpdate", foreign_keys="StatusUpdateUser.status_id")
     __table_args__ = (db.UniqueConstraint('author_id', 'id', name='unique_user_status_user'),)
 
-    ignoring = db.Column(db.Boolean, default=False)
-    blocked = db.Column(db.Boolean, default=False)
+    ignoring = db.Column(db.Boolean, default=False, index=True)
+    blocked = db.Column(db.Boolean, default=False, index=True)
     viewed = db.Column(db.Integer, default=0)
     last_viewed = db.Column(db.DateTime)
 
@@ -96,13 +96,13 @@ class StatusComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_status_comment_author", ondelete="CASCADE"))
+        name="fk_status_comment_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User")
-    created = db.Column(db.DateTime)
-    hidden = db.Column(db.Boolean, default=False)
+    created = db.Column(db.DateTime, index=True)
+    hidden = db.Column(db.Boolean, default=False, index=True)
 
     status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
-        name="fk_status_comment_status", ondelete="CASCADE"))
+        name="fk_status_comment_status", ondelete="CASCADE"), index=True)
     status = db.relationship("StatusUpdate", backref="comments")
 
 class StatusUpdate(db.Model):
@@ -121,9 +121,9 @@ class StatusUpdate(db.Model):
     last_viewed = db.Column(db.DateTime)
     replies = db.Column(db.Integer, default=0)
     created = db.Column(db.DateTime, index=True)
-    hidden = db.Column(db.Boolean, default=False)
-    muted = db.Column(db.Boolean, default=False)
-    locked = db.Column(db.Boolean, default=False)
+    hidden = db.Column(db.Boolean, default=False, index=True)
+    muted = db.Column(db.Boolean, default=False, index=True)
+    locked = db.Column(db.Boolean, default=False, index=True)
 
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
@@ -145,8 +145,8 @@ class SiteTheme(db.Model):
     name = db.Column(db.String, unique=True)
     theme_css = db.Column(db.String)
     base_css = db.Column(db.String)
-    weight = db.Column(db.Integer, default=0)
-    created = db.Column(db.DateTime)
+    weight = db.Column(db.Integer, default=0, index=True)
+    created = db.Column(db.DateTime, index=True)
 
     def __repr__(self):
         return "<SiteTheme: (name='%s')>" % (self.name,)
@@ -157,10 +157,10 @@ class SiteTheme(db.Model):
 
 class IPAddress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ip_address = db.Column(db.Text)
-    last_seen = db.Column(db.DateTime)
+    ip_address = db.Column(db.Text, index=True)
+    last_seen = db.Column(db.DateTime, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_ipaddress_user", ondelete="CASCADE"))
+        name="fk_ipaddress_user", ondelete="CASCADE"), index=True)
     user = db.relationship("User")
 
     __table_args__ = (db.UniqueConstraint('user_id', 'id', name='unique_user_ip_addy'),)
@@ -171,11 +171,11 @@ class IPAddress(db.Model):
 class Fingerprint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     json = db.Column(JSONB)
-    factors = db.Column(db.Integer, default=0)
-    fingerprint_hash = db.Column(db.String, default="")
-    last_seen = db.Column(db.DateTime)
+    factors = db.Column(db.Integer, default=0, index=True)
+    fingerprint_hash = db.Column(db.String, default="", index=True)
+    last_seen = db.Column(db.DateTime, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_fingerprint_user", ondelete="CASCADE"))
+        name="fk_fingerprint_user", ondelete="CASCADE"), index=True)
     user = db.relationship("User")
     __table_args__ = (db.UniqueConstraint('user_id', 'fingerprint_hash', name='unique_user_hash'),)
 
@@ -201,17 +201,17 @@ class Fingerprint(db.Model):
 
 class SiteLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    method = db.Column(db.String, default="")
+    method = db.Column(db.String, default="", index=True)
     path = db.Column(db.String, default="", index=True)
-    ip_address = db.Column(db.String, default="")
+    ip_address = db.Column(db.String, default="", index=True)
     agent_platform = db.Column(db.String, default="")
     agent_browser = db.Column(db.String, default="")
     agent_browser_version = db.Column(db.String, default="")
     agent = db.Column(db.String, default="")
     time = db.Column(db.DateTime, index=True)
-    error = db.Column(db.Boolean, default=False)
-    error_name = db.Column(db.String, default="")
-    error_code = db.Column(db.String, default="")
+    error = db.Column(db.Boolean, default=False, index=True)
+    error_name = db.Column(db.String, default="", index=True)
+    error_code = db.Column(db.String, default="", index=True)
     error_description = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_sitelog_user", ondelete="SET NULL"), nullable=True, index=True)
@@ -226,15 +226,15 @@ class EmailLog(db.Model):
         name="fk_sitelog_user", ondelete="SET NULL"), nullable=True, index=True)
     to = db.relationship("User")
     sent = db.Column(db.DateTime, index=True)
-    subject = db.Column(db.Text)
-    body = db.Column(db.Text)
+    subject = db.Column(db.Text, index=True)
+    body = db.Column(db.Text, index=True)
     result = db.Column(db.Text)
 
 class Announcement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    subject = db.Column(db.Text)
-    body = db.Column(db.Text)
-    draft = db.Column(db.Boolean, default=True)
+    subject = db.Column(db.Text, index=True)
+    body = db.Column(db.Text, index=True)
+    draft = db.Column(db.Boolean, default=True, index=True)
     sent = db.Column(db.DateTime, index=True)
 
 ############################################################
@@ -253,14 +253,14 @@ class Role(db.Model):
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
-    snippet = db.Column(db.Text)
+    snippet = db.Column(db.Text, index=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_notification_user", ondelete="CASCADE"), index=True)
     user = db.relationship("User", backref="notifications", foreign_keys="Notification.user_id")
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_notification_author", ondelete="CASCADE"))
+        name="fk_notification_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="Notification.author_id")
 
     NOTIFICATION_CATEGORIES = (
@@ -287,38 +287,38 @@ class Notification(db.Model):
 
     # TODO: message_frequency = db.Column(db.Integer)
 
-    category = db.Column(db.String, default="")
+    category = db.Column(db.String, default="", index=True)
     created = db.Column(db.DateTime, index=True)
-    url = db.Column(db.String, default="")
+    url = db.Column(db.String, default="", index=True)
     acknowledged = db.Column(db.Boolean, default=False, index=True)
     seen = db.Column(db.Boolean, default=False, index=True)
     emailed = db.Column(db.Boolean, default=False, index=True)
-    priority = db.Column(db.Integer, default=0)
+    priority = db.Column(db.Integer, default=0, index=True)
 
 class IgnoringUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_ignoringuser_user", ondelete="CASCADE"))
+        name="fk_ignoringuser_user", ondelete="CASCADE"), index=True)
     user = db.relationship("User", foreign_keys=user_id)
     ignoring_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_ignoringuser_ignoring", ondelete="CASCADE"))
+        name="fk_ignoringuser_ignoring", ondelete="CASCADE"), index=True)
     ignoring = db.relationship("User", foreign_keys=ignoring_id)
     __table_args__ = (db.UniqueConstraint('user_id', 'ignoring_id', name='unique_user_ignoring'),)
     created = db.Column(db.DateTime)
 
-    distort_posts = db.Column(db.Boolean, default=True)
-    block_sigs = db.Column(db.Boolean, default=True)
-    block_pms = db.Column(db.Boolean, default=True)
-    block_blogs = db.Column(db.Boolean, default=True)
-    block_status = db.Column(db.Boolean, default=True)
+    distort_posts = db.Column(db.Boolean, default=True, index=True)
+    block_sigs = db.Column(db.Boolean, default=True, index=True)
+    block_pms = db.Column(db.Boolean, default=True, index=True)
+    block_blogs = db.Column(db.Boolean, default=True, index=True)
+    block_status = db.Column(db.Boolean, default=True, index=True)
 
 class FollowingUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_followinguser_user", ondelete="CASCADE"))
+        name="fk_followinguser_user", ondelete="CASCADE"), index=True)
     user = db.relationship("User", foreign_keys="FollowingUser.user_id")
     following_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_followinguser_following", ondelete="CASCADE"))
+        name="fk_followinguser_following", ondelete="CASCADE"), index=True)
     following = db.relationship("User", foreign_keys="FollowingUser.following_id")
     __table_args__ = (db.UniqueConstraint('user_id', 'following_id', name='unique_user_following'),)
     created = db.Column(db.DateTime)
@@ -326,10 +326,10 @@ class FollowingUser(db.Model):
 class Friendship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_friendship_user", ondelete="CASCADE"))
+        name="fk_friendship_user", ondelete="CASCADE"), index=True)
     user = db.relationship("User", foreign_keys="Friendship.user_id")
     friend_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_friendship_friend", ondelete="CASCADE"))
+        name="fk_friendship_friend", ondelete="CASCADE"), index=True)
     friend = db.relationship("User", foreign_keys="Friendship.friend_id")
     __table_args__ = (db.UniqueConstraint('user_id', 'friend_id', name='unique_user_friend'),)
     created = db.Column(db.DateTime)
@@ -339,9 +339,9 @@ class Friendship(db.Model):
 
 user_role_table = db.Table('user_roles', db.metadata,
     db.Column('role_id', db.Integer, db.ForeignKey('role.id',
-        name="fk_userrole_role", ondelete="CASCADE")),
+        name="fk_userrole_role", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_userrole_user", ondelete="CASCADE")))
+        name="fk_userrole_user", ondelete="CASCADE"), index=True))
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -350,7 +350,7 @@ class User(db.Model):
                     backref="users")
 
     data = db.Column(JSONB)
-    time_online = db.Column(db.Integer, default=0)
+    time_online = db.Column(db.Integer, default=0, index=True)
     AVAILABLE_PROFILE_FIELDS = [
         "Discord",
         "DeviantArt",
@@ -380,34 +380,34 @@ class User(db.Model):
     display_name = db.Column(db.String, unique=True)
     login_name = db.Column(db.String, unique=True)
     email_address = db.Column(db.String, unique=True)
-    password_hash = db.Column(db.String, default="")
+    password_hash = db.Column(db.String, default="", index=True)
     joined = db.Column(db.DateTime, index=True)
 
-    phrase_last_updated = db.Column(db.DateTime)
-    smileys_last_updated = db.Column(db.DateTime)
+    phrase_last_updated = db.Column(db.DateTime, index=True)
+    smileys_last_updated = db.Column(db.DateTime, index=True)
 
-    how_did_you_find_us = db.Column(db.Text, default="")
-    is_allowed_during_construction = db.Column(db.Boolean, default=False)
+    how_did_you_find_us = db.Column(db.Text, default="", index=True)
+    is_allowed_during_construction = db.Column(db.Boolean, default=False, index=True)
     my_url = db.Column(db.String, unique=True)
     time_zone = db.Column(db.String, default="")
     theme_id = db.Column(db.Integer, db.ForeignKey('site_theme.id',
-        name="fk_member_theme", ondelete="SET NULL"))
+        name="fk_member_theme", ondelete="SET NULL"), index=True)
     theme = db.relationship("SiteTheme")
 
     banned = db.Column(db.Boolean, index=True, default=False)
     validated = db.Column(db.Boolean, default=False, index=True)
     over_thirteen = db.Column(db.Boolean, default=True)
 
-    emails_muted = db.Column(db.Boolean, default=False)
-    last_sent_notification_email = db.Column(db.DateTime, nullable=True)
-    minimum_notifications_for_email = db.Column(db.Integer, default=5)
-    minimum_time_between_emails = db.Column(db.Integer, default=360)
+    emails_muted = db.Column(db.Boolean, default=False, index=True)
+    last_sent_notification_email = db.Column(db.DateTime, nullable=True, index=True)
+    minimum_notifications_for_email = db.Column(db.Integer, default=5, index=True)
+    minimum_time_between_emails = db.Column(db.Integer, default=360, index=True)
 
-    title = db.Column(db.String, default="")
-    minecraft = db.Column(db.String, default="")
-    location = db.Column(db.String, default="")
+    title = db.Column(db.String, default="", index=True)
+    minecraft = db.Column(db.String, default="", index=True)
+    location = db.Column(db.String, default="", index=True)
     about_me = db.Column(db.Text, default="")
-    anonymous_login = db.Column(db.Boolean, default=False)
+    anonymous_login = db.Column(db.Boolean, default=False, index=True)
 
     avatar_extension = db.Column(db.String, default="")
     avatar_full_x = db.Column(db.Integer, default=200)
@@ -436,16 +436,16 @@ class User(db.Model):
     status_count = db.Column(db.Integer, default=0)
     status_comment_count = db.Column(db.Integer, default=0)
 
-    last_seen = db.Column(db.DateTime, nullable=True)
+    last_seen = db.Column(db.DateTime, nullable=True, index=True)
     legacy_password = db.Column(db.Boolean, nullable=True)
     ipb_salt = db.Column(db.String, nullable=True)
     ipb_hash = db.Column(db.String, nullable=True)
     hidden_last_seen = db.Column(db.DateTime, nullable=True, index=True)
-    last_seen_at = db.Column(db.String, default="")
-    last_at_url = db.Column(db.String, default="")
+    last_seen_at = db.Column(db.String, default="", index=True)
+    last_at_url = db.Column(db.String, default="", index=True)
 
-    is_admin = db.Column(db.Boolean, default=False)
-    is_mod = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False, index=True)
+    is_mod = db.Column(db.Boolean, default=False, index=True)
 
     display_name_history = db.Column(JSONB)
     notification_preferences = db.Column(JSONB)
@@ -607,7 +607,7 @@ class Signature(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_user_signature", ondelete="CASCADE"), index=True)
     owner = db.relationship("User", foreign_keys="Signature.owner_id")
-    name = db.Column(db.String, default="")
+    name = db.Column(db.String, default="", index=True)
     html = db.Column(db.Text)
     created = db.Column(db.DateTime, index=True)
     active = db.Column(db.Boolean, default=True, index=True)
@@ -618,14 +618,14 @@ class Signature(db.Model):
 
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String, default="")
-    content_type = db.Column(db.String, default="")
-    content_id = db.Column(db.Integer)
+    url = db.Column(db.String, default="", index=True)
+    content_type = db.Column(db.String, default="", index=True)
+    content_id = db.Column(db.Integer, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_report_author", ondelete="CASCADE"))
+        name="fk_report_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User")
 
-    report = db.Column(db.Text)
+    report = db.Column(db.Text, index=True)
     content_html = db.Column(db.Text)
 
     STATUS_CHOICES = (
@@ -636,21 +636,21 @@ class Report(db.Model):
         ('action taken', 'Action Taken')
     )
 
-    status = db.Column(db.String, default="open")
-    created = db.Column(db.DateTime)
+    status = db.Column(db.String, default="open", index=True)
+    created = db.Column(db.DateTime, index=True)
 
     def __repr__(self):
         return "<Report: (content_type='%s', content_id='%s')>" % (self.content_type, self.content_id)
 
 class ReportComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    created = db.Column(db.DateTime)
-    comment = db.Column(db.Text)
+    created = db.Column(db.DateTime, index=True)
+    comment = db.Column(db.Text, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_reportcomment_author", ondelete="CASCADE"))
+        name="fk_reportcomment_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User")
     report_id = db.Column(db.Integer, db.ForeignKey('report.id',
-        name="fk_reportcomment_report", ondelete="CASCADE"))
+        name="fk_reportcomment_report", ondelete="CASCADE"), index=True)
     report = db.relationship("Report")
 
     def __repr__(self):
@@ -662,14 +662,14 @@ class ReportComment(db.Model):
 
 class Attachment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    path = db.Column(db.String, default="")
+    path = db.Column(db.String, default="", index=True)
     mimetype = db.Column(db.String, default="")
     extension = db.Column(db.String, default="")
 
-    size_in_bytes = db.Column(db.Integer, default=0)
-    created_date = db.Column(db.DateTime)
-    do_not_convert = db.Column(db.Boolean, default=False)
-    alt = db.Column(db.String, default="")
+    size_in_bytes = db.Column(db.Integer, default=0, index=True)
+    created_date = db.Column(db.DateTime, index=True)
+    do_not_convert = db.Column(db.Boolean, default=False, index=True)
+    alt = db.Column(db.String, default="", index=True)
 
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
@@ -680,18 +680,18 @@ class Attachment(db.Model):
     linked = db.Column(db.Boolean, default=False)
     origin_url =  db.Column(db.String, default="")
     origin_domain = db.Column(db.String, default="")
-    caption = db.Column(db.String, default="")
+    caption = db.Column(db.String, default="", index=True)
 
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_attachment_owner", ondelete="SET NULL"))
+        name="fk_attachment_owner", ondelete="SET NULL"), index=True)
     owner = db.relationship("User")
 
     character_id = db.Column(db.Integer, db.ForeignKey('character.id',
-        name="fk_attachment_character", ondelete="SET NULL"), nullable=True)
+        name="fk_attachment_character", ondelete="SET NULL"), nullable=True, index=True)
     character = db.relationship("Character", foreign_keys="Attachment.character_id")
-    character_gallery = db.Column(db.Boolean, default=False)
-    character_gallery_weight = db.Column(db.Integer, default=0)
-    character_avatar = db.Column(db.Boolean, default=False)
+    character_gallery = db.Column(db.Boolean, default=False, index=True)
+    character_gallery_weight = db.Column(db.Integer, default=0, index=True)
+    character_avatar = db.Column(db.Boolean, default=False, index=True)
 
     def __repr__(self):
         return "<Attachment: (path='%s')>" % (self.path,)
@@ -742,11 +742,11 @@ class Attachment(db.Model):
 
 class Character(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_character_author", ondelete="CASCADE"))
+        name="fk_character_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User")
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, default="")
+    name = db.Column(db.String, default="", index=True)
     slug = db.Column(db.String, unique=True)
 
     age = db.Column(db.String, default="")
@@ -756,22 +756,22 @@ class Character(db.Model):
     backstory = db.Column(db.Text, default="")
     other = db.Column(db.Text, default="")
     motto = db.Column(db.String, default="")
-    created = db.Column(db.DateTime)
-    modified = db.Column(db.DateTime, nullable=True)
-    hidden = db.Column(db.Boolean, default=False)
+    created = db.Column(db.DateTime, index=True)
+    modified = db.Column(db.DateTime, nullable=True, index=True)
+    hidden = db.Column(db.Boolean, default=False, index=True)
 
     character_history = db.Column(JSONB)
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     default_avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
-        name="fk_character_default_avatar", ondelete="SET NULL"))
+        name="fk_character_default_avatar", ondelete="SET NULL"), index=True)
     default_avatar = db.relationship("Attachment", foreign_keys="Character.default_avatar_id")
-    legacy_avatar_field = db.Column(db.String)
+    legacy_avatar_field = db.Column(db.String, index=True)
 
     default_gallery_image_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
-        name="fk_character_default_gallery", ondelete="SET NULL"))
+        name="fk_character_default_gallery", ondelete="SET NULL"), index=True)
     default_gallery_image = db.relationship("Attachment", foreign_keys="Character.default_gallery_image_id")
-    legacy_gallery_field = db.Column(db.String)
+    legacy_gallery_field = db.Column(db.String, index=True)
 
     def get_avatar(self, size=200):
         if current_user.no_images:
@@ -838,47 +838,47 @@ class Label(db.Model):
     pre_html = db.Column(db.String, default="")
     label = db.Column(db.String, default="", index=True)
     post_html = db.Column(db.String, default="")
-    modern = db.Column(db.Boolean, default=True)
+    modern = db.Column(db.Boolean, default=True, index=True)
 
     def __repr__(self):
         return "%s" % (self.label,)
 
 class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, index=True)
     slug = db.Column(db.String, unique=True)
-    weight = db.Column(db.Integer, default=0)
+    weight = db.Column(db.Integer, default=0, index=True)
 
     def __repr__(self):
         return "<Section: (name='%s', weight='%s')>" % (self.name, self.weight)
 
 allowed_user_table = db.Table('category_allowed_users', db.metadata,
     db.Column('category_id', db.Integer, db.ForeignKey('category.id',
-        name="fk_allowedcategoryuser_category", ondelete="CASCADE")),
+        name="fk_allowedcategoryuser_category", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_allowedcategoryuser_user", ondelete="CASCADE")))
+        name="fk_allowedcategoryuser_user", ondelete="CASCADE"), index=True))
 
 allowed_label_table = db.Table('category_allowed_labels', db.metadata,
     db.Column('category_id', db.Integer, db.ForeignKey('category.id',
-        name="fk_allowedcategorylabel_category", ondelete="CASCADE")),
+        name="fk_allowedcategorylabel_category", ondelete="CASCADE"), index=True),
     db.Column('label_id', db.Integer, db.ForeignKey('label.id',
-        name="fk_allowedcategorylabel_label", ondelete="CASCADE")))
+        name="fk_allowedcategorylabel_label", ondelete="CASCADE"), index=True))
 
 category_watchers_table = db.Table('category_watchers', db.metadata,
     db.Column('category_id', db.Integer, db.ForeignKey('category.id',
-        name="fk_categorywatchers_category", ondelete="CASCADE")),
+        name="fk_categorywatchers_category", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_categorywatchers_user", ondelete="CASCADE")))
+        name="fk_categorywatchers_user", ondelete="CASCADE"), index=True))
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('category.id',
-        name="fk_category_categoryparent", ondelete="SET NULL"))
+        name="fk_category_categoryparent", ondelete="SET NULL"), index=True)
     parent = db.relationship("Category", backref="children", remote_side=[id])
 
     section_id = db.Column(db.Integer, db.ForeignKey('section.id',
-        name="fk_category_section", ondelete="SET NULL"))
+        name="fk_category_section", ondelete="SET NULL"), index=True)
     section = db.relationship("Section")
 
     watchers = db.relationship("User",
@@ -889,17 +889,17 @@ class Category(db.Model):
                     secondary=allowed_label_table)
 
     recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
-        name="fk_category_recentpost", ondelete="SET NULL"))
+        name="fk_category_recentpost", ondelete="SET NULL"), index=True)
     recent_post = db.relationship("Post", foreign_keys="Category.recent_post_id")
     recent_topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
-        name="fk_category_recenttopic", ondelete="SET NULL"))
+        name="fk_category_recenttopic", ondelete="SET NULL"), index=True)
     recent_topic = db.relationship("Topic", foreign_keys="Category.recent_topic_id")
 
-    name = db.Column(db.String, default="")
+    name = db.Column(db.String, default="", index=True)
     slug = db.Column(db.String, unique=True)
 
-    weight = db.Column(db.Integer, default=0)
-    restricted = db.Column(db.Boolean, default=False)
+    weight = db.Column(db.Integer, default=0, index=True)
+    restricted = db.Column(db.Boolean, default=False, index=True)
 
     topic_count = db.Column(db.Integer, default=0)
     post_count = db.Column(db.Integer, default=0)
@@ -910,21 +910,21 @@ class Category(db.Model):
 
 topic_watchers_table = db.Table('topic_watchers', db.metadata,
     db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
-        name="fk_topicwatchers_topic", ondelete="CASCADE")),
+        name="fk_topicwatchers_topic", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_topicwatchers_user", ondelete="CASCADE")))
+        name="fk_topicwatchers_user", ondelete="CASCADE"), index=True))
 
 topic_mods_table = db.Table('topic_moderators', db.metadata,
     db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
-        name="fk_topicmods_topic", ondelete="CASCADE")),
+        name="fk_topicmods_topic", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_topicmods_user", ondelete="CASCADE")))
+        name="fk_topicmods_user", ondelete="CASCADE"), index=True))
 
 topic_banned_table = db.Table('topic_banned_users', db.metadata,
     db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
-        name="fk_topicbanned_topic", ondelete="CASCADE")),
+        name="fk_topicbanned_topic", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_topicbanned_user", ondelete="CASCADE")))
+        name="fk_topicbanned_user", ondelete="CASCADE"), index=True))
 
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -936,11 +936,11 @@ class Topic(db.Model):
     author = db.relationship("User", foreign_keys="Topic.author_id")
 
     editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_topic_editor", ondelete="SET NULL"), nullable=True)
+        name="fk_topic_editor", ondelete="SET NULL"), nullable=True, index=True)
     editor = db.relationship("User", foreign_keys="Topic.editor_id")
 
     label_id = db.Column(db.Integer, db.ForeignKey('label.id',
-        name="fk_topic_label", ondelete="SET NULL"), nullable=True)
+        name="fk_topic_label", ondelete="SET NULL"), nullable=True, index=True)
     label = db.relationship("Label", foreign_keys="Topic.label_id")
 
     watchers = db.relationship("User",
@@ -950,16 +950,16 @@ class Topic(db.Model):
     banned = db.relationship("User",
                     secondary=topic_banned_table)
     recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
-        name="fk_topic_recentpost", ondelete="SET NULL"))
+        name="fk_topic_recentpost", ondelete="SET NULL"), index=True)
     recent_post = db.relationship("Post", foreign_keys="Topic.recent_post_id")
     last_seen_by = db.Column(JSONB)
 
-    title = db.Column(db.String)
+    title = db.Column(db.String, index=True)
     slug = db.Column(db.String, unique=True)
-    sticky = db.Column(db.Boolean, default=False)
-    announcement = db.Column(db.Boolean, default=False)
+    sticky = db.Column(db.Boolean, default=False, index=True)
+    announcement = db.Column(db.Boolean, default=False, index=True)
     hidden = db.Column(db.Boolean, default=False, index=True)
-    locked = db.Column(db.Boolean, default=False)
+    locked = db.Column(db.Boolean, default=False, index=True)
     created = db.Column(db.DateTime, index=True)
     post_count = db.Column(db.Integer, default=0)
     view_count = db.Column(db.Integer, default=0)
@@ -1007,7 +1007,7 @@ class Post(db.Model):
     author = db.relationship("User", foreign_keys="Post.author_id")
 
     editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_post_editor", ondelete="SET NULL"), nullable=True)
+        name="fk_post_editor", ondelete="SET NULL"), nullable=True, index=True)
     editor = db.relationship("User", foreign_keys="Post.editor_id")
 
     boops = db.relationship("User",
@@ -1015,15 +1015,15 @@ class Post(db.Model):
                     backref="booped_posts")
 
     character_id = db.Column(db.Integer, db.ForeignKey('character.id',
-        name="fk_post_character", ondelete="SET NULL"), nullable=True)
+        name="fk_post_character", ondelete="SET NULL"), nullable=True, index=True)
     character = db.relationship("Character", foreign_keys="Post.character_id", backref="posts")
 
     avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
-        name="fk_post_avatar", ondelete="SET NULL"), nullable=True)
+        name="fk_post_avatar", ondelete="SET NULL"), nullable=True, index=True)
     avatar = db.relationship("Attachment", foreign_keys="Post.avatar_id")
 
     html = db.Column(db.Text)
-    modified = db.Column(db.DateTime, nullable=True)
+    modified = db.Column(db.DateTime, nullable=True, index=True)
     created = db.Column(db.DateTime, index=True)
     hidden = db.Column(db.Boolean, default=False, index=True)
     post_history = db.Column(JSONB)
@@ -1034,9 +1034,9 @@ class Post(db.Model):
 
 blogcomment_boop_table = db.Table('blog_comment_boops', db.metadata,
     db.Column('blogcomment_id', db.Integer, db.ForeignKey('blog_comment.id',
-        name="fk_boop_blogcomment", ondelete="CASCADE")),
+        name="fk_boop_blogcomment", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_boop_blogcomment_user", ondelete="CASCADE")))
+        name="fk_boop_blogcomment_user", ondelete="CASCADE"), index=True))
 
 class BlogComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1048,51 +1048,51 @@ class BlogComment(db.Model):
     blog = db.relationship("Blog", foreign_keys="BlogComment.blog_id", cascade="delete")
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogcomment_author", ondelete="CASCADE"))
+        name="fk_blogcomment_author", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="BlogComment.author_id")
 
     editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogcomment_editor", ondelete="SET NULL"), nullable=True)
+        name="fk_blogcomment_editor", ondelete="SET NULL"), nullable=True, index=True)
     editor = db.relationship("User", foreign_keys="BlogComment.editor_id")
 
     boops = db.relationship("User",
                     secondary=blogcomment_boop_table)
 
     html = db.Column(db.Text)
-    modified = db.Column(db.DateTime, nullable=True)
+    modified = db.Column(db.DateTime, nullable=True, index=True)
     created = db.Column(db.DateTime, index=True)
     hidden = db.Column(db.Boolean, default=False, index=True)
     comment_history = db.Column(JSONB)
-    b_e_title = db.Column(db.String, default="")
+    b_e_title = db.Column(db.String, default="", index=True)
     data = db.Column(JSONB)
 
 blog_editor_table = db.Table('blog_editors', db.metadata,
     db.Column('blog_id', db.Integer, db.ForeignKey('blog.id',
-        name="fk_editor_blog", ondelete="CASCADE")),
+        name="fk_editor_blog", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_editor_user", ondelete="CASCADE")))
+        name="fk_editor_user", ondelete="CASCADE"), index=True))
 
 blog_subscriber_table = db.Table('blog_subscribers', db.metadata,
     db.Column('blog_id', db.Integer, db.ForeignKey('blog.id',
-        name="fk_subscriber_blog", ondelete="CASCADE")),
+        name="fk_subscriber_blog", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_subscriber_user", ondelete="CASCADE")))
+        name="fk_subscriber_user", ondelete="CASCADE"), index=True))
 
 blogentry_boop_table = db.Table('blog_entry_boops', db.metadata,
     db.Column('blogentry_id', db.Integer, db.ForeignKey('blog_entry.id',
-        name="fk_boop_blogentry", ondelete="CASCADE")),
+        name="fk_boop_blogentry", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_boop_blogentry_user", ondelete="CASCADE")))
+        name="fk_boop_blogentry_user", ondelete="CASCADE"), index=True))
 
 blogentry_subscriber_table = db.Table('blog_entry_subscribers', db.metadata,
     db.Column('blogentry_id', db.Integer, db.ForeignKey('blog_entry.id',
-        name="fk_subscriber_blog_entry", ondelete="CASCADE")),
+        name="fk_subscriber_blog_entry", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_subscriber_user_blog_entry", ondelete="CASCADE")))
+        name="fk_subscriber_user_blog_entry", ondelete="CASCADE"), index=True))
 
 class BlogEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, default="")
+    title = db.Column(db.String, default="", index=True)
     slug = db.Column(db.String, default="", index=True)
     blog_id = db.Column(db.Integer, db.ForeignKey('blog.id',
         name="fk_blogentry_blog", ondelete="CASCADE"), index=True)
@@ -1104,7 +1104,7 @@ class BlogEntry(db.Model):
     author = db.relationship("User", foreign_keys="BlogEntry.author_id")
 
     editor_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blogentry_editor", ondelete="SET NULL"), nullable=True)
+        name="fk_blogentry_editor", ondelete="SET NULL"), nullable=True, index=True)
     editor = db.relationship("User", foreign_keys="BlogEntry.editor_id")
 
     boops = db.relationship("User",
@@ -1114,33 +1114,33 @@ class BlogEntry(db.Model):
                     secondary=blogentry_subscriber_table)
 
     character_id = db.Column(db.Integer, db.ForeignKey('character.id',
-        name="fk_blogentry_character", ondelete="SET NULL"), nullable=True)
+        name="fk_blogentry_character", ondelete="SET NULL"), nullable=True, index=True)
     character = db.relationship("Character", foreign_keys="BlogEntry.character_id", backref="blog_entries")
 
     avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
-        name="fk_blogentry_avatar", ondelete="SET NULL"), nullable=True)
+        name="fk_blogentry_avatar", ondelete="SET NULL"), nullable=True, index=True)
     avatar = db.relationship("Attachment", foreign_keys="BlogEntry.avatar_id")
 
     draft = db.Column(db.Boolean, default=True, index=True)
     html = db.Column(db.Text)
-    modified = db.Column(db.DateTime, nullable=True)
+    modified = db.Column(db.DateTime, nullable=True, index=True)
     created = db.Column(db.DateTime, index=True)
     published = db.Column(db.DateTime, index=True)
     hidden = db.Column(db.Boolean, default=False, index=True)
     entry_history = db.Column(JSONB)
-    b_title = db.Column(db.String, default="")
+    b_title = db.Column(db.String, default="", index=True)
     data = db.Column(JSONB)
-    featured = db.Column(db.Boolean, default=False)
+    featured = db.Column(db.Boolean, default=False, index=True)
 
     def comment_count(self):
         return BlogComment.query.filter_by(hidden=False, blog_entry=self).count()
 
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, index=True)
     slug = db.Column(db.String, unique=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_blog_owner", ondelete="CASCADE"))
+        name="fk_blog_owner", ondelete="CASCADE"), index=True)
     author = db.relationship("User", foreign_keys="Blog.author_id")
     description = db.Column(db.Text)
 
@@ -1152,11 +1152,11 @@ class Blog(db.Model):
     view_count = db.Column(db.Integer, default=0)
 
     recent_entry_id = db.Column(db.Integer, db.ForeignKey('blog_entry.id',
-    name="fk_blog_recententry", ondelete="SET NULL"))
+    name="fk_blog_recententry", ondelete="SET NULL"), index=True)
     recent_entry = db.relationship("BlogEntry", foreign_keys="Blog.recent_entry_id")
 
     recent_comment_id = db.Column(db.Integer, db.ForeignKey('blog_comment.id',
-    name="fk_blog_recentcomment", ondelete="SET NULL"))
+    name="fk_blog_recentcomment", ondelete="SET NULL"), index=True)
     recent_comment = db.relationship("BlogComment", foreign_keys="Blog.recent_comment_id")
 
     subscribers = db.relationship("User",
