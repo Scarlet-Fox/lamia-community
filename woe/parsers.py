@@ -26,7 +26,7 @@ strike_re = re.compile(r'\[s\](.*?)\[\/s\]', re.DOTALL)
 img_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL)
 html_img_re = re.compile(r'<img src=\"(.*?)\">', re.I)
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
-progress_re = re.compile(r'(\[progressbar=(.+?)\](\d+?)\[/progressbar\])')
+progress_re = re.compile(r'(\[progressbar=.*(#?[a-zA-Z1-9]+?).*\](\d+?)\[/progressbar\])')
 mention_re = re.compile("\[@(.*?)\]")
 deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\](.*?\[\/reply\])', re.DOTALL)
 reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
@@ -493,7 +493,10 @@ class ForumPostParser(object):
                 progress_bar_bbcode[0],
                 """
                     <div class="progress" style="border-radius: 0px;">
-                      <div class="progress-bar" role="progressbar" aria-valuenow="VALUEHERE" aria-valuemin="0" aria-valuemax="100" style="width: VALUEHERE%; background-color: COLORHERE; border-radius: 0px;">
+                      <div class="progress-bar" role="progressbar"
+                      aria-valuenow="VALUEHERE" aria-valuemin="0"
+                      aria-valuemax="100"
+                      style="width: VALUEHERE%; background-color: COLORHERE; border-radius: 0px;">
                         <span class="sr-only"></span>
                       </div>
                     </div>
