@@ -346,15 +346,14 @@ def toggle_status_blocking(status, user):
     except:
         return abort(404)
 
-    if current_user._get_current_object() != status.author:
-        if (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
-            return abort(404)
+    if (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
+        return abort(404)
 
     if user == current_user._get_current_object():
         return abort(404)
 
     status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(
-        author=current_user._get_current_object(), status=status)
+        author=user, status=status)[0]
 
     status_user.blocked = not status_user.blocked
 

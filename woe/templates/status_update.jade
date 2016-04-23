@@ -74,7 +74,7 @@
               a.hover_user(href="{{url_for('view_profile', login_name=participant.login_name)}}")= participant.display_name
               if current_user == participant:
                 br
-              elif current_user != participant and (current_user == status.author or mod == True) and not status.attached_to_user:
+              elif current_user != participant and (mod == True) and not status.attached_to_user:
                 if not participant in status.blocked():
                   br
                   a.inherit_colors.post-link(href="/status/{{status.id}}/toggle-silence/{{participant.id}}") (Silence)

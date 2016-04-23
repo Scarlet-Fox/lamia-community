@@ -134,7 +134,8 @@ class StatusUpdate(db.Model):
         return count
 
     def blocked(self):
-        return db.session.query(StatusUpdateUser).filter(StatusComment.status_id==self.id).filter_by(blocked=True).all()
+        blocked = [s.author for s in db.session.query(StatusUpdateUser).filter(StatusUpdateUser.status_id==self.id).filter_by(blocked=True).all()]
+        return blocked
 
 db.Index('_status_user_created', StatusUpdate.author_id, StatusUpdate.created)
 
