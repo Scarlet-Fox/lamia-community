@@ -266,6 +266,9 @@ color:#a4a4a4;
     padding: 6px 15px;
     border: 1px solid #ddd;
     border-radius: 0px !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
 }
 .blog-description {
   overflow-wrap: break-word;
