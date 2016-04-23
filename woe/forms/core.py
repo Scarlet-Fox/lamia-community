@@ -52,6 +52,7 @@ class UserSettingsForm(Form):
 
 class RegistrationForm(Form):
     username = StringField('Username', [validators.InputRequired(),
+        validators.Length(max=30),
         validators.Regexp("[A-Za-z\s0-9]", message="Your first username should be letters, numbers, and maybe a space. You can change how it looks to others, later.")])
     password = PasswordField('Password', [validators.InputRequired()])
     confirm_password = PasswordField('Confirm Password', [validators.InputRequired()])
@@ -132,7 +133,7 @@ class LoginForm(Form):
                 raise validators.ValidationError("Improper redirect.")
 
 class DisplayNamePasswordForm(Form):
-    display_name = StringField('Display Name')
+    display_name = StringField('Display Name', [validators.Length(max=30),])
     email = StringField('Email Address', [validators.Email()])
     current_password = PasswordField('Current Password')
     new_password = PasswordField('New Password')

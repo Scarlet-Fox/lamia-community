@@ -438,7 +438,7 @@ def create_message():
         return app.jsonify(error="Choose who should receive your message.")
 
     topic = sqlm.PrivateMessage()
-    topic.title = request_json.get("title", "").strip()
+    topic.title = request_json.get("title", "").strip()[:100]
     topic.count = 1
     topic.author = current_user._get_current_object()
     topic.created = arrow.utcnow().datetime.replace(tzinfo=None)

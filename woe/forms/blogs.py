@@ -5,7 +5,7 @@ from wand.image import Image
 import shutil, pytz, arrow
 
 class BlogSettingsForm(Form):
-    title = StringField('Blog Name', [validators.InputRequired()], default="")
+    title = StringField('Blog Name', [validators.InputRequired(), validators.Length(max=100)], default="")
     description = HiddenField('Description', [validators.InputRequired()], default="")
     privacy_setting = SelectField('Privacy Setting', choices=[
             ("all", "Everyone"),
@@ -16,7 +16,7 @@ class BlogSettingsForm(Form):
         ], default="members")
 
 class BlogEntryForm(Form):
-    title = StringField('Title', [validators.InputRequired()], default="")
+    title = StringField('Title', [validators.InputRequired(), validators.Length(max=100)], default="")
     entry = HiddenField('Post', [validators.InputRequired()], default="")
     draft = BooleanField('Draft / Mark as Hidden?', default=False)
 

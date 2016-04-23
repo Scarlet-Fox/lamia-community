@@ -778,7 +778,7 @@ def edit_topic(slug):
             if request_json.get("edit_reason", "").strip() == "":
                 return app.jsonify(error="Please include an edit reason for editing someone else's topic.")
 
-        topic.title = request_json.get("title")
+        topic.title = request_json.get("title")[:100]
         if label != "":
             topic.label = label
 
@@ -840,7 +840,7 @@ def new_topic(slug):
 
         new_topic = sqlm.Topic()
         new_topic.category = category
-        new_topic.title = request_json.get("title")
+        new_topic.title = request_json.get("title")[:100]
         new_topic.slug = sqlm.find_topic_slug(new_topic.title)
         new_topic.author = current_user._get_current_object()
         new_topic.created = arrow.utcnow().datetime.replace(tzinfo=None)
