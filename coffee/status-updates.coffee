@@ -4,6 +4,7 @@ $ ->
       @id = $("#status").attr("data-id")
       @max_length = 250
       status = this
+      @processing = false
       @replyHTML = Handlebars.compile(@replyHTMLTemplate())
       @confirmModelHTML = Handlebars.compile(@confirmModelHTMLTemplate())
       do @refreshView
@@ -61,7 +62,13 @@ $ ->
         status.updateCount $("#status-reply").val().length
 
     addReply: () ->
+      if @processing
+        return
+      $("#submit-reply").addClass "disabled"
+      @processing = true
       $.post "/status/#{@id}/reply", JSON.stringify({reply: $("#status-reply").val()}), (data) =>
+        @processing = false
+        $("#submit-reply").removeClass "disabled"
         if data.error?
           @flashError data.error
         else

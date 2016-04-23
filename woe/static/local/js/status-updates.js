@@ -8,6 +8,7 @@
         this.id = $("#status").attr("data-id");
         this.max_length = 250;
         status = this;
+        this.processing = false;
         this.replyHTML = Handlebars.compile(this.replyHTMLTemplate());
         this.confirmModelHTML = Handlebars.compile(this.confirmModelHTMLTemplate());
         this.refreshView();
@@ -70,10 +71,17 @@
       }
 
       Status.prototype.addReply = function() {
+        if (this.processing) {
+          return;
+        }
+        $("#submit-reply").addClass("disabled");
+        this.processing = true;
         return $.post("/status/" + this.id + "/reply", JSON.stringify({
           reply: $("#status-reply").val()
         }), (function(_this) {
           return function(data) {
+            _this.processing = false;
+            $("#submit-reply").removeClass("disabled");
             if (data.error != null) {
               return _this.flashError(data.error);
             } else {
