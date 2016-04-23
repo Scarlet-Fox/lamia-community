@@ -163,7 +163,7 @@ $ ->
             </a>
             {{/if}}
         </div>
-        <p class="text-muted">by <a href="{{author_profile_link}}">{{author_name}}</a> - <a href="{{url}}">{{time}}</a>
+        <p class="text-muted">by <a class="hover_user" href="/member/{{author_profile_link}}">{{author_name}}</a> - <a href="{{url}}">{{time}}</a>
         </p>
       </li>
     </ul>

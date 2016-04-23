@@ -176,7 +176,7 @@
     $("#start-date").val(window.start_date);
     $("#end-date").val(window.end_date);
     resultTemplateHTML = function() {
-      return "<ul class=\"list-group\">\n  <li class=\"list-group-item\">\n    <p>\n      <b>\n        <a href=\"{{url}}\" class=\"search-result-title\">{{title}}</a>\n      </b>\n    </p>\n    <div class=\"search-result-content\">\n        {{{description}}}\n        {{#if readmore}}\n        <a href=\"{{url}}\" class=\"readmore\">\n          <br><b>Read more »</b><br>\n        </a>\n        {{/if}}\n    </div>\n    <p class=\"text-muted\">by <a href=\"{{author_profile_link}}\">{{author_name}}</a> - <a href=\"{{url}}\">{{time}}</a>\n    </p>\n  </li>\n</ul>";
+      return "<ul class=\"list-group\">\n  <li class=\"list-group-item\">\n    <p>\n      <b>\n        <a href=\"{{url}}\" class=\"search-result-title\">{{title}}</a>\n      </b>\n    </p>\n    <div class=\"search-result-content\">\n        {{{description}}}\n        {{#if readmore}}\n        <a href=\"{{url}}\" class=\"readmore\">\n          <br><b>Read more »</b><br>\n        </a>\n        {{/if}}\n    </div>\n    <p class=\"text-muted\">by <a class=\"hover_user\" href=\"/member/{{author_profile_link}}\">{{author_name}}</a> - <a href=\"{{url}}\">{{time}}</a>\n    </p>\n  </li>\n</ul>";
     };
     resultTemplate = Handlebars.compile(resultTemplateHTML());
     paginationHTMLTemplate = function() {
