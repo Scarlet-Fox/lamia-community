@@ -2,7 +2,7 @@ from woe import app
 from woe.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_required, current_user
-from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
+from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview_for_email
 from mongoengine.queryset import Q
 import arrow, json
 from woe.views.dashboard import broadcast
@@ -57,7 +57,14 @@ def display_status_update(status):
     sqla.session.add(status)
     sqla.session.commit()
 
-    return render_template("status_update.jade", page_title="%s's Status Update - %s - Scarlet's Web" % (unicode(status.author.display_name), humanize_time(status.created)), status=status, mod=mod)
+    return render_template(
+        "status_update.jade",
+        page_title="%s - %s's Status Update - Scarlet's Web" % (
+            get_preview_for_email(status.message),
+            unicode(status.author.display_name)),
+            status=status,
+            mod=mod
+        )
 
 @app.route('/clear-status-updates', methods=['POST',])
 @login_required
