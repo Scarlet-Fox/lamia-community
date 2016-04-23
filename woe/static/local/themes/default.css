@@ -536,6 +536,9 @@ blockquote {
 .post-right img {
   max-width: 100%;
 }
+div img {
+  max-width: 100%;
+}
 .fast-post-area {
   overflow: hidden;
 }
