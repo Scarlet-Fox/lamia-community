@@ -2,6 +2,7 @@
 (function() {
   $(function() {
     var $grid, _option, author, blogHTML, blogHTMLTemplate, j, len, ref, select_options;
+    window.addExtraHTML(".list-group-item");
     $grid = $('#blog-container');
     window.grid = $grid;
     $grid.shuffle({

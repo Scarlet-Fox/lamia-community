@@ -1,4 +1,6 @@
 $ ->
+  window.addExtraHTML(".list-group-item")
+
   $(".boop-link").click (e) ->
     e.preventDefault()
     element = $(this)

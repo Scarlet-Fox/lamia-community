@@ -244,6 +244,7 @@ $ ->
 
         $.post "/preview", JSON.stringify({text: @element.data("editor").getHTML()}), (response) =>
           $("#preview-box-#{@quillID}").html response.preview
+          window.addExtraHTML("#preview-box-#{@quillID}")
 
       if @readyFunction?
         do @readyFunction

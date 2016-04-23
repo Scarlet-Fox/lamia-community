@@ -1,4 +1,6 @@
 $ ->
+  window.addExtraHTML(".list-group-item")
+  
   $grid = $('#blog-container')
   window.grid = $grid
   $grid.shuffle

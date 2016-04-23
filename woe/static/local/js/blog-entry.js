@@ -2,6 +2,7 @@
 (function() {
   $(function() {
     var inline_editor;
+    window.addExtraHTML(".list-group-item");
     $(".boop-link").click(function(e) {
       var count, current_status, element;
       e.preventDefault();

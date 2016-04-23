@@ -233,7 +233,8 @@
             return $.post("/preview", JSON.stringify({
               text: _this.element.data("editor").getHTML()
             }), function(response) {
-              return $("#preview-box-" + _this.quillID).html(response.preview);
+              $("#preview-box-" + _this.quillID).html(response.preview);
+              return window.addExtraHTML("#preview-box-" + _this.quillID);
             });
           };
         })(this));
