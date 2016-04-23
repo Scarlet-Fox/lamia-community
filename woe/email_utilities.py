@@ -1,6 +1,7 @@
 from woe import app
 from mako.template import Template
 from mako.lookup import TemplateLookup
+from urllib import quote
 from woe import sqla
 import woe.sqlmodels as sqlm
 import requests, arrow

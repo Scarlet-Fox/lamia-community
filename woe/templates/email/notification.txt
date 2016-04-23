@@ -1,6 +1,6 @@
 Hello ${_user.display_name},
 
-Here are your most recent notifications. To change your notification preferences, go to your settings area on your Scarlet's Web profile page - ${_base}/member/${_user.login_name}/change-settings - and you can unsubscribe from all emails using the link at the bottom of this message.
+Here are your most recent notifications. To change your notification preferences, go to your settings area on your Scarlet's Web profile page - ${_base}/member/${_user.get_url_safe_login_name()}/change-settings - and you can unsubscribe from all emails using the link at the bottom of this message.
 
 % for category in _summaries:
     % if _summaries_k[category] == 1:

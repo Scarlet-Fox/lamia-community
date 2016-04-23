@@ -9,6 +9,7 @@ from threading import Thread
 import arrow, re, os, math
 from mako.template import Template
 from mako.lookup import TemplateLookup
+from urllib import quote
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
 
@@ -488,6 +489,9 @@ class User(db.Model):
 
     def get_hash(self):
         return self.password_hash[-40:]
+
+    def get_url_safe_login_name(self):
+        return quote(self.login_name)
 
     def is_authenticated(self):
         return True # Will only ever return True.
