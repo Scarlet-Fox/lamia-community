@@ -10,6 +10,7 @@ import arrow, re, os, math
 from mako.template import Template
 from mako.lookup import TemplateLookup
 from urllib import quote
+from BeautifulSoup import BeautifulSoup
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
 

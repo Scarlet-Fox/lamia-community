@@ -205,6 +205,8 @@ a {
     /* Be VERY careful with this, breaks normal words wh_erever */
     word-break: break-all;
     /* Non standard for webkit */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
     word-break: break-word;
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
@@ -266,8 +268,11 @@ color:#a4a4a4;
     border-radius: 0px !important;
 }
 .blog-description {
-    overflow: hidden;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
+
 .list-group-item:first-child {
   border-radius:0px;
 }
@@ -357,6 +362,7 @@ color:#a4a4a4;
   background-repeat: repeat-y;
   background-attachment:fixed;
   margin-bottom: 10px;
+  overflow: hidden;
 }
 
 .section-header .btn-xs {
@@ -440,6 +446,8 @@ background-color: rgb(248, 248, 248);}
 }
 .front-page-status {
   overflow: hidden;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
   word-break: break-word;
   font-size: 14px;
 }
@@ -448,6 +456,8 @@ background-color: rgb(248, 248, 248);}
   padding: 5px;
   margin: 5px;
   margin-right: 15px;*/
+  overflow-wrap: break-word;
+  word-wrap: break-word;
   word-break: break-word;
 }
 .front-page-status p {
@@ -461,6 +471,14 @@ background-color: rgb(248, 248, 248);}
 }
 .status-reply {
   margin-left: 30px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+.blog-entry {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 .status-reply img {
   margin-right: 10px;
@@ -707,6 +725,12 @@ body {
   background: #A89898;
 }
 
+.post-content {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
 .post-content img {
   max-width: 100%;
 }
@@ -725,6 +749,8 @@ a.inherit_colors {
 
 .status-message {
   font-size: 14px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
   word-break: break-word;
 }
 .post-member-avatar {
