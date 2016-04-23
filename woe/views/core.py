@@ -258,6 +258,19 @@ def get_user_info_api():
         roles=user.get_roles()
     )
 
+@app.route('/change-theme/<id>', methods=['POST'])
+@login_required
+def change_theme(id):
+    user = current_user._get_current_object()
+
+    try:
+        theme = sqlm.SiteTheme.query.filter_by(id=id)[0]
+    except IndexError:
+        return abort(404)
+
+    user.theme = theme
+    return app.jsonify(url="/")
+
 @app.route('/make-report', methods=['POST'])
 @login_required
 def make_report():

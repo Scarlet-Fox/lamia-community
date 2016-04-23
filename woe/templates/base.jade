@@ -240,6 +240,15 @@ body(role='document')
                 a(href="/t/scarlet-s-web-rules") Site Rules
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 a.to-top(href="/") Go to Top
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                if current_user.is_authenticated():
+                  span.dropdown.dropup
+                    a(href="#", data-toggle="dropdown") Themes
+                    .caret
+                    ul.dropdown-menu.dropup
+                      for theme in current_user.get_themes()
+                        li
+                          a.post-link(href="/change-theme/{{theme.id}}")= theme.name
   #img-click-modal.modal.fade
   #report-click-modal.modal.fade
   script(src="/static/assets/handlebars.min.js").

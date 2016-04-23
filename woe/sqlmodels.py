@@ -489,6 +489,9 @@ class User(db.Model):
     def get_text_id(self):
         return "%s" % (self.id, )
 
+    def get_themes(self):
+        return SiteTheme.query.all()
+
     def get_hash(self):
         return self.password_hash[-40:]
 
