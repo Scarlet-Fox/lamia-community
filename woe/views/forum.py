@@ -1036,6 +1036,7 @@ def category_index(slug):
     subcategories = sqla.session.query(sqlm.Category).filter_by(parent=category).all()
     prefixes = sqla.session.query(sqlm.Label.label, sqla.func.count(sqlm.Topic.id)) \
         .filter(sqlm.Topic.category==category) \
+        .filter(sqlm.Topic.hidden==False) \
         .filter(sqlm.Label.label != "") \
         .join(sqlm.Topic.label).group_by(sqlm.Label.label) \
         .order_by(sqla.desc(sqla.func.count(sqlm.Topic.id))).all()
