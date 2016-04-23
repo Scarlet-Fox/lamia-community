@@ -113,7 +113,7 @@
                   a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title
                 div
                   a(href="/blog/{{blog.slug}}")= blog.name
-                div= blog.recent_entry.created|humanize_time("MMM D YYYY")
+                div= blog.recent_entry.published|humanize_time("MMM D YYYY")
           li.list-group-item
             center
               a.btn.btn-primary(href="/blogs") Browse All Blogs
