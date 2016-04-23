@@ -10,7 +10,6 @@ from woe import sqla
 import woe.sqlmodels as sqlm
 
 @app.route('/status/<status>/replies', methods=['GET'])
-@login_required
 def status_update_replies(status):
     try:
         status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
@@ -37,7 +36,6 @@ def status_update_replies(status):
     return app.jsonify(replies=replies, count=status.get_comment_count())
 
 @app.route('/status/<status>', methods=['GET'])
-@login_required
 def display_status_update(status):
     try:
         status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
