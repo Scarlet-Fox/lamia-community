@@ -409,9 +409,9 @@ class ForumPostParser(object):
                     pass
 
                 if container:
-                    inner_html = reply[3].replace("[/reply]","")
+                    inner_html = reply[3].replace("[/reply]","").replace("[spoiler]", "").replace("[/spoiler]", "")
                 else:
-                    inner_html = _replying_to.html.replace("[/reply]","")
+                    inner_html = _replying_to.html.replace("[/reply]","").replace("[spoiler]", "").replace("[/spoiler]", "")
 
                 return html.replace(string_to_replace, """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
@@ -492,7 +492,7 @@ class ForumPostParser(object):
             html = html.replace(
                 progress_bar_bbcode[0],
                 """
-                    <div class="progress" style="border-radius: 0px;">
+                    <div class="progress" style="border-radius: 0px; max-width: 75%;">
                       <div class="progress-bar" role="progressbar"
                       aria-valuenow="VALUEHERE" aria-valuemin="0"
                       aria-valuemax="100"
