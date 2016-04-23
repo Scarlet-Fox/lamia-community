@@ -489,7 +489,56 @@ def load_user(login_name):
     elif request.path == ("/characters"):
         user.last_seen_at = "Browsing character database"
         user.last_at_url = "/characters"
+    elif request.path == ("/blogs"):
+        user.last_seen_at = "Browsing blogs"
+        user.last_at_url = "/blogs"
+    elif request.path.startswith("/blog/"):
+        full_path = request.path.split("/")
+        try:
+            if len(full_path) > 4:
+                try:
+                    blog = sqla.session.query(sqlm.Blog).filter_by(slug=full_path[2])[0]
+                except IndexError:
+                    user.last_seen_at = "Forum index"
+                    user.last_at_url = "/"
 
+                if blog.privacy_setting == "you":
+                    user.last_seen_at = "Forum index"
+                    user.last_at_url = "/"
+                elif blog.privacy_setting == "editors":
+                    user.last_seen_at = "Forum index"
+                    user.last_at_url = "/"
+
+                try:
+                    entry = sqla.session.query(sqlm.BlogEntry).filter_by(blog=blog, slug=full_path[4])[0]
+                except IndexError:
+                    user.last_seen_at = "Forum index"
+                    user.last_at_url = "/"
+
+                user.last_seen_at = entry.title
+                user.last_at_url = "/blog/%s/e/%s" % (blog.slug, entry.slug)
+            elif len(full_path) < 4:
+                try:
+                    blog = sqla.session.query(sqlm.Blog).filter_by(slug=full_path[2])[0]
+                except IndexError:
+                    user.last_seen_at = "Forum index"
+                    user.last_at_url = "/"
+
+                if blog.privacy_setting == "you":
+                    user.last_seen_at = "Forum index"
+                    user.last_at_url = "/"
+                elif blog.privacy_setting == "editors":
+                    user.last_seen_at = "Forum index"
+                    user.last_at_url = "/"
+
+                user.last_seen_at = blog.name
+                user.last_at_url = "/blog/%s" % (blog.slug)
+            else:
+                user.last_seen_at = "Browsing blogs"
+                user.last_at_url = "/blogs"
+        except IndexError:
+            user.last_seen_at = "Browsing blogs"
+            user.last_at_url = "/blogs"
     try:
         ip_address = sqla.session.query(sqlm.IPAddress).filter_by(ip_address=request.remote_addr, user=user).one()
     except:
