@@ -26,6 +26,7 @@ strike_re = re.compile(r'\[s\](.*?)\[\/s\]', re.DOTALL)
 img_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL)
 html_img_re = re.compile(r'<img src=\"(.*?)\">', re.I)
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
+progress_re = re.compile(r'(\[progressbar=(.+?)\](\d+?)\[/progressbar\])')
 mention_re = re.compile("\[@(.*?)\]")
 deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\](.*?\[\/reply\])', re.DOTALL)
 reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
@@ -485,6 +486,18 @@ class ForumPostParser(object):
         prefix_bbcode_in_post = prefix_re.findall(html)
         for prefix_bbcode in prefix_bbcode_in_post:
             html = html.replace(prefix_bbcode[0], """<span class="badge prefix" style="background:%s; font-size: 10px; font-weight: normal; vertical-align: top; margin-top: 2px;">%s</span>""" % (prefix_bbcode[1], prefix_bbcode[2],))
+
+        progress_bar_bbcode_in_post = progress_re.findall(html)
+        for progress_bar_bbcode in progress_bar_bbcode_in_post:
+            html = html.replace(
+                progress_bar_bbcode[0],
+                """
+                    <div class="progress" style="border-radius: 0px;">
+                      <div class="progress-bar" role="progressbar" aria-valuenow="VALUEHERE" aria-valuemin="0" aria-valuemax="100" style="width: VALUEHERE%; background-color: COLORHERE; border-radius: 0px;">
+                        <span class="sr-only"></span>
+                      </div>
+                    </div>
+                """.replace("VALUEHERE", progress_bar_bbcode[2]).replace("COLORHERE", progress_bar_bbcode[1]))
 
         size_bbcode_in_post = size_re.findall(html)
         for size_bbcode in size_bbcode_in_post:
