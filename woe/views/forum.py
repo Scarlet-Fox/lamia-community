@@ -395,23 +395,27 @@ def topic_posts(slug):
         else:
             parsed_post["is_admin"] = False
 
-        if author_signatures.has_key(post.author.login_name):
-            parsed_post["signature"] = author_signatures[post.author.login_name]
-            parsed_post["signature_id"] = author_signatures_id[post.author.login_name]
+        if current_user.is_authenticated():
+            if author_signatures.has_key(post.author.login_name):
+                parsed_post["signature"] = author_signatures[post.author.login_name]
+                parsed_post["signature_id"] = author_signatures_id[post.author.login_name]
+            else:
+                signatures = list(sqla.session.query(sqlm.Signature) \
+                    .filter_by(owner=post.author, active=True).all())
+
+                try:
+                    signature = random.choice(signatures)
+                    parsed_post["signature"] = clean_html_parser.parse(signature.html)
+                    parsed_post["signature_id"] = signature.id
+                except IndexError:
+                    parsed_post["signature"] = False
+                    parsed_post["signature_id"] = False
+
+                author_signatures[post.author.login_name] = parsed_post["signature"]
+                author_signatures_id[post.author.login_name] = parsed_post["signature_id"]
         else:
-            signatures = list(sqla.session.query(sqlm.Signature) \
-                .filter_by(owner=post.author, active=True).all())
-
-            try:
-                signature = random.choice(signatures)
-                parsed_post["signature"] = clean_html_parser.parse(signature.html)
-                parsed_post["signature_id"] = signature.id
-            except IndexError:
-                parsed_post["signature"] = False
-                parsed_post["signature_id"] = False
-
-            author_signatures[post.author.login_name] = parsed_post["signature"]
-            author_signatures_id[post.author.login_name] = parsed_post["signature_id"]
+            parsed_post["signature"] = False
+            parsed_post["signature_id"] = False
 
         if post == first_post:
             parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"
