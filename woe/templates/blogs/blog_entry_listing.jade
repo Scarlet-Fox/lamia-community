@@ -34,7 +34,8 @@
         if entry.draft
           li.list-group-item(style="background-color: #FFDCFF;")
             .media-left
-              img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
+              a(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")
+                img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
             .media-body
               em
                 a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
@@ -51,7 +52,8 @@
         else
           li.list-group-item
             .media-left
-              img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
+              a(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")
+                img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
             .media-body
               a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
               br
@@ -106,7 +108,8 @@
         li.list-group-item
           for comment in comments
             .media-left
-              img.avatar-mini(src="{{comment.author.get_avatar_url("40")}}", width="{{comment.author.avatar_40_x}}", height="{{comment.author.avatar_40_y}}")
+              a(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")
+                img.avatar-mini(src="{{comment.author.get_avatar_url("40")}}", width="{{comment.author.avatar_40_x}}", height="{{comment.author.avatar_40_y}}")
             .media-body
               a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")= comment.author.display_name
               |  commented on 

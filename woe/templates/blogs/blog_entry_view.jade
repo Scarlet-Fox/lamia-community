@@ -29,7 +29,8 @@
       li.list-group-item.section-header.hidden-sm.hidden-xs= entry.title
       li.list-group-item
         .media-left
-          img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
+          a(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")
+            img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
         .media-body
           a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
           br
@@ -85,7 +86,8 @@
           .list-group-item(style="padding: 20px;")
             .row
               .col-sm-2.hidden-xs.hidden-sm
-                img.media-object(src="{{ comment.author.get_avatar_url() }}", width=comment.author.avatar_full_x*0.70, height=comment.author.avatar_full_y*0.70, class="avatar-mini")
+                a(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")
+                  img.media-object.avatar-mini(src="{{ comment.author.get_avatar_url() }}", width=comment.author.avatar_full_x*0.70, height=comment.author.avatar_full_y*0.70, class="avatar-mini")
               .col-sm-10.col-xs-12!= comment.parsed
             .blog-options
               br
