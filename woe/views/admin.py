@@ -189,7 +189,7 @@ class LogView(ModelView):
 
 class EmailLogView(ModelView):
     column_list = ("id", "to", "sent", "subject",)
-    column_filters = ("id", "to_id", "sent", "subject", )
+    column_filters = ("id", "to_id", "sent", "subject", "result")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
