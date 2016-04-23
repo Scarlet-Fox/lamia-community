@@ -411,7 +411,7 @@ class ForumPostParser(object):
                 if container:
                     inner_html = reply[3].replace("[/reply]","")
                 else:
-                    inner_html = _replying_to.html.replace("img", "imgdisabled")
+                    inner_html = _replying_to.html.replace("img", "imgdisabled").replace("[/reply]","")
 
                 return html.replace(string_to_replace, """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
@@ -438,9 +438,9 @@ class ForumPostParser(object):
                         return
 
                 if container:
-                    inner_html = reply[3]
+                    inner_html = reply[3].replace("[/reply]","")
                 else:
-                    inner_html = _replying_to.message.replace("img", "imgdisabled")
+                    inner_html = _replying_to.message.replace("img", "imgdisabled").replace("[/reply]","")
 
                 return html.replace(string_to_replace, """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
