@@ -96,11 +96,13 @@ body(role='document')
                 span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
             ul.dropdown-menu.notification-dropdown(role='menu')
               li
-                a(href='/dashboard') Dashboard&nbsp;
+                a(href='/dashboard')
                   span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
+                  | Dashboard&nbsp;
               li
-                a(href='/messages') Messages&nbsp;
+                a(href='/messages')
                   span.badge.float-right{{current_user.unread_private_messages()}}
+                  | Messages&nbsp;
               li.divider
               for notification in current_user.get_recent_notifications(15)
                 li.notification-li
@@ -212,11 +214,13 @@ body(role='document')
                     span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
                 ul.dropdown-menu.notification-dropdown(role='menu')
                   li
-                    a(href='/dashboard') Dashboard&nbsp;
+                    a(href='/dashboard') 
                       span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
+                      | Dashboard&nbsp;
                   li
-                    a(href='/messages') Messages&nbsp;
+                    a(href='/messages')
                       span.badge.float-right{{current_user.unread_private_messages()}}
+                      | Messages&nbsp;
                   li.divider
                   for notification in current_user.get_recent_notifications(15)
                     li.notification-li
