@@ -28,7 +28,7 @@ class PrivateMessageUser(db.Model):
     pm_id = db.Column(db.Integer, db.ForeignKey('private_message.id',
         name="fk_pm_u_pm", ondelete="CASCADE"), index=True)
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageUser.pm_id")
-    __table_args__ = (db.UniqueConstraint('author_id', 'id', name='unique_user_pm_user'),)
+    __table_args__ = (db.UniqueConstraint('author_id', 'pm_id', name='unique_user_pm_user'),)
 
     ignoring = db.Column(db.Boolean, default=False, index=True)
     exited = db.Column(db.Boolean, default=False, index=True)
@@ -87,7 +87,7 @@ class StatusUpdateUser(db.Model):
     status_id = db.Column(db.Integer, db.ForeignKey('status_update.id',
         name="fk_status_user_status", ondelete="CASCADE"), index=True)
     status = db.relationship("StatusUpdate", foreign_keys="StatusUpdateUser.status_id")
-    __table_args__ = (db.UniqueConstraint('author_id', 'id', name='unique_user_status_user'),)
+    __table_args__ = (db.UniqueConstraint('author_id', 'status_id', name='unique_user_status_user'),)
 
     ignoring = db.Column(db.Boolean, default=False, index=True)
     blocked = db.Column(db.Boolean, default=False, index=True)
