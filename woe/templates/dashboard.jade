@@ -21,7 +21,7 @@
                 img.avatar-mini(src=topic.recent_post.author.get_avatar_url("40"), width=topic.recent_post.author.avatar_40_x, height=topic.recent_post.author.avatar_40_y)
             .media-body
               strong
-                a(href="/t/{{topic.slug}}")= topic.title
+                a(href="/t/{{topic.slug}}/page/1/post/last_seen")= topic.title
               div.text-muted Updated {{topic.recent_post.created|humanize_time("MMM D YYYY")}}
       if followed_blogs
         li.list-group-item.section-header Followed Blogs
