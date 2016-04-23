@@ -253,7 +253,7 @@ class Role(db.Model):
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
-    snippet = db.Column(db.Text, index=True)
+    snippet = db.Column(db.Text)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_notification_user", ondelete="CASCADE"), index=True)
