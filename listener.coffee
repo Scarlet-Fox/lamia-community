@@ -24,10 +24,13 @@ app.post config.talker_path+"/notify", (req, res) ->
     try
       if client.user in req.body.users
         req_temp = JSON.parse(JSON.stringify(req.body))
-        req_temp.count = req_temp.count[client.user]
-        req_temp.dashboard_count = req_temp.dashboard_count[client.user]
-        req_temp.id = req_temp.id[client.user]
-        req_temp._id = req_temp.id
+        if req_temp.count_update?
+          req_temp = req_temp
+        else
+          req_temp.count = req_temp.count[client.user]
+          req_temp.dashboard_count = req_temp.dashboard_count[client.user]
+          req_temp.id = req_temp.id[client.user]
+          req_temp._id = req_temp.id
         client.emit "notify", req_temp
     catch
       continue

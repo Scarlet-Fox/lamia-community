@@ -96,7 +96,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         "author_url": "/member/"+author.login_name,
         "time": humanize_time(now.datetime),
         "url": url,
-        "stamp": timestamp,
+        "stamp": humanize_time(timestamp),
         "text": title,
         "priority": priority,
         "id": notification_ids
