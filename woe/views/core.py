@@ -479,7 +479,7 @@ def blog_sitemap_generate():
             comment_pages = int(math.ceil(float(comments_count)/10.0))-1
             for comment_page in range(2,comment_pages+1):
                 url = "%s/blog/%s/e/%s/page/%s" % (app.config['BASE'], entry.blog.slug, entry.slug, comment_page)
-                modified = comments[-1].created.isoformat()
+                modified = comments[-1].created.replace(microsecond=0).isoformat()
                 pages.append([url, modified])
 
     sitemap_xml = render_template('sitemap.xml', pages=pages[:50000])
@@ -508,7 +508,7 @@ def topic_sitemap_generate():
 
             for topic_page in xrange(1,topic_pages+1):
                 url = "%s/t/%s/page/%s" % (app.config['BASE'], topic.slug, topic_page)
-                modified = topic.recent_post.created.isoformat()
+                modified = topic.recent_post.created.replace(microsecond=0).isoformat()
                 pages.append([url, modified])
                 continue
 
