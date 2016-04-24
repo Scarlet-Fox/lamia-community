@@ -13,21 +13,22 @@ server = require('http').createServer(app)
 io = require('socket.io')(server, {path: config.listener_path})
 
 app.use (req, res, next) ->
-  console.log "Real Connection"
-  #console.log req
   do next
 
 app.get config.talker_path, (req, res) ->
   res.send ''
 
 app.post config.talker_path+"/notify", (req, res) ->
+  res.send 'ok'
   for client in socketList
     try
       if client.user in req.body.users
-        client.emit "notify", req.body
+        req_temp = JSON.parse(JSON.stringify(req.body))
+        req_temp.count = req_temp.count[client.user]
+        req_temp.dashboard_count = req_temp.dashboard_count[client.user]
+        client.emit "notify", req_temp
     catch
       continue
-  res.send 'ok'
 
 io.on 'connection', (client) ->
   #console.log client
@@ -53,13 +54,13 @@ io.on 'connection', (client) ->
     client.broadcast.to(room).emit("event", data)
 
 app.listen 3001, () ->
-  console.log('Server on sidecar.')
+  console.log('Listener at http://%s:%s', server.address().address, 3001)
 
 server.listen 3000, () ->
   host = server.address().address
   port = server.address().port
 
-  console.log('Listener at http://%s:%s', host, port)
+  console.log('Listener at http://%s:%s', host, 3000)
 
 # var clients_in_the_room = io.sockets.adapter.rooms[roomId];
 # for (var clientId in clients_in_the_room ) {

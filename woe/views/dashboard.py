@@ -9,6 +9,7 @@ from woe import sqla
 import woe.sqlmodels as sqlm
 import hashlib
 from sqlalchemy.orm.attributes import flag_modified
+import time
 
 def send_message(data):
     req = urllib2.Request(app.settings_file["listener"]+app.settings_file["talker_path"]+"/notify")
@@ -24,6 +25,10 @@ def broadcast(to, category, url, title, description, content, author, priority=0
 
     now = arrow.utcnow()
     author = author
+
+    send_to_logins = []
+    notification_counts = {}
+    dashboard_notifications = {}
 
     for u in to:
         try:
@@ -70,28 +75,32 @@ def broadcast(to, category, url, title, description, content, author, priority=0
 
         reference = hashlib.md5(url).hexdigest()
 
-        data = {
-            "users": [u.login_name, ],
-            "count": u.get_notification_count(),
-            "dashboard_count": u.get_dashboard_notifications(),
-            "category": category,
-            "author": author.display_name,
-            "member_name": author.login_name,
-            "member_pk": unicode(author.id),
-            "member_disp_name": author.display_name,
-            "author_url": "/member/"+author.login_name,
-            "time": humanize_time(now.datetime),
-            "url": url,
-            "stamp": arrow.get(new_notification.created).timestamp,
-            "text": title,
-            "priority": priority,
-            "_id": str(new_notification.id),
-            "id": str(new_notification.id)
-        }
-        data["reference"] = reference
+        send_to_logins.append(u.login_name)
+        notification_counts[u.login_name] = u.get_notification_count()
+        dashboard_notifications[u.login_name] = u.get_dashboard_notifications()
 
-        thread = Thread(target=send_message, args=(data, ))
-        thread.start()
+    data = {
+        "users": send_to_logins,
+        "count": notification_counts,
+        "dashboard_count": dashboard_notifications,
+        "category": category,
+        "author": author.display_name,
+        "member_name": author.login_name,
+        "member_pk": unicode(author.id),
+        "member_disp_name": author.display_name,
+        "author_url": "/member/"+author.login_name,
+        "time": humanize_time(now.datetime),
+        "url": url,
+        "stamp": arrow.get(new_notification.created).timestamp,
+        "text": title,
+        "priority": priority,
+        "_id": str(new_notification.id),
+        "id": str(new_notification.id)
+    }
+    data["reference"] = reference
+
+    thread = Thread(target=send_message, args=(data, ))
+    thread.start()
 
 @app.route('/dashboard/ack_category', methods=["POST",])
 @login_required
