@@ -281,10 +281,10 @@ def create_new_status(target):
     status = sqlm.StatusUpdate()
     if attached_to_user:
         status.attached_to_user = attached_to_user
+        status.participants.append(attached_to_user)
     status.author = current_user._get_current_object()
     status.message = _html
     status.participants.append(status.author)
-    status.participants.append(target_user)
     status.created = arrow.utcnow().datetime.replace(tzinfo=None)
     status.replies = 0
     sqla.session.add(status)
