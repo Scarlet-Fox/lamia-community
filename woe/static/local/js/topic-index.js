@@ -584,10 +584,6 @@
                 $("#postlink-smallscreen-" + window._initial_post)[0].scrollIntoView();
                 return window._initial_post = "";
               }, 300);
-            } else {
-              setTimeout(function() {
-                return $("#topic-breadcrumb")[0].scrollIntoView();
-              }, 300);
             }
             return window.setupContent();
           };

@@ -713,10 +713,10 @@ $ ->
             $("#postlink-smallscreen-#{window._initial_post}")[0].scrollIntoView()
             window._initial_post = ""
           , 300
-        else
-          setTimeout () ->
-            $("#topic-breadcrumb")[0].scrollIntoView()
-          , 300
+        # else
+        #   setTimeout () ->
+        #     $("#topic-breadcrumb")[0].scrollIntoView()
+        #   , 300
         window.setupContent()
 
   window.topic = new Topic($("#post-container").data("slug"))
