@@ -18,7 +18,7 @@ from sqlalchemy.orm import joinedload
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
-roll_re = re.compile(r'\[roll=(\d+)d(\d+)(?:\+(\d+)|\-(\d+))?\](.*?)\[\/roll\]', re.DOTALL)
+roll_re = re.compile(r'\[roll=(\d+)d(\d+)(?:\+(\d+)|\-(\d+))?\](.*?)\[\/roll\]', re.I)
 
 @app.route('/category-list-api', methods=['GET'])
 @login_required
