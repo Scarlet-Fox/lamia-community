@@ -21,6 +21,7 @@ from woe import sqla
 from flask.ext.login import AnonymousUserMixin
 import woe.sqlmodels as sqlm
 import pytz
+import math
 
 class Anonymouse(AnonymousUserMixin):
     login_name = None
@@ -430,8 +431,127 @@ def create_attachment():
         return abort(404)
 
 @app.route('/robots.txt')
-def static_from_root():
+def robots_static_from_root():
     return send_from_directory(app.static_folder, app.settings_file.get("robots-alt", request.path[1:]))
+
+@app.route('/sitemap-status-updates.xml')
+def status_update_sitemap_generate():
+    pages = []
+
+    for status_update in sqlm.StatusUpdate.query.filter_by(hidden=False) \
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:50000]:
+        url = "%s/status/%s" % (app.config['BASE'], status_update.id,)
+        modified = status_update.created.isoformat()
+        pages.append([url, modified])
+
+    sitemap_xml = render_template('sitemap.xml', pages=pages)
+    response= make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+    return response
+
+@app.route('/sitemap-blog-entries.xml')
+def blog_sitemap_generate():
+    pages = []
+
+    for entry in sqla.session.query(sqlm.BlogEntry) \
+            .join(sqlm.Blog, sqlm.BlogEntry.blog_id == sqlm.Blog.id) \
+            .filter(sqlm.Blog.disabled.isnot(True)) \
+            .filter(sqlm.BlogEntry.draft.isnot(True)) \
+            .filter(sqlm.BlogEntry.published.isnot(None)) \
+            .filter(sqla.or_(
+                sqlm.Blog.privacy_setting == "all",
+            )) \
+            .order_by(sqla.desc(sqlm.BlogEntry.published)):
+
+        comments = sqla.session.query(sqlm.BlogComment) \
+            .filter_by(blog_entry=entry, hidden=False) \
+            .order_by(sqlm.BlogComment.created)
+        comments_count = comments.count()
+
+        url = "%s/blog/%s/e/%s" % (app.config['BASE'], entry.blog.slug, entry.slug)
+        if comments_count > 0:
+            modified = comments[-1].created.isoformat()
+        else:
+            modified = entry.published.isoformat()
+        pages.append([url, modified])
+
+        if comments_count > 10:
+            comment_pages = int(math.ceil(float(comments_count)/10.0))-1
+            for comment_page in range(2,comment_pages+1):
+                url = "%s/blog/%s/e/%s/page/%s" % (app.config['BASE'], entry.blog.slug, entry.slug, comment_page)
+                modified = comments[-1].created.isoformat()
+                pages.append([url, modified])
+
+    sitemap_xml = render_template('sitemap.xml', pages=pages[:50000])
+    response= make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+    return response
+
+@app.route('/sitemap-topics.xml')
+def topic_sitemap_generate():
+    pages = []
+
+    for topic in sqla.session.query(sqlm.Topic) \
+        .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
+        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc()):
+
+        topic_post_count = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+            .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)).count()
+
+        if topic_post_count <= 20:
+            url = "%s/t/%s" % (app.config['BASE'], topic.slug)
+            modified = topic.recent_post.created.isoformat()
+            pages.append([url, modified])
+            continue
+        else:
+            topic_pages = int(math.ceil(float(topic.post_count)/20.0))
+
+            for topic_page in xrange(1,topic_pages+1):
+                url = "%s/t/%s/page/%s" % (app.config['BASE'], topic.slug, topic_page)
+                modified = topic.recent_post.created.isoformat()
+                pages.append([url, modified])
+                continue
+
+    sitemap_xml = render_template('sitemap.xml', pages=pages[:50000])
+    response= make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+    return response
+
+@app.route('/sitemap.xml')
+def sitemap_index_generate():
+    pages = []
+
+    # for status_update in sqlm.StatusUpdate.query.filter_by(hidden=False):
+    #     url = "%s/status/%s" % (app.config['BASE'], status_update.id,)
+    #     modified = status_update.created.isoformat()
+    #     pages.append([url, modified])
+    #
+    recent_post_time = sqla.session.query(sqlm.Topic) \
+        .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
+        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[0].recent_post.created.isoformat()
+
+    recent_status_time = sqla.session.query(sqlm.StatusUpdate) \
+        .filter_by(hidden=False) \
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[0].created.isoformat()
+
+    recent_blog_time = sqla.session.query(sqlm.Blog) \
+        .join(sqlm.Blog.recent_entry) \
+        .filter(sqlm.Blog.disabled.isnot(True)) \
+        .filter(sqlm.BlogEntry.draft.isnot(True)) \
+        .filter(sqlm.BlogEntry.published.isnot(None)) \
+        .filter(sqla.or_(
+            sqlm.Blog.privacy_setting == "all"
+        )) \
+        .order_by(sqla.desc(sqlm.BlogEntry.published))[0].recent_entry.created.isoformat()
+
+    pages.append([app.config['BASE']+"/sitemap-topics.xml", recent_post_time])
+    pages.append([app.config['BASE']+"/sitemap-status-updates.xml", recent_status_time])
+    pages.append([app.config['BASE']+"/sitemap-blog-entries.xml", recent_blog_time])
+
+    sitemap_xml = render_template('sitemap_index.xml', pages=pages)
+    response= make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+    return response
 
 @login_manager.user_loader
 def load_user(login_name):
