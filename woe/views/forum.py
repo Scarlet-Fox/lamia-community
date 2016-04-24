@@ -379,6 +379,13 @@ def topic_posts(slug):
         parsed_post["_tid"] = topic.id
         parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
         parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
+        parsed_post["modified_by"] = False
+        if post.post_history != None:
+            try:
+                if len(post.post_history) > 0:
+                    parsed_post["modified_by"] = sqlm.User.query.filter_by(id=post.post_history[-1]["author"])[0].display_name
+            except IndexError:
+                pass
         parsed_post["html"] = clean_html_parser.parse(post.html)
         parsed_post["roles"] = post.author.get_roles()
         parsed_post["user_avatar"] = post.author.get_avatar_url()
@@ -525,14 +532,16 @@ def edit_topic_post_html(slug):
     history = {}
     history["author"] = current_user._get_current_object().id
     history["created"] = str(arrow.utcnow().datetime)
-    history["html"] = post.html+""
-    history["data"] = post.data
+    history["old_html"] = post.html+""
+    history["new_html"] = post_html
+    history["old_data"] = post.data
     history["reason"] = request_json.get("edit_reason", "")
 
     if post.post_history == None:
         post.post_history = []
 
     post.post_history.append(history)
+    flag_modified(post, "post_history")
 
     if current_user._get_current_object() != post.author:
         if request_json.get("edit_reason", "").strip() == "":
@@ -764,7 +773,8 @@ def edit_topic(slug):
         history = {}
         history["author"] = current_user._get_current_object().id
         history["created"] = str(arrow.utcnow().datetime)
-        history["html"] = first_post.html+""
+        history["old_html"] = post.html+""
+        history["new_html"] = post_html
         history["data"] = first_post.data
         history["reason"] = request_json.get("edit_reason", "")
 
@@ -773,6 +783,7 @@ def edit_topic(slug):
             post.post_history = []
 
         post.post_history.append(history)
+        flag_modified(post, "post_history")
 
         if current_user._get_current_object() != topic.author:
             if request_json.get("edit_reason", "").strip() == "":

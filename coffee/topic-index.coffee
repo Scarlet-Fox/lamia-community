@@ -562,6 +562,11 @@ $ ->
                 <div class="col-md-9 post-right">
                   <div class="post-content" id="post-{{_id}}">
                     {{{html}}}
+
+                    {{#if modified_by}}
+                    <br>
+                    <div class="text-muted"><i>edited by {{modified_by}}, {{modified}}</i></span>
+                    {{/if}}
                   </div>
                   <br>
                   <div class="row post-edit-likes-info" id="post-buttons-{{_id}}">
