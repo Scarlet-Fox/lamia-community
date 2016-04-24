@@ -313,6 +313,23 @@ class ForumHTMLCleaner(object):
 
         return html
 
+@app.template_filter('datetimeformat')
+def date_time_format(time, format_str="YYYY"):
+    if time == None:
+        return ""
+
+    try:
+        timezone = current_user._get_current_object().time_zone
+    except:
+        timezone = "US/Pacific"
+
+    try:
+        a = arrow.get(time).to(timezone)
+        return a.format(format_str)
+    except:
+        a = arrow.utcnow().to(timezone)
+        return a.format(format_str)
+
 @app.template_filter('humanize_time')
 def humanize(time, format_str="MMM D YYYY, hh:mm a"):
     if time == None:

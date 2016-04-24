@@ -3,7 +3,7 @@
     {% for page in pages %}
     <sitemap>
         <loc>{{page[0]|safe}}</loc>
-        <lastmod>{{page[1]}}</lastmod>
+        <lastmod>{{page[1]|datetimeformat('YYYY-MM-DD')}}</lastmod>
     </sitemap>
     {% endfor %}
 </sitemapindex>
