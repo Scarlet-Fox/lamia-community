@@ -518,7 +518,7 @@ $ ->
                   {{else}}
                     <span style="color:#B00E0E;" class="hidden-xs"><strong>Characters</strong></span><br>
                   {{/unless}}
-                  <span class="hidden-md hidden-lg"><span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-{{_id}}">\#{{_id}}</a></span>
+                  <span class="hidden-md hidden-lg"><span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-smallscreen-{{_id}}">\#{{_id}}</a></span>
                   Posted {{created}}</span>
                 </div>
                 <div class="col-md-9 hidden-xs hidden-sm">
@@ -710,6 +710,7 @@ $ ->
         if window._initial_post != ""
           setTimeout () ->
             $("#postlink-#{window._initial_post}")[0].scrollIntoView()
+            $("#postlink-smallscreen-#{window._initial_post}")[0].scrollIntoView()
             window._initial_post = ""
           , 300
         else
