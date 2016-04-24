@@ -252,9 +252,7 @@ def make_status_update_reply(status):
 @login_required
 def create_new_status(target):
     request_json = request.get_json(force=True)
-
-    status = sqlm.StatusUpdate()
-    status.author = current_user._get_current_object()
+    attached_to_user = False
 
     if target:
         try:
@@ -265,14 +263,13 @@ def create_new_status(target):
             if (current_user in [u.ignoring for u in target_user.ignored_users]) and not current_user.is_admin:
                 return app.jsonify(error="User has blocked you.")
 
-            status.attached_to_user = target_user
-            status.participants.append(target_user)
+            attached_to_user = target_user
         except IndexError:
             target_user = None
     else:
         target_user = None
 
-    if len(request_json.get("message", "")) == 0:
+    if len(request_json.get("message", "").strip()) == 0:
         return app.jsonify(error="Your status update is empty.")
 
     cleaner = ForumHTMLCleaner()
@@ -281,8 +278,13 @@ def create_new_status(target):
     except:
         return abort(500)
 
+    status = sqlm.StatusUpdate()
+    if attached_to_user:
+        status.attached_to_user = attached_to_user
+    status.author = current_user._get_current_object()
     status.message = _html
     status.participants.append(status.author)
+    status.participants.append(target_user)
     status.created = arrow.utcnow().datetime.replace(tzinfo=None)
     status.replies = 0
     sqla.session.add(status)
