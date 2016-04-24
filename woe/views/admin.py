@@ -258,9 +258,15 @@ class SignatureView(ModelView):
 class AnnouncementView(ModelView):
     column_list = ("id", "subject", "draft")
 
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 class DiceRollView(ModelView):
     column_list = ("id", "number_of_dice", "sides")
     column_filters = ("content_id", "content_type",)
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 admin.add_view(LabelView(sqlm.Label, sqla.session))
 admin.add_view(CharacterView(sqlm.Character, sqla.session))
