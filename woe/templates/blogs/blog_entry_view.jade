@@ -11,11 +11,10 @@
           li 
             a(href="/blogs") Blogs
           li
-            a.hidden-sm.hidden-xs(href="/blog/{{blog.slug}}")= blog.name
-            a.visible-sm-inline.visible-xs-inline(href="/blog/{{blog.slug}}") This Blog
-          li
-            a.hidden-sm.hidden-xs#entry-url(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
-            a.visible-sm-inline.visible-xs-inline(href="/blog/{{blog.slug}}/e/{{entry.slug}}") This Entry
+            a(href="/blog/{{blog.slug}}")= blog.name
+          li.hidden-sm.hidden-xs
+            a#entry-url(href="/blog/{{blog.slug}}/e/{{entry.slug}}")
+              h1.breadcrumb-h1= entry.title
         {% if current_user.is_authenticated() %}
         {% if current_user in entry.subscribers %}
         a.btn.btn-xs.btn-default.post-link.float-right(href="/blog/{{blog.slug}}/e/{{entry.slug}}/toggle-follow", style="color: #333;") Unsubscribe
@@ -27,7 +26,8 @@
       li.list-group-item.section-header
         ul.breadcrumb#topic-breadcrumb
           li
-            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")
+              h1.breadcrumb-h1= entry.title
 .row
   .col-md-12
     ul.list-group

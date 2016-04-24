@@ -37,7 +37,8 @@ style!= profile.get_custom_css()
 .row 
   .col-sm-4
     ul.list-group
-      li.list-group-item.section-header.category-section-header {{profile.display_name}}'s Profile
+      li.list-group-item.section-header.category-section-header 
+        h1.breadcrumb-h1 {{profile.display_name}}'s Profile
         {% if current_user == profile or current_user.is_admin %}
         a(href="/member/{{profile.login_name}}/change-avatar-title")
           span.glyphicon.glyphicon-cog.float-right
