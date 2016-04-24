@@ -502,7 +502,7 @@ class ForumPostParser(object):
                       aria-valuenow="VALUEHERE" aria-valuemin="0"
                       aria-valuemax="100"
                       style="width: VALUEHERE%; background-color: COLORHERE; border-radius: 0px;">
-                        <span class="sr-only"></span>
+                        VALUEHERE%
                       </div>
                     </div>
                 """.replace("VALUEHERE", progress_bar_bbcode[2]).replace("COLORHERE", progress_bar_bbcode[1]))
