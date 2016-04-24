@@ -25,4 +25,5 @@
 
 body {
   background: #f8f8f8 url("/static/local/themes/nagisa/nagisa.png") scroll top;
+  background-attachment: fixed;
 }
