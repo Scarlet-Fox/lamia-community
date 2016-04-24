@@ -23,6 +23,11 @@
         a.btn.btn-xs.btn-default.post-link.float-right(href="/blog/{{blog.slug}}/e/{{entry.slug}}/toggle-follow", style="color: #333;") Subscribe
         {% endif %}
         {% endif %}
+    ul.list-group.visible-sm-block.visible-xs-block
+      li.list-group-item.section-header
+        ul.breadcrumb#topic-breadcrumb
+          li
+            a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
 .row
   .col-md-12
     ul.list-group
