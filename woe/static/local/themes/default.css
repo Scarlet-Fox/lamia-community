@@ -231,7 +231,7 @@ text-shadow:none;
 }
 
 .badge {
-  border-radius:3px;
+  border-radius:2px;
 }
 
 .pagination-listing {
@@ -910,4 +910,14 @@ td {
 }
 .go-to-profile {
   cursor: pointer;
+}
+.dice-roll {
+  font-size: 13px;
+  font-weight: normal;
+}
+.active-dice-roll {
+  background-color: #317873;
+}
+.inactive-dice-roll {
+  background-color: #CB4154;
 }

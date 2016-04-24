@@ -11,6 +11,7 @@ from woe import sqla
 import woe.sqlmodels as sqlm
 from urllib import urlencode
 
+roll_re = re.compile(r'(\[roll=(\d+)d(\d+)(?:\+(\d+)|\-(\d+))?\](.*?)\[\/roll\])', re.DOTALL)
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)(:wrap)?\]')
 spoiler_re = re.compile(r'\[spoiler\](.*?)\[\/spoiler\]', re.DOTALL)
 center_re = re.compile(r'\[center\](.*?)\[\/center\]', re.DOTALL)
@@ -122,7 +123,7 @@ class ForumPostParser(object):
     def __init__(self):
         pass
 
-    def parse(self, html, strip_images=False):
+    def parse(self, html, strip_images=False, _object=False):
         # parse images
         images_found = img_re.findall(html)
         skiplink = []
@@ -486,6 +487,10 @@ class ForumPostParser(object):
         prefix_bbcode_in_post = prefix_re.findall(html)
         for prefix_bbcode in prefix_bbcode_in_post:
             html = html.replace(prefix_bbcode[0], """<span class="badge prefix" style="background:%s; font-size: 10px; font-weight: normal; vertical-align: top; margin-top: 2px;">%s</span>""" % (prefix_bbcode[1], prefix_bbcode[2],))
+
+        rolls = roll_re.findall(html)
+        for roll in rolls:
+            html = html.replace(roll[0], "")
 
         progress_bar_bbcode_in_post = progress_re.findall(html)
         for progress_bar_bbcode in progress_bar_bbcode_in_post:

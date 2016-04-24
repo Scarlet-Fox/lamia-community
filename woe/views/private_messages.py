@@ -163,7 +163,7 @@ def edit_post_in_pm_topic(pk):
     sqla.session.commit()
 
     clean_html_parser = ForumPostParser()
-    return app.jsonify(html=clean_html_parser.parse(message.message), success=True)
+    return app.jsonify(html=clean_html_parser.parse(message.message, _object=message), success=True)
 
 @app.route('/messages/<pk>/new-post', methods=['POST'])
 @login_required
@@ -223,7 +223,7 @@ def new_message_in_pm_topic(pk):
     parsed_post = {}
     parsed_post["created"] = humanize_time(message.created, "MMM D YYYY")
     parsed_post["modified"] = humanize_time(message.modified, "MMM D YYYY")
-    parsed_post["html"] = clean_html_parser.parse(message.message)
+    parsed_post["html"] = clean_html_parser.parse(message.message, _object=message)
     parsed_post["user_avatar"] = message.author.get_avatar_url()
     parsed_post["user_avatar_x"] = message.author.avatar_full_x
     parsed_post["user_avatar_y"] = message.author.avatar_full_y
@@ -296,7 +296,7 @@ def private_message_posts(pk):
         parsed_post = {}
         parsed_post["created"] = humanize_time(post.created, "MMM D YYYY")
         parsed_post["modified"] = humanize_time(post.modified, "MMM D YYYY")
-        parsed_post["html"] = clean_html_parser.parse(post.message)
+        parsed_post["html"] = clean_html_parser.parse(post.message, _object=post)
         parsed_post["user_avatar"] = post.author.get_avatar_url()
         parsed_post["user_avatar_x"] = post.author.avatar_full_x
         parsed_post["user_avatar_y"] = post.author.avatar_full_y

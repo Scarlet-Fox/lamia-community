@@ -258,6 +258,9 @@ class SignatureView(ModelView):
 class AnnouncementView(ModelView):
     column_list = ("id", "subject", "draft")
 
+class DiceRollView(ModelView):
+    column_list = ("id", "number_of_dice", "sides")
+    column_filters = ("content_id", "content_type",)
 
 admin.add_view(LabelView(sqlm.Label, sqla.session))
 admin.add_view(CharacterView(sqlm.Character, sqla.session))
@@ -282,6 +285,7 @@ admin.add_view(StatusView(sqlm.StatusUpdate, sqla.session, category='Members'))
 admin.add_view(StatusCommentView(sqlm.StatusComment, sqla.session, category='Members'))
 admin.add_view(PrivateMessageTopicView(sqlm.PrivateMessage, sqla.session, category='Members'))
 admin.add_view(PostView(sqlm.Post, sqla.session, category='Forum'))
+admin.add_view(DiceRollView(sqlm.DiceRoll, sqla.session, category='Forum'))
 admin.add_view(TopicView(sqlm.Topic, sqla.session, category='Forum'))
 admin.add_view(CategoryView(sqlm.Category, sqla.session, category='Forum'))
 

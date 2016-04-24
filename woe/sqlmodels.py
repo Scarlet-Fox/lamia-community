@@ -6,13 +6,58 @@ from woe import bcrypt
 from flask.ext.login import current_user
 from wand.image import Image
 from threading import Thread
-import arrow, re, os, math
+import arrow, re, os, math, random
 from mako.template import Template
 from mako.lookup import TemplateLookup
 from urllib import quote
 from BeautifulSoup import BeautifulSoup
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
+
+############################################################
+# Dice Roll Models
+############################################################
+
+class DiceRoll(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_diceroll_to_content_user", ondelete="CASCADE"), index=True)
+    user = db.relationship("User", foreign_keys="DiceRoll.user_id")
+
+    content_type = db.Column(db.String, default="", index=True)
+    content_id = db.Column(db.Integer, index=True)
+
+    order_of_roll = db.Column(db.Integer, index=True, default=0)
+    sides = db.Column(db.Integer, index=True)
+    base = db.Column(db.Integer, index=True, default=0)
+    penalty = db.Column(db.Integer, index=True, default=0)
+    number_of_dice = db.Column(db.Integer, index=True)
+
+    value = db.Column(db.Integer, index=True)
+    flavor_text = db.Column(db.String, default="", index=True)
+    created = db.Column(db.DateTime, index=True)
+
+    def get_value(self):
+        minimum = self.number_of_dice + self.base - self.penalty
+        maximum = self.number_of_dice * self.sides + self.base - self.penalty
+        seed = "%s%s%s%s%s" % (
+            self.content_id,
+            self.content_type,
+            self.order_of_roll,
+            self.flavor_text,
+            self.created.isoformat()
+            )
+        random.seed(seed)
+        r_ = random.randint(minimum, maximum)
+        return r_
+
+    def get_spec(self):
+        if self.base != 0:
+            return "%sd%s+%s" % (self.number_of_dice, self.sides, self.base)
+        elif self.penalty != 0:
+            return "%sd%s-%s" % (self.number_of_dice, self.sides, self.penalty)
+        else:
+            return "%sd%s" % (self.number_of_dice, self.sides)
 
 ############################################################
 # Private Message Models

@@ -26,6 +26,8 @@ app.post config.talker_path+"/notify", (req, res) ->
         req_temp = JSON.parse(JSON.stringify(req.body))
         req_temp.count = req_temp.count[client.user]
         req_temp.dashboard_count = req_temp.dashboard_count[client.user]
+        req_temp.id = req_temp.id[client.user]
+        req_temp._id = req_temp.id
         client.emit "notify", req_temp
     catch
       continue

@@ -29,6 +29,9 @@ def broadcast(to, category, url, title, description, content, author, priority=0
     send_to_logins = []
     notification_counts = {}
     dashboard_notifications = {}
+    notification_ids = {}
+    timestamp = None
+    reference = None
 
     for u in to:
         try:
@@ -77,7 +80,9 @@ def broadcast(to, category, url, title, description, content, author, priority=0
 
         send_to_logins.append(u.login_name)
         notification_counts[u.login_name] = u.get_notification_count()
+        notification_ids[u.login_name] = new_notification.id
         dashboard_notifications[u.login_name] = u.get_dashboard_notifications()
+        timestamp = new_notification.created
 
     data = {
         "users": send_to_logins,
@@ -91,11 +96,10 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         "author_url": "/member/"+author.login_name,
         "time": humanize_time(now.datetime),
         "url": url,
-        "stamp": arrow.get(new_notification.created).timestamp,
+        "stamp": timestamp,
         "text": title,
         "priority": priority,
-        "_id": str(new_notification.id),
-        "id": str(new_notification.id)
+        "id": notification_ids
     }
     data["reference"] = reference
 

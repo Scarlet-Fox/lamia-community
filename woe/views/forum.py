@@ -18,6 +18,7 @@ from sqlalchemy.orm import joinedload
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
+roll_re = re.compile(r'\[roll=(\d+)d(\d+)(?:\+(\d+)|\-(\d+))?\](.*?)\[\/roll\]', re.DOTALL)
 
 @app.route('/category-list-api', methods=['GET'])
 @login_required
@@ -185,11 +186,70 @@ def new_post_in_topic(slug):
     sqla.session.add(category)
     sqla.session.commit()
 
+    active_rolls = [] # (roll_id, spec, flavor, outcome)
+    active_roll_ids = []
+    inactive_rolls = [] # (roll_id, spec, flavor, outcome)
+
+    post = new_post
+    rolls = roll_re.findall(post.html)
+    for i, roll in enumerate(rolls):
+        if roll[2] == '':
+            base = 0
+        else:
+            base = roll[2]
+
+        if roll[3] == '':
+            penalty = 0
+        else:
+            penalty = roll[3]
+
+        try:
+            roll = sqlm.DiceRoll.query.filter_by(
+                order_of_roll = i,
+                sides = roll[1],
+                number_of_dice = roll[0],
+                base = base,
+                penalty = penalty,
+                content_type = "post",
+                content_id = post.id,
+                flavor_text = roll[4],
+                user = post.author
+            )[0]
+        except IndexError:
+            roll = sqlm.DiceRoll(
+                order_of_roll = i,
+                sides = roll[1],
+                number_of_dice = roll[0],
+                base = base,
+                penalty = penalty,
+                content_type = "post",
+                content_id = post.id,
+                flavor_text = roll[4],
+                created = arrow.utcnow().datetime.replace(tzinfo=None),
+                user = post.author
+            )
+            sqla.session.add(roll)
+            sqla.session.commit()
+
+        active_roll_ids.append(roll.id)
+        active_rolls.append([roll.id, roll.get_spec(), roll.flavor_text, roll.get_value()])
+
+    all_rolls = sqlm.DiceRoll.query.filter_by(
+        content_type = "post",
+        content_id = post.id
+    )
+
+    for roll in all_rolls:
+        if not roll.id in active_roll_ids:
+            inactive_rolls.append([roll.id, roll.get_spec(), roll.flavor_text, roll.get_value()])
+
     clean_html_parser = ForumPostParser()
     parsed_post = {}
     parsed_post["created"] = humanize_time(new_post.created, "MMM D YYYY")
     parsed_post["modified"] = humanize_time(new_post.modified, "MMM D YYYY")
-    parsed_post["html"] = clean_html_parser.parse(new_post.html)
+    parsed_post["html"] = clean_html_parser.parse(new_post.html, _object=new_post)
+    parsed_post["active_rolls"] = active_rolls
+    parsed_post["inactive_rolls"] = inactive_rolls
     parsed_post["_id"] = new_post.id
     parsed_post["user_avatar"] = new_post.author.get_avatar_url()
     parsed_post["user_avatar_x"] = new_post.author.avatar_full_x
@@ -374,6 +434,63 @@ def topic_posts(slug):
 
     for post in posts:
         clean_html_parser = ForumPostParser()
+
+        active_rolls = [] # (roll_id, spec, flavor, outcome)
+        active_roll_ids = []
+        inactive_rolls = [] # (roll_id, spec, flavor, outcome)
+
+        rolls = roll_re.findall(post.html)
+        for i, roll in enumerate(rolls):
+            if roll[2] == '':
+                base = 0
+            else:
+                base = roll[2]
+
+            if roll[3] == '':
+                penalty = 0
+            else:
+                penalty = roll[3]
+
+            try:
+                roll = sqlm.DiceRoll.query.filter_by(
+                    order_of_roll = i,
+                    sides = roll[1],
+                    number_of_dice = roll[0],
+                    base = base,
+                    penalty = penalty,
+                    content_type = "post",
+                    content_id = post.id,
+                    flavor_text = roll[4],
+                    user = post.author
+                )[0]
+            except IndexError:
+                roll = sqlm.DiceRoll(
+                    order_of_roll = i,
+                    sides = roll[1],
+                    number_of_dice = roll[0],
+                    base = base,
+                    penalty = penalty,
+                    content_type = "post",
+                    content_id = post.id,
+                    flavor_text = roll[4],
+                    created = arrow.utcnow().datetime.replace(tzinfo=None),
+                    user = post.author
+                )
+                sqla.session.add(roll)
+                sqla.session.commit()
+
+            active_roll_ids.append(roll.id)
+            active_rolls.append([roll.id, roll.get_spec(), roll.flavor_text, roll.get_value()])
+
+        all_rolls = sqlm.DiceRoll.query.filter_by(
+            content_type = "post",
+            content_id = post.id
+        )
+
+        for roll in all_rolls:
+            if not roll.id in active_roll_ids:
+                inactive_rolls.append([roll.id, roll.get_spec(), roll.flavor_text, roll.get_value()])
+
         parsed_post = {}
         parsed_post["_id"] = post.id
         parsed_post["_tid"] = topic.id
@@ -386,7 +503,7 @@ def topic_posts(slug):
                     parsed_post["modified_by"] = sqlm.User.query.filter_by(id=post.post_history[-1]["author"])[0].display_name
             except IndexError:
                 pass
-        parsed_post["html"] = clean_html_parser.parse(post.html)
+        parsed_post["html"] = clean_html_parser.parse(post.html, _object=post)
         parsed_post["roles"] = post.author.get_roles()
         parsed_post["user_avatar"] = post.author.get_avatar_url()
         parsed_post["user_avatar_x"] = post.author.avatar_full_x
@@ -396,6 +513,8 @@ def topic_posts(slug):
         parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
+        parsed_post["active_rolls"] = active_rolls
+        parsed_post["inactive_rolls"] = inactive_rolls
 
         if current_user.is_admin == True:
             parsed_post["is_admin"] = True
@@ -571,7 +690,7 @@ def edit_topic_post_html(slug):
     sqla.session.commit()
 
     clean_html_parser = ForumPostParser()
-    return app.jsonify(html=clean_html_parser.parse(post.html), success=True)
+    return app.jsonify(html=clean_html_parser.parse(post.html, _object=post), success=True)
 
 @app.route('/t/<slug>/edit-post/<post>', methods=['GET'])
 @login_required

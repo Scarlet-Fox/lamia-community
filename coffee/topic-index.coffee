@@ -562,11 +562,6 @@ $ ->
                 <div class="col-md-9 post-right">
                   <div class="post-content" id="post-{{_id}}">
                     {{{html}}}
-
-                    {{#if modified_by}}
-                    <br>
-                    <div class="text-muted"><i>edited by {{modified_by}}, {{modified}}</i></span>
-                    {{/if}}
                   </div>
                   <br>
                   <div class="row post-edit-likes-info" id="post-buttons-{{_id}}">
@@ -643,6 +638,26 @@ $ ->
                       {{/if}}
                     </div>
                   </div>
+                  {{#if modified_by}}
+                  <br>
+                  <div class="text-muted"><i>edited by {{modified_by}}, {{modified}}</i></span>
+                  {{/if}}
+                  {{#if active_rolls}}
+                  <br>
+                  <span class="text-muted">Active Rolls: </span>
+                  <br>
+                  {{#each active_rolls}}
+                    <span class="badge dice-roll active-dice-roll">{{2}} {{1}}={{3}} </span>&nbsp;
+                  {{/each}}
+                  {{/if}}
+                  {{#if inactive_rolls}}
+                  <br>
+                  <span class="text-muted">Deleted/Edited Rolls: </span>
+                  <br>
+                  {{#each inactive_rolls}}
+                    <span class="badge dice-roll inactive-dice-roll">{{2}} {{1}}={{3}} </span>&nbsp;
+                  {{/each}}
+                  {{/if}}
                   <hr>
                   <div class="post-signature">
                     {{#if signature}}
