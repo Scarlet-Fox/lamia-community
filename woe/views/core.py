@@ -441,7 +441,7 @@ def status_update_sitemap_generate():
     for status_update in sqlm.StatusUpdate.query.filter_by(hidden=False) \
         .order_by(sqla.desc(sqlm.StatusUpdate.created))[:50000]:
         url = "%s/status/%s" % (app.config['BASE'], status_update.id,)
-        modified = status_update.created.isoformat()
+        modified = status_update.created.replace(microsecond=0).isoformat()
         pages.append([url, modified])
 
     sitemap_xml = render_template('sitemap.xml', pages=pages)
@@ -472,7 +472,7 @@ def blog_sitemap_generate():
         if comments_count > 0:
             modified = comments[-1].created.isoformat()
         else:
-            modified = entry.published.isoformat()
+            modified = entry.published.replace(microsecond=0).isoformat()
         pages.append([url, modified])
 
         if comments_count > 10:
@@ -500,7 +500,7 @@ def topic_sitemap_generate():
 
         if topic_post_count <= 20:
             url = "%s/t/%s" % (app.config['BASE'], topic.slug)
-            modified = topic.recent_post.created.isoformat()
+            modified = topic.recent_post.created.replace(microsecond=0).isoformat()
             pages.append([url, modified])
             continue
         else:
@@ -528,11 +528,11 @@ def sitemap_index_generate():
     #
     recent_post_time = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
-        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[0].recent_post.created.isoformat()
+        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[0].recent_post.created.replace(microsecond=0).isoformat()
 
     recent_status_time = sqla.session.query(sqlm.StatusUpdate) \
         .filter_by(hidden=False) \
-        .order_by(sqla.desc(sqlm.StatusUpdate.created))[0].created.isoformat()
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[0].created.replace(microsecond=0).isoformat()
 
     recent_blog_time = sqla.session.query(sqlm.Blog) \
         .join(sqlm.Blog.recent_entry) \
@@ -542,7 +542,7 @@ def sitemap_index_generate():
         .filter(sqla.or_(
             sqlm.Blog.privacy_setting == "all"
         )) \
-        .order_by(sqla.desc(sqlm.BlogEntry.published))[0].recent_entry.created.isoformat()
+        .order_by(sqla.desc(sqlm.BlogEntry.published))[0].recent_entry.created.replace(microsecond=0).isoformat()
 
     pages.append([app.config['BASE']+"/sitemap-topics.xml", recent_post_time])
     pages.append([app.config['BASE']+"/sitemap-status-updates.xml", recent_status_time])
