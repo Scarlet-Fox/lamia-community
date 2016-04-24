@@ -349,8 +349,8 @@ def show_friends(login_name):
 
     friend_status_updates = sqlm.StatusUpdate.query \
         .filter(sqlm.StatusUpdate.author_id.in_([u.id for u in user.friends()])) \
+        .filter_by(hidden=False) \
         .order_by(sqla.desc(sqlm.StatusUpdate.created))[0:5]
-
 
     if current_user.is_authenticated():
         friend_blog_entries = sqla.session.query(sqlm.Blog) \
