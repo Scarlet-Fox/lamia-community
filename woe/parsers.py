@@ -423,8 +423,9 @@ class ForumPostParser(object):
                     "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.id),
                     _display_name,
                     "/member/%s" % _replying_to.author.login_name,
-                    re.sub(reply_re, "", inner_html)
+                    re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
                 ))
+
             if reply[1] == "pm":
                 try:
                     r_id = int(reply[0])
