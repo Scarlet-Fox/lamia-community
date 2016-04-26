@@ -644,12 +644,12 @@ def load_user(login_name):
 
                 try:
                     entry = sqla.session.query(sqlm.BlogEntry).filter_by(blog=blog, slug=full_path[4])[0]
+                    user.last_seen_at = entry.title
+                    user.last_at_url = "/blog/%s/e/%s" % (blog.slug, entry.slug)
                 except IndexError:
                     user.last_seen_at = "Forum index"
                     user.last_at_url = "/"
-
-                user.last_seen_at = entry.title
-                user.last_at_url = "/blog/%s/e/%s" % (blog.slug, entry.slug)
+                    
             elif len(full_path) < 4:
                 try:
                     blog = sqla.session.query(sqlm.Blog).filter_by(slug=full_path[2])[0]
