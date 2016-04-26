@@ -303,7 +303,7 @@ class ForumPostParser(object):
                     continue
 
             if current_user.no_images:
-                link_html = """<a href="/static/uploads/%s" target="_blank">View Attachment.%s (%sKB)</a>""" % (quote(attachment.path), attachment.extension, int(float(attachment.size_in_bytes)/1024))
+                link_html = """<a href="/static/uploads/%s" target="_blank">View Attachment.%s (%sKB)</a>""" % (quote(attachment.path.encode('utf-8')), attachment.extension, int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), link_html, 1)
                 continue
 
@@ -332,13 +332,13 @@ class ForumPostParser(object):
                 if ignore_size:
                     image_html = """
                     <img class="attachment-image%s" src="%s" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                    """ % (image_formatting_class, quote(url), show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                    """ % (image_formatting_class, quote(url.encode('utf-8')), show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
                     html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html, 1)
                     continue
                 else:
                     image_html = """
                     <img class="attachment-image%s" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                    """ % (image_formatting_class, quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                    """ % (image_formatting_class, quote(url.encode('utf-8')), size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
                     html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html, 1)
                     continue
 
@@ -361,13 +361,13 @@ class ForumPostParser(object):
                         <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s" data-resized-size="%s">
                         <p class="text-warning">This file is %sKB large, click to play.</p>
                     </div>
-                    """ % (image_formatting_class, quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(new_size)/1024), int(float(new_size)/1024), int(float(new_size)/1024))
+                    """ % (image_formatting_class, quote(url.encode('utf-8')), size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(new_size)/1024), int(float(new_size)/1024), int(float(new_size)/1024))
                     html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
                     continue
                 elif attachment.extension != "gif":
                     image_html = """
                     <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
-                    """ % (image_formatting_class, quote(url), size, show_box, attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                    """ % (image_formatting_class, quote(url.encode('utf-8')), size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
                     html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
                     continue
             else:
@@ -376,7 +376,7 @@ class ForumPostParser(object):
                 url = os.path.join("/static/uploads", attachment.path)
                 image_html = """
                 <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
-                """ % (image_formatting_class, quote(url), size, "no", attachment.alt, quote(attachment.path), int(float(attachment.size_in_bytes)/1024))
+                """ % (image_formatting_class, quote(url.encode('utf-8')), size, "no", attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
                 html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
                 continue
 
@@ -410,9 +410,9 @@ class ForumPostParser(object):
                     pass
 
                 if container:
-                    inner_html = reply[3].replace("[/reply]","").replace("[spoiler]", "").replace("[/spoiler]", "")
+                    inner_html = reply[3].replace("[spoiler]", "").replace("[/spoiler]", "")
                 else:
-                    inner_html = _replying_to.html.replace("[/reply]","").replace("[spoiler]", "").replace("[/spoiler]", "")
+                    inner_html = _replying_to.html.replace("[spoiler]", "").replace("[/spoiler]", "")
 
                 return html.replace(string_to_replace, """
                 <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>

@@ -541,7 +541,7 @@ class User(db.Model):
         return self.password_hash[-40:]
 
     def get_url_safe_login_name(self):
-        return quote(self.login_name)
+        return quote(self.login_name.encode('utf-8'))
 
     def is_authenticated(self):
         return True # Will only ever return True.

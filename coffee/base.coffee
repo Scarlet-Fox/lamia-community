@@ -193,6 +193,7 @@ $ ->
       time = moment.unix(element.data("time")).tz(window.my_tz).format("MMMM Do YYYY @ h:mm:ss a")
       element.find("blockquote").remove()
       element.html(element.html().replace(new RegExp("<p>&nbsp;</p>", "g"), ""))
+      element.html(element.html().replace(new RegExp("\\[reply\\]|\\[\\/reply\\]", "g"), ""))
       element.dotdotdot({height: 100})
       if time != "Invalid date"
         element.prepend blockquote_attribution_template

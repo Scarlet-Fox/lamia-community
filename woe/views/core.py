@@ -434,6 +434,38 @@ def create_attachment():
 def robots_static_from_root():
     return send_from_directory(app.static_folder, app.settings_file.get("robots-alt", request.path[1:]))
 
+@app.route('/sitemap-characters.xml')
+def character_sitemap_generate():
+    pages = []
+
+    for character in sqla.session.query(sqlm.Character).filter_by(hidden=False)[:50000]:
+
+        url = "%s/characters/%s" % (app.config['BASE'], character.slug,)
+        modified = arrow.utcnow().datetime
+        pages.append([url, modified])
+
+    sitemap_xml = render_template('sitemap.xml', pages=pages)
+    response= make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+    return response
+
+@app.route('/sitemap-members.xml')
+def member_sitemap_generate():
+    pages = []
+
+    for member in sqla.session.query(sqlm.User) \
+        .filter_by(banned=False, validated=True) \
+        .order_by(sqla.desc(sqlm.User.joined))[:50000]:
+
+        url = "%s/member/%s" % (app.config['BASE'], member.get_url_safe_login_name(),)
+        modified = arrow.utcnow().datetime
+        pages.append([url, modified])
+
+    sitemap_xml = render_template('sitemap.xml', pages=pages)
+    response= make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+    return response
+
 @app.route('/sitemap-status-updates.xml')
 def status_update_sitemap_generate():
     pages = []
@@ -547,6 +579,8 @@ def sitemap_index_generate():
     pages.append([app.config['BASE']+"/sitemap-topics.xml", recent_post_time])
     pages.append([app.config['BASE']+"/sitemap-status-updates.xml", recent_status_time])
     pages.append([app.config['BASE']+"/sitemap-blog-entries.xml", recent_blog_time])
+    pages.append([app.config['BASE']+"/sitemap-characters.xml", recent_post_time])
+    pages.append([app.config['BASE']+"/sitemap-members.xml", recent_post_time])
 
     sitemap_xml = render_template('sitemap_index.xml', pages=pages)
     response= make_response(sitemap_xml)
@@ -649,7 +683,7 @@ def load_user(login_name):
                 except IndexError:
                     user.last_seen_at = "Forum index"
                     user.last_at_url = "/"
-                    
+
             elif len(full_path) < 4:
                 try:
                     blog = sqla.session.query(sqlm.Blog).filter_by(slug=full_path[2])[0]
