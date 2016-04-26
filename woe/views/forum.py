@@ -18,7 +18,7 @@ from sqlalchemy.orm import joinedload
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
-roll_re = re.compile(r'\[roll=([1-9]+)d([1-9]+)(?:\+([1-9]+)|\-([1-9]+))?\](.*?)\[\/roll\]', re.I)
+roll_re = re.compile(r'\[roll=(\d+)d(\d+)(?:\+(\d+)|\-(\d+))?\](.*?)\[\/roll\]', re.I)
 
 @app.route('/category-list-api', methods=['GET'])
 @login_required
@@ -193,6 +193,9 @@ def new_post_in_topic(slug):
     post = new_post
     rolls = roll_re.findall(post.html)
     for i, roll in enumerate(rolls):
+        if i > 50:
+            continue
+            
         if roll[2] == '':
             base = 0
         else:
@@ -202,6 +205,12 @@ def new_post_in_topic(slug):
             penalty = 0
         else:
             penalty = roll[3]
+
+        if int(roll[0]) == 0 or int(roll[0]) > 1000:
+            continue
+
+        if int(roll[1]) == 0 or int(roll[1]) > 1000:
+            continue
 
         try:
             roll = sqlm.DiceRoll.query.filter_by(
@@ -441,6 +450,9 @@ def topic_posts(slug):
 
         rolls = roll_re.findall(post.html)
         for i, roll in enumerate(rolls):
+            if i > 50:
+                continue
+
             if roll[2] == '':
                 base = 0
             else:
@@ -450,6 +462,12 @@ def topic_posts(slug):
                 penalty = 0
             else:
                 penalty = roll[3]
+
+            if int(roll[0]) == 0 or int(roll[0]) > 1000:
+                continue
+
+            if int(roll[1]) == 0 or int(roll[1]) > 1000:
+                continue
 
             try:
                 roll = sqlm.DiceRoll.query.filter_by(
