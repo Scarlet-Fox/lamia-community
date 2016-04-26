@@ -37,22 +37,40 @@
           {% else %}
           a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-ignore") Ignore
           {% endif %}
-      li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}")
-        .media-left
-          img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
-        .media-body
-          p
-            a.hover_user(href="/member/{{ status.author.login_name }}") {{ status.author.display_name }}
-            span &nbsp;says
-              if status.attached_to_user
-                | &nbsp;to 
-                a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
-                |:
-            span.status-time {{ status.created|humanize_time }} 
-          if current_user.is_admin
-            a.float-right(href="/admin/statusupdate/edit/?id={{status.id}}", target="_blank")
-              span.glyphicon.glyphicon-cog
-          p {{status.message}}
+      if status.attached_to_user
+        li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}", style="background-color: rgb(253, 242, 255);")
+          .media-left
+            img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
+          .media-body
+            p
+              a.hover_user(href="/member/{{ status.author.login_name }}") {{ status.author.display_name }}
+              span &nbsp;says
+                if status.attached_to_user
+                  | &nbsp;to 
+                  a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
+                  |:
+              span.status-time {{ status.created|humanize_time }} 
+            if current_user.is_admin
+              a.float-right(href="/admin/statusupdate/edit/?id={{status.id}}", target="_blank")
+                span.glyphicon.glyphicon-cog
+            p {{status.message}}
+      else
+        li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}")
+          .media-left
+            img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
+          .media-body
+            p
+              a.hover_user(href="/member/{{ status.author.login_name }}") {{ status.author.display_name }}
+              span &nbsp;says
+                if status.attached_to_user
+                  | &nbsp;to 
+                  a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
+                  |:
+              span.status-time {{ status.created|humanize_time }} 
+            if current_user.is_admin
+              a.float-right(href="/admin/statusupdate/edit/?id={{status.id}}", target="_blank")
+                span.glyphicon.glyphicon-cog
+            p {{status.message}}
       li.list-group-item.status-replies#status-replies
       if current_user.is_authenticated()
         li.list-group-item.status-reply-form
