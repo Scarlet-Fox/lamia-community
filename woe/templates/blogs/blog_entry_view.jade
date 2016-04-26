@@ -73,8 +73,8 @@
                     | &nbsp;
                     span.boop-text Boop!
           br
-      li.list-group-item.section-header#comments(style="margin-top: 10px;") Comments
       if current_user.is_authenticated()
+        li.list-group-item.section-header#comments(style="margin-top: 10px;") Comments
         .list-group-item
           #new-post-box    
       if comments          
