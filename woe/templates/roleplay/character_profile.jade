@@ -68,25 +68,25 @@
           center
             br
             h4 Appearance
-          span!= character.appearance
+          span!= character.parsed_appearance
           br
         if character.personality and not character.personality.replace("<div>","").replace("</div>","").strip() == "<br>"
           center
             br
             h4 Personality
-          span!= character.personality
+          span!= character.parsed_personality
           br
         if character.backstory and not character.backstory.replace("<div>","").replace("</div>","").strip() == "<br>"
           center
             br
             h4 Backstory
-          span!= character.backstory
+          span!= character.parsed_backstory
           br
         if character.other and not character.other.replace("<div>","").replace("</div>","").strip() == "<br>"
           center
             br
             h4 Other
-          span!= character.other
+          span!= character.parsed_other
           br
         br
         hr

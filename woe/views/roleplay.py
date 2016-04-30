@@ -111,19 +111,19 @@ def character_edit_profile(slug):
     if form.validate_on_submit():
         cleaner = ForumHTMLCleaner()
         try:
-            name = cleaner.basic_escape(form.name.data)
+            name = form.name.data
         except:
             return abort(500)
         try:
-            species = cleaner.basic_escape(form.species.data)
+            species = form.species.data
         except:
             return abort(500)
         try:
-            motto = cleaner.basic_escape(form.motto.data)
+            motto = form.motto.data
         except:
             return abort(500)
         try:
-            age = cleaner.basic_escape(form.age.data)
+            age = form.age.data
         except:
             return abort(500)
 
@@ -362,16 +362,16 @@ def character_basic_profile(slug):
     parser = ForumPostParser()
 
     if character.appearance:
-        character.appearance = parser.parse(character.appearance)
+        character.parsed_appearance = parser.parse(character.appearance)
 
     if character.personality:
-        character.personality = parser.parse(character.personality)
+        character.parsed_personality = parser.parse(character.personality)
 
     if character.backstory:
-        character.backstory = parser.parse(character.backstory)
+        character.parsed_backstory = parser.parse(character.backstory)
 
     if character.other:
-        character.other = parser.parse(character.other)
+        character.parsed_other = parser.parse(character.other)
 
     return render_template("roleplay/character_profile.jade", character=character, page_title="%s - Character Database - Scarlet's Web" % (unicode(character.name),))
 

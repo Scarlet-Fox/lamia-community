@@ -206,6 +206,7 @@ class CharacterView(ModelView):
     column_list = ("id", "author", "name", "created",)
     column_filters = ("author_id", "name", "created")
     column_searchable_list = ("name", "appearance", "personality", "backstory", "other")
+    form_excluded_columns = ("default_avatar", "default_gallery_image", "blog_entries")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
