@@ -195,7 +195,7 @@ def new_post_in_topic(slug):
     for i, roll in enumerate(rolls):
         if i > 50:
             continue
-            
+
         if roll[2] == '':
             base = 0
         else:
@@ -906,6 +906,7 @@ def edit_topic(slug):
             label = sqla.session.query(sqlm.Label).filter_by(label=request_json.get("prefix", "").strip())[0]
         except IndexError:
             label = ""
+        post = first_post
 
         history = {}
         history["author"] = current_user._get_current_object().id
@@ -915,7 +916,6 @@ def edit_topic(slug):
         history["data"] = first_post.data
         history["reason"] = request_json.get("edit_reason", "")
 
-        post = first_post
         if post.post_history == None:
             post.post_history = []
 
