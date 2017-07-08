@@ -812,7 +812,7 @@ def topic_index(slug, page, post):
         rp_topic = "false"
         if topic.category.slug in ["roleplays"]:
             rp_topic = "true"
-        return render_template("forum/topic.jade", topic=topic, page_title="%s - Scarlet's Web" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
+        return render_template("forum/topic.jade", topic=topic, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
 
     topic.view_count = topic.view_count + 1
     try:
@@ -828,7 +828,7 @@ def topic_index(slug, page, post):
     if topic.category.slug in ["roleplays", "scenarios"]:
         rp_topic = "true"
 
-    return render_template("forum/topic.jade", topic=topic, page_title="%s - Scarlet's Web" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
+    return render_template("forum/topic.jade", topic=topic, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
@@ -1189,7 +1189,7 @@ def category_index(slug):
         .join(sqlm.Topic.label).group_by(sqlm.Label.label) \
         .order_by(sqla.desc(sqla.func.count(sqlm.Topic.id))).all()
 
-    return render_template("forum/category.jade", page_title="%s - Scarlet's Web" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
+    return render_template("forum/category.jade", page_title="%s - Casual Anime" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
 
 @app.route('/')
 def index():
@@ -1291,7 +1291,7 @@ def index():
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
-    render = render_template("index.jade", page_title="Scarlet's Web",
+    render = render_template("index.jade", page_title="Casual Anime",
         sections=sections, sub_categories=sub_categories,announcements=announcements,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic,

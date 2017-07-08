@@ -1,9 +1,9 @@
 Hello ${_user.display_name},
 
-Thank you for registering at Scarlet's Web! Please be patient while our administrators review your account application. We review all accounts manually to protect the community from spammers, trolls and other troublemakers.
+Thank you for registering at Casual Anime! Please be patient while our administrators review your account application. We review all accounts manually to protect the community from spammers, trolls and other troublemakers.
 
 This process usually doesn't take very long. However, on occasion, there may be a slight delay. You will receive an email notification when your account has been validated. :)
 
-To unsubscribe from all future messages from Scarlet's Web, go to this page - https://scarletsweb.moe/member/${_user.id}/${_user.email_address}/unsubscribe - after your account has been validated.
+To unsubscribe from all future messages from Casual Anime, go to this page - https://scarletsweb.moe/member/${_user.id}/${_user.email_address}/unsubscribe - after your account has been validated.
 
-- Scarlet's Web
+- Casual Anime

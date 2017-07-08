@@ -35,8 +35,11 @@ class UserSettingsForm(Form):
     minimum_time_between_emails = IntegerField("Minimum time between notification emails (in minutes, no less than 30 and no more than 1440)",
             [validators.InputRequired(), validators.NumberRange(30,1440)]
         )
-
-    THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]
+    
+    try:
+        THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]
+    except:
+        THEME_CHOICES = []
     theme = SelectField('Theme', choices=THEME_CHOICES)
 
     def validate_time_zone(self, field):

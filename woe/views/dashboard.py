@@ -242,5 +242,5 @@ def view_dashboard():
     return render_template("dashboard.jade",
         followed_topics = _followed_topics,
         followed_blogs = _followed_blogs,
-        page_title="Your Dashboard - Scarlet's Web"
+        page_title="Your Dashboard - Casual Anime"
         )

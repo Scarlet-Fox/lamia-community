@@ -58,7 +58,7 @@ def user_moderation_panel(login_name):
     return render_template("profile/mod_panel.jade",
         profile=user,
         recent_ips=last_five_ip_addresses,
-        title="Mod Details for %s - Scarlet's Web" % (unicode(user.display_name),),
+        title="Mod Details for %s - Casual Anime" % (unicode(user.display_name),),
         recent_fingerprints=most_recent_fingerprints,
         top_fingerprint_matches=fingerprints_with_top_matches)
 
@@ -168,7 +168,7 @@ def view_profile(login_name):
     return render_template(
         "profile.jade",
         profile=user,
-        page_title="%s - Scarlet's Web" % (unicode(user.display_name),),
+        page_title="%s - Casual Anime" % (unicode(user.display_name),),
         post_count=post_count,
         custom_fields=custom_fields,
         available_fields=available_fields,
@@ -206,7 +206,7 @@ def validate_user(login_name):
     send_mail_w_template(
         send_to=[user,],
         template="welcome_to_moe.txt",
-        subject="Welcome - Scarlet's Web",
+        subject="Welcome - Casual Anime",
         variables={
             "_user": user,
         }
@@ -232,7 +232,7 @@ def show_signatures(login_name):
         except:
             s.parsed = ""
 
-    return render_template("profile/view_signatures.jade", signatures=signatures, profile=user, page_title="%s's Signatures - Scarlet's Web" % (unicode(user.display_name),))
+    return render_template("profile/view_signatures.jade", signatures=signatures, profile=user, page_title="%s's Signatures - Casual Anime" % (unicode(user.display_name),))
 
 @app.route('/member/<login_name>/delete-signature/<id>', methods=['POST'])
 @login_required
@@ -306,7 +306,7 @@ def edit_signature(login_name, id):
         form.signature.data = signature.html
         form.name.data = signature.name
 
-    return render_template("profile/edit_signature.jade", form=form, profile=user, signature=signature, page_title="Edit Signature - Scarlet's Web")
+    return render_template("profile/edit_signature.jade", form=form, profile=user, signature=signature, page_title="Edit Signature - Casual Anime")
 
 @app.route('/member/<login_name>/new-signature', methods=['GET', 'POST'])
 @login_required
@@ -332,7 +332,7 @@ def new_signature(login_name):
         sqla.session.commit()
         return redirect("/member/"+unicode(user.login_name)+"/signatures")
 
-    return render_template("profile/new_signature.jade", form=form, profile=user, page_title="New Signature - Scarlet's Web")
+    return render_template("profile/new_signature.jade", form=form, profile=user, page_title="New Signature - Casual Anime")
 
 @app.route('/member/<login_name>/friends', methods=['GET'])
 def show_friends(login_name):
@@ -383,7 +383,7 @@ def show_friends(login_name):
             incoming_friend_requests=incoming_friend_requests,
             friend_status_updates=friend_status_updates,
             friend_blog_entries=friend_blog_entries,
-            page_title="%s's Friends - Scarlet's Web" % (unicode(user.display_name),),
+            page_title="%s's Friends - Casual Anime" % (unicode(user.display_name),),
         )
 
 @app.route('/member/<login_name>/request-friend', methods=['POST'])
@@ -729,7 +729,7 @@ def change_avatar_or_title(login_name):
         filename = None
         form.title.data = user.title
 
-    return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - Scarlet's Web")
+    return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - Casual Anime")
 
 @app.route('/member/<login_name>/toggle-notification-method', methods=['POST'])
 @login_required
@@ -914,11 +914,11 @@ def customize_user_profile(login_name):
         form.use_text_shadow.data = user.use_text_shadow
         form.full_page_image.data = user.full_page_image
 
-    return render_template("profile/customize_profile.jade", profile=user, form=form, page_title="Customize Profile - Scarlet's Web")
+    return render_template("profile/customize_profile.jade", profile=user, form=form, page_title="Customize Profile - Casual Anime")
 
 @app.route('/unsubscribe-confirm', methods=['GET'])
 def confirm_unsubscribe_from_all_emails():
-    return render_template("unsubscribe_confirm.jade", page_title="Unsubscribed - Scarlet's Web")
+    return render_template("unsubscribe_confirm.jade", page_title="Unsubscribed - Casual Anime")
 
 @app.route('/member/<id>/<email>/unsubscribe', methods=['GET', 'POST'])
 def unsubscribe_from_all_emails(id, email):
@@ -933,7 +933,7 @@ def unsubscribe_from_all_emails(id, email):
         sqla.session.commit()
         return app.jsonify(url="/unsubscribe-confirm")
     else:
-        return render_template("unsubscribe.jade", profile=user, page_title="Unsubscribe - Scarlet's Web")
+        return render_template("unsubscribe.jade", profile=user, page_title="Unsubscribe - Casual Anime")
 
 @app.route('/member/<login_name>/change-settings', methods=['GET', 'POST'])
 @login_required
@@ -986,7 +986,7 @@ def change_user_settings(login_name):
         else:
             form.theme.data = str(user.theme.id)
 
-    return render_template("profile/change_user_settings.jade", profile=user, NOTIFICATION_CATEGORIES=sqlm.Notification.NOTIFICATION_CATEGORIES, available_fields=available_fields, current_fields=current_fields, form=form, page_title="Change Settings - Scarlet's Web")
+    return render_template("profile/change_user_settings.jade", profile=user, NOTIFICATION_CATEGORIES=sqlm.Notification.NOTIFICATION_CATEGORIES, available_fields=available_fields, current_fields=current_fields, form=form, page_title="Change Settings - Casual Anime")
 
 @app.route('/member/<login_name>/change-account', methods=['GET', 'POST'])
 @login_required
@@ -1027,7 +1027,7 @@ def change_display_name_password(login_name):
         form.display_name.data = user.display_name
         form.email.data = user.email_address
 
-    return render_template("profile/change_account.jade", profile=user, form=form, page_title="Change Account Details - Scarlet's Web")
+    return render_template("profile/change_account.jade", profile=user, form=form, page_title="Change Account Details - Casual Anime")
 
 @app.route('/member/<login_name>/edit-profile', methods=['GET', 'POST'])
 @login_required

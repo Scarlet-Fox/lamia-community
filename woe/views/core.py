@@ -76,7 +76,7 @@ def server_error(e):
     except:
         sqla.session.rollback()
 
-    return render_template('500.jade', page_title="SERVER ERROR! - Scarlet's Web"), 500
+    return render_template('500.jade', page_title="SERVER ERROR! - Casual Anime"), 500
 
 @app.errorhandler(403)
 def unauthorized_access(e):
@@ -117,7 +117,7 @@ def unauthorized_access(e):
     except:
         sqla.session.rollback()
 
-    return render_template('403.jade', page_title="Page Not Found - Scarlet's Web"), 403
+    return render_template('403.jade', page_title="Page Not Found - Casual Anime"), 403
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -158,7 +158,7 @@ def page_not_found(e):
     except:
         sqla.session.rollback()
 
-    return render_template('404.jade', page_title="Page Not Found - Scarlet's Web"), 404
+    return render_template('404.jade', page_title="Page Not Found - Casual Anime"), 404
 
 @app.route('/under-construction')
 def under_construction():
@@ -745,7 +745,7 @@ def password_reset(token):
         login_user(user)
         return redirect("/")
 
-    return render_template("new_password.jade", page_title="Forgot Password - Scarlet's Web", form=form, token=token)
+    return render_template("new_password.jade", page_title="Forgot Password - Casual Anime", form=form, token=token)
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -761,7 +761,7 @@ def forgot_password():
         send_mail_w_template(
             send_to=[form.user,],
             template="password_reset.txt",
-            subject="Password Reset Email - Scarlet's Web",
+            subject="Password Reset Email - Casual Anime",
             variables={
                 "display_name": unicode(form.user.display_name),
                 "address": app.config['BASE'] + "/password-reset/" + str(token)
@@ -769,9 +769,9 @@ def forgot_password():
         )
         sqla.session.add(form.user)
         sqla.session.commit()
-        return render_template("forgot_password_confirm.jade", page_title="Forgot Password - Scarlet's Web", profile=form.user)
+        return render_template("forgot_password_confirm.jade", page_title="Forgot Password - Casual Anime", profile=form.user)
 
-    return render_template("forgot_password.jade", page_title="Forgot Password - Scarlet's Web", form=form)
+    return render_template("forgot_password.jade", page_title="Forgot Password - Casual Anime", form=form)
 
 @app.route('/hello/<pk>')
 def confirm_register(pk):
@@ -779,7 +779,7 @@ def confirm_register(pk):
         user = sqla.session.query(sqlm.User).filter_by(id=pk)[0]
     except:
         return abort(404)
-    return render_template("welcome_new_user.jade", page_title="Welcome! - Scarlet's Web", profile=user)
+    return render_template("welcome_new_user.jade", page_title="Welcome! - Casual Anime", profile=user)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -806,7 +806,7 @@ def register():
         send_mail_w_template(
             send_to=[new_user,],
             template="pending_validation.txt",
-            subject="Your Account is Being Reviewed - Scarlet's Web",
+            subject="Your Account is Being Reviewed - Casual Anime",
             variables={
                 "_user": new_user,
             }
@@ -858,7 +858,7 @@ def register():
 
         return redirect('/hello/'+str(new_user.id))
 
-    return render_template("register.jade", page_title="Become One of Us - Scarlet's Web", form=form)
+    return render_template("register.jade", page_title="Become One of Us - Casual Anime", form=form)
 
 @app.route('/sign-in', methods=['GET', 'POST'])
 def sign_in():
@@ -978,7 +978,7 @@ def sign_in():
     else:
         form.redirect_to.data = request.args.get('next', "/")
 
-    return render_template("sign_in.jade", page_title="Sign In - Scarlet's Web", form=form)
+    return render_template("sign_in.jade", page_title="Sign In - Casual Anime", form=form)
 
 @app.route('/banned')
 def banned_user():
@@ -1040,7 +1040,7 @@ def user_list_api_variant():
 @app.route('/members', methods=["GET",])
 @login_required
 def show_memeber_listing():
-    return render_template("members.jade", page_title="Members - Scarlet's Web")
+    return render_template("members.jade", page_title="Members - Casual Anime")
 
 @app.route('/preview', methods=["POST",])
 @login_required

@@ -189,7 +189,7 @@ def send_notification_emails():
                 result = requests.post(
                     "https://api.mailgun.net/v3/scarletsweb.moe/messages",
                     auth=("api", _api),
-                    data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
+                    data={"from": "Casual Anime <sally@scarletsweb.moe>",
                           "to": _to_email_address,
                           "subject": "You have %s notifications at Scarletsweb.moe" % (_total,),
                           "text": _rendered})
@@ -223,7 +223,7 @@ def send_mail_w_template(send_to, subject, template, variables):
         response = requests.post(
             "https://api.mailgun.net/v3/scarletsweb.moe/messages",
             auth=("api", _api),
-            data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
+            data={"from": "Casual Anime <sally@scarletsweb.moe>",
                   "to": _to_email_addresses,
                   "subject": subject,
                   "text": _template.render(**variables)})
@@ -258,7 +258,7 @@ def send_announcement_emails():
                     result = requests.post(
                         "https://api.mailgun.net/v3/scarletsweb.moe/messages",
                         auth=("api", _api),
-                        data={"from": "Scarlet's Web <sally@scarletsweb.moe>",
+                        data={"from": "Casual Anime <sally@scarletsweb.moe>",
                               "to": user.email_address,
                               "subject": announcement.subject,
                               "text": _rendered})

@@ -1,68 +1,62 @@
 from woe import sqla
 from woe.sqlmodels import *
-import woe.models.core as core
-import woe.models.forum as forum
-import woe.models.roleplay as rp
-import woe.models.blogs as blogs
 from datetime import datetime
 import random
 
-# sqla.drop_all()
-# sqla.create_all()
-#
-# themes = [
-#     {
-#         "name": "Sally",
-#         "css": "",
-#         "base": "local/themes/default.css",
-#         "created": datetime.now().replace(tzinfo=None)
-#     },
-#     {
-#         "name": "Half and Half",
-#         "css": "local/themes/halfnhalf.css",
-#         "base": "local/themes/default.css",
-#         "created": datetime.now().replace(tzinfo=None)
-#     },
-#     {
-#         "name": "Luna",
-#         "css": "local/themes/luna.css",
-#         "base": "local/themes/default.css",
-#         "created": datetime.now().replace(tzinfo=None)
-#     },
-#     {
-#         "name": "Celestia",
-#         "css": "local/themes/celestia.css",
-#         "base": "local/themes/default.css",
-#         "created": datetime.now().replace(tzinfo=None)
-#     },
-#     {
-#         "name": "Nagisa",
-#         "css": "local/themes/nagisa.css",
-#         "base": "local/themes/default.css",
-#         "created": datetime.now().replace(tzinfo=None)
-#     },
-#     {
-#         "name": "Plain",
-#         "css": "local/themes/plain.css",
-#         "base": "local/themes/default.css",
-#         "created": datetime.now().replace(tzinfo=None)
-#     }
-# ]
-#
-# default_theme = None
-#
-# for i, theme in enumerate(themes):
-#     new_theme = SiteTheme(
-#         name=theme["name"],
-#         theme_css=theme["css"],
-#         base_css=theme["base"],
-#         created=theme["created"],
-#         weight=i*10
-#     )
-#     sqla.session.add(new_theme)
-#     sqla.session.commit()
-#     if i == 0:
-#         default_theme = new_theme
+#sqla.create_all()
+themes = [
+    {
+        "name": "Sally",
+        "css": "",
+        "base": "local/themes/default.css",
+        "created": datetime.now().replace(tzinfo=None)
+    },
+    {
+        "name": "Half and Half",
+        "css": "local/themes/halfnhalf.css",
+        "base": "local/themes/default.css",
+        "created": datetime.now().replace(tzinfo=None)
+    },
+    {
+        "name": "Luna",
+        "css": "local/themes/luna.css",
+        "base": "local/themes/default.css",
+        "created": datetime.now().replace(tzinfo=None)
+    },
+    {
+        "name": "Celestia",
+        "css": "local/themes/celestia.css",
+        "base": "local/themes/default.css",
+        "created": datetime.now().replace(tzinfo=None)
+    },
+    {
+        "name": "Nagisa",
+        "css": "local/themes/nagisa.css",
+        "base": "local/themes/default.css",
+        "created": datetime.now().replace(tzinfo=None)
+    },
+    {
+        "name": "Plain",
+        "css": "local/themes/plain.css",
+        "base": "local/themes/default.css",
+        "created": datetime.now().replace(tzinfo=None)
+    }
+]
+
+default_theme = None
+
+for i, theme in enumerate(themes):
+    new_theme = SiteTheme(
+        name=theme["name"],
+        theme_css=theme["css"],
+        base_css=theme["base"],
+        created=theme["created"],
+        weight=i*10
+    )
+    sqla.session.add(new_theme)
+    sqla.session.commit()
+    if i == 0:
+        default_theme = new_theme
 #
 # for mongo_user in core.User.objects():
 #     if mongo_user.login_name == "silhouette":

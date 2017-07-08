@@ -29,7 +29,7 @@ def search_display():
         categories=json.dumps(categories),
         topics=json.dumps(topics),
         authors=json.dumps(authors),
-        page_title="Search - Scarlet's Web"
+        page_title="Search - Casual Anime"
         )
 
 @app.route('/clear-search', methods=['POST',])
