@@ -1,0 +1,57 @@
+purple - #663399 - royal purple
+blue - 	#1034A6 - egyptian blue
+green - #228B22 - forest
+pink - #FF69B4 - hot pink
+red - #FF2400 - scarlet
+
+Castle
+======
+
+Staff Board
+- chit chat // #FF2400
+- conspiracy // #663399
+- moderation // #1034A6
+
+News
+- announcement // #FF2400
+- event // #FF69B4
+
+Welcome
+- hi // #663399
+- hello // #FF2400
+- hiya // #FF69B4
+- howdy // #228B22
+- hey // #1034A6
+
+FAQ/Help
+- information // #1034A6
+- community // #663399
+- features // #FF69B4
+- bug // #FF2400
+
+Casual
+======
+
+purple - #663399 - royal purple
+blue - 	#1034A6 - egyptian blue
+green - #228B22 - forest
+pink - #FF69B4 - hot pink
+red - #FF2400 - scarlet
+
+Anime
+- anime // #FF69B4
+- manga // #1034A6
+- merchandise // #FF2400
+- other // #663399
+
+General
+- other // #228B22
+- life // #FF2400
+- hobbies // #663399
+- creativity // #FF69B4
+
+Forum Games
+- silliness // #FF69B4
+- game // #663399
+- roleplay // #1034A6
+- ask // #1034A6

@@ -42,7 +42,7 @@
       if status.attached_to_user
         li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}", style="background-color: rgb(253, 242, 255);")
           .media-left
-            img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
+            img(src="{{ status.author.get_avatar_url("60") }}", width="{{status.author.avatar_60_x}}", height="{{status.author.avatar_60_y}}")
           .media-body
             p
               a.hover_user(href="/member/{{ status.author.login_name }}") {{ status.author.display_name }}
@@ -59,7 +59,7 @@
       else
         li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}")
           .media-left
-            img(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}", height="{{status.author.avatar_40_y}}")
+            img(src="{{ status.author.get_avatar_url("60") }}", width="{{status.author.avatar_60_x}}", height="{{status.author.avatar_60_y}}", class="avatar-mini")
           .media-body
             p
               a.hover_user(href="/member/{{ status.author.login_name }}") {{ status.author.display_name }}
@@ -90,7 +90,7 @@
           li.list-group-item
             .media-left
               a(href="{{url_for('view_profile', login_name=participant.login_name)}}")
-                img.media-object(src="{{ participant.get_avatar_url("40") }}", width="{{ participant.avatar_40_x }}", height="{{ participant.avatar_40_y }}", class="avatar-mini")
+                img.media-object(src="{{ participant.get_avatar_url("60") }}", width="{{ participant.avatar_60_x }}", height="{{ participant.avatar_60_y }}", class="avatar-mini")
             .media-body
               a.hover_user(href="{{url_for('view_profile', login_name=participant.login_name)}}")= participant.display_name
               if current_user == participant:

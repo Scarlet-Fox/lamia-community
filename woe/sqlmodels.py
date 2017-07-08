@@ -437,7 +437,7 @@ class User(db.Model):
     how_did_you_find_us = db.Column(db.Text, default="", index=True)
     is_allowed_during_construction = db.Column(db.Boolean, default=False, index=True)
     my_url = db.Column(db.String, unique=True)
-    time_zone = db.Column(db.String, default="")
+    time_zone = db.Column(db.String, default="US/Pacific")
     theme_id = db.Column(db.Integer, db.ForeignKey('site_theme.id',
         name="fk_member_theme", ondelete="SET NULL"), index=True)
     theme = db.relationship("SiteTheme")

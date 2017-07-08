@@ -39,7 +39,7 @@ class LabelView(ModelView):
     column_filters = ["id", ]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class RoleView(ModelView):
     can_create = True
@@ -53,7 +53,7 @@ class RoleView(ModelView):
     column_filters = ["id", ]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class UserView(ModelView):
     can_create = False
@@ -70,7 +70,7 @@ class UserView(ModelView):
     form_excluded_columns = ["status_updates", "private_messages", "notifications", "booped_posts"]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class FollowView(ModelView):
     can_create = False
@@ -79,7 +79,7 @@ class FollowView(ModelView):
     column_filters = ("user_id", "following_id")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class NotificationView(ModelView):
     can_delete = False
@@ -94,7 +94,7 @@ class NotificationView(ModelView):
     column_filters = ("acknowledged", "id", "seen", "author_id", "user_id", "acknowledged", "category", "emailed")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class CategoryView(ModelView):
     can_delete = False
@@ -108,8 +108,15 @@ class CategoryView(ModelView):
 
     column_filters = ["id", ]
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
+class SectionView(ModelView):
+    can_delete = False
+    column_list = ("id", "name","weight")
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+        
 class TopicView(ModelView):
     can_delete = False
     column_list = ("id", "title","created")
@@ -118,7 +125,7 @@ class TopicView(ModelView):
     form_excluded_columns = ("moderators", "recent_post", "editor")
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class StatusView(ModelView):
     can_delete = False
@@ -128,7 +135,7 @@ class StatusView(ModelView):
 
     column_filters = ["id", ]
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class StatusCommentView(ModelView):
     can_delete = False
@@ -139,7 +146,7 @@ class StatusCommentView(ModelView):
     column_filters = ["id", ]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class PostView(ModelView):
     can_delete = False
@@ -150,7 +157,7 @@ class PostView(ModelView):
     column_filters = ["id", ]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class AttachView(ModelView):
     can_delete = False
@@ -160,7 +167,7 @@ class AttachView(ModelView):
     column_filters = ["id", ]
 
     def is_accessible(self):
-        return (current_user.is_authenticated() and current_user.is_admin) or current_user.login_name == "scarlet"
+        return (current_user.is_authenticated() and current_user.is_admin)
 
 class PrivateMessageTopicView(ModelView):
     can_delete = False
@@ -295,6 +302,7 @@ admin.add_view(PostView(sqlm.Post, sqla.session, category='Forum'))
 admin.add_view(DiceRollView(sqlm.DiceRoll, sqla.session, category='Forum'))
 admin.add_view(TopicView(sqlm.Topic, sqla.session, category='Forum'))
 admin.add_view(CategoryView(sqlm.Category, sqla.session, category='Forum'))
+admin.add_view(SectionView(sqlm.Section, sqla.session, category='Forum'))
 
 #
 # class BlogView(ModelView):

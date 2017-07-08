@@ -76,6 +76,96 @@ new_user.how_did_you_find_us = "From the beginning."
 sqla.session.add(new_user)
 sqla.session.commit()
 
+castle = Section(name="Castle", weight=0, slug=slugify("castle"))
+casual = Section(name="Casual", weight=10, slug=slugify("casual"))
+sqla.session.add(castle)
+sqla.session.add(casual)
+sqla.session.commit()
+
+castle_categories = ["Staff Board", "News", "Welcome", "FAQ/Help"]
+casual_categories = ["Anime", "General", "Forum Games"]
+
+for i, category in enumerate(castle_categories):
+    sqlcategory = Category(
+        name = category,
+        slug = slugify(category),
+        section = castle,
+        weight = i*10
+    )
+    
+    sqla.session.add(sqlcategory)
+    sqla.session.commit()
+
+for i, category in enumerate(casual_categories):
+    sqlcategory = Category(
+        name = category,
+        slug = slugify(category),
+        section = casual,
+        weight = i*10
+    )
+    sqla.session.add(sqlcategory)
+    sqla.session.commit()
+
+label_matrix = {
+    "Staff Board": [
+        {"chit chat": "#FF2400"},
+        {"conspiracy": "#663399"},
+        {"moderation": "#1034A6"}
+    ],
+    "News": [
+        {"announcement": "#FF2400"},
+        {"event": "#FF69B4"}
+    ],
+    "Welcome": [
+        {"hi": "#663399"},
+        {"hello": "#FF2400"},
+        {"hiya": "#FF69B4"},
+        {"howdy": "#228B22"},
+        {"hey": "#1034A6"}
+    ],
+    "FAQ/Help": [
+        {"information": "#1034A6"},
+        {"community": "#663399"},
+        {"features": "#FF69B4"},
+        {"bug": "#FF2400"}
+    ],
+    "Anime": [
+        {"anime": "#FF69B4"},
+        {"manga": "#1034A6"},
+        {"merchandise": "#FF2400"},
+        {"other": "#663399"}
+    ],
+    "General": [
+        {"other": "#228B22"},
+        {"life": "#FF2400"},
+        {"hobbies": "#663399"},
+        {"creativity": "#FF69B4"}
+    ],
+    "Forum Games": [
+        {"silliness": "#FF69B4"},
+        {"game": "#663399"},
+        {"roleplay": "#1034A6"},
+        {"ask": "#1034A6"}
+    ]
+}
+
+for category_name in label_matrix:
+    category = sqla.session.query(Category).filter_by(name=category_name).first()
+    
+    for prefix_to_add in label_matrix[category_name]:
+        new_label = Label(
+            pre_html = """<span class="badge prefix" style="background:%s;">""" % prefix_to_add.items()[0][1],
+            post_html = """</span>""",
+            label = prefix_to_add.items()[0][0],
+            modern = True
+        )
+        sqla.session.add(new_label)
+        sqla.session.commit()
+        category.allowed_labels.append(new_label)
+        
+    sqla.session.add(category)
+    sqla.session.commit()
+    
 #
 # for mongo_user in core.User.objects():
 #     if mongo_user.login_name == "silhouette":
