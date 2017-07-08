@@ -15,10 +15,10 @@ io = require('socket.io')(server, {path: config.listener_path})
 app.use (req, res, next) ->
   do next
 
-app.get config.talker_path, (req, res) ->
+app.get "/talker", (req, res) ->
   res.send ''
 
-app.post config.talker_path+"/notify", (req, res) ->
+app.post "/talker/notify", (req, res) ->
   res.send 'ok'
   for client in socketList
     try
@@ -36,7 +36,6 @@ app.post config.talker_path+"/notify", (req, res) ->
       continue
 
 io.on 'connection', (client) ->
-  #console.log client
   client.on "user", (data) ->
     socketList.push client
     if socketList.length > 10000

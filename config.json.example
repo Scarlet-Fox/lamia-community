@@ -1,0 +1,11 @@
+{
+	"secret_key": "SECRET",
+	"debug": true,
+	"asset_debug": true,
+	"base_url": "http://192.168.1.123:5000",
+	"talker_path": "http://192.168.1.123:3001/talker",
+	"mailgun_api": "N/A",
+	"listener": "http://192.168.1.123:3000",
+	"listener_path": "/",
+	"alchemy_uri": "postgresql://evangel:PASSWORD@localhost/DATABASE"
+}
