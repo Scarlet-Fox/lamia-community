@@ -22,50 +22,44 @@ try:
 except ImportError:
     import pickle
 
-@app.route('/member/<login_name>/mod-panel')
-@login_required
-def user_moderation_panel(login_name):
-    if current_user._get_current_object().is_admin != True:
-        abort(404)
-
-    try:
-        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
-    except IndexError:
-        abort(404)
-
-    last_five_ip_addresses = sqla.session.query(sqlm.IPAddress).filter_by(user=user)[0:5]
-
-    fingerprints_with_top_matches = {}
-    most_recent_fingerprints = sqla.session.query(sqlm.Fingerprint).filter_by(user=user)[0:5]
-
-    for recent_fingerprint in most_recent_fingerprints:
-        matches = []
-        other_fingerprints = sqla.session.query(sqlm.Fingerprint) \
-            .filter_by(user=user) \
-            .filter(sqlm.Fingerprint.factors > recent_fingerprint.factors-6) \
-            .filter(sqlm.Fingerprint.factors < recent_fingerprint.factors+6)[0:5]
-
-        for fingerprint in other_fingerprints:
-            user_ = fingerprint.user
-            hash_ = fingerprint.fingerprint_hash
-            score = recent_fingerprint.compute_similarity_score(fingerprint)
-
-            if len(matches) == 0:
-                matches.append((user_, hash_, round(score*100,0)))
-            else:
-                if round(score*100,0) > matches[0][2]:
-                    matches.insert(0,(user_, hash_, round(score*100,0)))
-                else:
-                    matches.append((user_, hash_, round(score*100,0)))
-
-        fingerprints_with_top_matches[recent_fingerprint.fingerprint_hash] = matches[0:3]
-
-    return render_template("profile/mod_panel.jade",
-        profile=user,
-        recent_ips=last_five_ip_addresses,
-        title="Mod Details for %s - Casual Anime" % (unicode(user.display_name),),
-        recent_fingerprints=most_recent_fingerprints,
-        top_fingerprint_matches=fingerprints_with_top_matches)
+# @app.route('/member/<login_name>/mod-panel')
+# @login_required
+# def user_moderation_panel(login_name):
+#     if current_user._get_current_object().is_admin != True:
+#         abort(404)
+#
+#     try:
+#         user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+#     except IndexError:
+#         abort(404)
+#
+#     last_five_ip_addresses = sqla.session.query(sqlm.IPAddress).filter_by(user=user)[0:5]
+#
+#     fingerprints_with_top_matches = {}
+#     most_recent_fingerprints = sqla.session.query(sqlm.Fingerprint).filter_by(user=user)[0:5]
+#
+#     for recent_fingerprint in most_recent_fingerprints:
+#         matches = []
+#         other_fingerprints = sqla.session.query(sqlm.Fingerprint) \
+#             .filter(sqlm.Fingerprint.factors > recent_fingerprint.factors-1) \
+#             .filter(sqlm.Fingerprint.factors < recent_fingerprint.factors+1) \
+#
+#
+#         for fingerprint in other_fingerprints:
+#             user_ = fingerprint.user
+#             hash_ = fingerprint.fingerprint_hash
+#             score = recent_fingerprint.compute_similarity_score(fingerprint)
+#             matches.append((user_, hash_, round(score,0)))
+#
+#
+#         fingerprints_with_top_matches[recent_fingerprint.fingerprint_hash] = matches[0:3]
+#
+#     return render_template("profile/mod_panel.jade",
+#         profile=user,
+#         recent_ips=last_five_ip_addresses,
+#         title="Mod Details for %s - Casual Anime" % (unicode(user.display_name),),
+#         recent_fingerprints=most_recent_fingerprints,
+#         top_fingerprint_matches=fingerprints_with_top_matches)
 
 @app.route('/member/<login_name>')
 def view_profile(login_name):

@@ -102,10 +102,6 @@ style!= profile.get_custom_css()
               a(href="/member/{{profile.login_name}}/change-settings") Settings
             li(role="presentation")
               a(href="/member/{{profile.login_name}}/customize-profile") Customize
-          {% if current_user.is_admin  %}
-          li(role="presentation")
-            a(href="/member/{{profile.login_name}}/mod-panel") Moderation
-          {% endif %}
     {% block profile_sidebar %}
     ul.list-group
       li.list-group-item.section-header.category-section-header {{profile.display_name}}'s Stats

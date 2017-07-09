@@ -37,6 +37,17 @@ login_manager.anonymous_user = Anonymouse
 def make_session_permanent():
     session.permanent = True
 
+
+@app.before_request
+def check_ip_ban():
+    if request.path != "/banned" and not request.path.startswith("/static/"):
+        try:
+            ip_address = sqla.session.query(sqlm.IPAddress).filter_by(ip_address=request.remote_addr, banned=True)[0]
+            print ip_address
+            return redirect("/banned", 307)
+        except IndexError:
+            pass
+
 @app.errorhandler(500)
 def server_error(e):
     traceback = get_current_traceback()
