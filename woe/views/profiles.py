@@ -2,7 +2,7 @@ from woe.parsers import ForumPostParser, emoticon_codes
 from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm, SiteCustomizationForm
 from woe.forms.signatures import NewSignature
 from woe import app
-from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
+from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
 from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
 import os
@@ -16,6 +16,11 @@ from threading import Thread
 from multiprocessing import Process, Queue
 from sqlalchemy.orm.attributes import flag_modified
 from woe.email_utilities import send_mail_w_template
+
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 @app.route('/member/<login_name>/mod-panel')
 @login_required
@@ -988,6 +993,24 @@ def change_user_settings(login_name):
 
     return render_template("profile/change_user_settings.jade", profile=user, NOTIFICATION_CATEGORIES=sqlm.Notification.NOTIFICATION_CATEGORIES, available_fields=available_fields, current_fields=current_fields, form=form, page_title="Change Settings - Casual Anime")
 
+from itsdangerous import want_bytes
+def invalidate_sessions(login_name): #default
+    session_table = sqla.Table('sessions',sqla.metadata,autoload=True)
+    all_sessions = sqla.session.query(session_table).all()
+    
+    current_session_cookie = "session:" + request.cookies.get(app.session_cookie_name)
+    engine = sqla.engine
+    
+    for _session in all_sessions:
+        session_data = _session[2]
+        session_id = _session[1]
+        parsed_session_data = pickle.loads(want_bytes(session_data))
+        parsed_session_data["__id"] = session_id
+        
+        if parsed_session_data.get("user_id", None) == login_name and current_session_cookie != parsed_session_data["__id"]:
+            statement = session_table.delete().where( session_table.c.session_id == parsed_session_data["__id"] )
+            engine.execute(statement)
+    
 @app.route('/member/<login_name>/change-account', methods=['GET', 'POST'])
 @login_required
 def change_display_name_password(login_name):
@@ -1006,6 +1029,7 @@ def change_display_name_password(login_name):
     if form.validate_on_submit():
         if form.new_password.data != "":
             user.set_password(form.new_password.data.strip())
+            invalidate_sessions(user.login_name)
 
         if form.display_name.data.strip() != user.display_name:
             dnh = {"name": user.display_name, "date": time.mktime(arrow.utcnow().datetime.replace(tzinfo=None).timetuple())}
