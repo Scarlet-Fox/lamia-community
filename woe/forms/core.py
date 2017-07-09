@@ -1,7 +1,7 @@
 from flask_wtf import Form
 from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField, IntegerField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wand.image import Image
+from wand.image import Image, GRAVITY_TYPES
 import shutil, pytz, arrow
 from woe import sqla
 import woe.sqlmodels as sqlm
@@ -240,11 +240,28 @@ class AvatarTitleForm(Form):
         avvie_size = len(resized_avatar_bin)
         if avvie_size > 512*1024:
             raise validators.ValidationError("Your avatar filesize (even after being resized) is too large. Resize to less than 512kb.")
+        
+        crop_off_bottom = False
+        crop_off_right = False
+        if ysize > xsize:
+            crop_off_bottom = True
+            pixels_to_crop = ysize - xsize
+        elif xsize > ysize:
+            crop_off_right = True
+            pixels_to_crop = xsize - ysize
 
-        resize_measure = min(40.0/float(xsize),40.0/float(ysize))
         self.fourty_image = image.clone()
-        self.fourty_image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
+        if crop_off_bottom == True:
+            self.fourty_image.crop(height=(ysize-pixels_to_crop))
+        if crop_off_right == True:
+            self.fourty_image.crop(width=(xsize-pixels_to_crop), gravity='center', height=ysize)
+            
+        self.fourty_image.resize(int(round(40)),int(round(40)))
 
-        resize_measure = min(60.0/float(xsize),60.0/float(ysize))
         self.sixty_image = image.clone()
-        self.sixty_image.resize(int(round(xsize*resize_measure)),int(round(ysize*resize_measure)))
+        if crop_off_bottom == True:
+            self.sixty_image.crop(height=(ysize-pixels_to_crop))
+        if crop_off_right == True:
+            self.sixty_image.crop(width=(xsize-pixels_to_crop), gravity='center', height=ysize)
+            
+        self.sixty_image.resize(int(round(60)),int(round((60))))
