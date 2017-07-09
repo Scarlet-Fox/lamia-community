@@ -115,6 +115,9 @@ $ ->
     socket.on "notify", (data) ->
       if data.count_update?
         counter_element = $(".notification-counter")
+        if parseInt(counter_element.text()) == 0 and data.count_update > 0
+          if $("#notification-sound").length > 0
+            document.getElementById('notification-sound').play()
         counter_element.text(data.count_update)
         if data.count_update == 0
           title_count = document.title.match(/\(\d+\)/)
@@ -131,6 +134,9 @@ $ ->
       else
         if window.woe_is_me in data.users
           counter_element = $(".notification-counter")
+          if parseInt(counter_element.text()) == 0 and data.count > 0
+            if $("#notification-sound").length > 0
+              document.getElementById('notification-sound').play()
           counter_element.text(data.count)
           counter_element.css("background-color", "#B22222")
           $(".dashboard-counter").text(data.dashboard_count)

@@ -968,6 +968,7 @@ def change_user_settings(login_name):
         user.theme = form.theme_object
         user.no_images = form.no_images.data
         user.emails_muted = form.no_emails.data
+        user.notification_sound = form.notification_sound.data
         user.minimum_time_between_emails = form.minimum_time_between_emails.data
         sqla.session.add(user)
         sqla.session.commit()
@@ -976,6 +977,7 @@ def change_user_settings(login_name):
         form.no_images.data = user.no_images
         form.time_zone.data = user.time_zone
         form.no_emails.data = user.emails_muted
+        form.notification_sound.data = user.notification_sound
 
         if user.minimum_time_between_emails == None:
             user.minimum_time_between_emails = 360
