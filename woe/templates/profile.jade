@@ -275,7 +275,7 @@ style!= profile.get_custom_css()
 
 {% block script %}
 {% assets filters="rjsmin", output="generated/editor.js",
-"assets/quill/quill.js", "assets/dropzone/dropzone.js", 
+"assets/quill2/quill.js", "assets/dropzone/dropzone.js", 
 "assets/select2/select2.full.js", "local/js/inline-editor.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}

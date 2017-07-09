@@ -31,7 +31,7 @@ head
     if current_user.is_authenticated() and current_user.theme
       if current_user.theme.theme_css
         {% assets filters="cssmin", output="generated/"+current_user.get_text_id()+"woe-core.css",
-        "assets/bootstrap.css", "assets/quill/quill.base.css", "assets/quill/quill.snow.css", 
+        "assets/bootstrap.css", "assets/quill2/quill.snow.css", 
         "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
         "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
         "assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
@@ -40,7 +40,7 @@ head
         {% endassets %}
       else
         {% assets filters="cssmin", output="generated/"+current_user.get_text_id()+"woe-core.css",
-        "assets/bootstrap.css", "assets/quill/quill.base.css", "assets/quill/quill.snow.css", 
+        "assets/bootstrap.css", "assets/quill2/quill.snow.css", 
         "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
         "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
         "assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
@@ -49,7 +49,7 @@ head
         {% endassets %}
     else
       {% assets filters="cssmin", output="generated/woe-core.css",
-      "assets/bootstrap.css", "assets/quill/quill.base.css", "assets/quill/quill.snow.css", 
+      "assets/bootstrap.css", "assets/quill2/quill.snow.css",
       "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
       "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
       "assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
@@ -265,7 +265,7 @@ body(role='document')
       window.logged_in = false;
       {% endif %}
   {% assets filters="rjsmin", output="generated/base.js",
-  "assets/jquery-1.11.3.js", "assets/socket.io.js", "assets/bootstrap.js",
+  "assets/jquery-3.2.1.js", "assets/socket.io.js", "assets/bootstrap.js",
   "assets/moment.js", "assets/socket.io.js", "assets/ie10-viewport-bug-workaround.js",
   "local/js/base.js", "assets/dotdotdot/jquery.dotdotdot.js", "assets/moment-timezone-with-data-2010-2020.js",
   "assets/ie-emulation-modes-warning.js" %}
