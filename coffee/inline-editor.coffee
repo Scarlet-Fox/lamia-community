@@ -46,8 +46,10 @@ $ ->
       Dropzone.forElement("#dropzone-#{@quillID}").removeAllFiles()
         
     setupEditor: (cancel_button) ->
+      @lockSave = false
       if @edit_reason
         @element.before @editReasonHTML
+      @element.before """<div id="draft-modal-#{@quillID}" class="modal fade"></div>"""
       @element.before """<div id="mention-modal-#{@quillID}" class="modal fade"></div>"""
       @element.before """<div id="emoticon-modal-#{@quillID}" class="modal fade"></div>"""
       @element.before """<div id="image-link-modal-#{@quillID}" class="modal fade"></div>"""
@@ -55,6 +57,12 @@ $ ->
       @element.after @dropzoneHTML
       @element.after @previewHTML
       @element.after @submitButtonHTML cancel_button
+      
+      @last_saved_draft = new Date().getTime() / 1000
+      
+      $.post "/drafts/count", JSON.stringify({quill_id: @quillID, path: window.location.pathname}), (response) =>
+        if response.count > 0
+          $("#draft-view-#{@quillID}").addClass("btn-success")
       
       toolbarOptions = [
         ['bold', 'italic', 'underline', 'strike'],
@@ -78,8 +86,15 @@ $ ->
         modules:
           toolbar: toolbarOptions
       
+      quill.on 'text-change', (delta, source) =>
+        if ((new Date().getTime() / 1000) - @last_saved_draft) > (2*60)
+          @last_saved_draft = new Date().getTime() / 1000
+          if not @lockSave and quill.getText != ""
+            $.post "/drafts/save", JSON.stringify({quill_id: @quillID, path: window.location.pathname, contents: $("#post-editor-#{@quillID}").children(".ql-editor").html()}), (response) =>
+              $("#draft-view-#{@quillID}").addClass("btn-success")
+      
       quill.clipboard.dangerouslyPasteHTML @element.data("editor_initial_html")
-      @quill = quill    
+      @quill = quill
       toolbar = quill.getModule 'toolbar'
 
       _this = this
@@ -143,14 +158,22 @@ $ ->
           $("#dropzone-#{@quillID}").hide()
         else
           $("#dropzone-#{@quillID}").show()
+          
+      $("#draft-view-#{@quillID}").click (e) =>
+        $.post "/drafts/list", JSON.stringify({quill_id: @quillID, path: window.location.pathname}), (response) =>
+          @createAndShowDraftModal response.drafts
 
       $("#save-text-#{@quillID}").click (e) =>
         e.preventDefault()
+        @lockSave = true
         if @saveFunction?
-          if @edit_reason
-            @saveFunction $("#post-editor-#{@quillID}").children(".ql-editor").html(), @element.data("editor").getText(), $("#edit-reason-#{@quillID}").val()
-          else
-            @saveFunction $("#post-editor-#{@quillID}").children(".ql-editor").html(), @element.data("editor").getText()
+          $.post "/drafts/clear", JSON.stringify({quill_id: @quillID, path: window.location.pathname}), (response) =>
+            if @edit_reason
+              @saveFunction $("#post-editor-#{@quillID}").children(".ql-editor").html(), @element.data("editor").getText(), $("#edit-reason-#{@quillID}").val()
+            else
+              @saveFunction $("#post-editor-#{@quillID}").children(".ql-editor").html(), @element.data("editor").getText()
+            $("#draft-view-#{@quillID}").removeClass("btn-success")
+            @lockSave = false
 
       $("#cancel-edit-#{@quillID}").click (e) =>
         e.preventDefault()
@@ -232,6 +255,7 @@ $ ->
         return """
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
             <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default post-post" id="draft-view-#{@quillID}">Drafts</button>
             <button type="button" class="btn btn-default post-post" id="upload-files-#{@quillID}">Upload Files</button>
             <button type="button" class="btn btn-default" id="cancel-edit-#{@quillID}">Cancel</button>
             <button type="button" class="btn btn-default" id="preview-#{@quillID}">Preview</button>
@@ -241,6 +265,7 @@ $ ->
         return """
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
             <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default post-post" id="draft-view-#{@quillID}">Drafts</button>
             <button type="button" class="btn btn-default post-post" id="upload-files-#{@quillID}">Upload Files</button>
             <button type="button" class="btn btn-default" id="preview-#{@quillID}">Preview</button>
           </div>
@@ -317,7 +342,59 @@ $ ->
         $("#emoticon-modal-#{_this.quillID}").modal("hide")
 
       $("#emoticon-modal-#{@quillID}").modal("show")
-
+    
+    createAndShowDraftModal: (drafts) =>
+      draft_picks_html = ""
+      for draft in drafts
+        draft_picks_html = draft_picks_html + """
+            <div style="margin-top: 5px;">
+            <a href="#" data-id="#{draft.id}" class="draft-select-#{@quillID} btn btn-xs btn-default">#{draft.time}</a>
+            <div class="content-spoiler" style="height: 150px;overflow: scroll;"><div>
+              #{draft.contents}
+            </div></div>
+            </div>
+        """
+        
+      $("#draft-modal-#{@quillID}").html(
+        """
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Restore Draft</h4>
+                </div>
+                <div class="modal-body">
+                  #{draft_picks_html}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" id="manual-save-#{@quillID}" >Manual Save</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+            </div>
+        """
+      )
+      window.addExtraHTML "#draft-modal-#{@quillID}"
+      $("#draft-modal-#{@quillID}").find(".toggle-spoiler").css("margin-top", "0px")
+      $("#draft-modal-#{@quillID}").find(".toggle-spoiler").text "Preview"
+      
+      $(".draft-select-#{@quillID}").click (e) =>
+        e.preventDefault()
+        _id = $(e.target).data("id")
+        @lockSave = true
+        $.post "/drafts/get", JSON.stringify({quill_id: @quillID, path: window.location.pathname, id: _id}), (response) =>
+          @quill.clipboard.dangerouslyPasteHTML response.contents
+          $("#draft-modal-#{@quillID}").modal("hide")
+          @lockSave = false
+      
+      $("#manual-save-#{@quillID}").click (e) =>
+        e.preventDefault()
+        $("#draft-modal-#{@quillID}").modal("hide")
+        $.post "/drafts/save", JSON.stringify({quill_id: @quillID, path: window.location.pathname, contents: $("#post-editor-#{@quillID}").children(".ql-editor").html()}), (response) =>
+          $("#draft-view-#{@quillID}").addClass("btn-success")
+      
+      $("#draft-modal-#{@quillID}").modal("show")
+    
     createAndShowMentionModal: () =>
       $("#mention-modal-#{@quillID}").html(
         """

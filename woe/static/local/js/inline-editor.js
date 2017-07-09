@@ -22,6 +22,7 @@
           no_image_link = false;
         }
         this.createAndShowMentionModal = bind(this.createAndShowMentionModal, this);
+        this.createAndShowDraftModal = bind(this.createAndShowDraftModal, this);
         this.createAndShowEmoticonModal = bind(this.createAndShowEmoticonModal, this);
         this.submitButtonHTML = bind(this.submitButtonHTML, this);
         this.editordivHTML = bind(this.editordivHTML, this);
@@ -87,9 +88,11 @@
 
       InlineEditor.prototype.setupEditor = function(cancel_button) {
         var Block, Parchment, _this, quill, toolbar, toolbarOptions;
+        this.lockSave = false;
         if (this.edit_reason) {
           this.element.before(this.editReasonHTML);
         }
+        this.element.before("<div id=\"draft-modal-" + this.quillID + "\" class=\"modal fade\"></div>");
         this.element.before("<div id=\"mention-modal-" + this.quillID + "\" class=\"modal fade\"></div>");
         this.element.before("<div id=\"emoticon-modal-" + this.quillID + "\" class=\"modal fade\"></div>");
         this.element.before("<div id=\"image-link-modal-" + this.quillID + "\" class=\"modal fade\"></div>");
@@ -97,6 +100,17 @@
         this.element.after(this.dropzoneHTML);
         this.element.after(this.previewHTML);
         this.element.after(this.submitButtonHTML(cancel_button));
+        this.last_saved_draft = new Date().getTime() / 1000;
+        $.post("/drafts/count", JSON.stringify({
+          quill_id: this.quillID,
+          path: window.location.pathname
+        }), (function(_this) {
+          return function(response) {
+            if (response.count > 0) {
+              return $("#draft-view-" + _this.quillID).addClass("btn-success");
+            }
+          };
+        })(this));
         toolbarOptions = [
           ['bold', 'italic', 'underline', 'strike'], ['code-block'], [
             {
@@ -134,6 +148,22 @@
             toolbar: toolbarOptions
           }
         });
+        quill.on('text-change', (function(_this) {
+          return function(delta, source) {
+            if (((new Date().getTime() / 1000) - _this.last_saved_draft) > (2 * 60)) {
+              _this.last_saved_draft = new Date().getTime() / 1000;
+              if (!_this.lockSave && quill.getText !== "") {
+                return $.post("/drafts/save", JSON.stringify({
+                  quill_id: _this.quillID,
+                  path: window.location.pathname,
+                  contents: $("#post-editor-" + _this.quillID).children(".ql-editor").html()
+                }), function(response) {
+                  return $("#draft-view-" + _this.quillID).addClass("btn-success");
+                });
+              }
+            }
+          };
+        })(this));
         quill.clipboard.dangerouslyPasteHTML(this.element.data("editor_initial_html"));
         this.quill = quill;
         toolbar = quill.getModule('toolbar');
@@ -188,15 +218,33 @@
             }
           };
         })(this));
+        $("#draft-view-" + this.quillID).click((function(_this) {
+          return function(e) {
+            return $.post("/drafts/list", JSON.stringify({
+              quill_id: _this.quillID,
+              path: window.location.pathname
+            }), function(response) {
+              return _this.createAndShowDraftModal(response.drafts);
+            });
+          };
+        })(this));
         $("#save-text-" + this.quillID).click((function(_this) {
           return function(e) {
             e.preventDefault();
+            _this.lockSave = true;
             if (_this.saveFunction != null) {
-              if (_this.edit_reason) {
-                return _this.saveFunction($("#post-editor-" + _this.quillID).children(".ql-editor").html(), _this.element.data("editor").getText(), $("#edit-reason-" + _this.quillID).val());
-              } else {
-                return _this.saveFunction($("#post-editor-" + _this.quillID).children(".ql-editor").html(), _this.element.data("editor").getText());
-              }
+              return $.post("/drafts/clear", JSON.stringify({
+                quill_id: _this.quillID,
+                path: window.location.pathname
+              }), function(response) {
+                if (_this.edit_reason) {
+                  _this.saveFunction($("#post-editor-" + _this.quillID).children(".ql-editor").html(), _this.element.data("editor").getText(), $("#edit-reason-" + _this.quillID).val());
+                } else {
+                  _this.saveFunction($("#post-editor-" + _this.quillID).children(".ql-editor").html(), _this.element.data("editor").getText());
+                }
+                $("#draft-view-" + _this.quillID).removeClass("btn-success");
+                return _this.lockSave = false;
+              });
             }
           };
         })(this));
@@ -278,9 +326,9 @@
           cancel_button = false;
         }
         if (cancel_button === true) {
-          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"cancel-edit-" + this.quillID + "\">Cancel</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"preview-" + this.quillID + "\">Preview</button>\n</div>";
+          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"draft-view-" + this.quillID + "\">Drafts</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"cancel-edit-" + this.quillID + "\">Cancel</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"preview-" + this.quillID + "\">Preview</button>\n</div>";
         } else {
-          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"preview-" + this.quillID + "\">Preview</button>\n</div>";
+          return "<div id=\"inline-editor-buttons-" + this.quillID + "\" class=\"inline-editor-buttons\">\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"save-text-" + this.quillID + "\">Save</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"draft-view-" + this.quillID + "\">Drafts</button>\n  <button type=\"button\" class=\"btn btn-default post-post\" id=\"upload-files-" + this.quillID + "\">Upload Files</button>\n  <button type=\"button\" class=\"btn btn-default\" id=\"preview-" + this.quillID + "\">Preview</button>\n</div>";
         }
       };
 
@@ -311,6 +359,50 @@
           return $("#emoticon-modal-" + _this.quillID).modal("hide");
         });
         return $("#emoticon-modal-" + this.quillID).modal("show");
+      };
+
+      InlineEditor.prototype.createAndShowDraftModal = function(drafts) {
+        var draft, draft_picks_html, j, len;
+        draft_picks_html = "";
+        for (j = 0, len = drafts.length; j < len; j++) {
+          draft = drafts[j];
+          draft_picks_html = draft_picks_html + ("<div style=\"margin-top: 5px;\">\n<a href=\"#\" data-id=\"" + draft.id + "\" class=\"draft-select-" + this.quillID + " btn btn-xs btn-default\">" + draft.time + "</a>\n<div class=\"content-spoiler\" style=\"height: 150px;overflow: scroll;\"><div>\n  " + draft.contents + "\n</div></div>\n</div>");
+        }
+        $("#draft-modal-" + this.quillID).html("<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n    <div class=\"modal-header\">\n      <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n      <h4 class=\"modal-title\">Restore Draft</h4>\n    </div>\n    <div class=\"modal-body\">\n      " + draft_picks_html + "\n    </div>\n    <div class=\"modal-footer\">\n      <button type=\"button\" class=\"btn btn-default\" id=\"manual-save-" + this.quillID + "\" >Manual Save</button>\n      <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel</button>\n    </div>\n  </div>\n</div>");
+        window.addExtraHTML("#draft-modal-" + this.quillID);
+        $("#draft-modal-" + this.quillID).find(".toggle-spoiler").css("margin-top", "0px");
+        $("#draft-modal-" + this.quillID).find(".toggle-spoiler").text("Preview");
+        $(".draft-select-" + this.quillID).click((function(_this) {
+          return function(e) {
+            var _id;
+            e.preventDefault();
+            _id = $(e.target).data("id");
+            _this.lockSave = true;
+            return $.post("/drafts/get", JSON.stringify({
+              quill_id: _this.quillID,
+              path: window.location.pathname,
+              id: _id
+            }), function(response) {
+              _this.quill.clipboard.dangerouslyPasteHTML(response.contents);
+              $("#draft-modal-" + _this.quillID).modal("hide");
+              return _this.lockSave = false;
+            });
+          };
+        })(this));
+        $("#manual-save-" + this.quillID).click((function(_this) {
+          return function(e) {
+            e.preventDefault();
+            $("#draft-modal-" + _this.quillID).modal("hide");
+            return $.post("/drafts/save", JSON.stringify({
+              quill_id: _this.quillID,
+              path: window.location.pathname,
+              contents: $("#post-editor-" + _this.quillID).children(".ql-editor").html()
+            }), function(response) {
+              return $("#draft-view-" + _this.quillID).addClass("btn-success");
+            });
+          };
+        })(this));
+        return $("#draft-modal-" + this.quillID).modal("show");
       };
 
       InlineEditor.prototype.createAndShowMentionModal = function() {

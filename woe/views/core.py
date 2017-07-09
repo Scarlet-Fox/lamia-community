@@ -403,6 +403,138 @@ def pm_topic_list_api():
     results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
     return app.jsonify(results=results)
 
+# class Draft(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+#         name="fk_draft_author", ondelete="CASCADE"), index=True)
+#     author = db.relationship("User", foreign_keys="Draft.author_id")
+#    
+#     path = db.Column(db.String)
+#     contents = db.Column(db.String)
+#     created = db.Column(db.DateTime, index=True)
+#     primary_editor = db.Column(db.Boolean, default=True, index=True)
+
+@app.route('/drafts/clear', methods=['POST',])
+@login_required
+def clear_drafts():
+    request_json = request.get_json(force=True)
+    
+    quill_id = request_json.get("quill_id", 1)
+    
+    primary = False
+    if quill_id == 1:
+        primary = True
+        
+    path = request_json["path"].split("/")
+    path = "/".join(path[:3])
+    
+    print primary
+    print path
+    
+    print sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
+        .filter_by(primary_editor = primary, path = path).count()
+    
+    sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
+        .filter_by(primary_editor = primary, path = path).delete()
+            
+    return app.jsonify(count=0)
+
+@app.route('/drafts/count', methods=['POST',])
+@login_required
+def count_drafts():
+    request_json = request.get_json(force=True)
+    
+    quill_id = request_json.get("quill_id", 1)
+    
+    primary = False
+    if quill_id == 1:
+        primary = True
+        
+    path = request_json["path"].split("/")
+    path = "/".join(path[:3])
+    
+    count = sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
+        .filter_by(primary_editor = primary, path = path).count()
+            
+    return app.jsonify(count=count)
+    
+@app.route('/drafts/save', methods=['POST',])
+@login_required
+def save_draft():
+    request_json = request.get_json(force=True)
+    
+    quill_id = request_json.get("quill_id", 1)
+    
+    primary = False
+    if quill_id == 1:
+        primary = True
+        
+    path = request_json["path"].split("/")
+    path = "/".join(path[:3])
+    
+    draft = sqlm.Draft()
+    draft.path = path
+    draft.primary_editor = primary
+    draft.created = arrow.utcnow().datetime
+    draft.author = current_user._get_current_object()
+    draft.author_name = current_user._get_current_object().login_name
+    draft.contents = request_json.get("contents")
+    sqla.session.add(draft)
+    sqla.session.commit()
+    
+    return "Ok."
+    
+@app.route('/drafts/get', methods=['POST',])
+@login_required
+def get_drafts():
+    request_json = request.get_json(force=True)
+
+    quill_id = request_json.get("quill_id", 1)
+
+    primary = False
+    if quill_id == 1:
+        primary = True
+    
+    path = request_json["path"].split("/")
+    path = "/".join(path[:3])
+    
+    _id = request_json["id"]
+
+    try:
+        draft = sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
+            .filter_by(primary_editor = primary, path = path, id = _id).order_by(sqla.desc(sqlm.Draft.created))[0]
+    except IndexError:
+        return abort(404)
+
+    return app.jsonify(contents=draft.contents)
+    
+@app.route('/drafts/list', methods=['POST',])
+@login_required
+def list_drafts():
+    request_json = request.get_json(force=True)
+    
+    quill_id = request_json.get("quill_id", 1)
+    
+    primary = False
+    if quill_id == 1:
+        primary = True
+        
+    path = request_json["path"].split("/")
+    path = "/".join(path[:3])
+    
+    drafts = sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
+        .filter_by(primary_editor = primary, path = path).order_by(sqla.desc(sqlm.Draft.created))[:10]
+    parsed_drafts = []
+    
+    for draft in drafts:
+        parsed_drafts.append({
+            "time": humanize_time(draft.created, "MMM D YYYY HH:mm:ss"),
+            "contents": draft.contents,
+            "id": draft.id
+        })    
+    
+    return app.jsonify(drafts=parsed_drafts)
+
 @app.route('/attach', methods=['POST',])
 @login_required
 def create_attachment():

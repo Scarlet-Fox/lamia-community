@@ -199,6 +199,21 @@ class SiteTheme(db.Model):
     def __repr__(self):
         return "<SiteTheme: (name='%s')>" % (self.name,)
 
+class Draft(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_draft_author", ondelete="CASCADE"), index=True)
+    author = db.relationship("User", foreign_keys="Draft.author_id")
+    author_name = db.Column(db.String)
+    path = db.Column(db.String, index=True)
+    contents = db.Column(db.Text)
+    created = db.Column(db.DateTime, index=True)
+    primary_editor = db.Column(db.Boolean, default=True, index=True)
+    
+    def __repr__(self):
+        return "<SiteTheme: (user='%s', path='%s')>" % (self.name, self.path)
+    
+
 ############################################################
 # Security Models
 ############################################################

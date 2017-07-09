@@ -148,6 +148,13 @@ class StatusCommentView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class DraftView(ModelView):
+    column_list = ("id", "author_name", "path", "created")
+    column_filters = ('author_name', 'path', 'created')
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 class PostView(ModelView):
     can_delete = False
     column_list = ("id", "topic", "created", "author")
@@ -304,6 +311,7 @@ admin.add_view(DiceRollView(sqlm.DiceRoll, sqla.session, category='Forum'))
 admin.add_view(TopicView(sqlm.Topic, sqla.session, category='Forum'))
 admin.add_view(CategoryView(sqlm.Category, sqla.session, category='Forum'))
 admin.add_view(SectionView(sqlm.Section, sqla.session, category='Forum'))
+admin.add_view(DraftView(sqlm.Draft, sqla.session, category='Core'))
 
 #
 # class BlogView(ModelView):
