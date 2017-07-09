@@ -409,6 +409,9 @@ def topic_posts(slug):
     except IndexError:
         return abort(404)
 
+    if topic.category.restricted == True and not current_user.is_admin:
+        return abort(404)
+        
     if current_user._get_current_object() in topic.banned:
         return abort(403)
 
@@ -746,6 +749,9 @@ def topic_index(slug, page, post):
 
     if current_user._get_current_object() in topic.banned:
         return abort(403)
+        
+    if topic.category.restricted == True and not current_user.is_admin:
+        return abort(404)
 
     if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
         return abort(404)
