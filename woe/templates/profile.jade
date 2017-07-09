@@ -172,7 +172,7 @@ style!= profile.get_custom_css()
           li.list-group-item
             .media-left 
               a.subcategory-listing-recent-image(href="/member/{{visitor[0].login_name}}")
-                img.avatar-mini(src=visitor[0].get_avatar_url("40"), width=visitor[0].avatar_40_x, height=visitor[0].avatar_40_y)
+                img.avatar-mini(src=visitor[0].get_avatar_url("60"), width=visitor[0].avatar_60_x, height=visitor[0].avatar_60_y)
             .media-body
               a.hover_user(href="{{url_for('view_profile', login_name=visitor[0].login_name)}}") {{visitor[0].display_name}}
               div {{visitor[1]|humanize_time}}
@@ -228,7 +228,7 @@ style!= profile.get_custom_css()
               li.list-group-item.front-page-status.sidebar-status-section
                 .media-left
                   a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
-                    img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{ status.author.avatar_40_x }}", height="{{ status.author.avatar_40_y }}", class="avatar-mini")
+                    img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
                 .media-body
                   a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
                   span &nbsp;says
@@ -256,7 +256,7 @@ style!= profile.get_custom_css()
               li.list-group-item.front-page-status.sidebar-status-section
                 .media-left
                   a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
-                    img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{ status.author.avatar_40_x }}", height="{{ status.author.avatar_40_y }}", class="avatar-mini")
+                    img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
                 .media-body
                   a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
                   span &nbsp;says

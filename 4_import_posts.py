@@ -83,7 +83,7 @@ for topic in Topic.objects():
         continue
     topic.last_post_by = recent_post.author
     topic.last_post_date = recent_post.created
-    topic.last_post_author_avatar = recent_post.author.get_avatar_url("40")
+    topic.last_post_author_avatar = recent_post.author.get_avatar_url("60")
     
     post_counts = {} #u.pk: count
     

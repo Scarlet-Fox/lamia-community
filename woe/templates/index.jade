@@ -69,7 +69,7 @@
           li.list-group-item(style="padding: 10px;")
             .media-left 
               a(href="/member/{{announcement.author.login_name}}")
-                img.avatar-mini(src=announcement.author.get_avatar_url("40"), width=announcement.author.avatar_40_x, height=announcement.author.avatar_40_y)
+                img.avatar-mini(src=announcement.author.get_avatar_url("60"), width=announcement.author.avatar_60_x, height=announcement.author.avatar_60_y)
             .media-body
               strong
                 a(href="/t/{{announcement.slug}}")= announcement.title
@@ -81,7 +81,7 @@
       li.list-group-item.front-page-status.sidebar-status-section
         .media-left.subcategory-listing-recent-image
           a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
-            img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{ status.author.avatar_40_x }}", height="{{ status.author.avatar_40_y }}", class="avatar-mini")
+            img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
         .media-body
           a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
           span &nbsp;says:
@@ -107,7 +107,7 @@
             li.list-group-item(style="padding: 10px;")
               .media-left.subcategory-listing-recent-image
                 a(href="/member/{{blog.recent_entry.author.login_name}}")
-                  img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
+                  img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("60"), width=blog.recent_entry.author.avatar_60_x, height=blog.recent_entry.author.avatar_60_y)
               .media-body
                 strong
                   a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title

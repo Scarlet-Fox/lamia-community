@@ -26,7 +26,7 @@ ul.list-group
           .col-sm-12
             .media-left
               a(href="{{url_for('view_profile', login_name=friend.friend.login_name)}}")
-                img(src="{{friend.friend.get_avatar_url("40")}}", width="{{friend.friend.avatar_40_x}}", height="{{friend.friend.avatar_40_y}}", class="avatar-mini")
+                img(src="{{friend.friend.get_avatar_url("60")}}", width="{{friend.friend.avatar_60_x}}", height="{{friend.friend.avatar_60_y}}", class="avatar-mini")
             .media-body
               a(href="{{url_for('view_profile', login_name=friend.friend.login_name)}}")= friend.friend.display_name
               div
@@ -41,7 +41,7 @@ ul.list-group
           .col-sm-12
             .media-left
               a(href="{{url_for('view_profile', login_name=friend.user.login_name)}}")
-                img(src="{{friend.user.get_avatar_url("40")}}", width="{{friend.user.avatar_40_x}}", height="{{friend.user.avatar_40_y}}", class="avatar-mini")
+                img(src="{{friend.user.get_avatar_url("60")}}", width="{{friend.user.avatar_60_x}}", height="{{friend.user.avatar_60_y}}", class="avatar-mini")
             .media-body
               a(href="{{url_for('view_profile', login_name=friend.user.login_name)}}")= friend.user.display_name
               .float-right
@@ -61,7 +61,7 @@ ul.list-group
           li.list-group-item.front-page-status.sidebar-status-section
             .media-left
               a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
-                img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{ status.author.avatar_40_x }}", height="{{ status.author.avatar_40_y }}", class="avatar-mini")
+                img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
             .media-body
               a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
               span &nbsp;says
@@ -85,7 +85,7 @@ ul.list-group
             li.list-group-item(style="padding: 10px;")
               .media-left 
                 a(href="/member/{{blog.recent_entry.author.login_name}}")
-                  img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
+                  img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("60"), width=blog.recent_entry.author.avatar_60_x, height=blog.recent_entry.author.avatar_60_y)
               .media-body
                 strong
                   a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title

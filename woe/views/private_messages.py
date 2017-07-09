@@ -603,7 +603,7 @@ def messages_topics():
         _parsed["last_post_x"] = message.last_reply.author.avatar_40_x
         _parsed["last_post_y"] = message.last_reply.author.avatar_40_y
         _parsed["last_post_by_login_name"] = message.last_reply.author.login_name
-        _parsed["last_post_author_avatar"] = message.last_reply.author.get_avatar_url("40")
+        _parsed["last_post_author_avatar"] = message.last_reply.author.get_avatar_url("60")
         _parsed["message_count"] = "{:,}".format(message.count)
         _parsed["_id"] = message.id
         _parsed["title"] = message.title

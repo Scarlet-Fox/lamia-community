@@ -1178,7 +1178,7 @@ def category_topics(slug):
             parsed_topic["last_post_x"] = topic.recent_post.author.avatar_40_x
             parsed_topic["last_post_y"] = topic.recent_post.author.avatar_40_y
             parsed_topic["last_post_by_login_name"] = topic.recent_post.author.login_name
-            parsed_topic["last_post_author_avatar"] = topic.recent_post.author.get_avatar_url("40")
+            parsed_topic["last_post_author_avatar"] = topic.recent_post.author.get_avatar_url("60")
         parsed_topic["post_count"] = "{:,}".format(topic.post_count)
         parsed_topic["view_count"] = "{:,}".format(topic.view_count)
         try:

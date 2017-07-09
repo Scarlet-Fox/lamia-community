@@ -64,7 +64,7 @@
             li.list-group-item
               .media-left
                 a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
-                  img.media-object(src="{{ status.author.get_avatar_url("40") }}", width="{{status.author.avatar_40_x}}px", height="{{status.author.avatar_40_y}}px", class="avatar-mini")
+                  img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{status.author.avatar_60_x}}px", height="{{status.author.avatar_60_y}}px", class="avatar-mini")
               .media-body
                 a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}")= status.author.display_name
                 if status.attached_to_user != None

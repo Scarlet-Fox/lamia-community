@@ -56,7 +56,7 @@ if current_user.is_authenticated()
           li.list-group-item(style="padding: 10px;")
             .media-left 
               a(href="{{url_for('view_profile', login_name=blogentry.author.login_name)}}")
-                img.avatar-mini(src=blogentry.author.get_avatar_url("40"), width=blogentry.author.avatar_40_x, height=blogentry.author.avatar_40_y)
+                img.avatar-mini(src=blogentry.author.get_avatar_url("60"), width=blogentry.author.avatar_60_x, height=blogentry.author.avatar_60_y)
             .media-body
               strong
                 a(href="#")= blogentry.title
@@ -68,7 +68,7 @@ if current_user.is_authenticated()
         li.list-group-item(style="padding: 10px;")
           .media-left
             a(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")
-              img.avatar-mini(src="{{comment.author.get_avatar_url("40")}}", width="{{comment.author.avatar_40_x}}", height="{{comment.author.avatar_40_y}}")
+              img.avatar-mini(src="{{comment.author.get_avatar_url("60")}}", width="{{comment.author.avatar_60_x}}", height="{{comment.author.avatar_60_y}}")
           .media-body
             a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")= comment.author.display_name
             |  commented on 
@@ -81,7 +81,7 @@ if current_user.is_authenticated()
         li.list-group-item(style="padding: 10px;")
           .media-left 
             a(href="{{url_for('view_profile', login_name=blog.recent_entry.author.login_name)}}")
-              img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
+              img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("60"), width=blog.recent_entry.author.avatar_60_x, height=blog.recent_entry.author.avatar_60_y)
           .media-body
             strong
               a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title

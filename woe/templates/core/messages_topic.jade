@@ -28,7 +28,7 @@
         li.list-group-item
           .media-left
             a.subcategory-listing-recent-image(href="{{url_for('view_profile', login_name=participant.author.login_name)}}")
-              img.media-object(src="{{ participant.author.get_avatar_url("40") }}", width="{{ participant.author.avatar_40_x }}", height="{{ participant.author.avatar_40_y }}", class="avatar-mini")
+              img.media-object(src="{{ participant.author.get_avatar_url("60") }}", width="{{ participant.author.avatar_60_x }}", height="{{ participant.author.avatar_60_y }}", class="avatar-mini")
           .media-body
             a.hover_user(href="{{url_for('view_profile', login_name=participant.author.login_name)}}")= participant.author.display_name
             if participant.exited
