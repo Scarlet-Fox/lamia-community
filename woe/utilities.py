@@ -58,6 +58,22 @@ def get_preview_for_email(html):
         text = text[:100] + "..."
     return text
 
+def get_preview(html, characters):
+    spc = spec_characters.findall(html)
+    for sp in spc:
+        html = html.replace(sp, "")
+    links = link_re.findall(html)
+    for link in links:
+        html = html.replace(link[0], "")
+    bbcode = bbcode_re.findall(html)
+    for code in bbcode:
+        html = html.replace(code[0], "")
+    soup = BeautifulSoup(html)
+    text = soup.getText()
+    if len(text) > characters:
+        text = text[:characters] + "..."
+    return text
+
 def parse_search_string(search_text, model, query_object, fields_to_search):
     if search_text.strip() == "":
         return query_object

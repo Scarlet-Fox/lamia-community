@@ -597,13 +597,18 @@ def topic_posts(slug):
                 parsed_post["author_online"] = False
         else:
             parsed_post["author_online"] = False
-
+        
+        hidden_character_avatar = False
+        
         if post.character is not None:
             try:
-                character = post.character
-                parsed_post["character_name"] = character.name
-                parsed_post["character_slug"] = character.slug
-                parsed_post["character_motto"] = character.motto
+                if not post.character.hidden:
+                    character = post.character
+                    parsed_post["character_name"] = character.name
+                    parsed_post["character_slug"] = character.slug
+                    parsed_post["character_motto"] = character.motto
+                else:
+                    hidden_character_avatar = True
             except:
                 pass
         else:
@@ -611,10 +616,11 @@ def topic_posts(slug):
 
         if post.avatar is not None:
             try:
-                a = post.avatar
-                parsed_post["character_avatar_small"] = a.get_specific_size(60)
-                parsed_post["character_avatar_large"] = a.get_specific_size(200)
-                parsed_post["character_avatar"] = True
+                if not hidden_character_avatar:
+                    a = post.avatar
+                    parsed_post["character_avatar_small"] = a.get_specific_size(60)
+                    parsed_post["character_avatar_large"] = a.get_specific_size(200)
+                    parsed_post["character_avatar"] = True
             except:
                 pass
         # else:

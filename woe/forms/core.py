@@ -32,8 +32,8 @@ class UserSettingsForm(Form):
     time_zone = SelectField('Time zone', choices=TIMEZONE_CHOICES)
     no_images = BooleanField("Hide all images (super at-work mode)")
     no_emails = BooleanField("Mute all emails (no email notifications)")
-    minimum_time_between_emails = IntegerField("Minimum time between notification emails (in minutes, no less than 30 and no more than 1440)",
-            [validators.InputRequired(), validators.NumberRange(30,1440)]
+    minimum_time_between_emails = IntegerField("Minimum time between notification emails (in minutes, no less than 5 and no more than 1440)",
+            [validators.InputRequired(), validators.NumberRange(5,1440)]
         )
     
     try:

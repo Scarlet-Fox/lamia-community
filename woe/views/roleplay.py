@@ -6,7 +6,7 @@ from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow, hashlib, mimetypes, time
-from woe.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q, parse_search_string
+from woe.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q, parse_search_string, get_preview
 from mongoengine.queryset import Q
 from wand.image import Image
 import woe.sqlmodels as sqlm
@@ -295,35 +295,67 @@ def character_list_api():
         direction = "desc"
 
     query = request.args.get("search[value]", "")[0:100]
-
-    character_count = sqla.session.query(sqlm.Character).filter_by(hidden=False).count()
-    filtered_character_count = parse_search_string(
-            query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
-        ).filter_by(hidden=False).count()
+    
+    if current_user.is_admin:
+        character_count = sqla.session.query(sqlm.Character).count()
+        filtered_character_count = parse_search_string(
+                query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
+            ).count()
+    else:
+        character_count = sqla.session.query(sqlm.Character).count()
+        filtered_character_count = parse_search_string(
+                query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
+            ).filter_by(hidden=False).count()
 
     if direction == "desc":
-        characters = parse_search_string(
-                query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
-            ).order_by(sqla.desc(getattr(sqlm.Character, order)))[current:current+length]
+        if current_user.is_admin:
+            characters = parse_search_string(
+                    query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
+                ).order_by(sqla.desc(getattr(sqlm.Character, order)))[current:current+length]
+        else:
+            characters = parse_search_string(
+                    query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
+                ).filter_by(hidden=False).order_by(sqla.desc(getattr(sqlm.Character, order)))[current:current+length]
     else:
-        characters = parse_search_string(
-                query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
-            ).order_by(getattr(sqlm.Character, order))[current:current+length]
-
+        if current_user.is_admin:
+            characters = parse_search_string(
+                    query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
+                ).order_by(getattr(sqlm.Character, order))[current:current+length]
+        else:
+            characters = parse_search_string(
+                    query, sqlm.Character, sqla.session.query(sqlm.Character), ["name",]
+                ).filter_by(hidden=False).order_by(getattr(sqlm.Character, order))[current:current+length]
+            
     table_data = []
+    
     for i, character in enumerate(characters):
-        table_data.append(
-            [
-                """<a href="/characters/%s">%s</a>   """ % (
-                        character.slug,
-                        character.name
-                    ),
-                character.age,
-                character.species,
-                humanize_time(character.created),
-                character.author.display_name
-            ]
-        )
+        if character.hidden:
+            table_data.append(
+                [
+                    """<a href="/characters/%s">%s</a>   """ % (
+                            character.slug,
+                            character.name + " (HIDDEN)"
+                        ),
+                    character.author.display_name, 
+                    get_preview(character.other, 50),
+                    humanize_time(character.created),
+                    "", ""
+                ]
+            )
+        else:
+            table_data.append(
+                [
+                    """<a href="/characters/%s">%s</a>   """ % (
+                            character.slug,
+                            character.name
+                        ),
+                    character.author.display_name, 
+                    get_preview(character.other, 50),
+                    humanize_time(character.created),
+                    "", ""
+                ]
+            )
+            
     data = {
         "draw": draw,
         "recordsTotal": character_count,

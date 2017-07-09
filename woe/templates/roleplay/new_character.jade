@@ -2,7 +2,7 @@
 
 {% block content %}
 ul.list-group
-  li.list-group-item.section-header Create a New Character (with love)
+  li.list-group-item.section-header Create a New Character
   li.list-group-item
     .edit-fields(style="padding: 10px;")
       form.form-horizontal(action="/characters/new-character", method="post")
@@ -14,44 +14,13 @@ ul.list-group
             {{ form.name(class="form-control") }}
         .form-group
           .col-sm-3
-            {{ form.age.label(class="control-label") }}
-          .col-sm-9
-            {{ form.age(class="form-control") }}
-        .form-group
-          .col-sm-3
-            {{ form.species.label(class="control-label") }}
-          .col-sm-9
-            {{ form.species(class="form-control") }}
-        .form-group
-          .col-sm-3
             {{ form.motto.label(class="control-label") }}
           .col-sm-9
             {{ form.motto(class="form-control") }}
         hr
         .form-group
           .col-sm-3
-            {{ form.appearance.label(class="control-label") }}
-          .col-sm-9
-            #character-appearance!= form.appearance.data
-            {{ form.appearance }}
-        hr
-        .form-group
-          .col-sm-3
-            {{ form.personality.label(class="control-label") }}
-          .col-sm-9
-            #character-personality!= form.personality.data
-            {{ form.personality }}
-        hr
-        .form-group
-          .col-sm-3
-            {{ form.backstory.label(class="control-label") }}
-          .col-sm-9
-            #character-backstory!= form.backstory.data
-            {{ form.backstory }}
-        hr
-        .form-group
-          .col-sm-3
-            {{ form.other.label(class="control-label") }}
+            label.control-label(for="other") Description
           .col-sm-9
             #character-other!= form.other.data
             {{ form.other }}
