@@ -258,7 +258,8 @@ class FriendshipView(ModelView):
         return (current_user.is_authenticated() and current_user.is_admin)
 
 class SignatureView(ModelView):
-    column_list = ("id", "user")
+    column_list = ("id", "name", "owner_name")
+    column_filters = ("owner_name",)
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)

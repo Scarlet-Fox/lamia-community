@@ -662,6 +662,7 @@ class Signature(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_user_signature", ondelete="CASCADE"), index=True)
     owner = db.relationship("User", foreign_keys="Signature.owner_id")
+    owner_name = db.Column(db.String, default="", index=True)
     name = db.Column(db.String, default="", index=True)
     html = db.Column(db.Text)
     created = db.Column(db.DateTime, index=True)

@@ -326,6 +326,7 @@ def new_signature(login_name):
         signature.html = cleaner.clean(form.signature.data)
         signature.active = form.active.data
         signature.owner = user
+        signature.owner_name = user.login_name
         signature.created = arrow.utcnow().datetime.replace(tzinfo=None)
         sqla.session.add(signature)
         sqla.session.commit()
