@@ -17,7 +17,7 @@ body {
     % endif
 % else:
 body {
-    background: ${"#"+_site_background_color if _site_background_color else ''} ${"url(\"/static/customizations/"+_banner_image+"\") no-repeat scroll top !important" if _banner_image else ''};
+    background: ${"#"+_site_background_color if _site_background_color else ''} ${"url(\"/static/customizations/"+_banner_image+"\") no-repeat fixed top !important" if _banner_image else ''};
 }
 .site-background {
   height: 460px;
