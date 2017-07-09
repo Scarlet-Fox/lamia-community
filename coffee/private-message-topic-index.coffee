@@ -255,7 +255,7 @@ $ ->
                         {{#if _is_logged_in}}
                         <div class="btn-group" role="group" aria-label="...">
                           <div class="btn-group">
-                            <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}"><span class="glyphicon glyphicon-comment"></span></button>
+                            <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}"><span class="">Reply</span></button>
                             <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="pm"><span class="glyphicon glyphicon-exclamation-sign"></span></button>
                           </div>
                         {{/if}}
