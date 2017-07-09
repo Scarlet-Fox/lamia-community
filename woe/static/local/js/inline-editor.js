@@ -31,6 +31,7 @@
         this.disableSaveButton = bind(this.disableSaveButton, this);
         this.editReasonHTML = bind(this.editReasonHTML, this);
         this.extraButtonsHTML = bind(this.extraButtonsHTML, this);
+        this.getHTML = bind(this.getHTML, this);
         Dropzone.autoDiscover = false;
         this.quillID = this.getQuillID();
         this.element = $(element);
@@ -97,23 +98,11 @@
         this.element.after(this.previewHTML);
         this.element.after(this.submitButtonHTML(cancel_button));
         toolbarOptions = [
-          ['bold', 'italic', 'underline', 'strike'], ['blockquote', 'code-block'], [
-            {
-              'header': 1
-            }, {
-              'header': 2
-            }
-          ], [
+          ['bold', 'italic', 'underline', 'strike'], ['code-block'], [
             {
               'list': 'ordered'
             }, {
               'list': 'bullet'
-            }
-          ], [
-            {
-              'script': 'sub'
-            }, {
-              'script': 'super'
             }
           ], [
             {
@@ -123,31 +112,17 @@
             }
           ], [
             {
-              'direction': 'rtl'
-            }
-          ], [
-            {
-              'size': ['small', false, 'large', 'huge']
-            }
-          ], [
-            {
               'header': [1, 2, 3, 4, 5, 6, false]
             }
           ], [
             {
               'color': []
-            }, {
-              'background': []
-            }
-          ], [
-            {
-              'font': []
             }
           ], [
             {
               'align': []
             }
-          ], ['clean'], ['link'], ['image']
+          ], ['link'], ['image']
         ];
         Parchment = Quill["import"]('parchment');
         Block = Parchment.query('block');
@@ -248,6 +223,10 @@
         if (this.readyFunction != null) {
           return this.readyFunction();
         }
+      };
+
+      InlineEditor.prototype.getHTML = function() {
+        return $("#post-editor-" + this.quillID).children(".ql-editor").html();
       };
 
       InlineEditor.prototype.setElementHtml = function(set_html) {

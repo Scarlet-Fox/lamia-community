@@ -926,3 +926,12 @@ h1.breadcrumb-h1 {
   margin: 0px !important;
   font-weight: bold !important;
 }
+.ql-align-center {
+  text-align: center;
+}
+.ql-align-justify {
+  text-align: justify;
+}
+.ql-align-right {
+  text-align: right;
+}

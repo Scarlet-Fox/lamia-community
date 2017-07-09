@@ -2,6 +2,7 @@
 (function() {
   $(function() {
     Dropzone.autoDiscover = false;
+    $(".add-dropzone").append("<div class=\"dropzone\"></div>");
     $(".dropzone").dropzone({
       url: window.location + "/attach",
       dictDefaultMessage: "Click here or drop a file in to upload (image files only).",

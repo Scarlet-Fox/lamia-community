@@ -8,5 +8,5 @@ $ ->
 
    $("form").submit (e) ->
      window.save = true
-     $("#entry").val(blog_entry_editor.quill.getHTML())
+     $("#entry").val(blog_entry_editor.getHTML())
      return true

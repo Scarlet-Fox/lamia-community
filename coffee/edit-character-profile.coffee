@@ -14,8 +14,8 @@ $ ->
   
   $("form").submit (e) ->
     window.save = true
-    $("#appearance").val(appearance_editor.quill.getHTML())
-    $("#personality").val(personality_editor.quill.getHTML())
-    $("#backstory").val(backstory_editor.quill.getHTML())
-    $("#other").val(other_editor.quill.getHTML())
+    $("#appearance").val(appearance_editor.getHTML())
+    $("#personality").val(personality_editor.getHTML())
+    $("#backstory").val(backstory_editor.getHTML())
+    $("#other").val(other_editor.getHTML())
     return true

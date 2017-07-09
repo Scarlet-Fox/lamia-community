@@ -58,18 +58,12 @@ $ ->
       
       toolbarOptions = [
         ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote', 'code-block'],
-        [{ 'header': 1 }, { 'header': 2 }],
+        ['code-block'],
         [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'script': 'sub'}, { 'script': 'super' }],
         [{ 'indent': '-1'}, { 'indent': '+1' }],
-        [{ 'direction': 'rtl' }],
-        [{ 'size': ['small', false, 'large', 'huge'] }],
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'font': [] }],
+        [{ 'color': [] },],
         [{ 'align': [] }],
-        ['clean'],
         ['link'],
         ['image'],
       ]
@@ -173,6 +167,9 @@ $ ->
 
       if @readyFunction?
         do @readyFunction
+
+    getHTML: () =>
+      $("#post-editor-#{@quillID}").children(".ql-editor").html()
 
     setElementHtml: (set_html) ->
       @element.data("given_editor_initial_html", set_html)

@@ -8,5 +8,5 @@ $ ->
 
    $("form").submit (e) ->
      window.save = true
-     $("#comment").val(blog_comment_editor.quill.getHTML())
+     $("#comment").val(blog_comment_editor.getHTML())
      return true

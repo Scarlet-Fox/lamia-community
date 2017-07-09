@@ -11,7 +11,7 @@
     };
     return $("form").submit(function(e) {
       window.save = true;
-      $("#description").val(blog_description.quill.getHTML());
+      $("#description").val(blog_description.getHTML());
       return true;
     });
   });

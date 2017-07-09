@@ -26,8 +26,13 @@ def category_list_api():
     query = request.args.get("q", "")[0:300]
     if len(query) < 2:
         return app.jsonify(results=[])
-
-    q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
+    
+    if current_user._get_current_object().is_admin:
+        q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
+        
+    else:
+        q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",]).filter_by(restricted=False)
+    
     categories = q_.all()
     results = [{"text": unicode(c.name), "id": str(c.id)} for c in categories]
     return app.jsonify(results=results)
@@ -50,6 +55,9 @@ def toggle_follow_category(slug):
     try:
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
+        return abort(404)
+        
+    if category.restricted == True and not current_user.is_admin:
         return abort(404)
 
     if not current_user._get_current_object() in category.watchers:
@@ -838,7 +846,9 @@ def category_filter_preferences(slug):
         return abort(404)
     if not current_user.is_authenticated():
         return app.jsonify(preferences={})
-
+    if category.restricted == True and not current_user.is_admin:
+        return abort(404)
+        
     if current_user.data is None:
         tmp_data = {}
     else:
@@ -948,7 +958,9 @@ def new_topic(slug):
             category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
         except IndexError:
             return abort(404)
-
+        if category.restricted == True and not current_user.is_admin:
+            return abort(404)
+            
         request_json = request.get_json(force=True)
 
         if request_json.get("title", "").strip() == "":
@@ -1085,6 +1097,8 @@ def new_topic(slug):
     else:
         try:
             category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
+            if category.restricted == True and not current_user.is_admin:
+                return abort(404)
         except IndexError:
             return abort(404)
 
@@ -1095,6 +1109,8 @@ def category_topics(slug):
     try:
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
+        return abort(404)
+    if category.restricted == True and not current_user.is_admin:
         return abort(404)
 
     if current_user.is_authenticated():
@@ -1180,6 +1196,8 @@ def category_index(slug):
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
+    if category.restricted == True and not current_user.is_admin:
+        return abort(404)
 
     subcategories = sqla.session.query(sqlm.Category).filter_by(parent=category).all()
     prefixes = sqla.session.query(sqlm.Label.label, sqla.func.count(sqlm.Topic.id)) \
@@ -1201,22 +1219,40 @@ def index():
         sections.append(section)
 
         categories[section] = []
-
-        for category in sqla.session.query(sqlm.Category) \
-            .filter_by(section=section).filter_by(parent=None) \
-            .order_by(sqlm.Category.weight).all():
-            categories[section].append(category)
-            if len(category.children) > 0:
-                sub_categories[category] = category.children
-                recent_post = category.recent_post
-                for category_child in category.children:
-                    try:
-                        if category_child.recent_post.created > recent_post.created:
-                            recent_post = category_child.recent_post
-                    except:
-                        pass
-                category.recent_post = recent_post
-                category.recent_topic = recent_post.topic
+        
+        if current_user.is_admin:
+            for category in sqla.session.query(sqlm.Category) \
+                .filter_by(section=section).filter_by(parent=None) \
+                .order_by(sqlm.Category.weight).all():
+                categories[section].append(category)
+                if len(category.children) > 0:
+                    sub_categories[category] = category.children
+                    recent_post = category.recent_post
+                    for category_child in category.children:
+                        try:
+                            if category_child.recent_post.created > recent_post.created:
+                                recent_post = category_child.recent_post
+                        except:
+                            pass
+                    category.recent_post = recent_post
+                    category.recent_topic = recent_post.topic
+        else:
+            for category in sqla.session.query(sqlm.Category) \
+                .filter_by(section=section).filter_by(parent=None).filter_by(restricted=False) \
+                .order_by(sqlm.Category.weight).all():
+                categories[section].append(category)
+                if len(category.children) > 0:
+                    sub_categories[category] = category.children
+                    recent_post = category.recent_post
+                    for category_child in category.children:
+                        try:
+                            if category_child.recent_post.created > recent_post.created:
+                                recent_post = category_child.recent_post
+                        except:
+                            pass
+                    category.recent_post = recent_post
+                    category.recent_topic = recent_post.topic
+            
 
     online_users = sqla.session.query(sqlm.User) \
         .filter(sqlm.User.hidden_last_seen > arrow.utcnow() \
