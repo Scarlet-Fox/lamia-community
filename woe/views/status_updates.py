@@ -51,7 +51,12 @@ def display_status_update(status):
         mod = False
 
     status.last_viewed=arrow.utcnow().datetime.replace(tzinfo=None)
-
+    
+    try:
+        status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status, author=current_user._get_current_object())[0]
+    except IndexError:
+        status_user = None
+    
     sqla.session.add(status)
     sqla.session.commit()
 
@@ -61,6 +66,7 @@ def display_status_update(status):
             get_preview_for_email(status.message),
             unicode(status.author.display_name)),
             status=status,
+            status_user=status_user,
             mod=mod
         )
 
@@ -220,7 +226,7 @@ def make_status_update_reply(status):
             continue
 
         send_notify_to_users.append(user.author)
-
+    
     broadcast(
         to=send_notify_to_users,
         category="status",
@@ -234,16 +240,33 @@ def make_status_update_reply(status):
         author=current_user._get_current_object()
         )
 
+    try:
+        status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status, author=status.author)[0]
+    except IndexError:
+        status_user = None
+        
     if current_user._get_current_object() != status.author:
-        broadcast(
-            to=[status.author],
-            category="status",
-            url="/status/"+str(status.id),
-            title="%s replied to your status update" % (unicode(current_user._get_current_object().display_name)),
-            description=status.message,
-            content=status,
-            author=current_user._get_current_object()
-            )
+        if status_user == None:
+            broadcast(
+                to=[status.author],
+                category="status",
+                url="/status/"+str(status.id),
+                title="%s replied to your status update" % (unicode(current_user._get_current_object().display_name)),
+                description=status.message,
+                content=status,
+                author=current_user._get_current_object()
+                )
+        else:
+            if not status_user.ignoring:
+                broadcast(
+                    to=[status.author],
+                    category="status",
+                    url="/status/"+str(status.id),
+                    title="%s replied to your status update" % (unicode(current_user._get_current_object().display_name)),
+                    description=status.message,
+                    content=status,
+                    author=current_user._get_current_object()
+                    )            
 
     return app.jsonify(newest_reply=parsed_reply, count=status.get_comment_count(), success=True)
 
@@ -374,14 +397,14 @@ def toggle_status_ignoring(status):
         status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status, author=current_user._get_current_object())[0]
     except IndexError:
         status_user = None
-
+        
     if not status_user:
         try:
             status.participants.append(current_user._get_current_object())
             return app.jsonify(url="/status/"+str(status.id))
         except:
             return app.jsonify(url="/status/"+str(status.id))
-
+            
     status_user.ignoring = not status_user.ignoring
 
     sqla.session.add(status_user)

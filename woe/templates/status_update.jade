@@ -34,7 +34,7 @@
           {% endif %}
           {% endif %}
           if current_user.is_authenticated()
-            {% if current_user in status.ignoring or not current_user in status.participants %}
+            {% if status_user.ignoring or not current_user in status.participants %}
             a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-ignore") Follow
             {% else %}
             a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-ignore") Ignore
