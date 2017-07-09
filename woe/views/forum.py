@@ -1282,7 +1282,7 @@ def index():
         new_member_intro_topic = sqla.session.query(sqlm.Topic) \
             .join(sqlm.Topic.category) \
             .filter(sqlm.Topic.hidden==False, sqlm.Topic.author==newest_member) \
-            .filter(sqlm.Category.slug == "welcome-mat") \
+            .filter(sqlm.Category.slug == "welcome") \
             .order_by(sqlm.Topic.created.desc())[0]
     except IndexError:
         new_member_intro_topic = None
