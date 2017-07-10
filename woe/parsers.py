@@ -29,8 +29,8 @@ html_img_re = re.compile(r'<img src=\"(.*?)\">', re.I)
 prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 progress_re = re.compile(r'(\[progressbar=(#?[a-zA-Z0-9]+)\](\d+?)\[\/progressbar\])')
 mention_re = re.compile("\[@(.*?)\]")
-deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\](.*?\[\/reply\])', re.DOTALL|re.I)
-reply_re = re.compile(r'\[reply=(.+?):(post|pm)(:.+?)?\]')
+deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\](.*?\[\/reply\])', re.DOTALL|re.I)
+reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\]')
 legacy_postcharacter_re = re.compile(r'\[(post)?character=.*?\]')
 list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL|re.I)
 link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
@@ -404,7 +404,33 @@ class ForumPostParser(object):
                     "/member/%s" % _replying_to.author.login_name,
                     re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
                 ))
+                
+            if reply[1] == "blogcomment":
+                try:
+                    r_id = int(reply[0])
+                    _replying_to = sqla.session.query(sqlm.BlogComment).filter_by(id=r_id)[0]
+                except:
+                    sqla.session.rollback()
 
+                _display_name = _replying_to.author.display_name
+
+                if container:
+                    inner_html = reply[3].replace("[spoiler]", "").replace("[/spoiler]", "")
+                else:
+                    inner_html = _replying_to.html.replace("[spoiler]", "").replace("[/spoiler]", "")
+                    
+                return html.replace(string_to_replace, """
+                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
+                %s
+                </div></blockquote>
+                """ % (
+                    arrow.get(_replying_to.created).timestamp,
+                    "/blog/test/e/%s/page/1" % (_replying_to.blog_entry.slug),
+                    _display_name,
+                    "/member/%s" % _replying_to.author.login_name,
+                    re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
+                ))
+                
             if reply[1] == "pm":
                 try:
                     r_id = int(reply[0])

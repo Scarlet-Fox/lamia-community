@@ -1,6 +1,4 @@
-$ ->
-  window.addExtraHTML(".list-group-item")
-
+$ ->  
   $(".boop-link").click (e) ->
     e.preventDefault()
     element = $(this)
@@ -23,6 +21,46 @@ $ ->
 
   if $("#new-post-box").length > 0
     inline_editor = new InlineEditor "#new-post-box", "", false, false, 150
+    
+    getSelectionText = () ->
+      text = ""
+      if window.getSelection
+        text = window.getSelection().toString();
+      else if document.selection and document.selection.type != "Control"
+        text = document.selection.createRange().text;
+      return text
+      
+    $(".list-group-item").delegate ".reply-button", "click", (e) ->
+      e.preventDefault()
+
+      try
+        post_object = getSelectionParentElement().closest(".post-content")
+      catch
+        post_object = null
+      highlighted_text = getSelectionText().trim()
+
+      element = $(this)
+      my_content = ""
+      
+      if post_object? and post_object == $("#post-#{element.data("pk")}")[0]
+        my_content = "[reply=#{element.data("pk")}:blogcomment:#{element.data("author")}]\n#{highlighted_text}\n[/reply]"
+      else
+        my_content = "[reply=#{element.data("pk")}:blogcomment:#{element.data("author")}]\n\n"
+
+      x = window.scrollX
+      y = window.scrollY
+      try
+        inline_editor.quill.focus()
+      catch
+        current_position = 0
+
+      window.scrollTo x, y
+      unless current_position?
+        current_position = inline_editor.quill.getSelection()?.start
+        unless current_position?
+          current_position = inline_editor.quill.getLength()
+      inline_editor.quill.insertText current_position, my_content
+    
 
     inline_editor.onSave (html, text) ->
       inline_editor.disableSaveButton()

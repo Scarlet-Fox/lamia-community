@@ -741,7 +741,26 @@ def create_blog_comment(slug, entry_slug, page):
     sqla.session.commit()
 
     max_pages = int(math.ceil(float(entry.comment_count())/10.0))
-                    
+    e = entry
+    
+    replies = reply_re.findall(new_blog_comment.html)
+    to_notify = {}
+    for reply_ in replies:
+        try:
+            to_notify[reply_] = sqla.session.query(sqlm.BlogComment).filter_by(id=reply_[0])[0].author
+        except:
+            continue
+
+    broadcast(
+      to=to_notify.values(),
+      category="topic_reply",
+      url="""/blog/%s/e/%s""" % (slug, entry.slug),
+      title="%s replied to you in %s" % (unicode(e.author.display_name), unicode(entry.title)),
+      description=new_blog_comment.html,
+      content=new_blog_comment,
+      author=new_blog_comment.author
+      )
+
     mentions = mention_re.findall(new_blog_comment.html)
     to_notify_m = {}
     for mention in mentions:
@@ -749,8 +768,6 @@ def create_blog_comment(slug, entry_slug, page):
             to_notify_m[mention] = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
         except:
             continue
-            
-    e = entry
 
     broadcast(
       to=to_notify_m.values(),
