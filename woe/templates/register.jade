@@ -2,25 +2,16 @@
 
 {% block content %}
 .row
-  .col-lg-6.col-md-6.col-sm-4
-    ul.list-group
-      li.list-group-item.section-header Welcome to Casual Anime
-      li.list-group-item
-        center
-          h2 Join Casual Anime!
-          img(src="/static/welcome.png", style="max-width: 100%;")
-          p 
-            b We're extremely happy that you would like to join us!  
-          p Just remember to stay polite, stay courteous, and respect your fellow members. 
-          p Our community is a friendly and safe place, and our goal is to 
-            | keep it this way. If you share our goal, then we will be your
-            | home away from home!
-          p If not, then we will kick you out.
   .col-lg-6.col-md-6.col-sm-8
     ul.list-group
       li.list-group-item.section-header One of Us, One of Us, One of Us!
       li.list-group-item
-        form(action="/register", method="post")
+        center
+          h2 Join Us!
+          img(src="/static/welcome.png", style="max-width: 50%;")
+          br
+          br
+        form(action="/register", method="post", id="join-now")
           {{ form_errors(form) }}
           .form-group
             {{ form.username.label }}
@@ -41,11 +32,32 @@
             label
               {{ form.over_thirteen() }} Are you at or over the age of 13?
           .form-group
+            p Joining this site means that you have read and agree with our <a href="/rules" target="_blank">rules and terms</a> and understand our <a href="/privacy" target="_blank">privacy policy</a>.
+          .form-group
             {{ form.how_did_you_find_us.label }}
             {{ form.how_did_you_find_us(class="form-control") }}
           button(type="submit").btn.btn-default Submit
           br
-          br
+  .col-lg-6.col-md-6.col-sm-4
+    ul.list-group
+      li.list-group-item.section-header Welcome to Casual Anime
+      li.list-group-item
+        center
+          h1 <strong style="color: purple;">Welcome to Casual Anime!</strong>
+        br
+        p Casual Anime is an online community devoted to members of the anime fandom that aren't hardcore otakus and don't feel like they have to be.
+        p <strong style="color: purple;">Are you tired of drama?</strong> Great! We are too! We strive to provide a restful, low-drama environment. If you're looking for a relatively drama-free zone, then welcome to the site, we look forward to seeing you around. 
+        p <strong style="color: purple;">Not interested in anime at all?</strong> We are still a pleasant community, and we welcome people regardless of their fandom interests. While we are an anime site, we are also happy to provide a space for anyone that is pleasant and fun.
+        p <strong style="color: purple;">Here to cause drama?</strong> Please don't. You won't have much fun, anyway. We ban quickly. Really, what could be the harm in joining and being nice, instead? You would probably make some new friends!
+        p We are a welcoming community, with a zero tolerance policy towards harassment.
+        p Looking for a place to get started? It's right here.      
+        p <strong style="color: purple;">Want to know more? Keep reading.</strong>
+        p When we say that we are a welcoming community, we mean it. We believe in the idea that everyone is equal online regardless of where they land on the spectrum of gender and sexuality. We are in favor of women's rights and believe in supporting the LGBT community.
+        p You may wonder, “What does this have to do with anime?” It's a good question, and the answer is that it doesn't have to have anything to do with anime. Instead, it has to do with the community. A community built on the idea that everyone is welcome has a very different tenor than one that is not.
+        p For one thing, it means that the community provides support and resources that may not be available in other places. We may talk about things that you won't find in other places. We might be home to members that would not have a safe space in other places. 
+        p The staff members of this community have decades of first hand experience in participating in, running, and administering fandom communities around the web. Experience has taught them that communities can't just rely on self-moderation to provide a safe, welcoming space. It has to be built into the culture from the beginning.
+        p Casual Anime is more than just an anime forum. It is a community, one that aims to be a pleasant escape from the turmoil and noise that is prevalent in many of the mega communities across the internet. 
+        
 {% endblock %}
 
 {% block script %}

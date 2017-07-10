@@ -924,6 +924,14 @@ def confirm_register(pk):
         return abort(404)
     return render_template("welcome_new_user.jade", page_title="Welcome! - Casual Anime", profile=user)
 
+@app.route('/privacy')
+def privacy():
+    return render_template("privacy.jade", page_title="Privacy Policy - Casual Anime")
+
+@app.route('/rules')
+def rules():
+    return render_template("rules.jade", page_title="Site Rules - Casual Anime")
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated():
@@ -941,15 +949,25 @@ def register():
         new_user.set_password(form.password.data.strip())
         new_user.joined = arrow.utcnow().datetime
         new_user.over_thirteeen = True
+        new_user.validated = True
         new_user.how_did_you_find_us = form.how_did_you_find_us.data
 
         sqla.session.add(new_user)
         sqla.session.commit()
 
+        # send_mail_w_template(
+        #     send_to=[new_user,],
+        #     template="pending_validation.txt",
+        #     subject="Your Account is Being Reviewed - Casual Anime",
+        #     variables={
+        #         "_user": new_user,
+        #     }
+        # )
+        
         send_mail_w_template(
             send_to=[new_user,],
-            template="pending_validation.txt",
-            subject="Your Account is Being Reviewed - Casual Anime",
+            template="welcome_to_moe.txt",
+            subject="Welcome - Casual Anime",
             variables={
                 "_user": new_user,
             }
@@ -959,7 +977,7 @@ def register():
             to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
             category="mod",
             url="/member/"+unicode(new_user.login_name),
-            title="%s has joined the forum. Please review and approve/ban (go to /admin/)." % (unicode(new_user.display_name),),
+            title="%s has joined the forum. Please review!" % (unicode(new_user.display_name),),
             description="",
             content=new_user,
             author=new_user
@@ -982,18 +1000,8 @@ def register():
         broadcast(
             to=[new_user,],
             category="new_member",
-            url="/category/welcome-mat",
+            url="/category/welcome",
             title="Welcome! Click here to introduce yourself!",
-            description="",
-            content=new_user,
-            author=new_user
-            )
-
-        broadcast(
-            to=[new_user,],
-            category="new_member",
-            url="/t/scarlet-s-web-rules",
-            title="Make sure to read the rules.",
             description="",
             content=new_user,
             author=new_user

@@ -1,15 +1,10 @@
 Hello ${_user.display_name},
 
-Our administrators have reviewed and approved your account. Welcome to Casual Anime! It is great to have you as a member of our community.
+Welcome to Casual Anime! It is great to have you as a member of our community!
 
-Please review the following links when you get a chance:
+You account is now active, so visit us and sign in: http://casualanime.com
 
-- Our community rules can be found at https://scarletsweb.moe/t/scarlet-s-web-rules
-- A useful guide on online etiquette is available here https://scarletsweb.moe/t/how-can-i-be-a-nice-person-online
-
-Besides those two pages, you should introduce yourself to the rest of the community! The Welcome Board is here https://scarletsweb.moe/category/welcome-mat and you can post your own introduction topic whenever you feel like it.
-
-To unsubscribe from all future messages from Casual Anime, go to this page - https://scarletsweb.moe/member/${_user.id}/${_user.email_address}/unsubscribe
+To unsubscribe from all future messages from Casual Anime, go to this page - https://casualanime.com/member/${_user.id}/${_user.email_address}/unsubscribe
 
 Take care!
 - Casual Anime

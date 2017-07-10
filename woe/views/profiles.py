@@ -186,32 +186,32 @@ def view_profile(login_name):
         status_update_comments_count=status_update_comments_created
         )
 
-@app.route('/member/<login_name>/validate-user', methods=['POST'])
-@login_required
-def validate_user(login_name):
-    try:
-        user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
-    except IndexError:
-        abort(404)
-
-    if current_user._get_current_object().is_admin != True:
-        return abort(404)
-
-    user.validated = True
-
-    sqla.session.add(user)
-    sqla.session.commit()
-
-    send_mail_w_template(
-        send_to=[user,],
-        template="welcome_to_moe.txt",
-        subject="Welcome - Casual Anime",
-        variables={
-            "_user": user,
-        }
-    )
-
-    return app.jsonify(url="/member/"+unicode(user.my_url))
+# @app.route('/member/<login_name>/validate-user', methods=['POST'])
+# @login_required
+# def validate_user(login_name):
+#     try:
+#         user = sqla.session.query(sqlm.User).filter_by(my_url=login_name.strip().lower())[0]
+#     except IndexError:
+#         abort(404)
+#
+#     if current_user._get_current_object().is_admin != True:
+#         return abort(404)
+#
+#     user.validated = True
+#
+#     sqla.session.add(user)
+#     sqla.session.commit()
+#
+#     send_mail_w_template(
+#         send_to=[user,],
+#         template="welcome_to_moe.txt",
+#         subject="Welcome - Casual Anime",
+#         variables={
+#             "_user": user,
+#         }
+#     )
+#
+#     return app.jsonify(url="/member/"+unicode(user.my_url))
 
 @app.route('/member/<login_name>/signatures', methods=['GET'])
 @login_required

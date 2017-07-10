@@ -187,11 +187,11 @@ def send_notification_emails():
 
             if not app.settings_file.get("lockout_on", False):
                 result = requests.post(
-                    "https://api.mailgun.net/v3/scarletsweb.moe/messages",
+                    "https://api.mailgun.net/v3/casualanime.com/messages",
                     auth=("api", _api),
-                    data={"from": "Casual Anime <sally@scarletsweb.moe>",
+                    data={"from": "Casual Anime <help@casualanime.com>",
                           "to": _to_email_address,
-                          "subject": "You have %s notifications at Scarletsweb.moe" % (_total,),
+                          "subject": "You have %s notifications at Casual Anime Forums" % (_total,),
                           "text": _rendered})
             else:
                 result = "LOCKDOWN ON"
@@ -199,7 +199,7 @@ def send_notification_emails():
             new_email_log = sqlm.EmailLog()
             new_email_log.to = u
             new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
-            new_email_log.subject = "You have %s notifications at Scarletsweb.moe" % (_total,)
+            new_email_log.subject = "You have %s notifications at Casual Anime Forums" % (_total,)
             new_email_log.body = _rendered
             new_email_log.result = str(result)
             sqla.session.add(new_email_log)
@@ -221,9 +221,9 @@ def send_mail_w_template(send_to, subject, template, variables):
 
     if not app.settings_file.get("lockout_on", False):
         response = requests.post(
-            "https://api.mailgun.net/v3/scarletsweb.moe/messages",
+            "https://api.mailgun.net/v3/casualanime.com/messages",
             auth=("api", _api),
-            data={"from": "Casual Anime <sally@scarletsweb.moe>",
+            data={"from": "Casual Anime <help@casualanime.com>",
                   "to": _to_email_addresses,
                   "subject": subject,
                   "text": _template.render(**variables)})
@@ -256,9 +256,9 @@ def send_announcement_emails():
             if not user.emails_muted:
                 if not app.settings_file.get("lockout_on", False):
                     result = requests.post(
-                        "https://api.mailgun.net/v3/scarletsweb.moe/messages",
+                        "https://api.mailgun.net/v3/casualanime.com/messages",
                         auth=("api", _api),
-                        data={"from": "Casual Anime <sally@scarletsweb.moe>",
+                        data={"from": "Casual Anime <help@casualanime.com>",
                               "to": user.email_address,
                               "subject": announcement.subject,
                               "text": _rendered})
