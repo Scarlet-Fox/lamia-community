@@ -14,8 +14,6 @@ doctype html(lang="en-us")
 head
     if current_user.is_authenticated()
       meta(name='hue', content='Hello {{current_user.login_name}}. Stare too long at this code, and you will succumb to eldritch influences. You have been warned.')
-    else
-      meta(name='hue', content='Lavo? Neikos? ... Is that you? Say something! :ooooo')
     link(rel="icon", href="/static/favicon.png", type="image/png", sizes="any")
     meta(http-equiv='content-type', content='text/html; charset=UTF-8')
     meta(http-equiv="content-language", content="en-us")
@@ -130,13 +128,13 @@ body(role='document')
                 hr
             li#forum-li
               a(href='/') Forum
+            li#blog-li
+              a(href='/blogs') Blogs
             li.dropdown
               a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                 | Community 
                 span.caret
               ul.dropdown-menu(role='menu')
-                li
-                  a(href='/blogs') Blogs
                 li
                   a(href='/status-updates') Status Updates
                 li.divider

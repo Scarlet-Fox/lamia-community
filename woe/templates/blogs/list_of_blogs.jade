@@ -92,6 +92,7 @@ if current_user.is_authenticated()
 {% block script %}
 script(type="text/javascript").
   $(document).ready(function(){ 
+    $('#blog-li').addClass('active');
   });
 
 {% assets filters="rjsmin", output="generated/listing-of-blogs.js",

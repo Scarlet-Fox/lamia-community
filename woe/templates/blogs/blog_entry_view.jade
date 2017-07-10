@@ -138,6 +138,12 @@
 {% endblock %}
 
 {% block script %}
+script(type="text/javascript").
+  $(document).ready(function(){
+    window.addExtraHTML(".list-group-item");
+    $('#blog-li').addClass('active');
+  });
+  
 {% assets filters="rjsmin", output="generated/editor.js",
 "assets/quill2/quill.js", "assets/dropzone/dropzone.js", 
 "assets/select2/select2.full.js", "local/js/inline-editor.js" %}
