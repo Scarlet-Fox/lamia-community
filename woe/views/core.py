@@ -924,6 +924,10 @@ def confirm_register(pk):
         return abort(404)
     return render_template("welcome_new_user.jade", page_title="Welcome! - Casual Anime", profile=user)
 
+@app.route('/acknowledgement')
+def credits():
+    return render_template("acknowledgement.jade", page_title="Thank You - Casual Anime")
+
 @app.route('/privacy')
 def privacy():
     return render_template("privacy.jade", page_title="Privacy Policy - Casual Anime")
