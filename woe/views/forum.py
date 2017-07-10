@@ -766,6 +766,8 @@ def topic_index(slug, page, post):
         page = int(page)
     except:
         page = 1
+        
+    request.canonical = app.config['BASE'] + "/t/%s/page/%s" % (slug, page)
 
     if topic.last_seen_by is None:
         topic.last_seen_by = {}

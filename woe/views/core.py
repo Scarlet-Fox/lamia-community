@@ -37,6 +37,9 @@ login_manager.anonymous_user = Anonymouse
 def make_session_permanent():
     session.permanent = True
 
+@app.before_request
+def add_canonical_url():
+    request.canonical = app.config['BASE'] + request.path
 
 @app.before_request
 def check_ip_ban():
