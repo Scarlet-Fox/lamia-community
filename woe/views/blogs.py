@@ -10,7 +10,10 @@ from woe.views.dashboard import broadcast
 from BeautifulSoup import BeautifulSoup
 import woe.sqlmodels as sqlm
 from woe.forms.blogs import BlogSettingsForm, BlogEntryForm, BlogCommentForm
-import math
+import math, re
+
+mention_re = re.compile("\[@(.*?)\]")
+reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
 
 @app.route('/blogs', methods=['GET'], defaults={'page': 1})
 @app.route('/blogs/page/<page>', methods=['GET'])
@@ -331,6 +334,24 @@ def new_blog_entry(slug):
             for u in blog.subscribers:
                 if u.id != current_user._get_current_object().id:
                     _to_notify.append(u)
+                    
+            mentions = mention_re.findall(e.html)
+            to_notify_m = {}
+            for mention in mentions:
+                try:
+                    to_notify_m[mention] = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
+                except:
+                    continue
+
+            broadcast(
+              to=to_notify_m.values(),
+              category="mention",
+              url="""/blog/%s/e/%s""" % (slug, entry.slug),
+              title="%s mentioned you in blog %s" % (unicode(e.author.display_name), unicode(entry.title)),
+              description=e.html,
+              content=e,
+              author=e.author
+              )
 
             if len(_to_notify) > 0:
                 broadcast(
@@ -720,6 +741,26 @@ def create_blog_comment(slug, entry_slug, page):
     sqla.session.commit()
 
     max_pages = int(math.ceil(float(entry.comment_count())/10.0))
+                    
+    mentions = mention_re.findall(new_blog_comment.html)
+    to_notify_m = {}
+    for mention in mentions:
+        try:
+            to_notify_m[mention] = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
+        except:
+            continue
+            
+    e = entry
+
+    broadcast(
+      to=to_notify_m.values(),
+      category="mention",
+      url="""/blog/%s/e/%s""" % (slug, entry.slug),
+      title="%s mentioned you in a comment on %s" % (unicode(e.author.display_name), unicode(entry.title)),
+      description=new_blog_comment.html,
+      content=new_blog_comment,
+      author=new_blog_comment.author
+      )
 
     broadcast(
         to=[entry.author,],
