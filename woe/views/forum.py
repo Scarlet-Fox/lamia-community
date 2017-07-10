@@ -8,7 +8,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import arrow, time, math
 from threading import Thread
 import random
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview
 from woe.views.dashboard import broadcast
 import re, json
 from datetime import datetime
@@ -769,6 +769,18 @@ def topic_index(slug, page, post):
         
     request.canonical = app.config['BASE'] + "/t/%s/page/%s" % (slug, page)
 
+    meta_description = topic.title + " - Page %s" % (page,)
+
+    try:
+        first_post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+            .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+            .order_by(sqlm.Post.created)[0]
+        description_parsed = get_preview(first_post.html, 140)
+        if description_parsed.strip() != "":
+            meta_description = get_preview(first_post.html, 140) + " - Page %s" % (page,)
+    except:
+        pass
+
     if topic.last_seen_by is None:
         topic.last_seen_by = {}
 
@@ -851,7 +863,7 @@ def topic_index(slug, page, post):
     if topic.category.slug in ["roleplays", "scenarios"]:
         rp_topic = "true"
 
-    return render_template("forum/topic.jade", topic=topic, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
+    return render_template("forum/topic.jade", topic=topic, meta_description=meta_description, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
@@ -1357,7 +1369,7 @@ def index():
     
     tweets = sqla.session.query(sqlm.Tweet).order_by(sqla.desc(sqlm.Tweet.time))[:3]
     
-    render = render_template("index.jade", page_title="Casual Anime",
+    render = render_template("index.jade", page_title="Casual Anime", meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
         sections=sections, sub_categories=sub_categories,announcements=announcements,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets, birthday_list=birthday_list,

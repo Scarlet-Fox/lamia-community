@@ -3,7 +3,7 @@ from woe import sqla
 from woe.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_required, current_user
-from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
+from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview
 from mongoengine.queryset import Q
 import arrow, json
 from woe.views.dashboard import broadcast
@@ -685,7 +685,8 @@ def blog_entry_index(slug, entry_slug, page):
 
     pages = [p+1 for p in range(pages)]
 
-    return render_template("blogs/blog_entry_view.jade", blog=blog, entry=entry, comments=comments, page=page, pages=pages, page_title=entry.title+" - Casual Anime")
+    return render_template("blogs/blog_entry_view.jade", blog=blog, meta_description=get_preview(entry.html, 140),
+    entry=entry, comments=comments, page=page, pages=pages, page_title=entry.title+" - Casual Anime")
 
 @app.route('/blog/<slug>/e/<entry_slug>/new-comment', methods=['POST'], defaults={'page': 1})
 @app.route('/blog/<slug>/e/<entry_slug>/page/<page>/new-comment', methods=['POST'])
