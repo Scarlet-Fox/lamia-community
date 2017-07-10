@@ -157,11 +157,11 @@ class DraftView(ModelView):
 
 class PostView(ModelView):
     can_delete = False
-    column_list = ("id", "topic", "created", "author")
+    column_list = ("id", "topic", "created", "author", "hidden")
     # column_filters = ('topic_name', 'author_name', 'html', 'old_ipb_id', 'hidden')
     form_excluded_columns = ("topic", "editor", "character", "avatar")
 
-    column_filters = ["id", ]
+    column_filters = ["id", "author_id", "hidden"]
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
