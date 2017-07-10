@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField, IntegerField
+from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField, IntegerField, DateField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wand.image import Image, GRAVITY_TYPES
 import shutil, pytz, arrow
@@ -42,6 +42,7 @@ class UserSettingsForm(Form):
     except:
         THEME_CHOICES = []
     theme = SelectField('Theme', choices=THEME_CHOICES)
+    birthday = DateField('Birthday', format='%m/%d/%Y', validators=(validators.Optional(),))
 
     def validate_time_zone(self, field):
         if field.data not in pytz.common_timezones:

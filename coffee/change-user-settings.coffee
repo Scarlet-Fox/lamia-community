@@ -58,6 +58,10 @@ $ ->
       cache: true
     minimumInputLength: 2
 
+  $("#birthday").datepicker
+    format: "m/d/yyyy"
+    clearBtn: true
+
   $("#user-ignore-button").click (e) ->
     e.preventDefault()
     data = $("#user-ignore-select").val()

@@ -1294,6 +1294,19 @@ def index():
     except IndexError:
         new_member_intro_topic = None
 
+    try:
+        timezone = current_user._get_current_object().time_zone
+    except:
+        timezone = "US/Pacific"
+    
+    try:
+        birthday_list = sqla.session.query(sqlm.User) \
+            .filter(sqla.extract('month', sqlm.User.birthday) == arrow.utcnow().to(timezone).datetime.month) \
+            .filter(sqla.extract('day', sqlm.User.birthday) == arrow.utcnow().to(timezone).datetime.day) \
+            .order_by(sqlm.User.birthday.desc()).all()
+    except:
+        birthday_list = []
+
     recently_replied_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
         .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:5]
@@ -1345,7 +1358,7 @@ def index():
     render = render_template("index.jade", page_title="Casual Anime",
         sections=sections, sub_categories=sub_categories,announcements=announcements,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
-        newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets,
+        newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets, birthday_list=birthday_list,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)
 
     return render

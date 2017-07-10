@@ -20,6 +20,9 @@
                 {{ form.theme.label }}
                 {{ form.theme(class="form-control") }}
               .form-group
+                {{ form.birthday.label }}
+                {{ form.birthday(class="form-control") }}
+              .form-group
                 {{ form.no_images.label }}
                 {{ form.no_images(class="form-control") }}
               .form-group
@@ -109,7 +112,7 @@
 
 {% block script %}
 {% assets filters="rjsmin", output="generated/change_user_settings.js",
-"local/js/change-user-settings.js", "assets/select2/select2.full.js" %}
+"local/js/change-user-settings.js", "assets/select2/select2.full.js", "assets/bootstrap-datepicker/bootstrap-datepicker.js" %}
 script(type="text/javascript", src="{{ASSET_URL}}").
 {% endassets %}
 script(type="text/javascript").

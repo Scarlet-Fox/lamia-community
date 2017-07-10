@@ -475,6 +475,7 @@ class User(db.Model):
 
     emails_muted = db.Column(db.Boolean, default=False, index=True)
     last_sent_notification_email = db.Column(db.DateTime, nullable=True, index=True)
+    birthday = db.Column(db.DateTime, nullable=True, index=True)
     minimum_notifications_for_email = db.Column(db.Integer, default=5, index=True)
     minimum_time_between_emails = db.Column(db.Integer, default=360, index=True)
     notification_sound = db.Column(db.Boolean, default=False, index=True)

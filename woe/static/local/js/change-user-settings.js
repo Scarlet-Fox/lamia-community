@@ -75,6 +75,10 @@
       },
       minimumInputLength: 2
     });
+    $("#birthday").datepicker({
+      format: "m/d/yyyy",
+      clearBtn: true
+    });
     return $("#user-ignore-button").click(function(e) {
       var data;
       e.preventDefault();

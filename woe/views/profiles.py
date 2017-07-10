@@ -976,6 +976,7 @@ def change_user_settings(login_name):
         user.theme = form.theme_object
         user.no_images = form.no_images.data
         user.emails_muted = form.no_emails.data
+        user.birthday = form.birthday.data
         user.notification_sound = form.notification_sound.data
         user.minimum_time_between_emails = form.minimum_time_between_emails.data
         sqla.session.add(user)
@@ -984,6 +985,8 @@ def change_user_settings(login_name):
     else:
         form.no_images.data = user.no_images
         form.time_zone.data = user.time_zone
+        if user.birthday:
+            form.birthday.data = user.birthday
         form.no_emails.data = user.emails_muted
         form.notification_sound.data = user.notification_sound
 
