@@ -60,7 +60,10 @@
         span#results-header Search Results 
       li.list-group-item
         .search-pagination
-        #search-results-buffer(style="display: none;")
+        #search-results-buffer
+          center
+            h5 <strong style="color: purple;">Looking for something? Use the search form to start searching!</strong>
+          p The search form's query field accepts a few simple keyword modifiers. Put things in quotes "like this" to search for a specific group of words. Add a minus character to the front of a keyword -like -this to exclude it.
         #search-results        
         .search-pagination   
 {% endblock %}
