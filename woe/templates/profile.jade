@@ -83,6 +83,13 @@ style!= profile.get_custom_css()
                   a.btn.btn-default.report-button(data-pk=profile.id, data-type="profile") Report
           br
     ul.list-group
+      li.list-group-item.section-header 
+      li.list-group-item
+        if age
+          span <strong>{{age}} years old</strong>
+          br
+        
+    ul.list-group
       li.list-group-item.section-header Navigation
       li.list-group-item
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
@@ -157,11 +164,16 @@ style!= profile.get_custom_css()
                 if loop.index == 3
                   br
           br    
-    if custom_fields
+    if custom_fields or age
       ul.list-group
-        li.list-group-item.section-header.category-section-header Other Accounts
+        li.list-group-item.section-header.category-section-header Other Stuff
         li.list-group-item
           ul
+            if age
+              li
+                b Age
+                |&nbsp;&nbsp;&nbsp;
+                |{{age}} years old
             for field_type in available_fields
               for field in custom_fields
                 if field[0] == field_type:

@@ -78,6 +78,11 @@ def view_profile(login_name):
     topic_count = sqlm.Topic.query.filter_by(hidden=False, author=user).count()
     status_update_created = sqlm.StatusUpdate.query.filter_by(hidden=False, author=user).count()
     status_update_comments_created = sqlm.StatusComment.query.filter_by(hidden=False, author=user).count()
+    
+    age = False
+    if user.birthday:
+        today = arrow.utcnow().datetime
+        age = today.year - user.birthday.year - ((today.month, today.day) < (user.birthday.month, user.birthday.day))
 
     boops_given = sqla.session.query(sqlm.post_boop_table).filter(sqlm.post_boop_table.c.user_id == user.id).count()
     boops_received = sqla.session.query(sqlm.post_boop_table) \
@@ -191,7 +196,8 @@ def view_profile(login_name):
         recent_status_updates=recent_status_updates,
         recent_status_updates_to_user=recent_status_updates_to_user,
         status_update_comments_count=status_update_comments_created,
-        ask_me=ask_me
+        ask_me=ask_me,
+        age=age
         )
 
 # @app.route('/member/<login_name>/validate-user', methods=['POST'])
