@@ -11,14 +11,14 @@
       count = parseInt(element.data("count"));
       return $.post(element.attr("href"), JSON.stringify({}), function(data) {
         if (current_status === "notbooped") {
-          element.children(".boop-text").html("<img src=\"/static/emoticons/brohoof_by_angelishi-d6wk2et.gif\">");
+          element.children(".boop-text").text("Boop!");
           element.children(".badge").text("");
           element.data("status", "booped");
           return element.data("count", count + 1);
         } else {
           element.children(".boop-text").html("");
           element.data("status", "notbooped");
-          element.children(".boop-text").text(" Boop!");
+          element.children(".boop-text").text(" Boop");
           element.data("count", count - 1);
           element.children(".badge").text(element.data("count"));
           return element.children(".badge").css("background-color", "#555");

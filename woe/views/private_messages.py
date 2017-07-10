@@ -385,14 +385,16 @@ def message_index(pk, page, post):
                 .order_by(sqlm.PrivateMessageReply.created.desc())[0]
         except IndexError:
             try:
+                post = int(post)
                 post = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic, id=post)[0]
-            except IndexError:
+            except:
                 return abort(404)
     else:
         if post != "":
             try:
+                post = int(post)
                 post = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic, id=post)[0]
-            except IndexError:
+            except:
                 return abort(404)
         else:
             post = ""

@@ -61,9 +61,9 @@ class RegistrationForm(Form):
     password = PasswordField('Password', [validators.InputRequired()])
     confirm_password = PasswordField('Confirm Password', [validators.InputRequired()])
     email = StringField('Email Address', [validators.Email(), validators.InputRequired()])
-    question  = SelectField('Fill in the blank : Twilight Sparkle is __________.', choices=[
-        ('kaiju', 'a kaiju'),
-        ('pony', 'a pony'),
+    question  = SelectField('What color is the sky, on a bright and sunny day?', choices=[
+        ('purple', 'purple'),
+        ('blue', 'blue'),
         ('darkestdungeon', 'an eldritch abomination')])
     over_thirteen = BooleanField('Are you at or above the age of 13?')
     how_did_you_find_us = StringField('How did you find us?', [validators.InputRequired(),])
@@ -95,8 +95,8 @@ class RegistrationForm(Form):
             raise validators.ValidationError("Your email address is already in use by another account.")
 
     def validate_question(self, field):
-        if field.data != "pony":
-            raise validators.ValidationError("You filled in the blank with the wrong thing. Are you a robot?")
+        if field.data != "blue":
+            raise validators.ValidationError("You answered with the wrong thing. Are you a robot?")
 
     def validate_confirm_password(self, field):
         if field.data != self.password.data:

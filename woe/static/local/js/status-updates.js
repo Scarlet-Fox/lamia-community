@@ -127,7 +127,7 @@
       };
 
       Status.prototype.confirmModelHTMLTemplate = function() {
-        return "<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n    <div class=\"modal-header\">\n      <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n      <h4 class=\"modal-title\">Hide Reply?</h4>\n    </div>\n    <div class=\"modal-body\">\n      Are you sure you want to hide this reply?\n    </div>\n    <div class=\"modal-footer\">\n      <button type=\"button\" class=\"btn btn-primary\" id=\"confirm-hide\">Hide</button>\n      <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel</button>\n    </div>\n  </div><!-- /.modal-content -->\n</div><!-- /.modal-dialog -->";
+        return "<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n    <div class=\"modal-header\">\n      <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n      <h4 class=\"modal-title\">Hide Reply?</h4>\n    </div>\n    <div class=\"modal-body\">\n      Are you sure you want to hide this reply?\n    </div>\n    <div class=\"modal-footer\">\n      <button type=\"button\" class=\"btn btn-primary\" id=\"confirm-hide\">Hide</button>\n      <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n    </div>\n  </div><!-- /.modal-content -->\n</div><!-- /.modal-dialog -->";
       };
 
       Status.prototype.refreshView = function(scrolldown) {

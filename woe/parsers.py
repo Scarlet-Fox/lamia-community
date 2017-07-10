@@ -46,37 +46,16 @@ vine_re = re.compile("(?:vine\.co/v/|www\.vine\.co/v/)(.*)", re.I)
 giphy_re = re.compile("(?:giphy\.com/gifs/|gph\.is/)(?:.*)-(.*)", re.I)
 
 emoticon_codes = {
-    ":wat:" : "applejack_confused_by_angelishi-d6wk2ew.gif",
-    ":hoofbump:" : "brohoof_by_angelishi-d6wk2et.gif",
-    ":derp:" : "derpy_by_angelishi-d7amv0j.gif",
-    ":)" : "fluttershy_happy_by_angelishi.gif",
-    ":(" : "fluttershy_sad_by_angelishi.gif",
-    ":liarjack:" : "liar_applejack_by_angelishi-d7aglwl.gif",
-    ":love:" : "love_spike_by_angelishi-d7amv0g.gif",
-    ":moonjoy:" : "moon_by_angelishi-d7amv0a.gif",
-    ":S" : "nervous_aj_by_angelishi-d7ahd5y.gif",
-    ":pinkamena:" : "pinkamena_by_angelishi-d6wk2er.gif",
-    ":D" : "pinkie_laugh_by_angelishi-d6wk2ek.gif",
-    ":mustache:" : "pinkie_mustache_by_angelishi-d6wk2eh.gif",
-    ":P" : "pinkie_silly_by_angelishi-d6wk2ef.gif",
-    ":cool:" : "rainbowdash_cool_by_angelishi.gif",
-    ":pleased:" : "rarity_happy_by_angelishi.gif",
-    ":shocked:" : "rarity_shock_2_by_angelishi-d6wk2eb.gif",
-    ":rofl:" : "rd_laugh_by_angelishi-d7aharw.gif",
-    ":sing:" : "singing_rarity_by_angelishi-d7agp33.gif",
-    ":sunjoy:" : "sun_happy_by_angelishi-d6wlo5g.gif",
-    ":twitch:" : "twilight___twitch_by_angelishi.gif",
-    ":?" : "twilight_think_by_angelishi.gif",
-    ":yawn:" : "rd_yawn_by_angelishi-d9cwc1o.gif",
-    ":want:" : "scootaloo_want_face_by_angelishi-d7xyd7g.gif",
-    ":unamused:" : "celestia_noapproval_by_angelishi-d9cwc1c.png",
-    ":playful:" : "celestia_playful_by_angelishi-d9cwc1g.gif",
-    ":jester:" : "head_wobble_by_angelishi-d9cwc16.gif",
-    ":plz:" : "luna_please_by_angelishi-d9cwc1l.gif",
-    ":troll:" : "discord_troll_laugh_by_angelishi-d7xyd7m.gif",
-    ":shy:" : "embarrassed_fluttershy_by_angelishi-d7xyd7k.gif",
-    ":horror:" : "shocked_fluttershy_by_angelishi-d7xyd7j.gif",
-    ";)" : "twilight_wink_by_angelishi.gif"
+    ":anger:" : "angry.png",
+    ":)" : "smile.png",
+    ":(" : "sad.png",
+    ":heart:" : "heart.png",
+    ":surprise:" : "oh.png",
+    ":wink:" : "wink.png",
+    ":cry:" : "cry.png",
+    ":silly:" : "tongue.png",
+    ":blushing:" : "embarassed.png",
+    ":lol:" : "biggrin.png",
 }
 
 def resize_image_save_custom(image_file_location, new_image_file, new_x_size, _id):
@@ -534,7 +513,7 @@ class ForumPostParser(object):
         # parse smileys
         if not current_user.no_images:
             for smiley in emoticon_codes.keys():
-                img_html = """<img src="%s" />""" % (os.path.join("/static/emoticons",emoticon_codes[smiley]),)
+                img_html = """<img src="%s" />""" % (os.path.join("/static/emotes",emoticon_codes[smiley]),)
                 html = html.replace(smiley, img_html)
 
         quote_bbcode_in_post = quote_re.findall(html)

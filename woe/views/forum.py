@@ -804,9 +804,10 @@ def topic_index(slug, page, post):
             except:
                 last_seen = arrow.get(arrow.utcnow().timestamp).datetime.replace(tzinfo=None)
             try:
+                post = int(post)
                 post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
                     .filter_by(id=post)[0]
-            except IndexError:
+            except:
                 return redirect("/t/"+unicode(topic.slug))
         else:
             post = ""
