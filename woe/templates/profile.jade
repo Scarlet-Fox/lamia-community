@@ -103,6 +103,14 @@ style!= profile.get_custom_css()
             li(role="presentation")
               a(href="/member/{{profile.login_name}}/customize-profile") Customize
     {% block profile_sidebar %}
+    if ask_me
+      ul.list-group
+        li.list-group-item.section-header Ask Me
+        li.list-group-item
+          ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
+            for topic in ask_me
+              li(role="presentation")
+                a(href="/t/{{topic.slug}}")= topic.title
     ul.list-group
       li.list-group-item.section-header.category-section-header {{profile.display_name}}'s Stats
       li.list-group-item

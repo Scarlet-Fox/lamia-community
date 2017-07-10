@@ -108,6 +108,13 @@ def view_profile(login_name):
 
     recent_topics = sqla.session.query(sqlm.Topic).filter_by(author=user, hidden=False) \
         .order_by(sqla.desc(sqlm.Topic.created))[:5]
+    
+    try:
+        label = sqla.session.query(sqlm.Label).filter_by(label="ask")[0]
+        ask_me = sqla.session.query(sqlm.Topic).filter_by(author=user, hidden=False, label=label) \
+            .order_by(sqla.desc(sqlm.Topic.created))[:5]
+    except IndexError:
+        ask_me = []
 
     recent_status_updates = sqla.session.query(sqlm.StatusUpdate) \
         .filter_by(author=user, hidden=False) \
@@ -183,7 +190,8 @@ def view_profile(login_name):
         recent_blog_entries=recent_blog_entries,
         recent_status_updates=recent_status_updates,
         recent_status_updates_to_user=recent_status_updates_to_user,
-        status_update_comments_count=status_update_comments_created
+        status_update_comments_count=status_update_comments_created,
+        ask_me=ask_me
         )
 
 # @app.route('/member/<login_name>/validate-user', methods=['POST'])
