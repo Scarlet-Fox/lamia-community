@@ -34,6 +34,28 @@
             {% endif %}
       {% endfor %}
     {% endfor %}
+    if blogs
+      ul.list-group
+        li.list-group-item.section-header Newest Blog Entries
+        for blog in blogs
+          li.list-group-item(style="padding: 10px;")
+            .row
+              .col-xs-4.col-sm-6
+                span.subcategory-listing-name 
+                  a(href="/category/{{blog.slug}}") {{blog.name}}
+              .col-sm-6.col-xs-8
+                .media-left
+                  span.subcategory-listing-recent-image
+                    a(href="/member/{{blog.recent_entry.author.login_name}}")
+                      img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
+                .media-body
+                  span.subcategory-listing-recent
+                    a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title|truncate(40)
+                    br
+                    a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}") {{blog.recent_entry.published|humanize_time}}
+        li.list-group-item
+          center
+            a.btn.btn-primary(href="/blogs") Browse All Blogs
     .row
       .col-md-6
         ul.list-group
@@ -62,7 +84,7 @@
                 br
                 a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
     .row
-      .col-sm-12
+      .col-md-12.hidden-sm.hidden-xs
         ul.list-group
           li.list-group-item.section-header.sidebar-section-header Twitter
           li.list-group-item(style="padding-left: 10px; padding-right: 10px;")
@@ -78,7 +100,9 @@
                   div
                     a(href="https://twitter.com/CasualAnimeFans/status/{{tweet.id}}", target="_blank")
                         span.text-muted {{tweet.time|humanize_time}}
-            
+            center
+            .row 
+              center <a href="https://twitter.com/CasualAnimeFans" class="twitter-follow-button" data-lang="en" data-show-count="true">Follow @CasualAnimeFans</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
   .col-md-4
     if announcements
       ul.list-group
@@ -94,7 +118,7 @@
               div= announcement.created|humanize_time("MMM D YYYY")
     
     ul.list-group
-      li.list-group-item.section-header.sidebar-section-header Status Updates
+      li.list-group-item.section-header.sidebar-section-header Newest Status Updates
       {% for status in status_updates %}
       li.list-group-item.front-page-status.sidebar-status-section
         .media-left.subcategory-listing-recent-image
@@ -118,23 +142,6 @@
               input.form-control#status-new(type="text", maxlength="250")
               br
               button#new-status.btn.btn-primary(type="submit") Create a Status Update
-      if blogs
-        ul.list-group(style="padding-top: 10px;")
-          li.list-group-item.section-header Blogs
-          for blog in blogs
-            li.list-group-item(style="padding: 10px;")
-              .media-left.subcategory-listing-recent-image
-                a(href="/member/{{blog.recent_entry.author.login_name}}")
-                  img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("60"), width=blog.recent_entry.author.avatar_60_x, height=blog.recent_entry.author.avatar_60_y)
-              .media-body
-                strong
-                  a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title
-                div
-                  a(href="/blog/{{blog.slug}}")= blog.name
-                div= blog.recent_entry.published|humanize_time("MMM D YYYY")
-          li.list-group-item
-            center
-              a.btn.btn-primary(href="/blogs") Browse All Blogs
       if newest_member
         ul.list-group
           li.list-group-item.section-header Newest Member

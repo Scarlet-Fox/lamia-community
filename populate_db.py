@@ -110,7 +110,9 @@ label_matrix = {
     "Staff Board": [
         {"chit chat": "#FF2400"},
         {"conspiracy": "#663399"},
-        {"moderation": "#1034A6"}
+        {"moderation": "#1034A6"},
+        {"procedure": "#228B22"},
+        {"instructions": "#FF69B4"}
     ],
     "News": [
         {"announcement": "#FF2400"},
@@ -126,7 +128,7 @@ label_matrix = {
     "FAQ/Help": [
         {"information": "#1034A6"},
         {"community": "#663399"},
-        {"features": "#FF69B4"},
+        {"feature": "#FF69B4"},
         {"bug": "#FF2400"}
     ],
     "Anime": [
@@ -138,8 +140,8 @@ label_matrix = {
     "General": [
         {"other": "#228B22"},
         {"life": "#FF2400"},
-        {"hobbies": "#663399"},
-        {"creativity": "#FF69B4"}
+        {"hobby": "#663399"},
+        {"art": "#FF69B4"}
     ],
     "Forum Games": [
         {"silliness": "#FF69B4"},

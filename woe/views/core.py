@@ -21,7 +21,7 @@ from woe import sqla
 from flask.ext.login import AnonymousUserMixin
 import woe.sqlmodels as sqlm
 import pytz
-import math
+import math, random
 
 class Anonymouse(AnonymousUserMixin):
     login_name = None
@@ -1039,92 +1039,92 @@ def sign_in():
             sqla.session.rollback()
             pass
 
-        try:
-            fingerprint__info_from_browser = json.loads(request.form.get("log_in_token"))
-        except:
-            fingerprint__info_from_browser = {"pl": []}
-
-        fingerprint_data = {}
-        fingerprint_data["current_user"] = form.user.login_name
-        fingerprint_data["screen_width"] = fingerprint__info_from_browser.get("sw", 0)
-        fingerprint_data["screen_height"] = fingerprint__info_from_browser.get("sh", 0)
-        fingerprint_data["screen_colors"] = fingerprint__info_from_browser.get("cd", 0)
-        fingerprint_data["timezone"] = fingerprint__info_from_browser.get("tz", 0)
-
-        for browser_plugin in fingerprint__info_from_browser.get("pl", []):
-            try:
-                fingerprint_data[browser_plugin["name"].replace(".", "dt").replace("$", "dl")] = browser_plugin["description"]
-            except:
-                pass
-
-        for browser_plugin in fingerprint__info_from_browser.get("pl", []):
-            try:
-                for browser_plugin_object in browser_plugin.keys():
-                    fingerprint_data[browser_plugin_object] = browser_plugin[browser_plugin_object]
-            except:
-                pass
-
-        fingerprint_data["agent_platform"] = request.user_agent.platform
-        fingerprint_data["agent_browser"] = request.user_agent.browser
-        fingerprint_data["agent_browser_version"] = request.user_agent.version
-        fingerprint_data["agent"] = request.user_agent.string
-
-        try:
-            for element in request.user_agent.platform.split(" "):
-                fingerprint_data[element] = element
-        except:
-            pass
-
-        try:
-            for element in request.user_agent.browser.split(" "):
-                fingerprint_data[element] = element
-        except:
-            pass
-
-        try:
-            for element in request.user_agent.version.split(" "):
-                fingerprint_data[element] = element
-        except:
-            pass
-
-        try:
-            for element in request.user_agent.string.split(" "):
-                fingerprint_data[element] = element
-        except:
-            pass
-
-        try:
-            obj = IPWhois(request.remote_addr)
-            results=obj.lookup(get_referral=True)
-            fingerprint_data["ip_owner"] = results["nets"][0]["name"]
-        except:
-            pass
-
-        clean_fingerprint_data = {}
-        fingerprint_hash = ""
-        for key, value in sorted(fingerprint_data.items()):
-            fingerprint_hash += unicode(key) + " "
-            fingerprint_hash += unicode(value) + " "
-            clean_fingerprint_data[key.replace(".", "dt").replace("$", "dl")]=value
-
-        _fingerprint_hash = hashlib.sha256(fingerprint_hash.encode('utf-8')).hexdigest()
-
-        try:
-            f = sqla.session.query(sqlm.Fingerprint).filter_by(fingerprint_hash=_fingerprint_hash)[0]
-            f.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
-        except:
-            f = sqlm.Fingerprint()
-            f.user = form.user
-            f.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
-            f.json = clean_fingerprint_data
-            f.fingerprint_hash = _fingerprint_hash
-            f.factors = len(clean_fingerprint_data)
-
-        try:
-            sqla.session.add(f)
-            sqla.session.commit()
-        except:
-            sqla.session.rollback()
+        # try:
+        #     fingerprint__info_from_browser = json.loads(request.form.get("log_in_token"))
+        # except:
+        #     fingerprint__info_from_browser = {"pl": []}
+        #
+        # fingerprint_data = {}
+        # fingerprint_data["current_user"] = form.user.login_name
+        # fingerprint_data["screen_width"] = fingerprint__info_from_browser.get("sw", 0)
+        # fingerprint_data["screen_height"] = fingerprint__info_from_browser.get("sh", 0)
+        # fingerprint_data["screen_colors"] = fingerprint__info_from_browser.get("cd", 0)
+        # fingerprint_data["timezone"] = fingerprint__info_from_browser.get("tz", 0)
+        #
+        # for browser_plugin in fingerprint__info_from_browser.get("pl", []):
+        #     try:
+        #         fingerprint_data[browser_plugin["name"].replace(".", "dt").replace("$", "dl")] = browser_plugin["description"]
+        #     except:
+        #         pass
+        #
+        # for browser_plugin in fingerprint__info_from_browser.get("pl", []):
+        #     try:
+        #         for browser_plugin_object in browser_plugin.keys():
+        #             fingerprint_data[browser_plugin_object] = browser_plugin[browser_plugin_object]
+        #     except:
+        #         pass
+        #
+        # fingerprint_data["agent_platform"] = request.user_agent.platform
+        # fingerprint_data["agent_browser"] = request.user_agent.browser
+        # fingerprint_data["agent_browser_version"] = request.user_agent.version
+        # fingerprint_data["agent"] = request.user_agent.string
+        #
+        # try:
+        #     for element in request.user_agent.platform.split(" "):
+        #         fingerprint_data[element] = element
+        # except:
+        #     pass
+        #
+        # try:
+        #     for element in request.user_agent.browser.split(" "):
+        #         fingerprint_data[element] = element
+        # except:
+        #     pass
+        #
+        # try:
+        #     for element in request.user_agent.version.split(" "):
+        #         fingerprint_data[element] = element
+        # except:
+        #     pass
+        #
+        # try:
+        #     for element in request.user_agent.string.split(" "):
+        #         fingerprint_data[element] = element
+        # except:
+        #     pass
+        #
+        # try:
+        #     obj = IPWhois(request.remote_addr)
+        #     results=obj.lookup(get_referral=True)
+        #     fingerprint_data["ip_owner"] = results["nets"][0]["name"]
+        # except:
+        #     pass
+        #
+        # clean_fingerprint_data = {}
+        # fingerprint_hash = ""
+        # for key, value in sorted(fingerprint_data.items()):
+        #     fingerprint_hash += unicode(key) + " "
+        #     fingerprint_hash += unicode(value) + " "
+        #     clean_fingerprint_data[key.replace(".", "dt").replace("$", "dl")]=value
+        #
+        # _fingerprint_hash = hashlib.sha256(fingerprint_hash.encode('utf-8')).hexdigest()
+        #
+        # try:
+        #     f = sqla.session.query(sqlm.Fingerprint).filter_by(fingerprint_hash=_fingerprint_hash)[0]
+        #     f.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
+        # except:
+        #     f = sqlm.Fingerprint()
+        #     f.user = form.user
+        #     f.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
+        #     f.json = clean_fingerprint_data
+        #     f.fingerprint_hash = _fingerprint_hash
+        #     f.factors = len(clean_fingerprint_data)
+        #
+        # try:
+        #     sqla.session.add(f)
+        #     sqla.session.commit()
+        # except:
+        #     sqla.session.rollback()
 
         try:
             return redirect(form.redirect_to.data)
@@ -1132,8 +1132,25 @@ def sign_in():
             return redirect("/")
     else:
         form.redirect_to.data = request.args.get('next', "/")
+        
+    flavor_text = [
+        [
+            "Welcome back! Don't worry, everything is more or less exactly the way you left it. I hope you didn't leave the stove on!",
+        ],
+        [
+            "Welcome back! I've heard this amazing rumor, lately. I'll tell you after you sign in. Maybe."
+        ],
+        [
+            "Welcome back! Did you know that today's my birthday? Actually, it isn't, but you should still sign in and go party, just in case."
+        ],
+        [
+            "Welcome back! Insert witty greeting text. No, this isn't a placeholder. It's a statement of philosophy."
+        ]
+    ]
+    
+    flavor_text = random.choice(flavor_text)
 
-    return render_template("sign_in.jade", page_title="Sign In - Casual Anime", form=form)
+    return render_template("sign_in.jade", page_title="Sign In - Casual Anime", form=form, flavor_text=flavor_text)
 
 @app.route('/banned')
 def banned_user():
