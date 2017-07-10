@@ -65,6 +65,14 @@
             });
           };
         })(this));
+        $("#show-smileys").on("click", function(e) {
+          e.preventDefault();
+          return $(".smileys").slideToggle();
+        });
+        $(".emoticon-listing").on("click", function(e) {
+          e.preventDefault();
+          return $("#status-reply").val($("#status-reply").val() + $(e.target).data("emotecode"));
+        });
         $("#status-reply").on("keyup", function(e) {
           return status.updateCount($("#status-reply").val().length);
         });

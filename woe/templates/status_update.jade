@@ -79,7 +79,20 @@
           form.form-inline
             .form-group.status-reply-box
               input.form-control#status-reply(type="text", maxlength="250", autocomplete="off")
-            button#submit-reply.btn.btn-default(type="submit") Reply
+            .btn-group
+              button#submit-reply.btn.btn-default(type="submit") Reply
+              button#show-smileys.btn.btn-default(type="submit") &#9786;
+            .smileys(style="display: none;")
+              <img src="/static/emotes/angry.png" class="emoticon-listing" data-emotecode=" :anger: ">
+              <img src="/static/emotes/smile.png" class="emoticon-listing" data-emotecode=" :) ">
+              <img src="/static/emotes/sad.png" class="emoticon-listing" data-emotecode=" :( ">
+              <img src="/static/emotes/heart.png" class="emoticon-listing" data-emotecode=" :heart: ">
+              <img src="/static/emotes/oh.png" class="emoticon-listing" data-emotecode=" :surprise: ">
+              <img src="/static/emotes/wink.png" class="emoticon-listing" data-emotecode=" :wink: ">
+              <img src="/static/emotes/cry.png" class="emoticon-listing" data-emotecode=" :cry: ">
+              <img src="/static/emotes/tongue.png" class="emoticon-listing" data-emotecode=" :silly: ">
+              <img src="/static/emotes/embarassed.png" class="emoticon-listing" data-emotecode=" :blushing: ">
+              <img src="/static/emotes/biggrin.png" class="emoticon-listing" data-emotecode=" :lol: ">
             &nbsp;
             span#status-comment-count
           

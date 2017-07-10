@@ -57,6 +57,14 @@ $ ->
         $.post "/status/#{status.id}/hide-reply/#{reply_idx}", {}, (data) =>
           if data.success?
             $("#reply-"+reply_idx).remove()
+        
+      $("#show-smileys").on "click", (e) ->
+        e.preventDefault()
+        $(".smileys").slideToggle()
+        
+      $(".emoticon-listing").on "click", (e) ->
+        e.preventDefault()
+        $("#status-reply").val($("#status-reply").val() + $(e.target).data("emotecode"))
 
       $("#status-reply").on "keyup", (e) ->
         status.updateCount $("#status-reply").val().length
