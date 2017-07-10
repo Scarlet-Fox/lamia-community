@@ -70,17 +70,22 @@ $ ->
         [{ 'list': 'ordered'}, { 'list': 'bullet' }],
         [{ 'indent': '-1'}, { 'indent': '+1' }],
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        [{ 'font': [false,] }],
         [{ 'color': [] },],
         [{ 'align': [] }],
         ['link'],
         ['image'],
       ]
       
+      Font = Quill.import('formats/font')
+      Font.whitelist = ['open-sans']
+      Quill.register(Font, true);
+      
       Parchment = Quill.import('parchment')
       Block = Parchment.query('block')
       Block.tagName = 'DIV'
       Quill.register(Block, true)
-       
+      
       quill = new Quill "#post-editor-#{@quillID}",
         theme: 'snow'
         modules:

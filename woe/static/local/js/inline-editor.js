@@ -87,7 +87,7 @@
       };
 
       InlineEditor.prototype.setupEditor = function(cancel_button) {
-        var Block, Parchment, _this, quill, toolbar, toolbarOptions;
+        var Block, Font, Parchment, _this, quill, toolbar, toolbarOptions;
         this.lockSave = false;
         if (this.edit_reason) {
           this.element.before(this.editReasonHTML);
@@ -130,6 +130,10 @@
             }
           ], [
             {
+              'font': [false]
+            }
+          ], [
+            {
               'color': []
             }
           ], [
@@ -138,6 +142,9 @@
             }
           ], ['link'], ['image']
         ];
+        Font = Quill["import"]('formats/font');
+        Font.whitelist = ['open-sans'];
+        Quill.register(Font, true);
         Parchment = Quill["import"]('parchment');
         Block = Parchment.query('block');
         Block.tagName = 'DIV';

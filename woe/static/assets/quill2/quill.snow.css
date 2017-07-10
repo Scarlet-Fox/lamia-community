@@ -6,8 +6,6 @@
  */
 .ql-container {
   box-sizing: border-box;
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: 13px;
   height: 100%;
   margin: 0px;
   position: relative;
@@ -349,12 +347,6 @@
 }
 .ql-editor .ql-color-purple {
   color: #93f;
-}
-.ql-editor .ql-font-serif {
-  font-family: Georgia, Times New Roman, serif;
-}
-.ql-editor .ql-font-monospace {
-  font-family: Monaco, Courier New, monospace;
 }
 .ql-editor .ql-size-small {
   font-size: 0.75em;
@@ -778,24 +770,6 @@
 }
 .ql-snow .ql-picker.ql-font {
   width: 108px;
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item::before {
-  content: 'Sans Serif';
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=serif]::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=serif]::before {
-  content: 'Serif';
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=monospace]::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=monospace]::before {
-  content: 'Monospace';
-}
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=serif]::before {
-  font-family: Georgia, Times New Roman, serif;
-}
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=monospace]::before {
-  font-family: Monaco, Courier New, monospace;
 }
 .ql-snow .ql-picker.ql-size {
   width: 98px;
