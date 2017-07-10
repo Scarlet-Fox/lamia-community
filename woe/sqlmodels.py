@@ -188,6 +188,17 @@ db.Index('_status_user_created', StatusUpdate.author_id, StatusUpdate.created)
 # Core Site Models
 ############################################################
 
+class Tweet(db.Model):
+    id = db.Column(db.Text, primary_key=True)
+    time = db.Column(db.DateTime, index=True)
+    text = db.Column(db.Text)
+    retweeted = db.Column(db.Boolean, default=False, index=True)
+    retweeted_from = db.Column(db.Text)
+    raw_json = db.Column(JSONB)
+
+    def __repr__(self):
+        return "<Tweet: (text='%s')>" % (self.text,)
+
 class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
@@ -211,7 +222,7 @@ class Draft(db.Model):
     primary_editor = db.Column(db.Boolean, default=True, index=True)
     
     def __repr__(self):
-        return "<SiteTheme: (user='%s', path='%s')>" % (self.name, self.path)
+        return "<Draft: (user='%s', path='%s')>" % (self.name, self.path)
     
 
 ############################################################
@@ -225,7 +236,7 @@ class IPAddress(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_ipaddress_user", ondelete="CASCADE"), index=True)
     user = db.relationship("User")
-    banned = db.Column(db.Boolean, default=True, index=True)
+    banned = db.Column(db.Boolean, default=False, index=True)
 
     __table_args__ = (db.UniqueConstraint('user_id', 'id', name='unique_user_ip_addy'),)
 

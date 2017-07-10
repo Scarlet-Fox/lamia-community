@@ -1296,11 +1296,11 @@ def index():
 
     recently_replied_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
-        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:8]
+        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:5]
 
     recently_created_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
-        .order_by(sqlm.Topic.created.desc())[:8]
+        .order_by(sqlm.Topic.created.desc())[:5]
 
     status_update_authors = sqla.session.query(sqlm.StatusUpdate.author_id.label("author_id"), sqla.func.max(sqlm.StatusUpdate.created).label("created")) \
         .group_by(sqlm.StatusUpdate.author_id) \
@@ -1339,11 +1339,13 @@ def index():
                 sqlm.Blog.privacy_setting == "all"
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
-
+    
+    tweets = sqla.session.query(sqlm.Tweet).order_by(sqla.desc(sqlm.Tweet.time))[:3]
+    
     render = render_template("index.jade", page_title="Casual Anime",
         sections=sections, sub_categories=sub_categories,announcements=announcements,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
-        newest_member=newest_member, new_member_intro_topic=new_member_intro_topic,
+        newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)
 
     return render

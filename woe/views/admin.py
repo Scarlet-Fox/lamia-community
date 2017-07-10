@@ -219,8 +219,8 @@ class CharacterView(ModelView):
     can_delete = False
     column_list = ("id", "author", "name", "created",)
     column_filters = ("author_id", "name", "created")
-    column_searchable_list = ("name", "appearance", "personality", "backstory", "other")
-    form_excluded_columns = ("default_avatar", "default_gallery_image", "blog_entries")
+    column_searchable_list = ("name", "other")
+    form_excluded_columns = ("default_avatar", "default_gallery_image", "blog_entries", "appearance", "personality", "backstory", "species", "age")
 
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
@@ -284,6 +284,14 @@ class DiceRollView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class TweetView(ModelView):
+    column_list = ("id", "time", "text")
+    column_filters = ("time", "id",)
+    column_searchable_list = ("text",)
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 admin.add_view(LabelView(sqlm.Label, sqla.session))
 admin.add_view(CharacterView(sqlm.Character, sqla.session))
 admin.add_view(ReportView(sqlm.Report, sqla.session))
@@ -312,6 +320,7 @@ admin.add_view(TopicView(sqlm.Topic, sqla.session, category='Forum'))
 admin.add_view(CategoryView(sqlm.Category, sqla.session, category='Forum'))
 admin.add_view(SectionView(sqlm.Section, sqla.session, category='Forum'))
 admin.add_view(DraftView(sqlm.Draft, sqla.session, category='Core'))
+admin.add_view(TweetView(sqlm.Tweet, sqla.session, category='Core'))
 
 #
 # class BlogView(ModelView):

@@ -61,6 +61,24 @@
                 a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title|truncate(40)
                 br
                 a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
+    .row
+      .col-sm-12
+        ul.list-group
+          li.list-group-item.section-header.sidebar-section-header Twitter
+          li.list-group-item(style="padding-left: 10px; padding-right: 10px;")
+            .row
+              for tweet in tweets
+                .col-lg-4(style="padding: 10px;")
+                  a(href="https://twitter.com/CasualAnimeFans", target="_blank")
+                    span.text-muted @CasualAnimeFans&nbsp;&nbsp;&nbsp;
+                  if tweet.retweeted
+                    span.glyphicon.glyphicon-retweet.text-muted
+                    span.text-muted &nbsp;Retweeted
+                  p {{tweet.text|twittercleaner}}
+                  div
+                    a(href="https://twitter.com/CasualAnimeFans/status/{{tweet.id}}", target="_blank")
+                        span.text-muted {{tweet.time|humanize_time}}
+            
   .col-md-4
     if announcements
       ul.list-group

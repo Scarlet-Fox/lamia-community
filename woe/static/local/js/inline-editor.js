@@ -130,7 +130,7 @@
             }
           ], [
             {
-              'font': [false]
+              'font': ["regular", "caption", "caviar", "comic", "monotype", "monterrey", "opensans"]
             }
           ], [
             {
@@ -143,7 +143,7 @@
           ], ['link'], ['image']
         ];
         Font = Quill["import"]('formats/font');
-        Font.whitelist = ['open-sans'];
+        Font.whitelist = ['regular', 'caption', 'caviar', 'comic', 'monotype', 'monterrey', 'opensans'];
         Quill.register(Font, true);
         Parchment = Quill["import"]('parchment');
         Block = Parchment.query('block');
