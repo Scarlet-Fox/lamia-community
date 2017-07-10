@@ -436,7 +436,7 @@ def toggle_status_hide(status):
                 )
 
         broadcast(
-            to=list(User.objects(is_admin=True)),
+            to=list(sqla.session.query(sqlm.User).filter_by(is_admin=True)),
             category="mod",
             url="/status/"+str(status.id),
             title="%s's status update hidden" % (unicode(status.author.display_name),),
