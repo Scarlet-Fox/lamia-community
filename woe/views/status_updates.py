@@ -54,7 +54,7 @@ def display_status_update(status):
     
     try:
         status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status, author=current_user._get_current_object())[0]
-    except IndexError:
+    except:
         status_user = None
     
     sqla.session.add(status)
