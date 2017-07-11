@@ -37,7 +37,7 @@
         return text;
       };
       $(".list-group-item").delegate(".reply-button", "click", function(e) {
-        var current_position, element, highlighted_text, my_content, post_object, ref, x, y;
+        var current_position, element, highlighted_text, my_content, post_object, x, y;
         e.preventDefault();
         try {
           post_object = getSelectionParentElement().closest(".post-content");
@@ -61,7 +61,7 @@
         }
         window.scrollTo(x, y);
         if (current_position == null) {
-          current_position = (ref = inline_editor.quill.getSelection()) != null ? ref.start : void 0;
+          current_position = inline_editor.quill.getSelection(true).index;
           if (current_position == null) {
             current_position = inline_editor.quill.getLength();
           }

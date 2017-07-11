@@ -186,7 +186,7 @@
           element = $(this);
           my_content = "";
           return $.get("/t/" + topic.slug + "/edit-post/" + (element.data("pk")), function(data) {
-            var current_position, ref, x, y;
+            var current_position, x, y;
             if ((post_object != null) && post_object === $("#post-" + (element.data("pk")))[0]) {
               my_content = "[reply=" + (element.data("pk")) + ":post:" + data.author + "]\n" + highlighted_text + "\n[/reply]";
             } else {
@@ -201,7 +201,7 @@
             }
             window.scrollTo(x, y);
             if (current_position == null) {
-              current_position = (ref = topic.inline_editor.quill.getSelection()) != null ? ref.start : void 0;
+              current_position = topic.inline_editor.quill.getSelection(true).index;
               if (current_position == null) {
                 current_position = topic.inline_editor.quill.getLength();
               }
@@ -213,7 +213,7 @@
           return $(this).parent().children(".roles-div").toggle();
         });
         $("#post-container").delegate(".mention-button", "click", function(e) {
-          var current_position, element, ref, x, y;
+          var current_position, element, x, y;
           e.preventDefault();
           element = $(this);
           x = window.scrollX;
@@ -225,7 +225,7 @@
           }
           window.scrollTo(x, y);
           if (current_position == null) {
-            current_position = (ref = topic.inline_editor.quill.getSelection()) != null ? ref.start : void 0;
+            current_position = topic.inline_editor.quill.getSelection(true).index;
             if (current_position == null) {
               current_position = topic.inline_editor.quill.getLength();
             }

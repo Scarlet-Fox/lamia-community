@@ -166,7 +166,7 @@ $ ->
 
           window.scrollTo x, y
           unless current_position?
-            current_position = topic.inline_editor.quill.getSelection()?.start
+            current_position = topic.inline_editor.quill.getSelection(true).index
             unless current_position?
               current_position = topic.inline_editor.quill.getLength()
           topic.inline_editor.quill.insertText current_position, my_content
@@ -186,7 +186,7 @@ $ ->
 
         window.scrollTo x, y
         unless current_position?
-          current_position = topic.inline_editor.quill.getSelection()?.start
+          current_position = topic.inline_editor.quill.getSelection(true).index
           unless current_position?
             current_position = topic.inline_editor.quill.getLength()
 

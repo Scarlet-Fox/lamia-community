@@ -124,13 +124,13 @@
           element = $(this);
           my_content = "";
           return $.get("/messages/" + topic.pk + "/edit-post/" + (element.data("pk")), function(data) {
-            var current_position, ref, x, y;
+            var current_position, x, y;
             my_content = "[reply=" + (element.data("pk")) + ":pm:" + data.author + "]\n\n";
             x = window.scrollX;
             y = window.scrollY;
             topic.inline_editor.quill.focus();
             window.scrollTo(x, y);
-            current_position = (ref = topic.inline_editor.quill.getSelection()) != null ? ref.start : void 0;
+            current_position = topic.inline_editor.quill.getSelection(true).index;
             if (current_position == null) {
               current_position = topic.inline_editor.quill.getLength();
             }
