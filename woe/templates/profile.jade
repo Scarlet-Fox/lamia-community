@@ -291,24 +291,29 @@ script(type="text/javascript", src="{{ASSET_URL}}").
 
 script(type="text/javascript").
   $(document).ready(function(){
+    var editor_live = false;
     {% if current_user.is_authenticated() %}
     $("#about-me-cog-icon").click(function(e) {
       e.preventDefault();
-      var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.login_name}}/edit-profile", true);
-      $.get("/member/{{profile.login_name}}/edit-profile", {}, function(data) {
-        editor.setElementHtml(data.content);
-      });
-      editor.onSave(function (html) {
-        $.post("/member/{{profile.login_name}}/edit-profile", {"about_me": html},function(data) {
-          $("#user-profile-about-me").html(data.about_me);
-          editor.destroyEditor();
+      if( editor_live != true ) {
+        var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.login_name}}/edit-profile", true);
+        editor_live = true;
+        $.get("/member/{{profile.login_name}}/edit-profile", {}, function(data) {
+          editor.setElementHtml(data.content);
         });
+        editor.onSave(function (html) {
+          $.post("/member/{{profile.login_name}}/edit-profile", {"about_me": html},function(data) {
+            $("#user-profile-about-me").html(data.about_me);
+            editor.destroyEditor();
+          });
+        });
+        editor.onCancel(function (html) {
+          editor.destroyEditor()
+          editor_live = false;
+          editor.resetElementHtml();
+        });
+        }
       });
-      editor.onCancel(function (html) {
-        editor.destroyEditor()
-        editor.resetElementHtml();
-      });
-    });
     window.setupContent()
     {% endif %}
   });

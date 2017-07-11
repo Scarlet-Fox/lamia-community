@@ -1340,7 +1340,6 @@ def index():
 
     status_update_authors = sqla.session.query(sqlm.StatusUpdate.author_id.label("author_id"), sqla.func.max(sqlm.StatusUpdate.created).label("created")) \
         .group_by(sqlm.StatusUpdate.author_id) \
-        .filter(sqlm.StatusUpdate.attached_to_user == None) \
         .filter(sqla.or_(sqlm.StatusUpdate.hidden == False, sqlm.StatusUpdate.hidden == None)) \
         .order_by(sqla.desc(sqla.func.max(sqlm.StatusUpdate.created))).limit(5).subquery()
 
@@ -1348,7 +1347,7 @@ def index():
         .join(status_update_authors, sqla.and_(
             status_update_authors.c.author_id == sqlm.StatusUpdate.author_id,
             status_update_authors.c.created == sqlm.StatusUpdate.created
-        ))[:5]
+        )).order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]
 
     announcements = sqla.session.query(sqlm.Topic) \
         .filter_by(announcement=True, hidden=False) \
