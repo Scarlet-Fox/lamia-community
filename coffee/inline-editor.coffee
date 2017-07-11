@@ -259,7 +259,7 @@ $ ->
       if cancel_button == true
         return """
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
-            <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Post</button>
             <button type="button" class="btn btn-default post-post" id="draft-view-#{@quillID}">Drafts</button>
             <button type="button" class="btn btn-default post-post" id="upload-files-#{@quillID}">Upload Files</button>
             <button type="button" class="btn btn-default" id="cancel-edit-#{@quillID}">Close</button>
@@ -269,7 +269,7 @@ $ ->
       else
         return """
           <div id="inline-editor-buttons-#{@quillID}" class="inline-editor-buttons">
-            <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Save</button>
+            <button type="button" class="btn btn-default post-post" id="save-text-#{@quillID}">Post</button>
             <button type="button" class="btn btn-default post-post" id="draft-view-#{@quillID}">Drafts</button>
             <button type="button" class="btn btn-default post-post" id="upload-files-#{@quillID}">Upload Files</button>
             <button type="button" class="btn btn-default" id="preview-#{@quillID}">Preview</button>
