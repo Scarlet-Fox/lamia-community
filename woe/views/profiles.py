@@ -109,6 +109,8 @@ def view_profile(login_name):
         ))[:5]
 
     recent_posts = sqla.session.query(sqlm.Post).filter_by(author=user, hidden=False) \
+        .join(sqlm.Post.topic) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .order_by(sqla.desc(sqlm.Post.created))[:5]
 
     recent_topics = sqla.session.query(sqlm.Topic).filter_by(author=user, hidden=False) \
