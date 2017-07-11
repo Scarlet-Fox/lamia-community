@@ -185,8 +185,8 @@ def make_status_update_reply(status):
             user_last_comment = comment
     if user_last_comment:
         difference = (arrow.utcnow().datetime - arrow.get(user_last_comment.created).datetime).seconds
-        if difference < 5:
-            return app.jsonify(error="Please wait %s seconds before you can reply again." % (5 - difference))
+        if difference < 2:
+            return app.jsonify(error="Please wait %s seconds before you can reply again." % (2 - difference))
 
     sc = sqlm.StatusComment()
     sc.created = arrow.utcnow().datetime.replace(tzinfo=None)
