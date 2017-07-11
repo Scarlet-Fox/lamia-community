@@ -1338,16 +1338,20 @@ def index():
         .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .order_by(sqlm.Topic.created.desc())[:5]
 
-    status_update_authors = sqla.session.query(sqlm.StatusUpdate.author_id.label("author_id"), sqla.func.max(sqlm.StatusUpdate.created).label("created")) \
-        .group_by(sqlm.StatusUpdate.author_id) \
-        .filter(sqla.or_(sqlm.StatusUpdate.hidden == False, sqlm.StatusUpdate.hidden == None)) \
-        .order_by(sqla.desc(sqla.func.max(sqlm.StatusUpdate.created))).limit(5).subquery()
-
+    # status_update_authors = sqla.session.query(sqlm.StatusUpdate.author_id.label("author_id"), sqla.func.max(sqlm.StatusUpdate.created).label("created")) \
+    #     .group_by(sqlm.StatusUpdate.author_id) \
+    #     .filter(sqla.or_(sqlm.StatusUpdate.hidden == False, sqlm.StatusUpdate.hidden == None)) \
+    #     .order_by(sqla.desc(sqla.func.max(sqlm.StatusUpdate.created))).limit(5).subquery()
+    #
+    # status_updates = sqla.session.query(sqlm.StatusUpdate) \
+    #     .join(status_update_authors, sqla.and_(
+    #         status_update_authors.c.author_id == sqlm.StatusUpdate.author_id,
+    #         status_update_authors.c.created == sqlm.StatusUpdate.created
+    #     )).order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]
+    
     status_updates = sqla.session.query(sqlm.StatusUpdate) \
-        .join(status_update_authors, sqla.and_(
-            status_update_authors.c.author_id == sqlm.StatusUpdate.author_id,
-            status_update_authors.c.created == sqlm.StatusUpdate.created
-        )).order_by(sqla.desc(sqlm.StatusUpdate.created))[:5]
+        .filter(sqla.or_(sqlm.StatusUpdate.hidden == False, sqlm.StatusUpdate.hidden == None)) \
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:8]
 
     announcements = sqla.session.query(sqlm.Topic) \
         .filter_by(announcement=True, hidden=False) \
