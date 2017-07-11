@@ -46,7 +46,6 @@ def check_ip_ban():
     if request.path != "/banned" and not request.path.startswith("/static/"):
         try:
             ip_address = sqla.session.query(sqlm.IPAddress).filter_by(ip_address=request.remote_addr, banned=True)[0]
-            print ip_address
             return redirect("/banned", 307)
         except IndexError:
             pass
@@ -430,12 +429,6 @@ def clear_drafts():
         
     path = request_json["path"].split("/")
     path = "/".join(path[:3])
-    
-    print primary
-    print path
-    
-    print sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
-        .filter_by(primary_editor = primary, path = path).count()
     
     sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
         .filter_by(primary_editor = primary, path = path).delete()
