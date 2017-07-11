@@ -10,6 +10,7 @@ db.sqlite3
 media
 .DS_Store
 .env
+migrations
 generated/
 .webassets-cache/
 uploads/
