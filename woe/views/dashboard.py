@@ -220,11 +220,19 @@ def dashboard_notifications():
 @app.route('/dashboard')
 @login_required
 def view_dashboard():
-    _followed_topics = sqla.session.query(sqlm.Topic) \
-        .join(sqlm.topic_watchers_table) \
-        .join(sqlm.Topic.recent_post) \
-        .filter(sqlm.topic_watchers_table.c.user_id == current_user.id) \
-        .order_by(sqlm.Post.created.desc())[:5]
+    if current_user.is_admin:
+        _followed_topics = sqla.session.query(sqlm.Topic) \
+            .join(sqlm.topic_watchers_table) \
+            .join(sqlm.Topic.recent_post) \
+            .filter(sqlm.topic_watchers_table.c.user_id == current_user.id) \
+            .order_by(sqlm.Post.created.desc())[:5]
+    else:
+        _followed_topics = sqla.session.query(sqlm.Topic) \
+            .join(sqlm.topic_watchers_table) \
+            .join(sqlm.Topic.recent_post) \
+            .filter(sqlm.topic_watchers_table.c.user_id == current_user.id) \
+            .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+            .order_by(sqlm.Post.created.desc())[:5]
 
     _followed_blogs = sqla.session.query(sqlm.Blog) \
         .join(sqlm.blog_subscriber_table) \

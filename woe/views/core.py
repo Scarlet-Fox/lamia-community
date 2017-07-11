@@ -671,6 +671,7 @@ def topic_sitemap_generate():
 
     for topic in sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc()):
 
         topic_post_count = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
@@ -706,6 +707,7 @@ def sitemap_index_generate():
     #
     recent_post_time = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[0].recent_post.created
 
     recent_status_time = sqla.session.query(sqlm.StatusUpdate) \
@@ -760,7 +762,9 @@ def load_user(login_name):
         user.last_at_url = "/"
     elif request.path.startswith("/t/"):
         try:
-            topic = sqla.session.query(sqlm.Topic).filter_by(slug=request.path.split("/")[2])[0]
+            topic = sqla.session.query(sqlm.Topic) \
+                .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+                .filter_by(slug=request.path.split("/")[2])[0]
             user.last_seen_at = unicode(topic.title)
             user.last_at_url = "/t/"+unicode(topic.slug)
         except IndexError:

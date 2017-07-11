@@ -44,7 +44,8 @@ def topic_list_api():
     if len(query) < 2:
         return app.jsonify(results=[])
 
-    q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic), ["title",])
+    q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) , ["title",])
     topics = q_.all()
     results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
     return app.jsonify(results=results)
@@ -1159,13 +1160,19 @@ def category_topics(slug):
 
     if len(prefixes) > 0:
         topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
-            sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label).join(sqlm.Topic.recent_post).order_by( \
+            sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label).join(sqlm.Topic.recent_post) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+        .order_by( \
             sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created))[minimum:maximum]
         topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
-            sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label).count()
+            sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+        .count()
     else:
         topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False) \
-            .join(sqlm.Topic.recent_post).order_by( \
+            .join(sqlm.Topic.recent_post) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+        .order_by( \
             sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created))[minimum:maximum]
         topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False).count()
 
@@ -1323,10 +1330,12 @@ def index():
 
     recently_replied_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:5]
 
     recently_created_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .order_by(sqlm.Topic.created.desc())[:5]
 
     status_update_authors = sqla.session.query(sqlm.StatusUpdate.author_id.label("author_id"), sqla.func.max(sqlm.StatusUpdate.created).label("created")) \
@@ -1343,6 +1352,7 @@ def index():
 
     announcements = sqla.session.query(sqlm.Topic) \
         .filter_by(announcement=True, hidden=False) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .order_by(sqlm.Topic.created.desc())[:3]
 
     if current_user.is_authenticated():

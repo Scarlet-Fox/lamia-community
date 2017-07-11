@@ -112,6 +112,7 @@ def view_profile(login_name):
         .order_by(sqla.desc(sqlm.Post.created))[:5]
 
     recent_topics = sqla.session.query(sqlm.Topic).filter_by(author=user, hidden=False) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .order_by(sqla.desc(sqlm.Topic.created))[:5]
     
     try:
