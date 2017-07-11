@@ -1351,7 +1351,7 @@ def index():
     
     status_updates = sqla.session.query(sqlm.StatusUpdate) \
         .filter(sqla.or_(sqlm.StatusUpdate.hidden == False, sqlm.StatusUpdate.hidden == None)) \
-        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:8]
+        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:6]
 
     announcements = sqla.session.query(sqlm.Topic) \
         .filter_by(announcement=True, hidden=False) \
