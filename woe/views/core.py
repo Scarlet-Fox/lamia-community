@@ -1176,7 +1176,7 @@ def banned_user():
 @app.route('/sign-out', methods=['POST'])
 def sign_out():
     logout_user()
-    return redirect('/')
+    return redirect(app.config['BASE'])
 
 @app.route('/user-list-api', methods=['GET'])
 @login_required
