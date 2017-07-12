@@ -97,8 +97,8 @@
         this.element.before("<div id=\"emoticon-modal-" + this.quillID + "\" class=\"modal fade\"></div>");
         this.element.before("<div id=\"image-link-modal-" + this.quillID + "\" class=\"modal fade\"></div>");
         this.element.html(this.editordivHTML());
-        this.element.after(this.dropzoneHTML);
         this.element.after(this.previewHTML);
+        this.element.after(this.dropzoneHTML);
         this.element.after(this.submitButtonHTML(cancel_button));
         this.last_saved_draft = new Date().getTime() / 1000;
         $.post("/drafts/count", JSON.stringify({

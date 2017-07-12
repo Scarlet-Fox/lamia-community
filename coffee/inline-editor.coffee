@@ -54,8 +54,8 @@ $ ->
       @element.before """<div id="emoticon-modal-#{@quillID}" class="modal fade"></div>"""
       @element.before """<div id="image-link-modal-#{@quillID}" class="modal fade"></div>"""
       @element.html(@editordivHTML())
-      @element.after @dropzoneHTML
       @element.after @previewHTML
+      @element.after @dropzoneHTML
       @element.after @submitButtonHTML cancel_button
       
       @last_saved_draft = new Date().getTime() / 1000
