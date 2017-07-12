@@ -56,6 +56,7 @@ emoticon_codes = {
     ":silly:" : "tongue.png",
     ":blushing:" : "embarassed.png",
     ":lol:" : "biggrin.png",
+    ":D" : "biggrin.png",
 }
 
 def resize_image_save_custom(image_file_location, new_image_file, new_x_size, _id):

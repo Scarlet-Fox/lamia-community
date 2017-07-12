@@ -268,6 +268,7 @@ emoticon_codes = {
     ":silly:" : "tongue.png",
     ":blushing:" : "embarassed.png",
     ":lol:" : "biggrin.png",
+    ":D" : "biggrin.png",
 }
 
 class ForumHTMLCleaner(object):
