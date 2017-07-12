@@ -61,14 +61,14 @@ k1._domainkey.scarletsweb.moe.	IN	TXT	"k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCB
 @	IN	MX	10	alt4.aspmx.l.google.com.
 
 [program:listener]
-command=/usr/bin/coffee listener.coffee
-directory = /home/sally/Sally
-user = sally
+command=/usr/local/bin/coffee listener.coffee
+directory = /home/casual/lamia
+user = lamia
 
-[program:scarletsweb]
-command=/home/sally/SallyEnv/bin/gunicorn --worker-class gevent --workers 5 --error-logfile=/home/sally/logs/error.log --access-logfile=/home/sally/logs/access.log woe:app -b 0.0.0.0:5001
-directory = /home/sally/Sally
-user = sally
+[program:lamia]
+command=/usr/local/bin/gunicorn --worker-class gevent --workers 3 --error-logfile=/home/casual/logs/error.log --access-logfile=/home/casual/logs/access.log woe:app -b 0.0.0.0:5000
+directory = /home/casual/lamia
+user = casual
 
 #!/bin/sh
 /usr/local/bin/tarsnap -c \

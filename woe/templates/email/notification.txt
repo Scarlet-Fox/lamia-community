@@ -1,6 +1,6 @@
 Hello ${_user.display_name},
 
-Here are your most recent notifications. To change your notification preferences, go to your settings area on your Casual Anime profile page - ${_base}/member/${_user.get_url_safe_login_name()}/change-settings - and you can unsubscribe from all emails using the link at the bottom of this message.
+You have notifications at casualanime.com!
 
 % for category in _summaries:
     % if _summaries_k[category] == 1:
@@ -40,4 +40,6 @@ ${_notification_names[category][0].capitalize()} Notification(s)
 % if category != _details[-1]:
 % endif
 % endfor
+To change your notification preferences, go to the settings area on your profile page - ${_base}/member/${_user.get_url_safe_login_name()}/change-settings
+
 To unsubscribe from all future messages from Casual Anime, go to this page - ${_base}/member/${_user.id}/${_user.email_address}/unsubscribe
