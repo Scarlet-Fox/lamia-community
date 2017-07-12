@@ -25,7 +25,7 @@
     $(".sign-out").click(function(e) {
       e.preventDefault();
       return $.post("/sign-out", function(data) {
-        return window.location = "/";
+        return window.location = "https://casualanime.com/";
       });
     });
     window.RegisterAttachmentContainer = function(selector) {

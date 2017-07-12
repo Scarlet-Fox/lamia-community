@@ -986,7 +986,7 @@ def register():
         send_mail_w_template(
             send_to=[new_user,],
             template="welcome_to_moe.txt",
-            subject="Welcome - Casual Anime",
+            subject="Welcome to Casual Anime!",
             variables={
                 "_user": new_user,
             }
