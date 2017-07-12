@@ -1161,17 +1161,14 @@ def category_topics(slug):
     if len(prefixes) > 0:
         topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
             sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label).join(sqlm.Topic.recent_post) \
-        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .order_by( \
             sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created))[minimum:maximum]
         topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
             sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label) \
-        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .count()
     else:
         topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False) \
             .join(sqlm.Topic.recent_post) \
-        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
         .order_by( \
             sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created))[minimum:maximum]
         topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False).count()
