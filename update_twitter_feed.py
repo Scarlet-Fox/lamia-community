@@ -31,7 +31,7 @@ for s in statuses:
         tweet = Tweet()
         tweet.text = s.text
         tweet.id = str(s.id)
-        tweet.time = arrow.get(s.created_at, "ddd MMM DD HH:mm:ss Z YYYY").replace(hours=1).datetime
+        tweet.time = arrow.get(s.created_at, "ddd MMM DD HH:mm:ss Z YYYY").datetime
         
         if s.retweeted_status:
             tweet.retweeted = True
