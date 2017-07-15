@@ -58,20 +58,25 @@
             .col-xs-6.post-likes
               if entry.author == current_user or not current_user.is_authenticated()
                 span
-                  span.badge {{entry.boops|length}}
-                  | &nbsp;
-                  | boops!
+                  if entry.boops|length == 1:
+                    span.badge {{entry.boops|length}}
+                    | &nbsp;
+                    | boop
+                  else
+                    span.badge {{entry.boops|length}}
+                    | &nbsp;
+                    | boops
               else
                 if current_user not in entry.boops
                   a.btn.btn-default.boop-button.boop-link(data-status="notbooped", data-count="{{entry.boops|length}}", type="button", href="/blog/{{blog.slug}}/e/{{entry.slug}}/toggle-boop")
                     span.badge(style="background-color: rgb(85, 85, 85);") {{entry.boops|length}}
                     | &nbsp;
-                    span.boop-text Boop!
+                    span.boop-text Boop
                 else
                   a.btn.btn-default.boop-button.boop-link(data-status="booped", data-count="{{entry.boops|length}}", type="button", href="/blog/{{blog.slug}}/e/{{entry.slug}}/toggle-boop")
                     span.badge(style="background-color: green;") {{entry.boops|length}}
                     | &nbsp;
-                    span.boop-text Boop!
+                    span.boop-text Unboop
           br
       if current_user.is_authenticated()
         li.list-group-item.section-header#comments(style="margin-top: 10px;") Comments
@@ -111,20 +116,25 @@
                       .post-likes
                         if comment.author == current_user or not current_user.is_authenticated()
                           span
-                            span.badge {{comment.boops|length}}
-                            | &nbsp;
-                            | boops!
+                            if comment.boops|length == 1:
+                              span.badge {{comment.boops|length}}
+                              | &nbsp;
+                              | boop
+                            else
+                              span.badge {{comment.boops|length}}
+                              | &nbsp;
+                              | boops
                         else
                           if current_user not in comment.boops
                             a.btn.btn-default.boop-button.boop-link(data-status="notbooped", data-count="{{comment.boops|length}}", type="button", href="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/toggle-boop")
                               span.badge(style="background-color: rgb(85, 85, 85);") {{comment.boops|length}}
                               | &nbsp;
-                              span.boop-text Boop!
+                              span.boop-text Boop
                           else
                             a.btn.btn-default.boop-button.boop-link(data-status="booped", data-count="{{comment.boops|length}}", type="button", href="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/toggle-boop")
                               span.badge(style="background-color: green;") {{comment.boops|length}}
                               | &nbsp;
-                              span.boop-text Boop!
+                              span.boop-text Unboop
                 br
       if pages
         .panel
