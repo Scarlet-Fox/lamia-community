@@ -478,7 +478,7 @@ class User(db.Model):
     birthday = db.Column(db.DateTime, nullable=True, index=True)
     minimum_notifications_for_email = db.Column(db.Integer, default=5, index=True)
     minimum_time_between_emails = db.Column(db.Integer, default=360, index=True)
-    notification_sound = db.Column(db.Boolean, default=False, index=True)
+    notification_sound = db.Column(db.Boolean, default=True, index=True)
 
     title = db.Column(db.String, default="", index=True)
     minecraft = db.Column(db.String, default="", index=True)
