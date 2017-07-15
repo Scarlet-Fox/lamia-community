@@ -185,7 +185,7 @@ class PrivateMessageTopicView(ModelView):
 
     column_filters = ["id", ]
     def is_accessible(self):
-        return current_user.login_name in ["scarlet", "zoop"]
+        return current_user.login_name in ["cy", "zoop"]
 
 class IPAddressView(ModelView):
     column_list = ("id", "user", "ip_address", "last_seen", "banned")
