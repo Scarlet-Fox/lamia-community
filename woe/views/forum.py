@@ -300,6 +300,7 @@ def new_post_in_topic(slug):
 
     parsed_post["is_author"] = True
     parsed_post["boop_count"] = 0
+    parsed_post["one_boop"] = False
     post_count = topic.post_count
 
     mentions = mention_re.findall(post_html)
@@ -578,6 +579,10 @@ def topic_posts(slug):
         parsed_post["author_login_name"] = post.author.login_name
         parsed_post["has_booped"] = current_user._get_current_object() in post.boops
         parsed_post["boop_count"] = len(post.boops)
+        if parsed_post["boop_count"] == 1:
+            parsed_post["one_boop"] = True
+        else:
+            parsed_post["one_boop"] = False
         if current_user.is_authenticated():
             parsed_post["can_boop"] = current_user._get_current_object() != post.author
         else:

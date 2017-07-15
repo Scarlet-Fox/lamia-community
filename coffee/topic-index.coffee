@@ -630,7 +630,11 @@ $ ->
                       <button type="button" class="btn btn-default boop-button" data-pk="{{_id}}" data-status="notbooped" data-count="{{boop_count}}"><span class="badge" style="background-color: #555;">{{boop_count}}</span><span class="boop-text">  Boop</span></button>
                       {{/if}}
                       {{else}}
-                      <span><span class="badge">{{boop_count}}</span> boops!</span>
+                      {{#if one_boop}}
+                      <span><span class="badge">{{boop_count}}</span> boop</span>
+                      {{else}}
+                      <span><span class="badge">{{boop_count}}</span> boops</span>
+                      {{/if}}
                       {{/if}}
                       {{/if}}
                     </div>
