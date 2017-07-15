@@ -42,6 +42,10 @@ $ ->
       $("#submit-reply").click (e) ->
         e.preventDefault()
         do status.addReply
+        
+      $("#go-down").click (e) ->
+        e.preventDefault()
+        $('#status-replies').scrollTop($('#status-replies')[0].scrollHeight);
 
       $("#status-replies").delegate ".hide-reply", "click", (e) ->
         e.preventDefault()

@@ -45,6 +45,10 @@
           e.preventDefault();
           return status.addReply();
         });
+        $("#go-down").click(function(e) {
+          e.preventDefault();
+          return $('#status-replies').scrollTop($('#status-replies')[0].scrollHeight);
+        });
         $("#status-replies").delegate(".hide-reply", "click", function(e) {
           e.preventDefault();
           $("#confirm-hide-modal").modal('hide');

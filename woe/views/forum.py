@@ -130,8 +130,8 @@ def new_post_in_topic(slug):
 
     request_json = request.get_json(force=True)
 
-    if request_json.get("text", "").strip() == "":
-        return app.jsonify(no_content=True)
+    # if request_json.get("text", "").strip() == "":
+    #     return app.jsonify(no_content=True)
 
     cleaner = ForumHTMLCleaner()
     try:
