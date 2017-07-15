@@ -41,9 +41,9 @@
                   a(href="{{url_for('view_profile', login_name=subcategory.recent_post.author.login_name)}}")
                     img(src="{{subcategory.recent_post.author.get_avatar_url("60")}}", width="{{ subcategory.recent_post.author.avatar_60_x }}", height="{{ subcategory.recent_post.author.avatar_60_y }}")
               .subcategory-listing-recent
-                a(href="/t/{{subcategory.recent_topic.slug}}")= subcategory.recent_topic.title
+                a(href="/t/{{subcategory.recent_topic.slug}}/page/1/post/last_seen")= subcategory.recent_topic.title
                 br
-                a(href="/t/{{subcategory.recent_topic.slug}}") {{subcategory.recent_post.created|humanize_time}}
+                a(href="/t/{{subcategory.recent_topic.slug}}/page/1/post/last_seen") {{subcategory.recent_post.created|humanize_time}}
       {% endfor %}
   {% endif %}
 .row

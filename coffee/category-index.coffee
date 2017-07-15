@@ -84,15 +84,15 @@ $ ->
             {{#if sticky}}<span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>&nbsp;{{/if}}
             {{#if closed}}<span class="glyphicon glyphicon-lock" aria-hidden="true"></span>&nbsp;{{/if}}
             {{/if}}
-            <a href="/t/{{slug}}">{{#if updated}}<strong>{{/if}}{{title}}{{#if updated}}</strong>{{/if}}</a><br>
+            <a href="/t/{{slug}}/page/1/post/last_seen">{{#if updated}}<strong>{{/if}}{{title}}{{#if updated}}</strong>{{/if}}</a><br>
             <span class="topic-author">
               Started by {{creator}}, {{created}}
             </span>
             <span class="topic-listing-jumps">
-              <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/1">1</a></span>
+              <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/1/post/last_seen">1</a></span>
               {{#if last_pages}}
               <span class="badge" style="">...</span>
-              <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/1/post/latest_post">{{last_page}}</a></span>
+              <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/1/post/last_seen">{{last_page}}</a></span>
               {{/if}}
             </span>
           </div>
@@ -100,7 +100,7 @@ $ ->
             <span class="topic-listing-recent">
               <a href="" class="topic-listing-text">{{post_count}} replies</a>
               <br>
-              <a href="" class="topic-listing-text">{{view_count}} views</a>
+              {{view_count}} views
             </span>
           </div>
           <div class="col-xs-6 col-sm-3 hidden-xs">

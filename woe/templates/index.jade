@@ -28,7 +28,7 @@
                     img(src="{{category.recent_post.author.get_avatar_url("40")}}", width="{{category.recent_post.author.avatar_40_x}}", height="{{category.recent_post.author.avatar_40_y}}", class="avatar-mini")
               .media-body
                 span.subcategory-listing-recent
-                  a(href="/t/{{category.recent_topic.slug}}")= category.recent_topic.title|truncate(40)
+                  a(href="/t/{{category.recent_topic.slug}}/page/1/post/last_seen")= category.recent_topic.title|truncate(40)
                   br
                   a(href="/t/{{category.recent_topic.slug}}/page/1/post/last_seen") {{category.recent_post.created|humanize_time}}
             {% endif %}
