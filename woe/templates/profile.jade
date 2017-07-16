@@ -114,49 +114,42 @@ style!= profile.get_custom_css()
     ul.list-group
       li.list-group-item.section-header.category-section-header {{profile.display_name}}'s Stats
       li.list-group-item
-        br
-        .row
-          .col-xs-6.col-sm-4
-            strong Topics Created
-          .col-xs-6.col-sm-2 {{topic_count}}
-          .col-xs-6.col-sm-4
-            strong Post Count
-          .col-xs-6.col-sm-2 {{post_count}}
-        br
-        .row
-          .col-xs-6.col-sm-4
-            strong Boops Given
-          .col-xs-6.col-sm-2 {{boops_given}}
-          .col-xs-6.col-sm-4
-            strong Boops Received
-          .col-xs-6.col-sm-2 {{boops_received}}
-        br
-        .row
-          .col-xs-6.col-sm-4
-            strong Status Updates
-          .col-xs-6.col-sm-2 {{status_update_count}}
-          .col-xs-6.col-sm-4
-            strong Status Comments
-          .col-xs-6.col-sm-2 {{status_update_comments_count}}
-        br
-        if favorite_phrase
-          .row
-            .col-sm-4
-              strong Favorite Phrase
-            .col-sm-8
-              {{favorite_phrase}}
-          br
-        if common_emotes
-          .row
-            .col-sm-4
-              strong Common Emotes
-            .col-sm-8
+        ul
+          if topic_count == 1
+            li {{topic_count}} <strong>topic</strong>
+          else
+            li {{topic_count}} <strong>topics</strong>
+          if post_count == 1
+            li {{post_count}} <strong>post</strong>
+          else
+            li {{post_count}} <strong>posts</strong>
+          if boops_given == 1
+            li {{boops_given}} <strong>boop</strong>
+          else
+            li {{boops_given}} <strong>boops</strong>
+          if boops_received == 1
+            li {{boops_received}} <strong>boop</strong>
+          else
+            li {{boops_received}} <strong>boops</strong>
+          if status_update_count == 1
+            li {{status_update_count}} <strong>status update</strong>
+          else
+            li {{status_update_count}} <strong>status updates</strong>
+          if status_update_comments_count == 1
+            li {{status_update_comments_count}} <strong>status comment</strong>
+          else
+            li {{status_update_comments_count}} <strong>status comments</strong>
+          if favorite_phrase
+            li <strong>Favorite Phrase</strong>
+            span "{{favorite_phrase}}" 
+          if common_emotes
+            li <strong>Common Emotes</strong>
+              br
               for emote in common_emotes
                 span {{emote}}
                 | &nbsp;
                 if loop.index == 3
                   br
-          br    
     if custom_fields or age
       ul.list-group
         li.list-group-item.section-header.category-section-header Other Stuff
