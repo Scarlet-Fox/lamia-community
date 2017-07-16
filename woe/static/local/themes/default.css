@@ -1038,3 +1038,10 @@ h1.breadcrumb-h1 {
 .dashboard-panel-header {
     background-attachment: initial !important;
 }
+
+.text-hide-overflow {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    
+}

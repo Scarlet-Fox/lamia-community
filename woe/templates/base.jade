@@ -541,10 +541,10 @@ body(role='document')
                 br
                 ul.nav.nav-pills.nav-stacked
                   li(role="presentation")
-                    a.text-muted(href="/register") 
+                    a.text-muted.text-hide-overflow(href="/register") 
                       span.glyphicon.glyphicon-list-alt
                       | &nbsp;&nbsp;&nbsp;&nbsp;Join Us!
-                    a.text-muted(href="/sign-in") 
+                    a.text-muted.text-hide-overflow(href="/sign-in") 
                       span.glyphicon.glyphicon-list-alt
                       | &nbsp;&nbsp;&nbsp;&nbsp;Sign In
             .col-sm-3
@@ -552,17 +552,17 @@ body(role='document')
               br
               ul.nav.nav-pills.nav-stacked
                 li(role="presentation")
-                  a.text-muted.to-top(href="#") 
+                  a.text-muted.text-hide-overflow.to-top(href="#") 
                     span.glyphicon.glyphicon-arrow-up
                     | &nbsp;&nbsp;&nbsp;&nbsp;Go to Top
                 if not current_user.is_authenticated()
                   li(role="presentation")
-                    a.text-muted.to-top(href="/blogs") 
+                    a.text-muted.text-hide-overflow(href="/blogs") 
                       span.glyphicon.glyphicon-pencil
                       | &nbsp;&nbsp;&nbsp;&nbsp;Blogs
                 if current_user.is_authenticated()
                   li(role="presentation")
-                    a.text-muted(href="/dashboard") 
+                    a.text-muted.text-hide-overflow(href="/dashboard") 
                       span.glyphicon.glyphicon-alert
                       | &nbsp;&nbsp;&nbsp;&nbsp;Your Notifications
             .col-sm-3
@@ -570,11 +570,11 @@ body(role='document')
               br
               ul.nav.nav-pills.nav-stacked
                 li(role="presentation")
-                  a.text-muted(href="/rules") 
+                  a.text-muted.text-hide-overflow(href="/rules") 
                     span.glyphicon.glyphicon-info-sign
                     | &nbsp;&nbsp;&nbsp;&nbsp;Site Rules
                 li(role="presentation")
-                  a.text-muted(href="/acknowledgement") 
+                  a.text-muted.text-hide-overflow(href="/acknowledgement") 
                     span.glyphicon.glyphicon-star
                     | &nbsp;&nbsp;&nbsp;&nbsp;Acknowledgements
             if current_user.is_authenticated()
@@ -583,7 +583,7 @@ body(role='document')
                 br
                 ul.nav.nav-pills.nav-stacked
                   li(role="presentation")
-                    a.text-muted.dropdown.dropup(href="#", data-toggle="dropdown") 
+                    a.text-muted.text-hide-overflow.dropdown.dropup(href="#", data-toggle="dropdown") 
                       span.glyphicon.glyphicon-picture
                       | &nbsp;&nbsp;&nbsp;&nbsp;Themes
                       .caret
@@ -592,7 +592,7 @@ body(role='document')
                         li
                           a.post-link(href="/change-theme/{{theme.id}}")= theme.name
                   li(role="presentation")
-                    a.text-muted(href="/change-account") 
+                    a.text-muted.text-hide-overflow(href="/change-account") 
                       span.glyphicon.glyphicon-wrench
                       | &nbsp;&nbsp;&nbsp;&nbsp;Account
             .col-sm-3
@@ -600,12 +600,12 @@ body(role='document')
               br
               ul.nav.nav-pills.nav-stacked
                 li(role="presentation")
-                  a.text-muted(href="https://animeforums.net/community/") 
+                  a.text-muted.text-hide-overflow(href="https://animeforums.net/community/") 
                     span.glyphicon.glyphicon-heart
                     | &nbsp;&nbsp;&nbsp;&nbsp;Anime Forums
               ul.nav.nav-pills.nav-stacked
                 li(role="presentation")
-                  a.text-muted(href="#") 
+                  a.text-muted.text-hide-overflow(href="#") 
                     span.glyphicon.glyphicon-link
                     | &nbsp;&nbsp;&nbsp;&nbsp;Room for more...
             .col-sm-6

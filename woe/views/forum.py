@@ -130,8 +130,8 @@ def new_post_in_topic(slug):
 
     request_json = request.get_json(force=True)
 
-    # if request_json.get("text", "").strip() == "":
-    #     return app.jsonify(no_content=True)
+    if request_json.get("text", "").strip() == "":
+        return app.jsonify(no_content=True)
 
     cleaner = ForumHTMLCleaner()
     try:
@@ -772,7 +772,14 @@ def topic_index(slug, page, post):
         page = int(page)
     except:
         page = 1
-        
+    
+    more_topics = sqla.session.query(sqlm.Topic) \
+        .filter(sqlm.Topic.id != topic.id) \
+        .filter(sqlm.Topic.recent_post.has(sqlm.Post.author != current_user)) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+        .filter(sqlm.Topic.category.has(sqlm.Category.slug!="welcome")) \
+        .order_by(sqla.func.random())[:5]
+            
     request.canonical = app.config['BASE'] + "/t/%s/page/%s" % (slug, page)
 
     meta_description = topic.title + " - Page %s" % (page,)
@@ -853,7 +860,7 @@ def topic_index(slug, page, post):
         rp_topic = "false"
         if topic.category.slug in ["roleplays"]:
             rp_topic = "true"
-        return render_template("forum/topic.jade", topic=topic, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
+        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
 
     topic.view_count = topic.view_count + 1
     try:
@@ -868,8 +875,8 @@ def topic_index(slug, page, post):
     rp_topic = "false"
     if topic.category.slug in ["roleplays", "scenarios"]:
         rp_topic = "true"
-
-    return render_template("forum/topic.jade", topic=topic, meta_description=meta_description, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
+    
+    return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):

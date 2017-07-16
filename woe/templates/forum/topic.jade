@@ -43,6 +43,43 @@
         else:
           #new-post-box
 nav.pagination-listing
+.row
+  .col-md-12
+    ul.list-group
+      li.list-group-item.section-header.sidebar-section-header(style="") More Topics
+      li.list-group-item(style="")
+        for another_topic in more_topics
+          .row
+            .col-xs-12.col-sm-6
+              span.topic-listing-name
+                if another_topic.prefix
+                  {{another_topic.pre_html}}
+                if another_topic.sticky
+                  span.glyphicon.glyphicon-pushpin(aria-hidden='true')
+                if another_topic.closed
+                  span.glyphicon.glyphicon-lock(aria-hidden='true')
+                if another_topic.prefix
+                  {{another_topic.post_html}}
+                a(href='/t/{{another_topic.slug}}/page/1/post/last_seen')= another_topic.title
+                br
+                span.topic-author
+                  | Started by {{another_topic.author.display_name}}, {{another_topic.created|humanize_time("MMM D YYYY")}}
+                span.topic-listing-jumps
+                  span.badge(style='')
+            .col-xs-3.hidden-xs.hidden-sm
+              span.topic-listing-recent
+                a.topic-listing-text(href='/t/{{another_topic.slug}}/page/1/post/last_seen') {{another_topic.post_count}} replies
+                br
+                |               {{another_topic.view_count}} views
+            .col-xs-6.col-sm-3.hidden-xs
+              span.topic-listing-recent-image.subcategory-listing-recent-image
+                a(href='/member/{{another_topic.recent_post.author.login_name}}')
+                  img.avatar-mini(src='{{another_topic.recent_post.author.get_avatar_url("60")}}', width='60px', height='60px')
+              span.topic-listing-recent
+                a.topic-listing-username.hover_user(href='/member/{{another_topic.recent_post.author.login_name}}') {{another_topic.recent_post.author.display_name}}
+                br
+                a.topic-listing-time(href='/t/{{another_topic.slug}}/page/1/post/last_seen') {{another_topic.recent_post.created|humanize_time("MMM D YYYY")}}
+          
 {% endblock %}
 
 {% block script %}
