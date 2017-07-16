@@ -35,6 +35,9 @@
                 {{ form.notification_sound.label }}
                 {{ form.notification_sound(class="form-control") }}
               .form-group
+                {{ form.all_notification_sounds.label }}
+                {{ form.all_notification_sounds(class="form-control") }}
+              .form-group
                 {{ form.minimum_time_between_emails.label }}
                 {{ form.minimum_time_between_emails(class="form-control") }}
               button(type="submit").btn.btn-default Submit

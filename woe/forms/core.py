@@ -34,6 +34,7 @@ class UserSettingsForm(Form):
     navbar_top = BooleanField("Use sticky navbar")
     no_emails = BooleanField("Mute all emails (no email notifications)")
     notification_sound = BooleanField("Play sound for new notifications")
+    all_notification_sounds = BooleanField("Play sound for all notifications (instead of just the first one)")
     minimum_time_between_emails = IntegerField("Minimum time between notification emails (in minutes, no less than 5 and no more than 1440)",
             [validators.InputRequired(), validators.NumberRange(5,1440)]
         )

@@ -69,7 +69,10 @@ head
 body(role='document')
   if current_user.is_authenticated()
     if current_user.notification_sound
-      audio#notification-sound(style="display: none;", preload, src="/static/notify.wav")
+      if current_user.all_notification_sounds
+        audio#notification-sound(style="display: none;",data-frequency="yes" ,preload, src="/static/notify.wav")
+      else
+        audio#notification-sound(style="display: none;", preload, src="/static/notify.wav")
   if current_user.navbar_top
     div.hidden-xs(style="padding-top: 50px")
     div.hidden-lg.hidden-md.hidden-sm(style="padding-top: 70px")

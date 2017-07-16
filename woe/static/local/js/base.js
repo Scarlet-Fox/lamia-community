@@ -99,10 +99,14 @@
         var counter_element, ref, title_count;
         if (data.count_update != null) {
           counter_element = $(".notification-counter");
-          if (parseInt(counter_element.text()) === 0 && data.count_update > 0) {
-            if ($("#notification-sound").length > 0) {
-              document.getElementById('notification-sound').play();
+          if ($("#notification-sound").data("frequency") == null) {
+            if (parseInt(counter_element.text()) === 0 && data.count_update > 0) {
+              if ($("#notification-sound").length > 0) {
+                document.getElementById('notification-sound').play();
+              }
             }
+          } else {
+            document.getElementById('notification-sound').play();
           }
           counter_element.text(data.count_update);
           if (data.count_update === 0) {
@@ -123,10 +127,14 @@
         } else {
           if (ref = window.woe_is_me, indexOf.call(data.users, ref) >= 0) {
             counter_element = $(".notification-counter");
-            if (parseInt(counter_element.text()) === 0 && data.count > 0) {
-              if ($("#notification-sound").length > 0) {
-                document.getElementById('notification-sound').play();
+            if ($("#notification-sound").data("frequency") == null) {
+              if (parseInt(counter_element.text()) === 0 && data.count > 0) {
+                if ($("#notification-sound").length > 0) {
+                  document.getElementById('notification-sound').play();
+                }
               }
+            } else {
+              document.getElementById('notification-sound').play();
             }
             counter_element.text(data.count);
             counter_element.css("background-color", "#B22222");
