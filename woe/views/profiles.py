@@ -936,15 +936,23 @@ def customize_user_profile(login_name):
 
         if form.background.data and form.background.data != "FFFFFF":
             user.profile_background_custom = form.background.data
+        else:
+            user.profile_background_custom = None
 
         if form.header_background.data and form.header_background.data != "FFFFFF":
             user.header_background_color = form.header_background.data
+        else:
+            user.header_background_color = None
 
         if form.header_text_color.data and form.header_text_color.data != "FFFFFF":
             user.header_text_color = form.header_text_color.data
+        else:
+            user.header_text_color = None
 
         if form.header_text_shadow_color.data and form.header_text_shadow_color.data != "FFFFFF":
             user.text_shadow_color = form.header_text_shadow_color.data
+        else:
+            user.text_shadow_color = None
 
         user.full_page_image = None
         user.use_text_shadow = form.use_text_shadow.data
