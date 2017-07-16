@@ -92,7 +92,7 @@ def view_profile(login_name):
 
     if user.data != None:
         favorite_phrase = user.data.get("favorite_phrase", [])
-        favorite_emotes = ["""<img src="/static/emoticons/%s" />""" % emoticon_codes[emote] for emote in user.data.get("favorite_emotes", [])]
+        favorite_emotes = ["""<img src="/static/emotes/%s" />""" % emote for emote in user.data.get("favorite_emotes", [])]
     else:
         favorite_phrase = []
         favorite_emotes = []

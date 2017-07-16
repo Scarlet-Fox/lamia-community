@@ -35,15 +35,15 @@ for user in User.query.filter_by(banned=False, validated=True).all():
             for emote in emoticon_codes.keys():
                 if emote in post.html:
                     if emote_frequency.has_key(emote):
-                        emote_frequency[emote] += 1
+                        emote_frequency[emoticon_codes[emote]] += 1
                     else:
-                        emote_frequency[emote] = 1
+                        emote_frequency[emoticon_codes[emote]] = 1
 
         emotes = emote_frequency.keys()
         emotes = sorted(emotes, key=lambda x: emote_frequency[x], reverse=True)
 
         try:
-            favorite_emotes = emotes[:6]
+            favorite_emotes = emotes[:3]
         except IndexError:
             return
 
