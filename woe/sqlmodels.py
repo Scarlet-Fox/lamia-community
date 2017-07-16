@@ -495,6 +495,7 @@ class User(db.Model):
     avatar_40_y = db.Column(db.Integer, default=40)
     avatar_timestamp = db.Column(db.String, default="")
     banner_image_custom = db.Column(db.String, default="")
+    background_image_custom = db.Column(db.String, default="")
     title_bar_background_custom = db.Column(db.String, default="")
     profile_background_custom = db.Column(db.String, default="")
     header_background_color = db.Column(db.String, default="")
@@ -554,10 +555,10 @@ class User(db.Model):
                 _banner_image=self.banner_image_custom,
                 _header_height=self.header_height,
                 _site_background_color=self.profile_background_custom,
+                _site_background_image=self.background_image_custom,
                 _section_image=self.title_bar_background_custom,
                 _section_background_color=self.header_background_color,
                 _section_text_color=self.header_text_color,
-                _full_page_image=self.full_page_image,
                 _use_text_shadow=self.use_text_shadow,
                 _text_shadow_color=self.text_shadow_color
             )

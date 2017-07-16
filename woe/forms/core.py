@@ -177,14 +177,31 @@ class SiteCustomizationForm(Form):
     header = FileField('Header Background Image',
             [FileAllowed(['jpg', 'jpeg', 'png'], 'Only jpg and png allowed.')]
         )
+    background_image = FileField('Page Background Image',
+            [FileAllowed(['jpg', 'jpeg', 'png'], 'Only jpg and png allowed.')]
+        )
+        
     background = StringField('Page Background Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
 
     header_background = StringField('Header Background Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
     header_text_color = StringField('Header Text Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
     header_text_shadow_color = StringField('Header Text Shadow Color', [validators.Regexp('^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^$', message="Only valid hexcodes are supported.")])
-    full_page_image = BooleanField('Use Full Page Background (instead of just the banner)')
     use_text_shadow = BooleanField('Use Header Text Shadow')
 
+    def validate_background_image(self, field):
+        if not field.data:
+            return
+
+        file = field.data
+        image = Image(file=file)
+        
+        _blob =  image.make_blob()
+        
+        if len(_blob) > 1024*1024*3:
+            raise validators.ValidationError("Your background image filesize is too large. Resize to less than 3 MB.")
+
+        self.background_image_file = image
+        
     def validate_banner(self, field):
         if not field.data:
             return

@@ -17,6 +17,9 @@
                 {{ form.header.label }}
                 {{ form.header(class="form-control") }}
               .form-group
+                {{ form.background_image.label }}
+                {{ form.background_image(class="form-control") }}
+              .form-group
                 {{ form.background.label }}
                 {{ form.background(class="form-control jscolor") }}
               .form-group
@@ -28,9 +31,6 @@
               .form-group
                 {{ form.header_text_shadow_color.label }}
                 {{ form.header_text_shadow_color(class="form-control jscolor") }}
-              .form-group
-                {{ form.full_page_image.label }}
-                {{ form.full_page_image(class="form-control") }}
               .form-group
                 {{ form.use_text_shadow.label }}
                 {{ form.use_text_shadow(class="form-control") }}
@@ -48,6 +48,10 @@
         li.list-group-item.section-header Current Title Bar Headers
         li.list-group-item
           img(src="/static/customizations/{{profile.title_bar_background_custom}}", style="max-width: 100%")
+      if profile.background_image_custom
+        li.list-group-item.section-header Current Page Background Image
+        li.list-group-item
+          img(src="/static/customizations/{{profile.background_image_custom}}", style="max-width: 100%")
 {% endblock %}
 
 {% block script %}

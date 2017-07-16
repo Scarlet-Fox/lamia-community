@@ -886,6 +886,7 @@ def remove_customizations_from_profile(login_name):
 
 
     user.banner_image_custom = None
+    user.background_image_custom = None
     user.title_bar_background_custom = None
     user.profile_background_custom = None
     user.header_background_color = None
@@ -927,6 +928,12 @@ def customize_user_profile(login_name):
             form.header_image.save(filename=header_file_name)
             user.title_bar_background_custom = "header_" + timestamp + str(user.id) + extension
 
+        if form.background_image.data:
+            extension = "." + form.background_image.data.filename.split(".")[-1].lower()
+            background_file_name = os.path.join(app.config["CUSTOMIZATIONS_UPLOAD_DIR"], "background_" + timestamp + str(user.id) + extension)
+            form.background_image_file.save(filename=background_file_name)
+            user.background_image_custom = "background_" + timestamp + str(user.id) + extension
+
         if form.background.data and form.background.data != "FFFFFF":
             user.profile_background_custom = form.background.data
 
@@ -939,7 +946,7 @@ def customize_user_profile(login_name):
         if form.header_text_shadow_color.data and form.header_text_shadow_color.data != "FFFFFF":
             user.text_shadow_color = form.header_text_shadow_color.data
 
-        user.full_page_image = form.full_page_image.data
+        user.full_page_image = None
         user.use_text_shadow = form.use_text_shadow.data
 
         sqla.session.add(user)
@@ -950,7 +957,6 @@ def customize_user_profile(login_name):
         form.header_text_color.data = user.header_text_color
         form.header_text_shadow_color.data = user.text_shadow_color
         form.use_text_shadow.data = user.use_text_shadow
-        form.full_page_image.data = user.full_page_image
 
     return render_template("profile/customize_profile.jade", profile=user, form=form, page_title="Customize Profile - Casual Anime")
 
