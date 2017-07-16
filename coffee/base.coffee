@@ -178,9 +178,16 @@ $ ->
     window.addExtraHTML("body")
 
   window.addExtraHTML = (selector) ->
-    $(selector).find(".content-spoiler").before """
-      <a class="btn btn-info btn-xs toggle-spoiler">Toggle Spoiler</a>
-      """
+    $(selector).find(".content-spoiler").each () -> 
+      element = $(this)
+      caption = "Toggle Spoiler"
+      
+      if element.data("caption")?
+        caption = element.data("caption")
+      
+      element.before """
+        <a class="btn btn-info btn-xs toggle-spoiler">#{caption}</a>
+        """
 
     $(selector).find(".toggle-spoiler").click (e) ->
       spoiler = $(this).next(".content-spoiler")

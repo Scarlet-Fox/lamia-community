@@ -179,7 +179,15 @@
     };
     window.addExtraHTML = function(selector) {
       var blockquote_attribution_html, blockquote_attribution_template;
-      $(selector).find(".content-spoiler").before("<a class=\"btn btn-info btn-xs toggle-spoiler\">Toggle Spoiler</a>");
+      $(selector).find(".content-spoiler").each(function() {
+        var caption, element;
+        element = $(this);
+        caption = "Toggle Spoiler";
+        if (element.data("caption") != null) {
+          caption = element.data("caption");
+        }
+        return element.before("<a class=\"btn btn-info btn-xs toggle-spoiler\">" + caption + "</a>");
+      });
       $(selector).find(".toggle-spoiler").click(function(e) {
         var spoiler;
         spoiler = $(this).next(".content-spoiler");
