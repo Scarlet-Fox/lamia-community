@@ -44,7 +44,7 @@ head
         "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
         "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
         "assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
-        "local/themes/default.css" %}
+        "local/themes/default.css", "local/themes/cali.css" %}
         link(href='{{ASSET_URL}}', rel='stylesheet')
         {% endassets %}
     else
@@ -53,7 +53,7 @@ head
       "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
       "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
       "assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
-      "local/themes/default.css" %}
+      "local/themes/default.css", "local/themes/cali.css" %}
       link(href='{{ASSET_URL}}', rel='stylesheet')
       {% endassets %}
     
@@ -609,30 +609,6 @@ body(role='document')
                     span.glyphicon.glyphicon-link
                     | &nbsp;&nbsp;&nbsp;&nbsp;Room for more...
             .col-sm-6
-      //- center
-      //-   ul.list-group.category
-      //-     li.list-group-item
-      //-       .row
-      //-         .col-xs-12
-      //-           a(href="/rules") Site Rules
-      //-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      //-           a(href="/privacy") Privacy Policy
-      //-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      //-           a(href="/acknowledgement") Acknowledgements
-      //-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      //-           if current_user.is_authenticated():
-      //-             a(href="/dashboard") Notifications
-      //-             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      //-           a.to-top(href="/") Go to Top
-      //-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      //-           if current_user.is_authenticated():
-      //-             span.dropdown.dropup
-      //-               a(href="#", data-toggle="dropdown") Themes
-      //-               .caret
-      //-               ul.dropdown-menu.dropup
-      //-                 for theme in current_user.get_themes()
-      //-                   li
-      //-                     a.post-link(href="/change-theme/{{theme.id}}")= theme.name
   #img-click-modal.modal.fade
   #report-click-modal.modal.fade
   script(src="/static/assets/handlebars.min.js").

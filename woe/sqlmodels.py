@@ -568,7 +568,7 @@ class User(db.Model):
         return "%s" % (self.id, )
 
     def get_themes(self):
-        return SiteTheme.query.all()
+        return SiteTheme.query.order_by(SiteTheme.name.desc()).all()
 
     def get_hash(self):
         return self.password_hash[-40:]

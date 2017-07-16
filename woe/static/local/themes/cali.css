@@ -1,0 +1,28 @@
+.panel-heading {
+  background: url("/static/local/themes/cali/header.png");
+  background-attachment: fixed;
+}
+
+.section-header {
+  background: url("/static/local/themes/cali/header.png");
+  background-attachment: fixed;
+}
+
+.popover-title {
+  background-image: url("/static/local/themes/cali/header.png") !important;
+  background-attachment: fixed;
+}
+
+.toggle-show-roles-button {
+  background: url("/static/local/themes/cali/header.png");
+  background-attachment: fixed;
+}
+
+.site-background {
+  height: 460px;
+  background: url("/static/local/themes/cali/banner.png") no-repeat scroll top;
+}
+
+body {
+  background: #CCCCFF;
+}

@@ -9,4 +9,5 @@ body {
     background-position: top left, top right;
     background-color: #A89898;
     background-attachment: fixed;
+    background-size: auto !important;
 }
