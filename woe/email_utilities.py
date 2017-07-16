@@ -184,14 +184,19 @@ def send_notification_emails():
                 n.emailed=True
                 sqla.session.add(n)
             sqla.session.commit()
-
+            
+            if _total == 1:
+                subject = "You have a notification at Casual Anime Forums"
+            else:
+                subject = "You have %s notifications at Casual Anime Forums" % (_total,)
+                
             if not app.settings_file.get("lockout_on", False):
                 result = requests.post(
                     "https://api.mailgun.net/v3/casualanime.com/messages",
                     auth=("api", _api),
                     data={"from": "Casual Anime <help@casualanime.com>",
                           "to": _to_email_address,
-                          "subject": "You have %s notifications at Casual Anime Forums" % (_total,),
+                          "subject": subject,
                           "text": _rendered})
             else:
                 result = "LOCKDOWN ON"
