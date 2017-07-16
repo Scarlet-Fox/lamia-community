@@ -196,7 +196,8 @@
 @viewport           { width: device-width; }
 
 body {
-    font-family:'pt_sansregular',tahoma,helvetica,arial,sans-serif !important
+    font-family:'pt_sansregular',tahoma,helvetica,arial,sans-serif !important;
+    background-size: cover !important;
 }
 
 a {
