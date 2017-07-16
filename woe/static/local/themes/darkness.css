@@ -1,0 +1,319 @@
+.avatar-mini {
+    border: 1px solid #691300;
+}
+
+.blockquote-reply {
+    background-color: #242424;
+    border: 1px solid #691300;
+}
+
+.blog-listing-info {
+    background-color: #242424;
+}
+
+.btn {
+    background-color: #3F3F3F;
+    border-color: #969696;
+    color: #FEFEFE;
+}
+
+.btn-group {
+    background-color: black;
+}
+
+.close {
+    color: #9bd5ff;
+    /* text-shadow: 0 1px 0 #fff; */
+    filter: alpha(opacity=20);
+    float: right;
+    font-size: 20px;
+    font-weight: normal;
+    line-height: 1;
+    opacity: .99;
+}
+
+.dropdown-menu {
+    background-color: #353535;
+    border: 1px solid #000000;
+}
+
+.dropdown-menu .divider {
+    background-color: #000000;
+    height: 1px;
+    margin: 9px 0;
+    overflow: hidden;
+}
+
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+    background-color: #242424;
+    color: white
+    text-decoration: none;
+}
+
+.form-control {
+    background-color: #242424;
+    border-color: #969696 ;
+    color: #dad6d6;
+}
+
+.form-control:focus {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(133,5,28,0.6);
+    border-color: #85051c;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(133,5,28,0.6);
+    outline: 0;
+}
+
+.list-group-item {
+    background-color: #353535;
+    border: 1px solid #000000 ;
+}
+
+.list-group-item .post-listing-info {
+    background-color: black ;
+}
+
+.member-page {
+    background-color: #353535 !important;
+}
+
+.navbar-default {
+    background-color: #353535 ;
+    border: 1px solid #000000;
+}
+
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+    background-color: #626262;
+}
+
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+    background-color: black;
+}
+
+.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus {
+    background-color: transparent;
+    border-color: #000000;
+    color: #ffffff;
+    z-index: 3;
+}
+
+.pagination > li > a, .pagination > li > span {
+    background-color: transparent ;
+}
+
+.pagination>li>a, .pagination>li>span {
+    background-color: transparent;
+    border: 1px solid #000000;
+    color: #337ab7;
+    float: left;
+    line-height: 1.42857143;
+    margin-left: -1px;
+    padding: 6px 12px;
+    position: relative;
+    text-decoration: none;
+}
+
+.panel {
+    background-color: #353535;
+}
+
+.panel-heading {
+    background-attachment: fixed;
+    background-color: #353535;
+}
+
+.popover {
+    background-color: #353535;
+    border: 1px solid #000000;
+}
+
+.popover-body {
+    background-color: #353535;
+    padding: 10px;
+}
+
+.popover-content {
+    background-color: #353535;
+    padding: 9px 14px;
+}
+
+.popover-title {
+    background-color: #353535;
+    background-image: url('/static/local/themes/darkness/background.png');
+    color: #E7FEFF;
+    padding: 8px 14px;
+    margin: 0;
+    font-size: 13px;
+    border-bottom: 1px solid black ;
+}
+
+.post-listing-info {
+    background-color: #242424 ;
+}
+
+.post-member-self-title {
+    color: #E7FEFF;
+}
+
+.section-header {
+    background: url('/static/local/themes/darkness/background.png');
+    background-attachment: fixed;
+    background-color: black;
+    color: #FEFEFE;
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+    background: #242424;
+    border: none;
+    color: #FEFEFE;
+    outline: 0;
+}
+
+.select2-container--default .select2-selection--multiple {
+    background-color: #242424;
+    color: #FEFEFE;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #242424;
+    color: #FEFEFE;
+}
+
+.select2-results__option {
+    background-color: #242424;
+    color: #FEFEFE;
+}
+
+.site-background {
+    background: transparent;
+    height: 150px;
+}
+
+.text-muted {
+    color: #898989;
+}
+
+.toggle-show-roles-button {
+    background: url('/static/local/themes/darkness/background.png');
+    background-attachment: fixed;
+}
+
+.popover-title {
+  background-image: url("/static/local/themes/darkness/background.png") !important;
+  background-attachment: fixed;
+}
+
+.topic-listing-jumps span.badge {
+    background-color: #000000;
+}
+
+.topic-listing-username {
+    color: white ;
+}
+
+a {
+    color: #9bd5ff;
+}
+
+body {
+    background: #242424;
+    color: #E7FEFF;
+}
+
+button.close {
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #000000;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.ql-snow .ql-picker.ql-expanded .ql-picker-label {
+    color: #dacbcb;
+    z-index: 2;
+}
+
+.ql-toolbar.ql-snow .ql-picker-label {
+    border: 1px solid transparent;
+}
+
+.ql-snow .ql-stroke {
+    fill: none;
+    stroke: #dacbcb;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
+.ql-snow .ql-picker {
+    color: #dacbcb;
+    display: inline-block;
+    float: left;
+    font-size: 14px;
+    font-weight: 500;
+    height: 24px;
+    position: relative;
+    vertical-align: middle;
+}
+
+.ql-snow.ql-toolbar .ql-picker.ql-font .ql-picker-label, .ql-snow.ql-toolbar .ql-picker.ql-size .ql-picker-label {
+    background-color: transparent;
+}
+
+.ql-snow.ql-toolbar .ql-format-button.ql-color, .ql-snow.ql-toolbar .ql-picker.ql-color .ql-picker-label, .ql-snow.ql-toolbar .ql-picker .ql-picker-label[data-value=color], .ql-snow.ql-toolbar .ql-picker .ql-picker-item[data-value=color] {
+    background-color: transparent
+;
+}
+
+.ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill {
+    fill: #dacbcb;
+}
+
+.ql-snow .ql-picker.ql-expanded .ql-picker-label .ql-stroke {
+    stroke: #dacbcb;
+}
+
+.ql-snow .ql-picker-options {
+    background-color: #242424;
+    min-width: 100%;
+    padding: 4px 8px;
+    position: absolute;
+    white-space: nowrap;
+}
+
+.modal-footer {
+    padding: 15px;
+    text-align: right;
+    border-top: 1px solid #242424;
+    background-color: #242424;
+}
+
+.modal-header {
+    padding: 15px;
+    border-bottom: 1px solid #242424;
+    background-color: #242424;
+}
+
+.modal-body {
+    position: relative;
+    padding: 15px;
+    background-color: #242424;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: inherit !important;
+}
+
+.dropdown-menu > li > a {
+    color: inherit !important;
+}
+
+.btn {
+    color: #FEFEFE !important;
+}

@@ -224,6 +224,13 @@ class Draft(db.Model):
     def __repr__(self):
         return "<Draft: (user='%s', path='%s')>" % (self.name, self.path)
     
+class TopTen(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    users = db.Column(JSONB)
+    counts = db.Column(JSONB)
+  
+    name = db.Column(db.String, index=True)
 
 ############################################################
 # Security Models

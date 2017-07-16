@@ -185,12 +185,16 @@ body(role='document')
                 ul.dropdown-menu(role='menu')
                   li
                     a(href='/status-updates') Status Updates
+                  li
+                    a(href='/stats') Global Stats
                   li.divider
                   li
                     a(href='/members')
                       | Members
                   li
                     a(href='/characters') Characters
+                  li
+                    a(href='/acknowledgement') Acknowledgements
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                   | Support 
@@ -405,12 +409,16 @@ body(role='document')
                 ul.dropdown-menu(role='menu')
                   li
                     a(href='/status-updates') Status Updates
+                  li
+                    a(href='/stats') Global Stats
                   li.divider
                   li
                     a(href='/members')
                       | Members
                   li
                     a(href='/characters') Characters
+                  li
+                    a(href='/acknowledgement') Acknowledgements
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                   | Support 
@@ -592,7 +600,7 @@ body(role='document')
                         li
                           a.post-link(href="/change-theme/{{theme.id}}")= theme.name
                   li(role="presentation")
-                    a.text-muted.text-hide-overflow(href="/change-account") 
+                    a.text-muted.text-hide-overflow(href="/member/{{current_user.login_name}}/change-account") 
                       span.glyphicon.glyphicon-wrench
                       | &nbsp;&nbsp;&nbsp;&nbsp;Account
             .col-sm-3

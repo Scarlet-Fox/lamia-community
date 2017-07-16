@@ -927,6 +927,23 @@ def confirm_register(pk):
 @app.route('/acknowledgement')
 def credits():
     return render_template("acknowledgement.jade", page_title="Thank You - Casual Anime")
+    
+@app.route('/stats')
+def stats():
+    topten = sqla.session.query(sqlm.TopTen).all()
+    all_stats = {}
+    
+    for stat in topten:
+        db_users = []
+        
+        for user in stat.users:
+            _u = sqla.session.query(sqlm.User).filter_by(login_name = user)[0]
+            db_users.append(_u)
+        
+        stat.db_users = db_users
+        all_stats[stat.name] = stat
+    
+    return render_template("global_stats.jade", page_title="Stats - Casual Anime", all_stats=all_stats)
 
 @app.route('/privacy')
 def privacy():

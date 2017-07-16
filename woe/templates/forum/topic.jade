@@ -79,7 +79,8 @@ nav.pagination-listing
                 a.topic-listing-username.hover_user(href='/member/{{another_topic.recent_post.author.login_name}}') {{another_topic.recent_post.author.display_name}}
                 br
                 a.topic-listing-time(href='/t/{{another_topic.slug}}/page/1/post/last_seen') {{another_topic.recent_post.created|humanize_time("MMM D YYYY")}}
-          
+          if not loop.last
+            hr
 {% endblock %}
 
 {% block script %}
