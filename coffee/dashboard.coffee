@@ -161,7 +161,7 @@ $ ->
     panelHTML: () ->
       return """
       <div class="col-sm-6 col-md-6 dashboard-panel" id="{{panel_id}}"  style="margin-bottom: 10px;">
-          <div class="list-group-item section-header">
+          <div class="list-group-item section-header dashboard-panel-header">
             <span>{{panel_title}}</span>
             <button class="close ack_all" data-panel="{{panel_id}}">&times;</button>
           </div>
