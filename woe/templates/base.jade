@@ -150,7 +150,7 @@ body(role='document')
                       span &nbsp;&nbsp;&nbsp;Hide Images
                 li.divider
                 li
-                  a(href='/member/{{current_user.login_name}}/change-avatar-title') Name &amp; Password
+                  a(href='/member/{{current_user.login_name}}/change-account') Name &amp; Password
                 li
                   a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
                 li.divider
@@ -267,7 +267,7 @@ body(role='document')
                             span &nbsp;&nbsp;&nbsp;Hide Images
                       li.divider
                       li
-                        a(href='/member/{{current_user.login_name}}/change-avatar-title') Name &amp; Password
+                        a(href='/member/{{current_user.login_name}}/change-account') Name &amp; Password
                       li
                         a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
                       li.divider
@@ -370,7 +370,7 @@ body(role='document')
                       span &nbsp;&nbsp;&nbsp;Hide Images
                 li.divider
                 li
-                  a(href='/member/{{current_user.login_name}}/change-avatar-title') Name &amp; Password
+                  a(href='/member/{{current_user.login_name}}/change-account') Name &amp; Password
                 li
                   a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
                 li.divider
@@ -489,7 +489,7 @@ body(role='document')
                             span &nbsp;&nbsp;&nbsp;Hide Images
                       li.divider
                       li
-                        a(href='/member/{{current_user.login_name}}/change-avatar-title') Name &amp; Password
+                        a(href='/member/{{current_user.login_name}}/change-account') Name &amp; Password
                       li
                         a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
                       li.divider
@@ -531,31 +531,108 @@ body(role='document')
     #content-border
       {% block content %}
       {% endblock %}
-      hr
-      center
-        ul.list-group.category
-          li.list-group-item
-            .row
-              .col-xs-12
-                a(href="/rules") Site Rules
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                a(href="/privacy") Privacy Policy
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                a(href="/acknowledgement") Acknowledgements
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                if current_user.is_authenticated():
-                  a(href="/dashboard") Notifications
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                a.to-top(href="/") Go to Top
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                if current_user.is_authenticated():
-                  span.dropdown.dropup
-                    a(href="#", data-toggle="dropdown") Themes
-                    .caret
-                    ul.dropdown-menu.dropup
+      ul.list-group
+        li.list-group-item.section-header.sidebar-section-header(style="margin-top: 10px;") Quick Links
+        li.list-group-item(style="margin-bottom: 25px;")
+          .row
+            if not current_user.is_authenticated()
+              .col-sm-3
+                strong.text-muted Hello there!
+                br
+                ul.nav.nav-pills.nav-stacked
+                  li(role="presentation")
+                    a.text-muted(href="/register") 
+                      span.glyphicon.glyphicon-list-alt
+                      | &nbsp;&nbsp;&nbsp;&nbsp;Join Us!
+                    a.text-muted(href="/sign-in") 
+                      span.glyphicon.glyphicon-list-alt
+                      | &nbsp;&nbsp;&nbsp;&nbsp;Sign In
+            .col-sm-3
+              strong.text-muted Utilities
+              br
+              ul.nav.nav-pills.nav-stacked
+                li(role="presentation")
+                  a.text-muted.to-top(href="#") 
+                    span.glyphicon.glyphicon-arrow-up
+                    | &nbsp;&nbsp;&nbsp;&nbsp;Go to Top
+                if not current_user.is_authenticated()
+                  li(role="presentation")
+                    a.text-muted.to-top(href="/blogs") 
+                      span.glyphicon.glyphicon-pencil
+                      | &nbsp;&nbsp;&nbsp;&nbsp;Blogs
+                if current_user.is_authenticated()
+                  li(role="presentation")
+                    a.text-muted(href="/dashboard") 
+                      span.glyphicon.glyphicon-alert
+                      | &nbsp;&nbsp;&nbsp;&nbsp;Your Notifications
+            .col-sm-3
+              strong.text-muted Information
+              br
+              ul.nav.nav-pills.nav-stacked
+                li(role="presentation")
+                  a.text-muted(href="/rules") 
+                    span.glyphicon.glyphicon-info-sign
+                    | &nbsp;&nbsp;&nbsp;&nbsp;Site Rules
+                li(role="presentation")
+                  a.text-muted(href="/acknowledgement") 
+                    span.glyphicon.glyphicon-star
+                    | &nbsp;&nbsp;&nbsp;&nbsp;Acknowledgements
+            if current_user.is_authenticated()
+              .col-sm-3
+                strong.text-muted Settings
+                br
+                ul.nav.nav-pills.nav-stacked
+                  li(role="presentation")
+                    a.text-muted.dropdown.dropup(href="#", data-toggle="dropdown") 
+                      span.glyphicon.glyphicon-picture
+                      | &nbsp;&nbsp;&nbsp;&nbsp;Themes
+                      .caret
+                    ul.dropdown-menu.dropup(style="top: auto; bottom: 100%; margin-bottom: 2px;")
                       for theme in current_user.get_themes()
                         li
                           a.post-link(href="/change-theme/{{theme.id}}")= theme.name
+                  li(role="presentation")
+                    a.text-muted(href="/change-account") 
+                      span.glyphicon.glyphicon-wrench
+                      | &nbsp;&nbsp;&nbsp;&nbsp;Account
+            .col-sm-3
+              strong.text-muted Friends!
+              br
+              ul.nav.nav-pills.nav-stacked
+                li(role="presentation")
+                  a.text-muted(href="https://animeforums.net/community/") 
+                    span.glyphicon.glyphicon-heart
+                    | &nbsp;&nbsp;&nbsp;&nbsp;Anime Forums
+              ul.nav.nav-pills.nav-stacked
+                li(role="presentation")
+                  a.text-muted(href="#") 
+                    span.glyphicon.glyphicon-link
+                    | &nbsp;&nbsp;&nbsp;&nbsp;Room for more...
+            .col-sm-6
+      //- center
+      //-   ul.list-group.category
+      //-     li.list-group-item
+      //-       .row
+      //-         .col-xs-12
+      //-           a(href="/rules") Site Rules
+      //-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      //-           a(href="/privacy") Privacy Policy
+      //-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      //-           a(href="/acknowledgement") Acknowledgements
+      //-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      //-           if current_user.is_authenticated():
+      //-             a(href="/dashboard") Notifications
+      //-             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      //-           a.to-top(href="/") Go to Top
+      //-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      //-           if current_user.is_authenticated():
+      //-             span.dropdown.dropup
+      //-               a(href="#", data-toggle="dropdown") Themes
+      //-               .caret
+      //-               ul.dropdown-menu.dropup
+      //-                 for theme in current_user.get_themes()
+      //-                   li
+      //-                     a.post-link(href="/change-theme/{{theme.id}}")= theme.name
   #img-click-modal.modal.fade
   #report-click-modal.modal.fade
   script(src="/static/assets/handlebars.min.js").
