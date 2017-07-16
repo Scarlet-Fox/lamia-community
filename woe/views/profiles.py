@@ -661,6 +661,27 @@ def toggle_ignore_user(login_name):
 
     return app.jsonify(url="/member/"+unicode(login_name))
 
+@app.route('/member/toggle-sounds', methods=['POST'])
+@login_required
+def toggle_sounds():
+    current_user.notification_sound = not current_user.notification_sound
+    sqla.session.add(current_user)
+    return app.jsonify(result=current_user.notification_sound)
+
+@app.route('/member/toggle-images', methods=['POST'])
+@login_required
+def toggle_images():
+    current_user.no_images = not current_user.no_images
+    sqla.session.add(current_user)
+    return app.jsonify(result=current_user.no_images)
+
+@app.route('/member/toggle-stickybar', methods=['POST'])
+@login_required
+def toggle_stickybar():
+    current_user.navbar_top = not current_user.navbar_top
+    sqla.session.add(current_user)
+    return app.jsonify(result=current_user.navbar_top)
+    
 @app.route('/member/<login_name>/toggle-follow', methods=['POST'])
 @login_required
 def toggle_follow_user(login_name):
@@ -987,6 +1008,7 @@ def change_user_settings(login_name):
         user.emails_muted = form.no_emails.data
         user.birthday = form.birthday.data
         user.notification_sound = form.notification_sound.data
+        user.navbar_top = form.navbar_top.data
         user.minimum_time_between_emails = form.minimum_time_between_emails.data
         sqla.session.add(user)
         sqla.session.commit()
@@ -998,6 +1020,7 @@ def change_user_settings(login_name):
             form.birthday.data = user.birthday
         form.no_emails.data = user.emails_muted
         form.notification_sound.data = user.notification_sound
+        form.navbar_top.data = user.navbar_top
 
         if user.minimum_time_between_emails == None:
             user.minimum_time_between_emails = 360

@@ -904,7 +904,7 @@ td {
   border-radius: 0px;
 }
 .post-signature {
-  max-height: 200px;
+  max-height: 250px;
   overflow: hidden;
 }
 .go-to-profile {
@@ -1030,3 +1030,6 @@ h1.breadcrumb-h1 {
   font-family: 'opensans';
 }
 
+.select2 .select2-container .select2-container--default .select2-container--below .select2-container--open {
+  width: 200px !important;
+}

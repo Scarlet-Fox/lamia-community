@@ -161,6 +161,24 @@
         return window.location = data.url;
       });
     });
+    $(".toggle-navbar").click(function(e) {
+      e.preventDefault();
+      return $.post("/member/toggle-stickybar", function(data) {
+        return location.reload()();
+      });
+    });
+    $(".toggle-sounds").click(function(e) {
+      e.preventDefault();
+      return $.post("/member/toggle-sounds", function(data) {
+        return location.reload()();
+      });
+    });
+    $(".toggle-images").click(function(e) {
+      e.preventDefault();
+      return $.post("/member/toggle-images", function(data) {
+        return location.reload()();
+      });
+    });
     $(".notification-dropdown").delegate(".notification-link", "click", function(e) {
       e.preventDefault();
       return $.post("/dashboard/ack_notification", JSON.stringify({

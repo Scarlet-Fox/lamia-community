@@ -70,161 +70,461 @@ body(role='document')
   if current_user.is_authenticated()
     if current_user.notification_sound
       audio#notification-sound(style="display: none;", preload, src="/static/notify.wav")
+  if current_user.navbar_top
+    div.hidden-xs(style="padding-top: 50px")
+    div.hidden-lg.hidden-md.hidden-sm(style="padding-top: 70px")
+
   a(href="/")
     .site-background.hidden-xs
+    
   .container#site-container
     .row
     ul.list-group.category
       center
         li.list-group-item.section-header 
           a(href="/", style="color: inherit;") Casual Anime
-    nav.navbar.navbar-default
-      .container-fluid
-        .navbar-header
-          if current_user.is_authenticated()
-            a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.login_name}}')
-              img(src='{{current_user.get_avatar_url("60")}}', width='{{current_user.avatar_60_x}}', height='{{current_user.avatar_60_y}}', style='margin-top: 7px; margin-left: 0px;', class="avatar-mini")
-          a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/')
-            span.glyphicon.glyphicon-home()
-          if current_user.is_authenticated()
-            if current_user.unread_private_messages() > 0
-              a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px; color: #B22222;", href='/messages')
-                span.glyphicon.glyphicon-envelope
-            else
-              a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/messages')
-                span.glyphicon.glyphicon-envelope
-            a.button.mini-notification-button.collapsed.dropdown-toggle.notification-dropdown-toggle.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
-              if notification_count == 0
-                span.badge.notification-counter {{notification_count}}
-              else
-                span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
-            ul.dropdown-menu.notification-dropdown(role='menu')
-              li
-                a(href='/dashboard')
-                  span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
-                  | Dashboard&nbsp;
-              li
-                a(href='/messages')
-                  span.badge.float-right{{current_user.unread_private_messages()}}
-                  | Messages&nbsp;
-              li.divider
-              for notification in current_user.get_recent_notifications(15)
-                li.notification-li
-                  a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
-          button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
-            span.sr-only Toggle navigation
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          a.navbar-brand(href='#')
-        #navbar.navbar-collapse.collapse
-          ul.nav.navbar-nav
-            if not current_user.is_authenticated()
-              li#sign-in-li.hidden-sm.hidden-md.hidden-lg
-                a(href='/sign-in')
-                  | Sign In
-              li#register-li.hidden-sm.hidden-md.hidden-lg
-                a(href='/register')
-                  | Register
-              li
-                hr
-            li#forum-li
-              a(href='/') Forum
-            li#blog-li
-              a(href='/blogs') Blogs
-            li.dropdown
-              a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-                | Community 
-                span.caret
-              ul.dropdown-menu(role='menu')
-                li
-                  a(href='/status-updates') Status Updates
-                li.divider
-                li
-                  a(href='/members')
-                    | Members
-                li
-                  a(href='/characters') Characters
-            li.dropdown
-              a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-                | Support 
-                span.caret
-              ul.dropdown-menu(role='menu')
-                li
-                  a(href='/rules') Community Rules
-                li
-                  a(href='/category/faq-help') Ask for help?
-            li
-              a(href='/search')
-                | Search
+    if current_user.navbar_top
+      nav.navbar.navbar-default.navbar-fixed-top(style="-ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)\"; filter: alpha(opacity=90); -moz-opacity: 0.9; -khtml-opacity: 0.9; opacity: 0.9;")
+        .container
+          .navbar-header
             if current_user.is_authenticated()
-              li.divider.hidden-sm.hidden-md.hidden-lg
-                hr
-              li.hidden-sm.hidden-md.hidden-lg
-                a(href='/dashboard') Dashboard
-              li.hidden-sm.hidden-md.hidden-lg
-                a(href='/messages') Messages
-              li.hidden-sm.hidden-md.hidden-lg
-                a(href='/member/{{current_user.login_name}}/change-settings') Settings
-              li.hidden-sm.hidden-md.hidden-lg
-                a(href='/member/{{current_user.login_name}}') Profile
-              li.hidden-sm.hidden-md.hidden-lg
-                a.sign-out(href='#') Sign Out
-          ul.nav.navbar-nav.navbar-right.hidden-xs
-            if current_user.is_authenticated()
-              li
-                img.go-to-profile(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 5px; margin-left: 15px;', class="avatar-mini")
-              li.dropdown
-                a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-                  | {{current_user.display_name}}
-                  span.caret
-                ul.dropdown-menu(role='menu')
-                    li
-                    li
-                      a(href='/dashboard') Dashboard
-                    li
-                      a(href='/messages') Messages
-                    li
-                      a(href='/member/{{current_user.login_name}}/change-settings') Settings
-                    li
-                      a(href='/member/{{current_user.login_name}}') Profile
-                    li.divider
-                    li
-                      a.sign-out(href='#') Sign Out
-            else
-              li#sign-in-li.hidden-xs
-                a(href='/sign-in')
-                  | Sign In
-              li#register-li.hidden-xs
-                a(href='/register')
-                  | Register
+              a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.login_name}}')
+                img(src='{{current_user.get_avatar_url("60")}}', width='{{current_user.avatar_60_x}}', height='{{current_user.avatar_60_y}}', style='margin-top: 7px; margin-left: 0px;', class="avatar-mini")
+            a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/')
+              span.glyphicon.glyphicon-home()
             if current_user.is_authenticated()
               if current_user.unread_private_messages() > 0
-                a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; color: #B22222; border: none;", href='/messages')
+                a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px; color: #B22222;", href='/messages')
                   span.glyphicon.glyphicon-envelope
               else
-                a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; border: none;", href='/messages')
+                a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/messages')
                   span.glyphicon.glyphicon-envelope
-              li.dropdown#dashboard-li.hidden-xs
-                a.dropdown-toggle.notification-dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
-                  if notification_count == 0
-                    span.badge.notification-counter {{notification_count}}
+              a.button.mini-notification-button.collapsed.dropdown-toggle.notification-dropdown-toggle.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
+                if notification_count == 0
+                  span.badge.notification-counter {{notification_count}}
+                else
+                  span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
+              ul.dropdown-menu.notification-dropdown(role='menu')
+                li
+                  a(href='/dashboard')
+                    span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
+                    | Dashboard&nbsp;
+                li
+                  a(href='/messages')
+                    span.badge.float-right{{current_user.unread_private_messages()}}
+                    | Messages&nbsp;
+                li.divider
+                for notification in current_user.get_recent_notifications(15)
+                  li.notification-li
+                    a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
+            span      
+              a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
+              ul.dropdown-menu(role='menu')
+                li
+                  if current_user.navbar_top
+                    a.toggle-navbar(href='') 
+                      span.glyphicon.glyphicon-check
+                      span &nbsp;&nbsp;&nbsp;Sticky Navbar
                   else
-                    span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
-                ul.dropdown-menu.notification-dropdown(role='menu')
+                    a.toggle-navbar(href='') 
+                      span.glyphicon.glyphicon-unchecked
+                      span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                  if current_user.notification_sound
+                    a.toggle-sounds(href='') 
+                      span.glyphicon.glyphicon-volume-up
+                      span &nbsp;&nbsp;&nbsp;Audio Alerts
+                  else
+                    a.toggle-sounds(href='') 
+                      span.glyphicon.glyphicon-volume-off
+                      span &nbsp;&nbsp;&nbsp;Audio Alerts
+                  if current_user.no_images
+                    a.toggle-images(href='') 
+                      span.glyphicon.glyphicon-check
+                      span &nbsp;&nbsp;&nbsp;Hide Images
+                  else
+                    a.toggle-images(href='') 
+                      span.glyphicon.glyphicon-unchecked
+                      span &nbsp;&nbsp;&nbsp;Hide Images
+                li.divider
+                li
+                  a(href='/member/{{current_user.login_name}}/change-avatar-title') Name &amp; Password
+                li
+                  a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
+                li.divider
+                li
+                  a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
+            
+            button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+              span.sr-only Toggle navigation
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+            a.navbar-brand(href='#')
+          #navbar.navbar-collapse.collapse
+            ul.nav.navbar-nav
+              if not current_user.is_authenticated()
+                li#sign-in-li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/sign-in')
+                    | Sign In
+                li#register-li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/register')
+                    | Register
+                li
+                  hr
+              li#forum-li
+                a(href='/') Forum
+              li#blog-li
+                a(href='/blogs') Blogs
+              li.dropdown
+                a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                  | Community 
+                  span.caret
+                ul.dropdown-menu(role='menu')
                   li
-                    a(href='/dashboard') 
-                      span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
-                      | Dashboard&nbsp;
-                  li
-                    a(href='/messages')
-                      span.badge.float-right{{current_user.unread_private_messages()}}
-                      | Messages&nbsp;
+                    a(href='/status-updates') Status Updates
                   li.divider
-                  for notification in current_user.get_recent_notifications(15)
-                    li.notification-li
-                      a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
-                      
+                  li
+                    a(href='/members')
+                      | Members
+                  li
+                    a(href='/characters') Characters
+              li.dropdown
+                a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                  | Support 
+                  span.caret
+                ul.dropdown-menu(role='menu')
+                  li
+                    a(href='/rules') Community Rules
+                  li
+                    a(href='/category/faq-help') Ask for help?
+              li
+                a(href='/search')
+                  | Search
+              if current_user.is_authenticated()
+                li.divider.hidden-sm.hidden-md.hidden-lg
+                  hr
+                li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/dashboard') Dashboard
+                li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/messages') Messages
+                li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/member/{{current_user.login_name}}/change-settings') Settings
+                li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/member/{{current_user.login_name}}') Profile
+                li.hidden-sm.hidden-md.hidden-lg
+                  a.sign-out(href='#') Sign Out
+            ul.nav.navbar-nav.navbar-right.hidden-xs
+              if current_user.is_authenticated()
+                li
+                  img.go-to-profile(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 5px; margin-left: 15px;', class="avatar-mini")
+                li.dropdown
+                  a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                    | {{current_user.display_name}}
+                    span.caret
+                  ul.dropdown-menu(role='menu')
+                      li
+                      li
+                        a(href='/dashboard') Dashboard
+                      li
+                        a(href='/messages') Messages
+                      li
+                        a(href='/member/{{current_user.login_name}}') Profile
+                      li.divider
+                      li
+                        a.sign-out(href='#') Sign Out
+                li.dropdown
+                  a.dropdown-toggle.glyphicon.glyphicon-cog(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                    span.caret
+                  ul.dropdown-menu(role='menu')
+                      li
+                      li
+                        if current_user.navbar_top
+                          a.toggle-navbar(href='') 
+                            span.glyphicon.glyphicon-check
+                            span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                        else
+                          a.toggle-navbar(href='') 
+                            span.glyphicon.glyphicon-unchecked
+                            span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                        if current_user.notification_sound
+                          a.toggle-sounds(href='') 
+                            span.glyphicon.glyphicon-volume-up
+                            span &nbsp;&nbsp;&nbsp;Audio Alerts
+                        else
+                          a.toggle-sounds(href='') 
+                            span.glyphicon.glyphicon-volume-off
+                            span &nbsp;&nbsp;&nbsp;Audio Alerts
+                        if current_user.no_images
+                          a.toggle-images(href='') 
+                            span.glyphicon.glyphicon-check
+                            span &nbsp;&nbsp;&nbsp;Hide Images
+                        else
+                          a.toggle-images(href='') 
+                            span.glyphicon.glyphicon-unchecked
+                            span &nbsp;&nbsp;&nbsp;Hide Images
+                      li.divider
+                      li
+                        a(href='/member/{{current_user.login_name}}/change-avatar-title') Name &amp; Password
+                      li
+                        a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
+                      li.divider
+                      li
+                        a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
+              else
+                li#sign-in-li.hidden-xs
+                  a(href='/sign-in')
+                    | Sign In
+                li#register-li.hidden-xs
+                  a(href='/register')
+                    | Register
+              if current_user.is_authenticated()
+                if current_user.unread_private_messages() > 0
+                  a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; color: #B22222; border: none;", href='/messages')
+                    span.glyphicon.glyphicon-envelope
+                else
+                  a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; border: none;", href='/messages')
+                    span.glyphicon.glyphicon-envelope
+                li.dropdown#dashboard-li.hidden-xs
+                  a.dropdown-toggle.notification-dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
+                    if notification_count == 0
+                      span.badge.notification-counter {{notification_count}}
+                    else
+                      span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
+                  ul.dropdown-menu.notification-dropdown(role='menu')
+                    li
+                      a(href='/dashboard') 
+                        span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
+                        | Dashboard&nbsp;
+                    li
+                      a(href='/messages')
+                        span.badge.float-right{{current_user.unread_private_messages()}}
+                        | Messages&nbsp;
+                    li.divider
+                    for notification in current_user.get_recent_notifications(15)
+                      li.notification-li
+                        a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
+    else
+      nav.navbar.navbar-default
+        .container-fluid
+          .navbar-header
+            if current_user.is_authenticated()
+              a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.login_name}}')
+                img(src='{{current_user.get_avatar_url("60")}}', width='{{current_user.avatar_60_x}}', height='{{current_user.avatar_60_y}}', style='margin-top: 7px; margin-left: 0px;', class="avatar-mini")
+            a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/')
+              span.glyphicon.glyphicon-home()
+            if current_user.is_authenticated()
+              if current_user.unread_private_messages() > 0
+                a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px; color: #B22222;", href='/messages')
+                  span.glyphicon.glyphicon-envelope
+              else
+                a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/messages')
+                  span.glyphicon.glyphicon-envelope
+              a.button.mini-notification-button.collapsed.dropdown-toggle.notification-dropdown-toggle.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
+                if notification_count == 0
+                  span.badge.notification-counter {{notification_count}}
+                else
+                  span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
+              ul.dropdown-menu.notification-dropdown(role='menu')
+                li
+                  a(href='/dashboard')
+                    span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
+                    | Dashboard&nbsp;
+                li
+                  a(href='/messages')
+                    span.badge.float-right{{current_user.unread_private_messages()}}
+                    | Messages&nbsp;
+                li.divider
+                for notification in current_user.get_recent_notifications(15)
+                  li.notification-li
+                    a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
+            span      
+              a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
+              ul.dropdown-menu(role='menu')
+                li
+                  if current_user.navbar_top
+                    a.toggle-navbar(href='') 
+                      span.glyphicon.glyphicon-check
+                      span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                  else
+                    a.toggle-navbar(href='') 
+                      span.glyphicon.glyphicon-unchecked
+                      span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                  if current_user.notification_sound
+                    a.toggle-sounds(href='') 
+                      span.glyphicon.glyphicon-volume-up
+                      span &nbsp;&nbsp;&nbsp;Audio Alerts
+                  else
+                    a.toggle-sounds(href='') 
+                      span.glyphicon.glyphicon-volume-off
+                      span &nbsp;&nbsp;&nbsp;Audio Alerts
+                  if current_user.no_images
+                    a.toggle-images(href='') 
+                      span.glyphicon.glyphicon-check
+                      span &nbsp;&nbsp;&nbsp;Hide Images
+                  else
+                    a.toggle-images(href='') 
+                      span.glyphicon.glyphicon-unchecked
+                      span &nbsp;&nbsp;&nbsp;Hide Images
+                li.divider
+                li
+                  a(href='/member/{{current_user.login_name}}/change-avatar-title') Name &amp; Password
+                li
+                  a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
+                li.divider
+                li
+                  a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
+            
+            button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+              span.sr-only Toggle navigation
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+            a.navbar-brand(href='#')
+          #navbar.navbar-collapse.collapse
+            ul.nav.navbar-nav
+              if not current_user.is_authenticated()
+                li#sign-in-li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/sign-in')
+                    | Sign In
+                li#register-li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/register')
+                    | Register
+                li
+                  hr
+              li#forum-li
+                a(href='/') Forum
+              li#blog-li
+                a(href='/blogs') Blogs
+              li.dropdown
+                a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                  | Community 
+                  span.caret
+                ul.dropdown-menu(role='menu')
+                  li
+                    a(href='/status-updates') Status Updates
+                  li.divider
+                  li
+                    a(href='/members')
+                      | Members
+                  li
+                    a(href='/characters') Characters
+              li.dropdown
+                a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                  | Support 
+                  span.caret
+                ul.dropdown-menu(role='menu')
+                  li
+                    a(href='/rules') Community Rules
+                  li
+                    a(href='/category/faq-help') Ask for help?
+              li
+                a(href='/search')
+                  | Search
+              if current_user.is_authenticated()
+                li.divider.hidden-sm.hidden-md.hidden-lg
+                  hr
+                li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/dashboard') Dashboard
+                li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/messages') Messages
+                li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/member/{{current_user.login_name}}/change-settings') Settings
+                li.hidden-sm.hidden-md.hidden-lg
+                  a(href='/member/{{current_user.login_name}}') Profile
+                li.hidden-sm.hidden-md.hidden-lg
+                  a.sign-out(href='#') Sign Out
+            ul.nav.navbar-nav.navbar-right.hidden-xs
+              if current_user.is_authenticated()
+                li
+                  img.go-to-profile(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 5px; margin-left: 15px;', class="avatar-mini")
+                li.dropdown
+                  a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                    | {{current_user.display_name}}
+                    span.caret
+                  ul.dropdown-menu(role='menu')
+                      li
+                      li
+                        a(href='/dashboard') Dashboard
+                      li
+                        a(href='/messages') Messages
+                      li
+                        a(href='/member/{{current_user.login_name}}/change-settings') Settings
+                      li
+                        a(href='/member/{{current_user.login_name}}') Profile
+                      li.divider
+                      li
+                        a.sign-out(href='#') Sign Out
+                li.dropdown
+                  a.dropdown-toggle.glyphicon.glyphicon-cog(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                    span.caret
+                  ul.dropdown-menu(role='menu')
+                      li
+                      li
+                        if current_user.navbar_top
+                          a.toggle-navbar(href='') 
+                            span.glyphicon.glyphicon-check
+                            span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                        else
+                          a.toggle-navbar(href='') 
+                            span.glyphicon.glyphicon-unchecked
+                            span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                        if current_user.notification_sound
+                          a.toggle-sounds(href='') 
+                            span.glyphicon.glyphicon-volume-up
+                            span &nbsp;&nbsp;&nbsp;Audio Alerts
+                        else
+                          a.toggle-sounds(href='') 
+                            span.glyphicon.glyphicon-volume-off
+                            span &nbsp;&nbsp;&nbsp;Audio Alerts
+                        if current_user.no_images
+                          a.toggle-images(href='') 
+                            span.glyphicon.glyphicon-check
+                            span &nbsp;&nbsp;&nbsp;Hide Images
+                        else
+                          a.toggle-images(href='') 
+                            span.glyphicon.glyphicon-unchecked
+                            span &nbsp;&nbsp;&nbsp;Hide Images
+                      li.divider
+                      li
+                        a(href='/member/{{current_user.login_name}}/change-avatar-title') Name &amp; Password
+                      li
+                        a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
+                      li.divider
+                      li
+                        a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
+              else
+                li#sign-in-li.hidden-xs
+                  a(href='/sign-in')
+                    | Sign In
+                li#register-li.hidden-xs
+                  a(href='/register')
+                    | Register
+              if current_user.is_authenticated()
+                if current_user.unread_private_messages() > 0
+                  a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; color: #B22222; border: none;", href='/messages')
+                    span.glyphicon.glyphicon-envelope
+                else
+                  a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; border: none;", href='/messages')
+                    span.glyphicon.glyphicon-envelope
+                li.dropdown#dashboard-li.hidden-xs
+                  a.dropdown-toggle.notification-dropdown-toggle(href='/dashboard', data-toggle='dropdown', role='button', aria-expanded='false')
+                    if notification_count == 0
+                      span.badge.notification-counter {{notification_count}}
+                    else
+                      span.badge.notification-counter(style="background-color: #B22222;") {{notification_count}}
+                  ul.dropdown-menu.notification-dropdown(role='menu')
+                    li
+                      a(href='/dashboard') 
+                        span.badge.dashboard-counter.float-right{{current_user.get_dashboard_notifications()}}
+                        | Dashboard&nbsp;
+                    li
+                      a(href='/messages')
+                        span.badge.float-right{{current_user.unread_private_messages()}}
+                        | Messages&nbsp;
+                    li.divider
+                    for notification in current_user.get_recent_notifications(15)
+                      li.notification-li
+                        a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
     #content-border
       {% block content %}
       {% endblock %}

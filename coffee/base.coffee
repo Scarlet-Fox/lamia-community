@@ -162,6 +162,21 @@ $ ->
     e.preventDefault()
     $.post $(this).attr("href"), (data) ->
       window.location = data.url
+      
+  $(".toggle-navbar").click (e) ->
+    e.preventDefault()
+    $.post "/member/toggle-stickybar", (data) ->
+      do location.reload()
+      
+  $(".toggle-sounds").click (e) ->
+    e.preventDefault()
+    $.post "/member/toggle-sounds", (data) ->
+      do location.reload()
+      
+  $(".toggle-images").click (e) ->
+    e.preventDefault()
+    $.post "/member/toggle-images", (data) ->
+      do location.reload()
 
   $(".notification-dropdown").delegate ".notification-link", "click", (e) ->
     e.preventDefault()

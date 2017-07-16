@@ -523,6 +523,8 @@ class User(db.Model):
 
     is_admin = db.Column(db.Boolean, default=False, index=True)
     is_mod = db.Column(db.Boolean, default=False, index=True)
+    
+    navbar_top = db.Column(db.Boolean, default=False, index=True)
 
     display_name_history = db.Column(JSONB)
     notification_preferences = db.Column(JSONB)
