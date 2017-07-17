@@ -11,7 +11,7 @@
             h3 Spam Chefs 
               span.text-muted(style="font-size: 75%;") most posts
             br
-            for user in all_stats["post_count"].db_users
+            for user in all_stats["post_count"].db_users[:10]
               if all_stats["post_count"].counts[user.login_name] > 0
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
@@ -32,7 +32,7 @@
             h3 Thread Wizards 
               span.text-muted(style="font-size: 75%;") most topics
             br
-            for user in all_stats["topic_count"].db_users
+            for user in all_stats["topic_count"].db_users[:10]
               if all_stats["topic_count"].counts[user.login_name] > 0
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
@@ -53,7 +53,7 @@
             h3 Scribes 
               span.text-muted(style="font-size: 75%;") most words written
             br
-            for user in all_stats["word_count"].db_users
+            for user in all_stats["word_count"].db_users[:10]
               if all_stats["word_count"].counts[user.login_name] > 0
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
@@ -75,7 +75,7 @@
             h3 Serial Boopers 
               span.text-muted(style="font-size: 75%;") most boops given
             br
-            for user in all_stats["boops_given"].db_users
+            for user in all_stats["boops_given"].db_users[:10]
               if all_stats["boops_given"].counts[user.login_name] > 0
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
@@ -96,7 +96,7 @@
             h3 Microbloggers 
               span.text-muted(style="font-size: 75%;") most status updates
             br
-            for user in all_stats["status_count"].db_users
+            for user in all_stats["status_count"].db_users[:10]
               if all_stats["status_count"].counts[user.login_name] > 0
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
@@ -117,7 +117,7 @@
             h3 Chatty Chatters 
               span.text-muted(style="font-size: 75%;") most status comments
             br
-            for user in all_stats["status_comments_count"].db_users
+            for user in all_stats["status_comments_count"].db_users[:10]
               if all_stats["status_comments_count"].counts[user.login_name] > 0
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
