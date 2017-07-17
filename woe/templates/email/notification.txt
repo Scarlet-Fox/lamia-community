@@ -19,9 +19,11 @@ ${_notification_names[category][0].capitalize()} Notification(s)
 ===================
     % for item in _list_k[category]:
         % if _list_url[item["url"]] == 1:
-- ${item["message"]} ${item["url"]}
+- ${item["message"]} 
+ ${item["url"]}
         % else:
-- ${item["message"]} with ${_list_url[item["url"]]-1} other notification(s) ${item["url"]}
+- ${item["message"]} with ${_list_url[item["url"]]-1} other notification(s) 
+ ${item["url"]}
         % endif
     % endfor
 % if category != _list[-1]:
@@ -33,13 +35,16 @@ ${_notification_names[category][0].capitalize()} Notification(s)
 ${_notification_names[category][0].capitalize()} Notification(s)
 ===================
     % for item in _details_k[category]:
-- ${item["message"]} (${item["url"]})
+- ${item["message"]} 
+(${item["url"]})
 "${item["description"]}"
 
     % endfor
 % if category != _details[-1]:
 % endif
 % endfor
+
+-------------------
 To change your notification preferences, go to the settings area on your profile page - ${_base}/member/${_user.get_url_safe_login_name()}/change-settings
 
 To unsubscribe from all future messages from Casual Anime, go to this page - ${_base}/member/${_user.id}/${_user.email_address}/unsubscribe
