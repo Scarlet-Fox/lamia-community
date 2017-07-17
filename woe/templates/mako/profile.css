@@ -7,21 +7,22 @@
     }
 % endif
 
+% if _site_background_color and not _banner_image and not _site_background_image:
+    body {
+        background: #${_site_background_color};
+    }
+% endif
+
 % if _banner_image:
     .site-background {
         background: ${"#"+_site_background_color if _site_background_color else ''} ${"url(\"/static/customizations/"+_banner_image+"\") no-repeat scroll top !important" if _banner_image else ''};
         height: ${_header_height}px; 
     }
-    % if _site_background_color:
-        body {
-            background: #${_site_background_color};
-        }
-    % endif
 % endif
 
 % if _site_background_image:
     body {
-        background: ${"#"+_site_background_color if _site_background_color else ''} ${"url(\"/static/customizations/"+_site_background_image+"\") no-repeat fixed top !important" if _banner_image else ''};
+        background: ${"#"+_site_background_color if _site_background_color else ''} ${"url(\"/static/customizations/"+_site_background_image+"\") no-repeat fixed top !important" if _site_background_image else ''};
         background-size: cover !important;
     }
     % if not _banner_image:
