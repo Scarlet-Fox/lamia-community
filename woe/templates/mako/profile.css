@@ -18,6 +18,11 @@
         background: ${"#"+_site_background_color if _site_background_color else ''} ${"url(\"/static/customizations/"+_banner_image+"\") no-repeat scroll top !important" if _banner_image else ''};
         height: ${_header_height}px; 
     }
+    % if _site_background_color:
+        body {
+            background: #${_site_background_color};
+        }
+    % endif
 % endif
 
 % if _site_background_image:
