@@ -88,10 +88,10 @@
                   .col-xs-7
                     if all_stats["boops_given"] == 1
                       strong
-                        | {{all_stats["boops_given"].counts[user.login_name]|number_format}} post
+                        | {{all_stats["boops_given"].counts[user.login_name]|number_format}} boop
                     else
                       strong
-                        | {{all_stats["boops_given"].counts[user.login_name]|number_format}} posts
+                        | {{all_stats["boops_given"].counts[user.login_name]|number_format}} boops
           .col-md-4.col-sm-6
             h3 Microbloggers 
               span.text-muted(style="font-size: 75%;") most status updates
@@ -109,10 +109,10 @@
                   .col-xs-7
                     if all_stats["status_count"] == 1
                       strong
-                        | {{all_stats["status_count"].counts[user.login_name]|number_format}} topic
+                        | {{all_stats["status_count"].counts[user.login_name]|number_format}} update
                     else
                       strong
-                        | {{all_stats["status_count"].counts[user.login_name]|number_format}} topics
+                        | {{all_stats["status_count"].counts[user.login_name]|number_format}} updates
           .col-md-4.col-sm-6
             h3 Chatty Chatters 
               span.text-muted(style="font-size: 75%;") most status comments
@@ -130,8 +130,8 @@
                   .col-xs-7
                     if all_stats["status_comments_count"] == 1
                       strong
-                        | {{all_stats["status_comments_count"].counts[user.login_name]|number_format}} words
+                        | {{all_stats["status_comments_count"].counts[user.login_name]|number_format}} comment
                     else
                       strong
-                        | {{all_stats["status_comments_count"].counts[user.login_name]|number_format}} words
+                        | {{all_stats["status_comments_count"].counts[user.login_name]|number_format}} comments
 {% endblock %}
