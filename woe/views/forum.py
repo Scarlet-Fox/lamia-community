@@ -775,15 +775,21 @@ def topic_index(slug, page, post):
     if current_user.is_authenticated():
         more_topics = sqla.session.query(sqlm.Topic) \
             .filter(sqlm.Topic.id != topic.id) \
+            .filter(sqlm.Topic.hidden == False) \
             .filter(sqlm.Topic.recent_post.has(sqlm.Post.author != current_user)) \
             .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
             .filter(sqlm.Topic.category.has(sqlm.Category.slug!="welcome")) \
+            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="faq-help")) \
+            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="news")) \
             .order_by(sqla.func.random())[:5]
     else:
         more_topics = sqla.session.query(sqlm.Topic) \
             .filter(sqlm.Topic.id != topic.id) \
+            .filter(sqlm.Topic.hidden == False) \
             .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
             .filter(sqlm.Topic.category.has(sqlm.Category.slug!="welcome")) \
+            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="faq-help")) \
+            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="news")) \
             .order_by(sqla.func.random())[:5]
             
     request.canonical = app.config['BASE'] + "/t/%s/page/%s" % (slug, page)
