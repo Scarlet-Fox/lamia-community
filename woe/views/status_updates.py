@@ -15,6 +15,8 @@ def status_update_replies(status):
         status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=status)[0]
     except:
         return abort(404)
+        
+    request.canonical = app.config['BASE'] + "/status/%s" % (status,)
 
     if status.hidden == True and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
         return abort(404)
