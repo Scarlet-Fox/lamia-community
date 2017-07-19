@@ -756,6 +756,7 @@ def load_user(login_name):
     elif request.path.startswith("/t/"):
         try:
             topic = sqla.session.query(sqlm.Topic) \
+                .filter_by(hidden=False) \
                 .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
                 .filter_by(slug=request.path.split("/")[2])[0]
             user.last_seen_at = unicode(topic.title)
@@ -767,14 +768,14 @@ def load_user(login_name):
         user.last_at_url = "/status-updates"
     elif request.path.startswith("/status/"):
         try:
-            status = sqla.session.query(sqlm.StatusUpdate).filter_by(id=request.path.split("/")[2])[0]
+            status = sqla.session.query(sqlm.StatusUpdate).filter_by(hidden=False).filter_by(id=request.path.split("/")[2])[0]
             user.last_seen_at = unicode(status.author.display_name)+"\'s status update"
             user.last_at_url = "/status/"+unicode(status.id)
         except IndexError:
             pass
     elif request.path.startswith("/category/"):
         try:
-            category = sqla.session.query(sqlm.Category).filter_by(slug=request.path.split("/")[2])[0]
+            category = sqla.session.query(sqlm.Category).filter_by(restricted=False).filter_by(slug=request.path.split("/")[2])[0]
             user.last_seen_at = category.name
             user.last_at_url = "/category/"+unicode(category.slug)
         except IndexError:
