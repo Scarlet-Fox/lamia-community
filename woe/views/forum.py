@@ -29,7 +29,6 @@ def category_list_api():
     
     if current_user._get_current_object().is_admin:
         q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
-        
     else:
         q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",]).filter_by(restricted=False)
     
@@ -1274,7 +1273,6 @@ def index():
             for category in sqla.session.query(sqlm.Category) \
                 .filter_by(section=section).filter_by(parent=None) \
                 .order_by(sqlm.Category.weight).all():
-                categories[section].append(category)
                 if len(category.children) > 0:
                     sub_categories[category] = category.children
                     recent_post = category.recent_post
@@ -1284,13 +1282,27 @@ def index():
                                 recent_post = category_child.recent_post
                         except:
                             pass
+                            
                     category.recent_post = recent_post
                     category.recent_topic = recent_post.topic
+                
+                # A simple hack.
+                try:
+                    if category.recent_topic.hidden == True:
+                        category.recent_topic = None
+                        category.recent_post = None
+                    else:
+                        if category.recent_post.hidden == True:
+                            category.recent_post = None
+                except:
+                    category.recent_topic = None
+                    category.recent_post = None
+                    
+                categories[section].append(category)
         else:
             for category in sqla.session.query(sqlm.Category) \
                 .filter_by(section=section).filter_by(parent=None).filter_by(restricted=False) \
                 .order_by(sqlm.Category.weight).all():
-                categories[section].append(category)
                 if len(category.children) > 0:
                     sub_categories[category] = category.children
                     recent_post = category.recent_post
@@ -1300,8 +1312,23 @@ def index():
                                 recent_post = category_child.recent_post
                         except:
                             pass
+                            
                     category.recent_post = recent_post
                     category.recent_topic = recent_post.topic
+                
+                # A simple hack.
+                try:
+                    if category.recent_topic.hidden == True:
+                        category.recent_topic = None
+                        category.recent_post = None
+                    else:
+                        if category.recent_post.hidden == True:
+                            category.recent_post = None
+                except:
+                    category.recent_topic = None
+                    category.recent_post = None
+                    
+                categories[section].append(category)
             
 
     online_users = sqla.session.query(sqlm.User) \

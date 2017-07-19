@@ -4,7 +4,10 @@ from woe.utilities import ipb_password_check
 from wand.image import Image
 from urllib import quote
 import arrow, os, math
-import regex as re
+try:
+    import regex as re
+except:
+    import re
 from flask.ext.login import current_user
 from threading import Thread
 from woe import sqla

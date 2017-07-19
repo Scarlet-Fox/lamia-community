@@ -3,7 +3,10 @@ import hashlib
 import arrow
 from woe import app
 import cgi, pytz, os
-import regex as re
+try:
+    import regex as re
+except:
+    import re
 from woe import sqla
 from flask.ext.login import current_user
 from mongoengine.queryset import Q
