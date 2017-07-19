@@ -443,11 +443,15 @@ class ForumPostParser(object):
                 try:
                     r_id = int(reply[0])
                     _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=reply[0])[0]
+                    if _replying_to.author != current_user:
+                        return
                 except:
                     sqla.session.rollback()
 
                     try:
                         _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(old_mongo_hash=reply[0])[0]
+                        if _replying_to.author != current_user:
+                            return
                     except:
                         sqla.session.rollback()
                         return
