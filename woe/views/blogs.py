@@ -28,6 +28,8 @@ def blogs_index(page):
     page = int(page)
     minimum = (int(page)-1)*int(10)
     maximum = int(page)*int(10)
+            
+    request.canonical = app.config['BASE'] + "/blogs/page/%s" % (page,)
 
     if current_user.is_authenticated():
         comments = sqla.session.query(sqlm.BlogComment) \
@@ -502,6 +504,8 @@ def blog_index(slug, page):
         page = int(page)
     except:
         page = 1
+            
+    request.canonical = app.config['BASE'] + "/blog/%s/page/%s" % (slug,page,)
 
     if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
         return abort(404)
@@ -648,6 +652,9 @@ def blog_entry_index(slug, entry_slug, page):
         page = int(page)
     except:
         page = 1
+
+            
+    request.canonical = app.config['BASE'] + "/blog/%s/e/%s/page/%s" % (slug, entry_slug, page)
 
     if not current_user.is_admin:
         if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:

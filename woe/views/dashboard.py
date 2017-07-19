@@ -17,6 +17,14 @@ def send_message(data):
     response = urllib2.urlopen(req, py_json.dumps(data))
 
 def broadcast(to, category, url, title, description, content, author, priority=0):
+    
+    # Hack for hidden areas of the forum
+    try:
+        if content.hidden == True:
+            return
+    except:
+        pass
+        
     if category not in [x[0] for x in sqlm.Notification.NOTIFICATION_CATEGORIES]:
         raise TypeError("Category is not defined in NOTIFICATION_CATEGORIES.")
 
@@ -46,6 +54,19 @@ def broadcast(to, category, url, title, description, content, author, priority=0
                 pass
         except IndexError:
             continue
+        
+        # Hack for hidden areas of the forum
+        try:
+            if content.category.restricted == True:
+                continue
+        except:
+            pass
+            
+        try:
+            if content.topic.category.restricted == True:
+                continue
+        except:
+            pass
 
         if user.notification_preferences is None:
             user.notification_preferences = {}

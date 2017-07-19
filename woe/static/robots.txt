@@ -1,3 +1,1 @@
 User-agent: *
-Disallow: */post/*
-Disallow: /blogs/page/*
