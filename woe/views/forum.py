@@ -42,9 +42,13 @@ def topic_list_api():
     query = request.args.get("q", "")[0:300]
     if len(query) < 2:
         return app.jsonify(results=[])
-
-    q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic) \
-        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) , ["title",])
+    
+    if current_user._get_current_object().is_admin:
+        q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic), ["title",])
+    else:
+        q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic) \
+            .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) , ["title",])
+    
     topics = q_.all()
     results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
     return app.jsonify(results=results)

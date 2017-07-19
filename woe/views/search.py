@@ -176,7 +176,15 @@ def search_lookup():
 
     parsed_results = []
     if content_type == "posts":
-        query_ = parse_search_string(query, model_, query_, ["html",]).filter(model_.hidden==False)
+        if current_user.is_admin:
+            query_ = parse_search_string(query, model_, query_, ["html",]) \
+                .join(sqlm.Post.topic) \
+                .filter(model_.hidden==False)
+        else:
+            query_ = parse_search_string(query, model_, query_, ["html",]) \
+                .join(sqlm.Post.topic) \
+                .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+                .filter(model_.hidden==False)
         count = query_.count()
 
         results = query_.order_by(sqla.desc(model_.created))[(page-1)*pagination:pagination*page]
@@ -193,10 +201,16 @@ def search_lookup():
     elif content_type == "topics":
         query_ = parse_search_string(query, model_, query_, ["title",])
         count = query_.count()
-
-        results = query_.filter(model_.hidden==False) \
-            .join(sqlm.Topic.recent_post) \
-            .order_by(sqla.desc(sqlm.Post.created))[(page-1)*pagination:pagination*page]
+        
+        if current_user.is_admin:
+            results = query_.filter(model_.hidden==False) \
+                .join(sqlm.Topic.recent_post) \
+                .order_by(sqla.desc(sqlm.Post.created))[(page-1)*pagination:pagination*page]
+        else:
+            results = query_.filter(model_.hidden==False) \
+                .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+                .join(sqlm.Topic.recent_post) \
+                .order_by(sqla.desc(sqlm.Post.created))[(page-1)*pagination:pagination*page]
 
         for result in results:
             parsed_result = {}
