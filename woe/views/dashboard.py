@@ -44,7 +44,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
     for u in to:
         try:
             if not type(u) == sqlm.User:
-                user = sqla.session.query(sqlm.User).filter_by(login_name=to)[0]
+                user = sqla.session.query(sqlm.User).filter_by(banned=False).filter_by(login_name=to)[0]
             else:
                 user = u
             try:
@@ -60,13 +60,13 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             if content.category.restricted == True and not user.is_admin:
                 continue
         except:
-            continue
+            pass
             
         try:
             if content.topic.category.restricted == True and not user.is_admin:
                 continue
         except:
-            continue
+            pass
 
         if user.notification_preferences is None:
             user.notification_preferences = {}
