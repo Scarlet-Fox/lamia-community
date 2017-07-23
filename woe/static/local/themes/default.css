@@ -1049,3 +1049,7 @@ h1.breadcrumb-h1 {
 .blog-description img {
   max-width: 100% !important;
 }
+
+.attached-status {
+  background-color: rgb(253, 242, 255);
+}

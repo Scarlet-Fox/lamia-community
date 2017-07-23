@@ -317,3 +317,7 @@ hr {
 .btn {
     color: #FEFEFE !important;
 }
+
+.attached-status {
+  background-color: #84041a;
+}

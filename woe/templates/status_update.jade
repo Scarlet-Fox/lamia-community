@@ -40,7 +40,7 @@
             a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-ignore") Ignore
             {% endif %}
       if status.attached_to_user
-        li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}", style="background-color: rgb(253, 242, 255);")
+        li.list-group-item.front-page-status.attached-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}")
           .media-left
             img(src="{{ status.author.get_avatar_url("60") }}", width="{{status.author.avatar_60_x}}", height="{{status.author.avatar_60_y}}")
           .media-body
