@@ -1437,10 +1437,17 @@ def index():
     
     tweets = sqla.session.query(sqlm.Tweet).order_by(sqla.desc(sqlm.Tweet.time))[:3]
     
+    post_count = sqla.session.query(sqlm.Post).count()
+    topic_count = sqla.session.query(sqlm.Topic).count()
+    blog_entry_count = sqla.session.query(sqlm.BlogEntry).count()
+    status_update_count = sqla.session.query(sqlm.StatusUpdate).count()
+    status_comments_count = sqla.session.query(sqlm.StatusComment).count()
+    
     render = render_template("index.jade", page_title="Casual Anime", meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
         sections=sections, sub_categories=sub_categories,announcements=announcements,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets, birthday_list=birthday_list,
-        online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics)
+        online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics,
+        post_count=post_count, topic_count=topic_count, blog_entry_count=blog_entry_count, status_update_count=status_update_count, status_comments_count=status_comments_count)
 
     return render

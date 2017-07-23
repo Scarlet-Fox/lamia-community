@@ -177,6 +177,16 @@
               a(href="/t/{{new_member_intro_topic.slug}}") Go say hello!
             else
               |but they have no welcome topic. :(
+    ul.list-group
+      li.list-group-item.section-header Casual Anime Stats
+      li.list-group-item 
+        ul
+          li {{topic_count|number_format}} <strong>topics</strong>
+          li {{post_count|number_format}} <strong>posts</strong>
+          li {{blog_entry_count|number_format}} <strong>blog entries</strong>
+          li {{status_update_count|number_format}} <strong>status updates</strong>
+          li {{status_comments_count|number_format}} <strong>status comments</strong>
+          br
 .row
   .col-md-12
     li.list-group-item.section-header.sidebar-section-header {{online_user_count}} Users Online
