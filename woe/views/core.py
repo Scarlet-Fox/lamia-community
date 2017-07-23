@@ -538,6 +538,20 @@ def create_attachment():
     if file:
         filename = secure_filename(file.filename)
         image = Image(file=file)
+        
+        exif = {}
+        exif.update((k[5:], v) for k, v in image.metadata.items()
+                                   if k.startswith('exif:'))
+                                   
+        orientation = exif.get("Orientation", '1')
+        
+        if orientation == '3':
+            image.rotate(180)
+        elif orientation == '6':
+            image.rotate(90)
+        elif orientation == '8':
+            image.rotate(270)
+        
         img_bin = image.make_blob()
         img_hash = hashlib.sha512(img_bin).hexdigest()
 
