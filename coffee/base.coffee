@@ -169,6 +169,11 @@ $ ->
     $.post $(this).attr("href"), (data) ->
       window.location = data.url
       
+  $(".toggle-link").click (e) ->
+    e.preventDefault()
+    $.post $(this).attr("href"), (data) ->
+      do location.reload()
+
   $(".toggle-navbar").click (e) ->
     e.preventDefault()
     $.post "/member/toggle-stickybar", (data) ->

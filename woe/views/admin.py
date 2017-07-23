@@ -238,6 +238,12 @@ class ThemeView(ModelView):
     def is_accessible(self):
         return (current_user.is_authenticated() and current_user.is_admin)
 
+class SettingView(ModelView):
+    column_list = ("name", "value")
+
+    def is_accessible(self):
+        return (current_user.is_authenticated() and current_user.is_admin)
+
 class BlogView(ModelView):
     column_list = ("id", "name")
 
@@ -298,6 +304,7 @@ admin.add_view(ReportView(sqlm.Report, sqla.session))
 admin.add_view(BlogView(sqlm.Blog, sqla.session, category='Blog'))
 admin.add_view(BlogEntryView(sqlm.BlogEntry, sqla.session, category='Blog'))
 admin.add_view(BlogCommentView(sqlm.BlogComment, sqla.session, category='Blog'))
+admin.add_view(SettingView(sqlm.SiteSetting, sqla.session, category='Core'))
 admin.add_view(ThemeView(sqlm.SiteTheme, sqla.session, category='Core'))
 admin.add_view(AttachView(sqlm.Attachment, sqla.session, category='Core'))
 admin.add_view(LogView(sqlm.SiteLog, sqla.session, category='Core'))

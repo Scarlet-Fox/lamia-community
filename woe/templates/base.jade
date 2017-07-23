@@ -573,6 +573,18 @@ body(role='document')
                     a.text-muted.text-hide-overflow(href="/dashboard") 
                       span.glyphicon.glyphicon-alert
                       | &nbsp;&nbsp;&nbsp;&nbsp;Your Notifications
+                if current_user.login_name == "cy" or current_user.login_name == "zoop"
+                  if current_user.get_site_setting("manual_validation") == "on"
+                    li(role="presentation")
+                      a.text-danger.text-hide-overflow.toggle-link(href="/toggle-manual-validation") 
+                        span.glyphicon.glyphicon-info-sign
+                        | &nbsp;&nbsp;&nbsp;&nbsp;Manual Validation is On!
+                  else
+                    li(role="presentation")
+                      a.text-muted.text-hide-overflow.toggle-link(href="/toggle-manual-validation") 
+                        span.glyphicon.glyphicon-info-sign
+                        | &nbsp;&nbsp;&nbsp;&nbsp;Manual Validation is Off
+                    
             .col-sm-3
               strong.text-muted Information
               br

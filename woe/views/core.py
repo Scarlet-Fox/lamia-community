@@ -1025,32 +1025,49 @@ def register():
         #     }
         # )
         
+        try:
+            manual_validation = sqlm.SiteSetting.query.filter_by(name="manual_validation")[0].value == "on"
+        except:
+            sqla.session.rollback()
+            manual_validation = False
+            
         time = str(arrow.utcnow().timestamp)+"THIS IS ANOTHER POINTLESS BIT OF TEXT LOL"
         token = bcrypt.generate_password_hash(time,10).encode('utf-8').replace("/","_")
         new_user.new_user_token = token
         new_user.new_user_token_date = arrow.utcnow().datetime.replace(tzinfo=None)
         sqla.session.add(new_user)
         sqla.session.commit()
-        
-        send_mail_w_template(
-            send_to=[new_user,],
-            template="welcome_to_moe.txt",
-            subject="Welcome to Casual Anime!",
-            variables={
-                "_user": new_user,
-                "address": app.config['BASE'] + "/confirm-user/" + str(token)
-            }
-        )
-
-        broadcast(
-            to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
-            category="mod",
-            url="/member/"+unicode(new_user.login_name),
-            title="%s has joined the forum. Please review!" % (unicode(new_user.display_name),),
-            description="",
-            content=new_user,
-            author=new_user
+            
+        if not manual_validation:
+            send_mail_w_template(
+                send_to=[new_user,],
+                template="welcome_to_moe.txt",
+                subject="Welcome to Casual Anime!",
+                variables={
+                    "_user": new_user,
+                    "address": app.config['BASE'] + "/confirm-user/" + str(token)
+                }
             )
+
+            broadcast(
+                to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
+                category="mod",
+                url="/member/"+unicode(new_user.login_name),
+                title="%s has joined the forum. Please review!" % (unicode(new_user.display_name),),
+                description="",
+                content=new_user,
+                author=new_user
+                )
+        else:
+            broadcast(
+                to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
+                category="mod",
+                url="/member/"+unicode(new_user.login_name),
+                title="%s has joined the forum. MANUAL VALIDATION IS ON! So, review and validate." % (unicode(new_user.display_name),),
+                description="",
+                content=new_user,
+                author=new_user
+                )
 
         broadcast(
             to=sqla.session.query(sqlm.User).filter_by(
@@ -1286,6 +1303,29 @@ def preview():
     clean_html_parser = ForumPostParser()
 
     return app.jsonify(preview=clean_html_parser.parse(request_json.get("text", "")))
+
+@app.route('/toggle-manual-validation', methods=["POST",])
+@login_required
+def toggle_manual_validation():
+    if not current_user.is_authenticated():
+        if not current_user.is_admin:
+            return abort(404)
+    
+    try:
+        setting = sqlm.SiteSetting.query.filter_by(name="manual_validation")[0]
+        
+        if setting.value == "on":
+            setting.value = "off"
+        else:
+            setting.value = "on"
+    except:
+        sqla.session.rollback()
+        setting = sqlm.SiteSetting(name="manual_validation", value="on")
+        
+    sqla.session.add(setting)
+    sqla.session.commit()
+    
+    return app.jsonify(response="Ok.")
 
 @app.route('/member-list-api', methods=["GET",])
 @login_required

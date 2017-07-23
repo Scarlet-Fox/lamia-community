@@ -199,6 +199,14 @@ class Tweet(db.Model):
     def __repr__(self):
         return "<Tweet: (text='%s')>" % (self.text,)
 
+class SiteSetting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True)
+    value = db.Column(db.String)
+
+    def __repr__(self):
+        return "<SiteSetting: (name='%s', value='%s)>" % (self.name, self.value)
+
 class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
@@ -683,7 +691,14 @@ class User(db.Model):
             .filter(PrivateMessageReply.author != self) \
             .filter(PrivateMessageUser.last_viewed < PrivateMessageReply.created).count()
         return my_unread_messages
-
+    
+    def get_site_setting(self, setting):
+        try:
+            return SiteSetting.query.filter_by(name=setting)[0].value
+        except:
+            db.session.rollback()
+            return False
+            
     def get_avatar_url(self, size=""):
         if current_user.no_images:
             return ""

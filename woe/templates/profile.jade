@@ -17,7 +17,8 @@ style!= profile.get_custom_css()
       li.list-group-item
         center
           img.center-block.profile-page-avatar.profile-avatar(src="{{profile.get_avatar_url()}}", width="{{profile.avatar_full_x}}", height="{{profile.avatar_full_y}}")
-          span.text-muted= profile.title
+          if profile.title
+            span.text-muted= profile.title
           for role in profile.roles
             br
             span

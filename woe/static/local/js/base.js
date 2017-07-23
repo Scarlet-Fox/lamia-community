@@ -169,6 +169,12 @@
         return window.location = data.url;
       });
     });
+    $(".toggle-link").click(function(e) {
+      e.preventDefault();
+      return $.post($(this).attr("href"), function(data) {
+        return location.reload()();
+      });
+    });
     $(".toggle-navbar").click(function(e) {
       e.preventDefault();
       return $.post("/member/toggle-stickybar", function(data) {
