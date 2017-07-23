@@ -26,20 +26,20 @@ def category_list_api():
     query = request.args.get("q", "")[0:300]
     if len(query) < 2:
         return app.jsonify(results=[])
+    results = []
     
     if current_user._get_current_object().is_admin:
         q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
     else:
         if current_user.is_authenticated() == True:
-            q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",]).filter(
-                    sqla.or_(
-                        sqlm.Category.restricted==False,
-                        sqlm.Category.allowed_users.contains(current_user)
-                    )
-                )
-    
-    categories = q_.all()
-    results = [{"text": unicode(c.name), "id": str(c.id)} for c in categories]
+            q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",]).all()
+        
+        for c in q_:
+            if c.restricted == True:
+                continue
+            else:
+                results.append({"text": unicode(c.name), "id": str(c.id)})
+        
     return app.jsonify(results=results)
 
 @app.route('/topic-list-api', methods=['GET'])
@@ -48,18 +48,19 @@ def topic_list_api():
     query = request.args.get("q", "")[0:300]
     if len(query) < 2:
         return app.jsonify(results=[])
+    results = []
     
     if current_user._get_current_object().is_admin:
         q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic), ["title",])
     else:
-        q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic) \
-            .filter(sqlm.Topic.category.has(sqla.or_(
-                        sqlm.Category.restricted==False,
-                        sqlm.Category.allowed_users.contains(current_user)
-                    ))) , ["title",])
-    
-    topics = q_.all()
-    results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
+        q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic) , ["title",])
+        
+        for t in q_:
+            if t.category.restricted == True:
+                continue
+            else:
+                results.append({"text": unicode(t.title), "id": str(t.id)})
+        
     return app.jsonify(results=results)
 
 @app.route('/c/<slug>/toggle-follow', methods=['POST'])
@@ -1329,7 +1330,7 @@ def index():
         else:
             _query = sqla.session.query(sqlm.Category) \
                 .filter_by(section=section).filter_by(parent=None)
-                                
+                
             for category in _query.order_by(sqlm.Category.weight).all():
                 if current_user.is_authenticated() == True:
                     if category.restricted == True and not current_user in category.allowed_users:

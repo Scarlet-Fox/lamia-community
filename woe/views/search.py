@@ -184,8 +184,7 @@ def search_lookup():
             query_ = parse_search_string(query, model_, query_, ["html",]) \
                 .join(sqlm.Post.topic) \
                 .filter(sqlm.Topic.category.has(sqla.or_(
-                        sqlm.Category.restricted==False,
-                        sqlm.Category.allowed_users.contains(current_user)
+                        sqlm.Category.restricted==False
                     ))) \
                 .filter(model_.hidden==False)
         count = query_.count()
@@ -211,10 +210,7 @@ def search_lookup():
                 .order_by(sqla.desc(sqlm.Post.created))[(page-1)*pagination:pagination*page]
         else:
             results = query_.filter(model_.hidden==False) \
-                .filter(sqlm.Topic.category.has(sqla.or_(
-                        sqlm.Category.restricted==False,
-                        sqlm.Category.allowed_users.contains(current_user)
-                    ))) \
+                .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
                 .join(sqlm.Topic.recent_post) \
                 .order_by(sqla.desc(sqlm.Post.created))[(page-1)*pagination:pagination*page]
 
