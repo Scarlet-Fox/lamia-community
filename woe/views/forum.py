@@ -810,7 +810,7 @@ def topic_index(slug, page, post):
     except:
         pass
 
-    if topic.last_seen_by is None:
+    if topic.last_seen_by == None:
         topic.last_seen_by = {}
 
     if post == "latest_post":
