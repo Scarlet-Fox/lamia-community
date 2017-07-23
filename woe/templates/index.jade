@@ -1,6 +1,17 @@
 {% extends "base.jade" %}
 
 {% block content %}
+if not current_user.is_authenticated()
+  .row
+    .col-md-12
+      ul.list-group
+        li.list-group-item
+          center
+            h4 Hello and welcome to Casual Anime!
+            p We are an online community devoted to members of the anime fandom that aren't hardcore otakus and don't feel like they have to be. Casual Anime is a welcoming, low-drama refuge from the negativity and chaos that are common in mega-sized communities.
+            p Our forum features <a href="/blogs" target="_blank">blogs</a>, <a href="/member/zoop" target="_blank">profile customization</a>, and <a href="/t/lamia-forum-our-custom-forum-software" target="_blank">a wealth of other features</a>. 
+            p 
+              strong If you would like to learn more about us and join the site, then <a href="/register" style="color: blue;" >click here to get started.</a>
 .row
   .col-md-8
     {% for section in sections %}

@@ -1063,3 +1063,7 @@ h1.breadcrumb-h1 {
 .attached-status {
   background-color: rgb(253, 242, 255);
 }
+
+.join-us-link {
+  color: blue !important;
+}
