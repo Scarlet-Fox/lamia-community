@@ -91,12 +91,52 @@ $ ->
               else
                 window.location = "/messages/#{topic.pk}/page/1/post/latest_post"
 
+      getSelectionParentElement = () ->
+        parentEl = null
+        sel = null
+        if window.getSelection
+          sel = window.getSelection()
+          if sel.rangeCount
+            parentEl = sel.getRangeAt(0).commonAncestorContainer
+            if parentEl.nodeType != 1
+              parentEl = parentEl.parentNode;
+        else if sel == document.selection and sel.type != "Control"
+          parentEl = sel.createRange().parentElement()
+        return parentEl;
+        
+      window.getSelectionParentElement = getSelectionParentElement
+                
+      getSelectionText = () ->
+        text = ""
+        if window.getSelection
+          text = window.getSelection().toString();
+        else if document.selection and document.selection.type != "Control"
+          text = document.selection.createRange().text;
+        return text
+        
+      window.getSelectionText = getSelectionText
+
       $("#post-container").delegate ".reply-button", "click", (e) ->
         e.preventDefault()
+
+        try
+          post_object = $(getSelectionParentElement()).closest(".post-content")[0]
+          if not post_object?
+            post_object = $(getSelectionParentElement()).find(".post-content")[0]
+        catch
+          post_object = null
+        highlighted_text = getSelectionText().trim()
+        
+        console.log post_object 
+
         element = $(this)
         my_content = ""
         $.get "/messages/#{topic.pk}/edit-post/#{element.data("pk")}", (data) ->
-          my_content = "[reply=#{element.data("pk")}:pm:#{data.author}]\n\n"
+          if post_object? and post_object == $("#post-#{element.data("pk")}")[0]
+            my_content = "[reply=#{element.data("pk")}:pm:#{data.author}]\n#{highlighted_text}\n[/reply]"
+          else
+            my_content = "[reply=#{element.data("pk")}:pm:#{data.author}]\n\n"
+          # my_content = "[reply=#{element.data("pk")}:pm:#{data.author}]\n\n"
           x = window.scrollX
           y = window.scrollY
           topic.inline_editor.quill.focus()

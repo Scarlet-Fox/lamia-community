@@ -144,7 +144,9 @@ $ ->
         e.preventDefault()
 
         try
-          post_object = getSelectionParentElement().closest(".post-content")
+          post_object = $(getSelectionParentElement()).closest(".post-content")[0]
+          if not post_object?
+            post_object = $(getSelectionParentElement()).find(".post-content")[0]
         catch
           post_object = null
         highlighted_text = getSelectionText().trim()

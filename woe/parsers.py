@@ -447,7 +447,7 @@ class ForumPostParser(object):
                     r_id = int(reply[0])
                     _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=reply[0])[0]
                     pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
-                        pm = _replying_to.topic,
+                        pm = _replying_to.pm,
                         author = current_user._get_current_object()
                     )[0]
                 except:
@@ -456,7 +456,7 @@ class ForumPostParser(object):
                     try:
                         _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(old_mongo_hash=reply[0])[0]
                         pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
-                            pm = _replying_to.topic,
+                            pm = _replying_to.pm,
                             author = current_user._get_current_object()
                         )[0]
                     except:
@@ -469,9 +469,9 @@ class ForumPostParser(object):
                     inner_html = _replying_to.message.replace("[/reply]","")
 
                 return html.replace(string_to_replace, """
-                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply">
+                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
                 %s
-                </blockquote>
+                </div></blockquote>
                 """ % (
                     arrow.get(_replying_to.created).timestamp,
                     "/messages/%s/page/1/post/%s" % (_replying_to.pm.id, _replying_to.id),

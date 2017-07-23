@@ -178,7 +178,10 @@
           var element, highlighted_text, my_content, post_object;
           e.preventDefault();
           try {
-            post_object = getSelectionParentElement().closest(".post-content");
+            post_object = $(getSelectionParentElement()).closest(".post-content")[0];
+            if (post_object == null) {
+              post_object = $(getSelectionParentElement()).find(".post-content")[0];
+            }
           } catch (error) {
             post_object = null;
           }
