@@ -1060,7 +1060,10 @@ def invalidate_sessions(login_name): #default
     for _session in all_sessions:
         session_data = _session[2]
         session_id = _session[1]
-        parsed_session_data = pickle.loads(want_bytes(session_data))
+        try:
+            parsed_session_data = pickle.loads(want_bytes(session_data))
+        except:
+            continue
         parsed_session_data["__id"] = session_id
         
         if parsed_session_data.get("user_id", None) == login_name and current_session_cookie != parsed_session_data["__id"]:
