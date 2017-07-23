@@ -86,3 +86,21 @@ sudo tarsnap-keygen \
 	--keyfile /root/tarsnap.key \
 	--user help@casualanime.com \
 	--machine casualvps
+
+
+location ~* \.(gif|png|jpe?g)$ {
+  expires 7d;
+  add_header Pragma public;
+  add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+
+  # prevent hotlink
+  valid_referers none blocked ~.google. ~.bing. ~.yahoo. server_names ~($host);
+  if ($invalid_referer) {
+    # rewrite (.*) /woe/static/fuckoff.png redirect;
+    return 302 $scheme://$host/static/images/hotlink-denied.jpg;
+    # drop the 'redirect' flag for redirect without URL change (internal rewrite)
+  }
+}
+
+# stop hotlink loop
+location = /woe/static/fuckoff.png { }
