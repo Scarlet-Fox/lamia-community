@@ -18,8 +18,8 @@ $ ->
 
   $(".sign-out").click (e) ->
     e.preventDefault()
-    $.post "https://casualanime.com/sign-out", (data) ->
-      window.location = "https://casualanime.com/"
+    $.post "/sign-out", (data) ->
+      window.location.reload()
 
   window.RegisterAttachmentContainer = (selector) ->
     imgModalHTML = () ->
