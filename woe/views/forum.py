@@ -30,7 +30,13 @@ def category_list_api():
     if current_user._get_current_object().is_admin:
         q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
     else:
-        q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",]).filter_by(restricted=False)
+        if current_user.is_authenticated() == True:
+            q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",]).filter(
+                    sqla.or_(
+                        sqlm.Category.restricted==False,
+                        sqlm.Category.allowed_users.contains(current_user)
+                    )
+                )
     
     categories = q_.all()
     results = [{"text": unicode(c.name), "id": str(c.id)} for c in categories]
@@ -47,7 +53,10 @@ def topic_list_api():
         q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic), ["title",])
     else:
         q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic) \
-            .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) , ["title",])
+            .filter(sqlm.Topic.category.has(sqla.or_(
+                        sqlm.Category.restricted==False,
+                        sqlm.Category.allowed_users.contains(current_user)
+                    ))) , ["title",])
     
     topics = q_.all()
     results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
@@ -61,7 +70,7 @@ def toggle_follow_category(slug):
     except IndexError:
         return abort(404)
         
-    if category.restricted == True and not current_user.is_admin:
+    if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
         return abort(404)
 
     if not current_user._get_current_object() in category.watchers:
@@ -414,7 +423,7 @@ def topic_posts(slug):
     except IndexError:
         return abort(404)
 
-    if topic.category.restricted == True and not current_user.is_admin:
+    if topic.category.restricted == True and not current_user.is_admin and not current_user in topic.category.allowed_users:
         return abort(404)
         
     if current_user._get_current_object() in topic.banned:
@@ -765,7 +774,7 @@ def topic_index(slug, page, post):
     if current_user._get_current_object() in topic.banned:
         return abort(403)
         
-    if topic.category.restricted == True and not current_user.is_admin:
+    if topic.category.restricted == True and not current_user.is_admin and not current_user in topic.category.allowed_users:
         return abort(404)
 
     if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
@@ -808,6 +817,7 @@ def topic_index(slug, page, post):
         if description_parsed.strip() != "":
             meta_description = get_preview(first_post.html, 140) + " - Page %s" % (page,)
     except:
+        sqla.session.rollback()
         pass
 
     if topic.last_seen_by == None:
@@ -819,6 +829,7 @@ def topic_index(slug, page, post):
             .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
             .order_by(sqla.desc(sqlm.Post.created))[0]
         except:
+            sqla.session.rollback()
             return redirect("/t/"+unicode(topic.slug))
 
     elif post == "last_seen":
@@ -833,12 +844,14 @@ def topic_index(slug, page, post):
                 .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
                 .order_by(sqlm.Post.created.desc())[0]
         except:
+            sqla.session.rollback()
             try:
                 post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
                     .filter_by(id=post).filter(sqlm.Post.created < last_seen) \
                     .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
                     .order_by(sqlm.Post.created.desc())[0]
             except:
+                sqla.session.rollback()
                 return redirect("/t/"+unicode(topic.slug))
     else:
         if post != "":
@@ -851,6 +864,7 @@ def topic_index(slug, page, post):
                 post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
                     .filter_by(id=post)[0]
             except:
+                sqla.session.rollback()
                 return redirect("/t/"+unicode(topic.slug))
         else:
             post = ""
@@ -901,10 +915,11 @@ def category_filter_preferences(slug):
     try:
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
+        sqla.session.rollback()
         return abort(404)
     if not current_user.is_authenticated():
         return app.jsonify(preferences={})
-    if category.restricted == True and not current_user.is_admin:
+    if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
         return abort(404)
         
     if current_user.data is None:
@@ -1016,7 +1031,7 @@ def new_topic(slug):
             category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
         except IndexError:
             return abort(404)
-        if category.restricted == True and not current_user.is_admin:
+        if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
             return abort(404)
             
         request_json = request.get_json(force=True)
@@ -1155,7 +1170,7 @@ def new_topic(slug):
     else:
         try:
             category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
-            if category.restricted == True and not current_user.is_admin:
+            if category.restricted == True and not current_user.is_admin and current_user not in category.allowed_users:
                 return abort(404)
         except IndexError:
             return abort(404)
@@ -1168,7 +1183,7 @@ def category_topics(slug):
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
-    if category.restricted == True and not current_user.is_admin:
+    if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
         return abort(404)
 
     if current_user.is_authenticated():
@@ -1257,7 +1272,7 @@ def category_index(slug):
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
-    if category.restricted == True and not current_user.is_admin:
+    if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
         return abort(404)
 
     subcategories = sqla.session.query(sqlm.Category).filter_by(parent=category).all()
@@ -1312,9 +1327,20 @@ def index():
                     
                 categories[section].append(category)
         else:
-            for category in sqla.session.query(sqlm.Category) \
-                .filter_by(section=section).filter_by(parent=None).filter_by(restricted=False) \
-                .order_by(sqlm.Category.weight).all():
+            _query = sqla.session.query(sqlm.Category) \
+                .filter_by(section=section).filter_by(parent=None)
+                
+            if current_user.is_authenticated() == True:
+                _query = _query.filter(
+                    sqla.or_(
+                        sqlm.Category.restricted==False,
+                        sqlm.Category.allowed_users.contains(current_user)
+                    )
+                )
+            else:
+                _query = _query.filter(sqlm.Category.restricted==False)
+                
+            for category in _query.order_by(sqlm.Category.weight).all():
                 if len(category.children) > 0:
                     sub_categories[category] = category.children
                     recent_post = category.recent_post

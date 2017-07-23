@@ -57,13 +57,13 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         
         # Hack for hidden areas of the forum
         try:
-            if content.category.restricted == True and not user.is_admin:
+            if content.category.restricted == True and not user.is_admin and not user in content.category.allowed_users:
                 continue
         except:
             pass
             
         try:
-            if content.topic.category.restricted == True and not user.is_admin:
+            if content.topic.category.restricted == True and not user.is_admin and not user in content.topic.category.allowed_users:
                 continue
         except:
             pass
