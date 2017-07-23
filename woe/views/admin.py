@@ -104,7 +104,7 @@ class CategoryView(ModelView):
         "parent",
         "weight",
     )
-    form_excluded_columns = ("recent_post", "recent_topic", "restricted")
+    form_excluded_columns = ("recent_post", "recent_topic", "restricted", "view_count", "topic_count", "post_count")
 
     column_filters = ["id", ]
     def is_accessible(self):
