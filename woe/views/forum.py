@@ -858,6 +858,8 @@ def topic_index(slug, page, post):
     if post != "":
         topic.view_count = topic.view_count + 1
         try:
+            if topic.last_seen_by == None:
+                topic.last_seen_by = {}
             topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
             flag_modified(topic, "last_seen_by")
             sqla.session.add(topic)
