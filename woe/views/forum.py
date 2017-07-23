@@ -1329,18 +1329,15 @@ def index():
         else:
             _query = sqla.session.query(sqlm.Category) \
                 .filter_by(section=section).filter_by(parent=None)
-                
-            if current_user.is_authenticated() == True:
-                _query = _query.filter(
-                    sqla.or_(
-                        sqlm.Category.restricted==False,
-                        sqlm.Category.allowed_users.contains(current_user)
-                    )
-                )
-            else:
-                _query = _query.filter(sqlm.Category.restricted==False)
-                
+                                
             for category in _query.order_by(sqlm.Category.weight).all():
+                if current_user.is_authenticated() == True:
+                    if category.restricted == True and not current_user in category.allowed_users:
+                        continue
+                else:
+                    if category.restricted == True:
+                        continue
+                        
                 if len(category.children) > 0:
                     sub_categories[category] = category.children
                     recent_post = category.recent_post
