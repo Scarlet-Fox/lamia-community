@@ -1045,3 +1045,7 @@ h1.breadcrumb-h1 {
     overflow: hidden;
     
 }
+
+.blog-description img {
+  max-width: 100% !important;
+}
