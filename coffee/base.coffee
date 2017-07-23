@@ -120,7 +120,8 @@ $ ->
             if $("#notification-sound").length > 0
               document.getElementById('notification-sound').play()
         else
-          document.getElementById('notification-sound').play()
+          if data.count_update > 0
+            document.getElementById('notification-sound').play()
         counter_element.text(data.count_update)
         if data.count_update == 0
           title_count = document.title.match(/\(\d+\)/)
@@ -142,7 +143,8 @@ $ ->
               if $("#notification-sound").length > 0
                 document.getElementById('notification-sound').play()
           else
-            document.getElementById('notification-sound').play()
+            if data.count > 0
+              document.getElementById('notification-sound').play()
           counter_element.text(data.count)
           counter_element.css("background-color", "#B22222")
           $(".dashboard-counter").text(data.dashboard_count)
