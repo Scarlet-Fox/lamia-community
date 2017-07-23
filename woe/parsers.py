@@ -59,6 +59,7 @@ emoticon_codes = {
     ":o" : "oh.png",
     ":surprise:" : "oh.png",
     ":wink:" : "wink.png",
+    ";)" : "wink.png",
     ":cry:" : "cry.png",
     ":P" : "tongue.png",
     ":silly:" : "tongue.png",
