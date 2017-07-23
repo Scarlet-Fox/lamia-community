@@ -77,4 +77,12 @@ user = casual
 
 tarsnap --dry-run --no-default-config --print-stats --humanize-numbers -c /home/sally/Sally
 
-cd /root;pg_dump -U postgres sally > sally.sql;/usr/local/bin/tarsnap -c -v --print-stats --humanize-numbers -f `uname -n`-moe_database-`date +%Y-%m-%d_%H-%M-%S` /root/sally.sql
+cd /root;pg_dump -U postgres -h 127.0.0.1 forum > lamia.sql;/usr/bin/tarsnap -c -v --print-stats --humanize-numbers -f `uname -n`-lamia_database-`date +%Y-%m-%d_%H-%M-%S` /root/lamia.sql
+
+/usr/bin/tarsnap -c -v --print-stats --humanize-numbers -f `uname -n`-lamia_files-`date +%Y-%m-%d_%H-%M-%S` /home/casual/lamia
+
+
+sudo tarsnap-keygen \
+	--keyfile /root/tarsnap.key \
+	--user help@casualanime.com \
+	--machine casualvps
