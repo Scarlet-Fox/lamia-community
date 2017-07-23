@@ -923,6 +923,29 @@ def confirm_register(pk):
         user = sqla.session.query(sqlm.User).filter_by(id=pk)[0]
     except:
         return abort(404)
+        
+    if user.new_user_token == "":
+        return abort(404)
+    
+    return render_template("confirm_new_user.jade", page_title="Welcome! - Casual Anime", profile=user)
+    
+@app.route('/confirm-user/<token>')
+def real_confirm_register(token):
+    try:
+        user = sqla.session.query(sqlm.User).filter_by(new_user_token=token)[0]
+    except:
+        return abort(404)
+        
+    if user.new_user_token == "":
+        return abort(404)
+    
+    user.validated = True
+    user.new_user_token = ""
+    user.new_user_token_date = None
+    
+    sqla.session.add(user)
+    sqla.session.commit()
+    
     return render_template("welcome_new_user.jade", page_title="Welcome! - Casual Anime", profile=user)
 
 @app.route('/acknowledgement')
@@ -971,7 +994,7 @@ def register():
         new_user.set_password(form.password.data.strip())
         new_user.joined = arrow.utcnow().datetime
         new_user.over_thirteeen = True
-        new_user.validated = True
+        new_user.validated = False
         new_user.how_did_you_find_us = form.how_did_you_find_us.data
 
         sqla.session.add(new_user)
@@ -990,6 +1013,7 @@ def register():
                 sqla.session.rollback()
             
         except IndexError:
+            sqla.session.rollback()
             return abort(404)
 
         # send_mail_w_template(
@@ -1001,12 +1025,20 @@ def register():
         #     }
         # )
         
+        time = str(arrow.utcnow().timestamp)+"THIS IS ANOTHER POINTLESS BIT OF TEXT LOL"
+        token = bcrypt.generate_password_hash(time,10).encode('utf-8').replace("/","_")
+        new_user.new_user_token = token
+        new_user.new_user_token_date = arrow.utcnow().datetime.replace(tzinfo=None)
+        sqla.session.add(new_user)
+        sqla.session.commit()
+        
         send_mail_w_template(
             send_to=[new_user,],
             template="welcome_to_moe.txt",
             subject="Welcome to Casual Anime!",
             variables={
                 "_user": new_user,
+                "address": app.config['BASE'] + "/confirm-user/" + str(token)
             }
         )
 

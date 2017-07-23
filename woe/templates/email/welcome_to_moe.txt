@@ -2,9 +2,11 @@ Hello ${_user.display_name},
 
 Welcome to Casual Anime! It is great to have you as a member of our community!
 
-You account is now active, so visit us and sign in: https://casualanime.com/sign-in
+Please click the following link to confirm your shiny new member account:
 
-To unsubscribe from all future messages from Casual Anime, go to this page - https://casualanime.com/member/${_user.id}/${_user.email_address}/unsubscribe
+${address}
+
+We look forward to seeing you around. :)
 
 Take care!
 - Casual Anime

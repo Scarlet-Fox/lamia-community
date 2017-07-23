@@ -1,0 +1,16 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-sm-12
+    ul.list-group
+      li.list-group-item.section-header 
+      li.list-group-item
+        center
+          h1 <strong style="color: purple;">Welcome to Casual Anime, {{profile.display_name}}!</strong>
+          h3 <strong style="color: purple;">Check your email to confirm your new membership...</strong>
+          br
+          h4 <strong>It should arrive shortly! Check your spam or email us at help-@-casualanime.com (without the dashes) if it doesn't appear.</strong>
+          br
+          br
+{% endblock %}

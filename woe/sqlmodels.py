@@ -517,6 +517,9 @@ class User(db.Model):
     password_forgot_token = db.Column(db.String, default="")
     password_forgot_token_date = db.Column(db.DateTime, nullable=True)
 
+    new_user_token = db.Column(db.String, default="")
+    new_user_token_date = db.Column(db.DateTime, nullable=True)
+
     posts_count = db.Column(db.Integer, default=0)
     topic_count = db.Column(db.Integer, default=0)
     status_count = db.Column(db.Integer, default=0)

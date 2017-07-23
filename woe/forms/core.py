@@ -132,7 +132,7 @@ class LoginForm(Form):
 
         self.user = user
         if self.user.validated == False:
-            raise validators.ValidationError("Your account is being validated, give us a moment. :)")
+            raise validators.ValidationError("Please confirm your account before login - check your email for the confirmation message!")
 
     def validate_redirect_to(self, field):
         if not field.data.strip() == "":
