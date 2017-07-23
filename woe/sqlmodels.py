@@ -991,6 +991,7 @@ class Category(db.Model):
     recent_topic = db.relationship("Topic", foreign_keys="Category.recent_topic_id")
 
     name = db.Column(db.String, default="", index=True)
+    description = db.Column(db.String, default="")
     slug = db.Column(db.String, unique=True)
 
     weight = db.Column(db.Integer, default=0, index=True)

@@ -12,7 +12,10 @@
           .row
             .col-xs-4.col-sm-6
               span.subcategory-listing-name 
-                a(href="/category/{{category.slug}}") {{category.name}}
+                a(href="/category/{{category.slug}}", style="vertical-align: middle; padding-top: 15px; font-size: 18px;") {{category.name}}
+                if category.description
+                  p(style="font-size: 12px;").text-muted.hidden-xs
+                    a(href="/category/{{category.slug}}")= category.description
                 {% for subcategory in sub_categories[category] %}
                 {% if loop.first %}
                 p.small
@@ -42,7 +45,9 @@
             .row
               .col-xs-4.col-sm-6
                 span.subcategory-listing-name 
-                  a(href="/blog/{{blog.slug}}") {{blog.name}}
+                  a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}", style="vertical-align: middle; padding-top: 15px; font-size: 18px;") {{blog.recent_entry.title|truncate(40)}}
+                  p(style="font-size: 12px;").text-muted.hidden-xs 
+                    a(href="/blog/{{blog.slug}}") {{blog.name}}
               .col-sm-6.col-xs-8
                 .media-left
                   span.subcategory-listing-recent-image
@@ -50,7 +55,7 @@
                       img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
                 .media-body
                   span.subcategory-listing-recent
-                    a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}")= blog.recent_entry.title|truncate(40)
+                    a(href="/member/{{blog.recent_entry.author.login_name}}") {{blog.recent_entry.author.display_name}}
                     br
                     a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}") {{blog.recent_entry.published|humanize_time}}
         li.list-group-item
