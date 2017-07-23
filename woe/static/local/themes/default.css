@@ -810,6 +810,12 @@ a.inherit_colors {
   color: #777;
 }
 
+.notification-li a {
+  max-width: 420px !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+}
+
 .navbar {
   margin-bottom: 10px;
   border-radius: 0px;
