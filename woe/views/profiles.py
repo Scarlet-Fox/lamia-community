@@ -217,7 +217,31 @@ def validate_user(login_name):
     user.validated = True
     user.new_user_token = ""
     user.new_user_token_date = None
+    
+    broadcast(
+        to=sqla.session.query(sqlm.User).filter_by(
+            banned=False,
+            ).filter(sqlm.User.login_name != user.login_name) \
+            .filter(sqlm.User.hidden_last_seen > arrow.utcnow().replace(hours=-24).datetime.replace(tzinfo=None)) \
+            .all(),
+        category="new_member",
+        url="/member/"+unicode(user.login_name),
+        title="%s has joined the forum! Greet them!" % (unicode(user.display_name),),
+        description="",
+        content=user,
+        author=user
+        )
 
+    broadcast(
+        to=[user,],
+        category="new_member",
+        url="/category/welcome",
+        title="Welcome! Click here to introduce yourself!",
+        description="",
+        content=user,
+        author=user
+        )
+        
     sqla.session.add(user)
     sqla.session.commit()
 
