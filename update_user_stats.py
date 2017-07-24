@@ -9,15 +9,10 @@ for user in User.query.filter_by(banned=False, validated=True).all():
     def update_user_smileys(user):
         user_name = user.login_name
 
-        # try:
         post_count = sqla.session.query(sqlm.Post) \
             .join(sqlm.Post.topic) \
             .join(sqlm.Topic.category) \
-            .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
-            .filter(sqlm.Category.slug != "welcome-mat").count()
-        # except:
-        #     sqla.session.rollback()
-        #     return
+            .filter(sqlm.Post.hidden==False, sqlm.Post.author==user).count()
 
         if post_count < 10:
             return
@@ -34,7 +29,7 @@ for user in User.query.filter_by(banned=False, validated=True).all():
         for post in posts:
             for emote in emoticon_codes.keys():
                 if emote in post.html:
-                    if emote_frequency.has_key(emote):
+                    if emote_frequency.has_key(emoticon_codes[emote]):
                         emote_frequency[emoticon_codes[emote]] += 1
                     else:
                         emote_frequency[emoticon_codes[emote]] = 1
@@ -69,7 +64,7 @@ for user in User.query.filter_by(banned=False, validated=True).all():
             .join(sqlm.Post.topic) \
             .join(sqlm.Topic.category) \
             .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
-            .filter(sqlm.Category.slug != "welcome-mat").count()
+            .filter(sqlm.Category.restricted == False).count()
         # except:
         #     sqla.session.rollback()
         #     return
@@ -81,8 +76,7 @@ for user in User.query.filter_by(banned=False, validated=True).all():
             .join(sqlm.Post.topic) \
             .join(sqlm.Topic.category) \
             .filter(sqlm.Post.hidden==False, sqlm.Post.author==user) \
-            .filter(sqlm.Category.slug != "welcome-mat") \
-            .filter(sqlm.Category.slug != "art-show") \
+            .filter(sqlm.Category.restricted == False) \
             .all())
 
         phrase_frequency = {}
