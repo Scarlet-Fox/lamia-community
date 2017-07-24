@@ -96,13 +96,13 @@ style!= profile.get_custom_css()
           else
             li {{post_count}} <strong>posts</strong>
           if boops_given == 1
-            li {{boops_given}} <strong>boop</strong>
+            li {{boops_given}} <strong>boop given</strong>
           else
-            li {{boops_given}} <strong>boops</strong>
+            li {{boops_given}} <strong>boops given</strong>
           if boops_received == 1
-            li {{boops_received}} <strong>boop</strong>
+            li {{boops_received}} <strong>boop received</strong>
           else
-            li {{boops_received}} <strong>boops</strong>
+            li {{boops_received}} <strong>boops received</strong>
           if status_update_count == 1
             li {{status_update_count}} <strong>status update</strong>
           else
@@ -121,7 +121,7 @@ style!= profile.get_custom_css()
                 span {{emote}}
                 | &nbsp;
                 if loop.index == 3
-                  br
+                  br    
     if custom_fields or age
       ul.list-group
         li.list-group-item.section-header.category-section-header Other Stuff
@@ -150,6 +150,12 @@ style!= profile.get_custom_css()
             .media-body
               a.hover_user(href="{{url_for('view_profile', login_name=visitor[0].login_name)}}") {{visitor[0].display_name}}
               div {{visitor[1]|humanize_time}}
+    if profile.last_seen_ip_address and current_user.is_admin
+      ul.list-group
+        li.list-group-item.section-header.category-section-header Last Seen IP Address
+        li.list-group-item
+          p
+            strong= profile.last_seen_ip_address
     {% endblock %}
   .col-sm-8
     {% block profile_content %}

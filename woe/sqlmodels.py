@@ -500,6 +500,7 @@ class User(db.Model):
     location = db.Column(db.String, default="", index=True)
     about_me = db.Column(db.Text, default="")
     anonymous_login = db.Column(db.Boolean, default=False, index=True)
+    last_seen_ip_address = db.Column(db.Text, index=True)
 
     avatar_extension = db.Column(db.String, default="")
     avatar_full_x = db.Column(db.Integer, default=200)

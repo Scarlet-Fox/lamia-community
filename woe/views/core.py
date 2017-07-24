@@ -872,6 +872,7 @@ def load_user(login_name):
         ip_address.user = user
 
     ip_address.last_seen = arrow.utcnow().datetime.replace(tzinfo=None)
+    user.last_seen_ip_address = request.remote_addr
 
     sqla.session.add(user)
     sqla.session.add(ip_address)
@@ -1034,6 +1035,7 @@ def register():
         new_user.over_thirteeen = True
         new_user.validated = False
         new_user.how_did_you_find_us = form.how_did_you_find_us.data
+        new_user.last_seen_ip_address = request.remote_addr
 
         sqla.session.add(new_user)
         sqla.session.commit()
