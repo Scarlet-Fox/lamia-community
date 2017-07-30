@@ -15,6 +15,7 @@ from datetime import datetime
 import woe.sqlmodels as sqlm
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm import joinedload
+from BeautifulSoup import BeautifulSoup
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
@@ -1262,7 +1263,17 @@ def category_topics(slug):
         parsed_topic["title"] = topic.title
         parsed_topic["sticky"] = topic.sticky
         parsed_topic["closed"] = topic.locked
-        parsed_topic["slug"] = topic.slug
+        parsed_topic["slug"] = topic.slug        
+        try:
+            first_post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
+                .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+                .order_by(sqlm.Post.created) \
+                [0]
+            clean_html_parser = ForumPostParser()
+            parsed_topic["preview"] = unicode(get_preview(first_post.html, 100))
+        except:
+            sqla.session.rollback()
+            parsed_topic["preview"] = ""
 
         parsed_topics.append(parsed_topic)
 

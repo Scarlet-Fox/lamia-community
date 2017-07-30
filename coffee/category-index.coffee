@@ -98,6 +98,9 @@ $ ->
               <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/1/post/last_seen">{{last_page}}</a></span>
               {{/if}}
             </span>
+            <div class="topic-author hidden-xs">
+            {{preview}}
+            </div>
           </div>
           <div class="col-xs-3 hidden-xs hidden-sm">
             <span class="topic-listing-recent">
