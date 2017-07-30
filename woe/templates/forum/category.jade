@@ -89,9 +89,9 @@
             //-       a(href='#') Separated link
             //-   {% endif %}
       if current_user.is_authenticated()
-        li.list-group-item.topic-listing(data-pagination='20',data-slug='{{category.slug}}')
+        li.list-group-item.topic-listing(data-pagination='15',data-slug='{{category.slug}}')
       else
-        li.list-group-item.topic-listing(data-pagination='20',data-slug='{{category.slug}}')
+        li.list-group-item.topic-listing(data-pagination='15',data-slug='{{category.slug}}')
 nav.pagination-listing
 {% endblock %}
 

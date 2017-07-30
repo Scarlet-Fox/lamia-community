@@ -40,14 +40,13 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "members"
             )) \
             .order_by(sqla.desc(sqlm.BlogComment.created))[0:10]
-        blogs = sqla.session.query(sqlm.Blog) \
-            .join(sqlm.Blog.recent_entry) \
+        entries = sqla.session.query(sqlm.BlogEntry) \
+            .join(sqlm.BlogEntry.blog) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
             .filter(sqlm.BlogEntry.draft.isnot(True)) \
             .filter(sqlm.BlogEntry.published.isnot(None)) \
             .filter(sqla.or_(
-                sqlm.Blog.privacy_setting == "all",
-                sqlm.Blog.privacy_setting == "members"
+                sqlm.Blog.privacy_setting == "all"
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.published))[minimum:maximum]
         count = sqla.session.query(sqlm.Blog) \
@@ -85,8 +84,8 @@ def blogs_index(page):
                 sqlm.Blog.privacy_setting == "all"
             )) \
             .order_by(sqla.desc(sqlm.BlogComment.created))[0:10]
-        blogs = sqla.session.query(sqlm.Blog) \
-            .join(sqlm.Blog.recent_entry) \
+        entries = sqla.session.query(sqlm.BlogEntry) \
+            .join(sqlm.BlogEntry.blog) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
             .filter(sqlm.BlogEntry.draft.isnot(True)) \
             .filter(sqlm.BlogEntry.published.isnot(None)) \
@@ -128,15 +127,15 @@ def blogs_index(page):
 
     clean_html_parser = ForumPostParser()
 
-    for blog in blogs:
-        blog.preview = unicode(BeautifulSoup(clean_html_parser.parse(blog.recent_entry.html, _object=blog)[:500]))+"..."
+    for entry in entries:
+        entry.preview = unicode(BeautifulSoup(clean_html_parser.parse(entry.html, _object=entry)[:500]))+"..."
 
     return render_template("blogs/list_of_blogs.jade",
         page_title="Blogs - Casual Anime",
         my_blogs=my_blogs,
         random_blogs=random_blogs,
         featured_blog_entries=featured_blog_entries,
-        blogs=blogs,
+        entries=entries,
         pages=pages,
         comments=comments,
         page=page
