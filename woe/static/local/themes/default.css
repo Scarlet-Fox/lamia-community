@@ -201,7 +201,7 @@ body {
 }
 
 a {
-    color: #02005A;
+    color: #834392;
     -ms-word-break: break-all;
     /* Be VERY careful with this, breaks normal words wh_erever */
     word-break: break-all;
@@ -513,6 +513,7 @@ background-color: rgb(248, 248, 248);}
   font-size: 120%;
 }
 .subcategory-listing-name {
+  font-weight: bold;
   vertical-align: middle;
   padding-top: 15px;
   font-size: 15px;
