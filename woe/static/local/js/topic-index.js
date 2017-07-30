@@ -586,7 +586,11 @@
                 $("#postlink-" + window._initial_post)[0].scrollIntoView();
                 $("#postlink-smallscreen-" + window._initial_post)[0].scrollIntoView();
                 return window._initial_post = "";
-              }, 300);
+              }, 500);
+            } else {
+              setTimeout(function() {
+                return $("#topic-breadcrumb")[0].scrollIntoView();
+              }, 500);
             }
             return window.setupContent();
           };
