@@ -85,10 +85,13 @@ $ ->
             {{#if closed}}<span class="glyphicon glyphicon-lock" aria-hidden="true"></span>&nbsp;{{/if}}
             {{/if}}
             <a href="/t/{{slug}}/page/1/post/last_seen">{{#if updated}}<strong>{{/if}}{{title}}{{#if updated}}</strong>{{/if}}</a><br>
-            <span class="topic-author">
+            <span class="topic-author hidden-xs hidden-sm">
               Started by {{creator}}, {{created}}
             </span>
-            <span class="topic-listing-jumps">
+            <span class="topic-author visible-xs-* visible-sm-*">
+              <a href="/t/{{slug}}/page/1/post/last_seen">Last Post by {{last_post_by}}&nbsp;&nbsp;|&nbsp;&nbsp;{{last_post_date}}</a>
+            </span>
+            <span class="topic-listing-jumps hidden-xs hidden-sm">
               <span class="badge" style=""><a class="inherit_colors" href="/t/{{slug}}/page/1">1</a></span>
               {{#if last_pages}}
               <span class="badge" style="">...</span>
