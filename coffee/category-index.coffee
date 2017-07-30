@@ -72,7 +72,7 @@ $ ->
     topicHTMLTemplate: () ->
       return """
         <div class="row">
-          <div class="col-xs-12 col-sm-6">
+          <div class="col-xs-12 col-sm-5">
             <span class="topic-listing-name">
             {{#if prefix}}
             {{{pre_html}}}
@@ -85,10 +85,10 @@ $ ->
             {{#if closed}}<span class="glyphicon glyphicon-lock" aria-hidden="true"></span>&nbsp;{{/if}}
             {{/if}}
             <a href="/t/{{slug}}/page/1/post/last_seen">{{#if updated}}<strong>{{/if}}{{title}}{{#if updated}}</strong>{{/if}}</a><br>
-            <span class="topic-author hidden-xs hidden-sm">
+            <span class="topic-author hidden-xs">
               Started by {{creator}}, {{created}}
             </span>
-            <span class="topic-author visible-xs-* visible-sm-*">
+            <span class="topic-author hidden-sm hidden-md hidden-lg">
               <a href="/t/{{slug}}/page/1/post/last_seen">Last Post by {{last_post_by}}&nbsp;&nbsp;|&nbsp;&nbsp;{{last_post_date}}</a>
             </span>
             <span class="topic-listing-jumps hidden-xs hidden-sm">
@@ -106,7 +106,7 @@ $ ->
               {{view_count}} views
             </span>
           </div>
-          <div class="col-xs-6 col-sm-3 hidden-xs">
+          <div class="col-xs-6 col-sm-4 hidden-xs">
             <span class="topic-listing-recent-image subcategory-listing-recent-image">
               <a href="/member/{{last_post_by_login_name}}"><img src="{{last_post_author_avatar}}" width="{{last_post_x}}px" height="{{last_post_y}}px" class="avatar-mini"></a>
             </span>
