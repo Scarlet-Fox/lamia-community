@@ -40,9 +40,6 @@ post_users = post_frequency.keys()
 post_users = sorted(post_users, key=lambda x: post_frequency[x], reverse=True)
 pack_into_db(post_users, post_frequency, "post_count")
 
-word_users = word_frequency.keys()
-word_users = sorted(word_users, key=lambda x: word_frequency[x], reverse=True)
-pack_into_db(word_users, word_frequency, "word_count")
 # Save
 
 topics = list(sqla.session.query(sqlm.Topic).filter(sqlm.Topic.hidden==False).all())
@@ -118,6 +115,64 @@ pack_into_db(boops_given_users, boops_given_frequency, "boops_given")
 
 # Save
 
+blogcomments = list(sqla.session.query(sqlm.BlogComment).filter(sqlm.BlogComment.hidden==False).all())
+blogcomment_frequency = {}
+blogcomment_users = []
 
+for blogcomment in blogcomments:
+    if blogcomment_frequency.has_key(blogcomment.author.login_name):
+        blogcomment_frequency[blogcomment.author.login_name] += 1
+    else:
+        blogcomment_frequency[blogcomment.author.login_name] = 1
+        
+    if word_frequency.has_key(blogcomment.author.login_name):
+        word_frequency[blogcomment.author.login_name] += len(strip_tags(blogcomment.html))
+    else:
+        word_frequency[blogcomment.author.login_name] = len(strip_tags(blogcomment.html))
 
+blogcomment_users = blogcomment_frequency.keys()
+blogcomment_users = sorted(blogcomment_users, key=lambda x: blogcomment_frequency[x], reverse=True)
+pack_into_db(blogcomment_users, blogcomment_frequency, "blog_comments_count")
 
+# Save
+
+blogentries = list(sqla.session.query(sqlm.BlogEntry).filter(sqlm.BlogEntry.hidden==False).all())
+blogentry_frequency = {}
+blogentry_users = []
+
+for blogentry in blogentries:
+    if blogentry_frequency.has_key(blogentry.author.login_name):
+        blogentry_frequency[blogentry.author.login_name] += 1
+    else:
+        blogentry_frequency[blogentry.author.login_name] = 1
+        
+    if word_frequency.has_key(blogentry.author.login_name):
+        word_frequency[blogentry.author.login_name] += len(strip_tags(blogentry.html))
+    else:
+        word_frequency[blogentry.author.login_name] = len(strip_tags(blogentry.html))
+
+blogentry_users = blogentry_frequency.keys()
+blogentry_users = sorted(blogentry_users, key=lambda x: blogentry_frequency[x], reverse=True)
+pack_into_db(blogentry_users, blogentry_frequency, "blog_entries_count")
+
+# Save
+
+attachments = list(sqla.session.query(sqlm.Attachment).all())
+attachment_frequency = {}
+attachment_users = []
+
+for attachment in attachments:
+    if attachment_frequency.has_key(attachment.owner.login_name):
+        attachment_frequency[attachment.owner.login_name] += 1
+    else:
+        attachment_frequency[attachment.owner.login_name] = 1
+
+attachment_users = attachment_frequency.keys()
+attachment_users = sorted(attachment_users, key=lambda x: attachment_frequency[x], reverse=True)
+pack_into_db(attachment_users, attachment_frequency, "attachment_count")
+
+# Save
+
+word_users = word_frequency.keys()
+word_users = sorted(word_users, key=lambda x: word_frequency[x], reverse=True)
+pack_into_db(word_users, word_frequency, "word_count")
