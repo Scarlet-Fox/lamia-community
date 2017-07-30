@@ -251,12 +251,11 @@ def search_lookup():
             parsed_results.append(parsed_result)
 
     elif content_type == "status":
-        query_ = parse_search_string(query, model_, query_, ["message",])
+        query_ = parse_search_string(query, model_, query_, ["message",]).filter(model_.hidden==False)
         count = query_.count()
 
-        results = query_.filter(model_.hidden==False) \
-            .join(sqlm.StatusComment) \
-            .order_by(sqla.desc(sqlm.StatusComment.created))[(page-1)*pagination:pagination*page]
+        results = query_ \
+            .order_by(sqla.desc(sqlm.StatusUpdate.created))[(page-1)*pagination:pagination*page]
 
         for result in results:
             parsed_result = {}
