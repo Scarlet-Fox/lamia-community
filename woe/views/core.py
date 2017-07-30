@@ -1270,7 +1270,7 @@ def user_list_api():
         return app.jsonify(results=[])
 
     users = parse_search_string(query, sqlm.User, sqla.session.query(sqlm.User), ["display_name", "login_name"]) \
-        .filter(sqlm.User.banned.isnot(True)).all()
+        .filter(sqlm.User.banned.isnot(True)).filter(sqlm.User.validated.isnot(False)).all()
     results = [{"text": unicode(u.display_name), "id": unicode(u.id)} for u in users]
 
     results_starting_ = []
@@ -1292,7 +1292,7 @@ def user_list_api_variant():
     if len(query) < 2:
         return app.jsonify(results=[])
 
-    users = parse_search_string(query, sqlm.User, sqla.session.query(sqlm.User), ["display_name", "login_name"]).filter_by(banned=False).all()
+    users = parse_search_string(query, sqlm.User, sqla.session.query(sqlm.User), ["display_name", "login_name"]).filter_by(banned=False, validated=True).all()
     results = [{"text": unicode(u.display_name), "id": unicode(u.login_name)} for u in users]
 
     results_starting_ = []
@@ -1388,7 +1388,7 @@ def member_list_api():
         sqlm.User,
         sqla.session.query(sqlm.User),
         ["display_name", "login_name"]
-    ).filter_by(banned=False).count()
+    ).filter_by(banned=False, validated=True).count()
 
     if direction == "desc":
         users = parse_search_string(query,
