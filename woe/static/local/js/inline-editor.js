@@ -199,6 +199,28 @@
             return _this.createAndShowEmoticonModal();
           };
         })(this));
+        $("#add-spoiler-" + this.quillID).on('click', (function(_this) {
+          return function(e) {
+            quill.insertText(quill.getSelection(true).index, "[spoiler=Spoiler!]\n");
+            return quill.insertText(quill.getSelection(true).index + quill.getSelection(true).length, "[/spoiler]\n");
+          };
+        })(this));
+        $("#add-quote-" + this.quillID).on('click', (function(_this) {
+          return function(e) {
+            quill.insertText(quill.getSelection(true).index, "[quote=Someone]\n");
+            return quill.insertText(quill.getSelection(true).index + quill.getSelection(true).length, "[/quote]\n");
+          };
+        })(this));
+        $("#add-roll-" + this.quillID).on('click', (function(_this) {
+          return function(e) {
+            return quill.insertText(quill.getSelection(true).index, "[roll=1d6]Rolling a thing![/roll]");
+          };
+        })(this));
+        $("#add-progress-" + this.quillID).on('click', (function(_this) {
+          return function(e) {
+            return quill.insertText(quill.getSelection(true).index, "[progressbar=pink]50[/progressbar]");
+          };
+        })(this));
         $("#toolbar-" + this.quillID).find(".ql-image-link").click((function(_this) {
           return function(e) {
             return _this.createAndShowImageLinkModal();
@@ -297,7 +319,7 @@
       };
 
       InlineEditor.prototype.extraButtonsHTML = function() {
-        return "<span class=\"ql-formats\">\n  <button type=\"button\" id=\"add-mention-" + this.quillID + "\" class=\"ql-mention\" >@</button>\n  <button type=\"button\" id=\"add-emote-" + this.quillID + "\" class=\"ql-mention\" >&#9786;</button>\n</span>";
+        return "<span class=\"ql-formats\">\n  <button type=\"button\" id=\"add-quote-" + this.quillID + "\" class=\"ql-quote glyphicon glyphicon-comment\">&nbsp;</button>\n  <button type=\"button\" id=\"add-progress-" + this.quillID + "\" class=\"ql-progress glyphicon glyphicon-signal\">&nbsp;</button>\n  <button type=\"button\" id=\"add-mention-" + this.quillID + "\" class=\"ql-mention\" >@</button>\n  <button type=\"button\" id=\"add-emote-" + this.quillID + "\" class=\"ql-emote\" >&#9786;</button>\n  <button type=\"button\" id=\"add-spoiler-" + this.quillID + "\" class=\"ql-spoiler\">S</button>\n  <button type=\"button\" id=\"add-roll-" + this.quillID + "\" class=\"ql-roll\">D6</button>\n</span>";
       };
 
       InlineEditor.prototype.editReasonHTML = function() {

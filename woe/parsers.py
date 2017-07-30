@@ -20,7 +20,7 @@ spoiler_re = re.compile(r'\[[sS][pP][oO][iI][lL][eE][rR]\](.*?)\[\/[sS][pP][oO][
 adv_spoiler_re = re.compile(r'\[[sS][pP][oO][iI][lL][eE][rR]=(.*?)\](.*?)\[\/[sS][pP][oO][iI][lL][eE][rR]\]', re.DOTALL|re.IGNORECASE)
 center_re = re.compile(r'\[center\](.*?)\[\/center\]', re.DOTALL|re.IGNORECASE)
 image_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL|re.IGNORECASE)
-quote_re = re.compile(r'\[quote=?(.*?)\](.*?)\[\/quote\]', re.DOTALL|re.IGNORECASE)
+quote_re = re.compile(r'\[quote=?(.*?)\](.*)\[\/quote\]', re.DOTALL|re.IGNORECASE)
 font_re = re.compile(r'\[font=?(.*?)\](.*?)\[\/font\]', re.DOTALL|re.IGNORECASE)
 color_re = re.compile(r'\[color=?(.*?)\](.*?)\[\/color\]', re.DOTALL|re.IGNORECASE)
 size_re = re.compile(r'\[size=?(.*?)\](.*?)\[\/size\]', re.DOTALL|re.IGNORECASE)

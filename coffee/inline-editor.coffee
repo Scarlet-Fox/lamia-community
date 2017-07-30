@@ -142,9 +142,23 @@ $ ->
       $("#add-mention-#{@quillID}").on 'click', (e) =>
         do @createAndShowMentionModal
         
-      $("#add-emote-#{@quillID}").on 'click',  (e) =>
+      $("#add-emote-#{@quillID}").on 'click', (e) =>
         do @createAndShowEmoticonModal
         
+      $("#add-spoiler-#{@quillID}").on 'click', (e) =>
+        quill.insertText quill.getSelection(true).index, "[spoiler=Spoiler!]\n"
+        quill.insertText quill.getSelection(true).index+quill.getSelection(true).length, "[/spoiler]\n"
+        
+      $("#add-quote-#{@quillID}").on 'click', (e) =>
+        quill.insertText quill.getSelection(true).index, "[quote=Someone]\n"
+        quill.insertText quill.getSelection(true).index+quill.getSelection(true).length, "[/quote]\n"
+                
+      $("#add-roll-#{@quillID}").on 'click', (e) =>
+        quill.insertText quill.getSelection(true).index, "[roll=1d6]Rolling a thing![/roll]"
+                
+      $("#add-progress-#{@quillID}").on 'click', (e) =>
+        quill.insertText quill.getSelection(true).index, "[progressbar=pink]50[/progressbar]"
+                
       $("#toolbar-#{@quillID}").find(".ql-image-link").click (e) =>
         do @createAndShowImageLinkModal
         
@@ -211,8 +225,12 @@ $ ->
     extraButtonsHTML: () =>
       """
       <span class="ql-formats">
+        <button type="button" id="add-quote-#{@quillID}" class="ql-quote glyphicon glyphicon-comment">&nbsp;</button>
+        <button type="button" id="add-progress-#{@quillID}" class="ql-progress glyphicon glyphicon-signal">&nbsp;</button>
         <button type="button" id="add-mention-#{@quillID}" class="ql-mention" >@</button>
-        <button type="button" id="add-emote-#{@quillID}" class="ql-mention" >&#9786;</button>
+        <button type="button" id="add-emote-#{@quillID}" class="ql-emote" >&#9786;</button>
+        <button type="button" id="add-spoiler-#{@quillID}" class="ql-spoiler">S</button>
+        <button type="button" id="add-roll-#{@quillID}" class="ql-roll">D6</button>
       </span>
       """
       
