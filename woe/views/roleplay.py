@@ -394,16 +394,16 @@ def character_basic_profile(slug):
     parser = ForumPostParser()
 
     if character.appearance:
-        character.parsed_appearance = parser.parse(character.appearance)
+        character.parsed_appearance = parser.parse(character.appearance, _object=character)
 
     if character.personality:
-        character.parsed_personality = parser.parse(character.personality)
+        character.parsed_personality = parser.parse(character.personality, _object=character)
 
     if character.backstory:
-        character.parsed_backstory = parser.parse(character.backstory)
+        character.parsed_backstory = parser.parse(character.backstory, _object=character)
 
     if character.other:
-        character.parsed_other = parser.parse(character.other)
+        character.parsed_other = parser.parse(character.other, _object=character)
 
     return render_template("roleplay/character_profile.jade", character=character, page_title="%s - Character Database - Casual Anime" % (unicode(character.name),))
 

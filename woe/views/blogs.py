@@ -129,7 +129,7 @@ def blogs_index(page):
     clean_html_parser = ForumPostParser()
 
     for blog in blogs:
-        blog.preview = unicode(BeautifulSoup(clean_html_parser.parse(blog.recent_entry.html)[:500]))+"..."
+        blog.preview = unicode(BeautifulSoup(clean_html_parser.parse(blog.recent_entry.html, _object=blog)[:500]))+"..."
 
     return render_template("blogs/list_of_blogs.jade",
         page_title="Blogs - Casual Anime",
@@ -538,10 +538,10 @@ def blog_index(slug, page):
     clean_html_parser = ForumPostParser()
 
     for entry in entries:
-        entry.parsed = clean_html_parser.parse(entry.html)
+        entry.parsed = clean_html_parser.parse(entry.html, _object=entry)
         entry.parsed_truncated = unicode(BeautifulSoup(entry.parsed[:1000]))+"..."
 
-    description = clean_html_parser.parse(blog.description)
+    description = clean_html_parser.parse(blog.description, _object=blog)
 
     comments = sqla.session.query(sqlm.BlogComment) \
         .filter_by(hidden=False, blog=blog) \
@@ -674,7 +674,7 @@ def blog_entry_index(slug, entry_slug, page):
         return abort(404)
 
     clean_html_parser = ForumPostParser()
-    entry.parsed = clean_html_parser.parse(entry.html)
+    entry.parsed = clean_html_parser.parse(entry.html, _object=entry)
 
     page = int(page)
     minimum = (int(page)-1)*int(10)
@@ -684,7 +684,7 @@ def blog_entry_index(slug, entry_slug, page):
     count = sqla.session.query(sqlm.BlogComment).filter_by(blog_entry=entry, hidden=False).count()
 
     for comment in comments:
-        comment.parsed = clean_html_parser.parse(comment.html)
+        comment.parsed = clean_html_parser.parse(comment.html, _object=comment)
 
     pages = int(math.ceil(float(count)/10.0))
     if pages > 10:

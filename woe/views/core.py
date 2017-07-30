@@ -1318,7 +1318,7 @@ def preview():
     request_json = request.get_json(force=True)
     clean_html_parser = ForumPostParser()
 
-    return app.jsonify(preview=clean_html_parser.parse(request_json.get("text", "")))
+    return app.jsonify(preview=clean_html_parser.parse(request_json.get("text", ""), _object=current_user._get_current_object()))
 
 @app.route('/toggle-manual-validation', methods=["POST",])
 @login_required

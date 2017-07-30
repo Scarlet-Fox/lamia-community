@@ -70,7 +70,7 @@ def view_profile(login_name):
 
     parser = ForumPostParser()
     try:
-        user.parsed_about_me = parser.parse(user.about_me)
+        user.parsed_about_me = parser.parse(user.about_me, _object=user)
     except:
         user.parsed_about_me = ""
 
@@ -271,7 +271,7 @@ def show_signatures(login_name):
     parser = ForumPostParser()
     for s in signatures:
         try:
-            s.parsed = parser.parse(s.html)
+            s.parsed = parser.parse(s.html, _object=s)
         except:
             s.parsed = ""
 
@@ -1157,7 +1157,7 @@ def edit_profile(login_name):
         sqla.session.commit()
         parser = ForumPostParser()
         # user.about_me = parser.parse(user.about_me)
-        return json.jsonify(about_me=parser.parse(user.about_me))
+        return json.jsonify(about_me=parser.parse(user.about_me, _object=user))
     else:
         return json.jsonify(content=user.about_me)
 

@@ -114,6 +114,17 @@ class ForumPostParser(object):
     def parse(self, html, strip_images=False, _object=False):
         cleaner = ForumHTMLCleaner()
         
+        try:
+            _content_owner = _object.author
+        except AttributeError:
+            try:
+                _content_owner = _object.owner
+            except AttributeError:
+                if type(_object) == sqlm.User:
+                    _content_owner = _object
+                else:
+                    _content_owner = False
+        
         # parse images
         images_found = img_re.findall(html)
         skiplink = []
@@ -291,6 +302,9 @@ class ForumPostParser(object):
                 except:
                     sqla.session.rollback()
                     continue
+            
+            if attachment.owner != _content_owner:
+                continue
 
             if current_user.no_images:
                 link_html = """<a href="/static/uploads/%s" target="_blank">View Attachment.%s (%sKB)</a>""" % (quote(attachment.path.encode('utf-8')), attachment.extension, int(float(attachment.size_in_bytes)/1024))

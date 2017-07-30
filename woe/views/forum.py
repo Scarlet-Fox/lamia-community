@@ -575,7 +575,7 @@ def topic_posts(slug):
 
                 try:
                     signature = random.choice(signatures)
-                    parsed_post["signature"] = clean_html_parser.parse(signature.html)
+                    parsed_post["signature"] = clean_html_parser.parse(signature.html, _object=signature)
                     parsed_post["signature_id"] = signature.id
                 except IndexError:
                     parsed_post["signature"] = False
@@ -652,7 +652,7 @@ def topic_posts(slug):
         #         pass
 
         parsed_posts.append(parsed_post)
-
+    
     return app.jsonify(posts=parsed_posts, count=post_count)
 
 @app.route('/t/<slug>/edit-post', methods=['POST'])
@@ -1466,7 +1466,7 @@ def index():
     blog_entry_count = sqla.session.query(sqlm.BlogEntry).count()
     status_update_count = sqla.session.query(sqlm.StatusUpdate).count()
     status_comments_count = sqla.session.query(sqlm.StatusComment).count()
-    
+        
     render = render_template("index.jade", page_title="Casual Anime", meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
         sections=sections, sub_categories=sub_categories,announcements=announcements,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,

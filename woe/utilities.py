@@ -390,6 +390,10 @@ def number_format(value, tsep=',', dsep='.'):
 
     return lhs + splt[:-1] + rhs
 
+@app.context_processor
+def inject_debug():
+    return dict(debug=app.debug)
+
 @app.template_filter('humanize_time')
 def humanize(time, format_str="MMM D YYYY, hh:mm a"):
     if time == None:
