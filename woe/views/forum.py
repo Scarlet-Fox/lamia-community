@@ -1234,7 +1234,8 @@ def category_topics(slug):
         if current_user.is_authenticated():
             if topic.last_seen_by.get(str(current_user._get_current_object().id)) != None:
                 if arrow.get(topic.recent_post.created).timestamp > topic.last_seen_by.get(str(current_user._get_current_object().id)):
-                    parsed_topic["updated"] = True
+                    if topic.recent_post.author != current_user._get_current_object():
+                        parsed_topic["updated"] = True
 
         if topic.label != None:
             try:
