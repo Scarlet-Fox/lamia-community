@@ -112,14 +112,10 @@
           };
         })(this));
         toolbarOptions = [
-          ['bold', 'italic', 'underline', 'strike'], ['code-block'], [
+          ['bold', 'italic', 'underline', 'strike'], [
             {
-              'list': 'ordered'
-            }, {
               'list': 'bullet'
-            }
-          ], [
-            {
+            }, {
               'indent': '-1'
             }, {
               'indent': '+1'

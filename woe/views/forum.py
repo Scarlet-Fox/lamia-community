@@ -417,6 +417,52 @@ def toggle_post_boop():
     sqla.session.commit()
     return app.jsonify(success=True)
 
+@app.route('/recent', methods=['GET'], defaults={'page': 1})
+@app.route('/recent/page/<page>', methods=['GET'])
+def recent_posts(page):
+    _starting = arrow.utcnow().replace(hours=-24).datetime.replace(tzinfo=None)
+    pagination = 20
+    
+    try:
+        page = int(page)
+    except:
+        page = 1
+    
+    recent_posts = sqla.session.query(sqlm.Post) \
+        .join(sqlm.Post.topic) \
+        .filter(sqlm.Topic.category.has(sqla.or_(
+                sqlm.Category.restricted==False
+            ))) \
+        .filter(sqlm.Post.created > _starting) \
+        .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+        .order_by(sqla.desc(sqlm.Post.created)) \
+        [(page-1)*pagination:page*pagination]
+        
+    recent_posts_count = sqla.session.query(sqlm.Post) \
+        .join(sqlm.Post.topic) \
+        .filter(sqlm.Topic.category.has(sqla.or_(
+                sqlm.Category.restricted==False
+            ))) \
+        .filter(sqlm.Post.created > _starting) \
+        .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
+        .order_by(sqla.desc(sqlm.Post.created)).count()
+        
+    pages = int(math.ceil(float(recent_posts_count)/float(pagination)))
+    if pages > 10:
+        pages = 10
+
+    pages = [p+1 for p in range(pages)]
+    
+    clean_html_parser = ForumPostParser()    
+    for post in recent_posts:
+        post.preview = unicode(BeautifulSoup(clean_html_parser.parse(post.html, _object=post)[:900]))+"..."
+    
+    return render_template("forum/recent_posts.jade",
+        page_title="Recent Posts - Casual Anime",
+        posts=recent_posts,
+        pages=pages,
+        page=page)
+
 @app.route('/t/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
     start = time.time()

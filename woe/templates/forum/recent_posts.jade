@@ -1,0 +1,47 @@
+{% extends "base.jade" %}
+
+{% block content %}
+.row
+  .col-sm-12
+    ul.list-group
+      li.list-group-item.section-header 
+        h1.breadcrumb-h1 Latest Posts
+      li.list-group-item
+        for post in posts
+          .row
+            .col-sm-12.blog-listing-info              
+              .media-left 
+                a(href="{{url_for('view_profile', login_name=post.author.login_name)}}")
+                  img.avatar-mini(src=post.author.get_avatar_url("60"), width=post.author.avatar_60_x, height=post.author.avatar_60_y)
+              .media-body
+                .blog-title
+                  a(href="/t/{{post.topic.slug}}/page/1/post/{{post.id}}")= post.topic.title
+                div
+                  | by&nbsp;
+                  a.hover_user(href="{{url_for('view_profile', login_name=post.author.login_name)}}") {{post.author.display_name}}
+                div= post.created|humanize_time
+          .row
+            .col-sm-12
+              div!= post.preview
+              br
+          a.btn.btn-xs.btn-primary(href="/t/{{post.topic.slug}}/page/1/post/{{post.id}}") View Post
+          hr
+        li.list-group-item
+          center
+            ul.pagination
+              for page_link in pages
+                if page_link == page
+                  li.active
+                    a(href="/recent/page/{{page_link}}")= page_link
+                else
+                  li
+                    a(href="/recent/page/{{page_link}}")= page_link
+{% endblock %}
+
+{% block script %}
+script(type="text/javascript").
+  $(document).ready(function(){ 
+    $('#recent-li').addClass('active');
+    window.addExtraHTML(".list-group-item")
+  });
+{% endblock %}

@@ -66,9 +66,7 @@ $ ->
       
       toolbarOptions = [
         ['bold', 'italic', 'underline', 'strike'],
-        ['code-block'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        [{ 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
         [{ 'font': ["regular", "caption", "caviar", "comic", "monotype", "monterrey", "opensans"] }],
         [{ 'color': [] },],
