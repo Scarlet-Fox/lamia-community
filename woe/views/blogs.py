@@ -46,7 +46,8 @@ def blogs_index(page):
             .filter(sqlm.BlogEntry.draft.isnot(True)) \
             .filter(sqlm.BlogEntry.published.isnot(None)) \
             .filter(sqla.or_(
-                sqlm.Blog.privacy_setting == "all"
+                sqlm.Blog.privacy_setting == "all",
+                sqlm.Blog.privacy_setting == "members"
             )) \
             .order_by(sqla.desc(sqlm.BlogEntry.published))[minimum:maximum]
         count = sqla.session.query(sqlm.Blog) \
