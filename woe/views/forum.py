@@ -1316,7 +1316,7 @@ def category_topics(slug):
                 .order_by(sqlm.Post.created) \
                 [0]
             clean_html_parser = ForumPostParser()
-            parsed_topic["preview"] = unicode(get_preview(first_post.html, 100))
+            parsed_topic["preview"] = unicode(get_preview(first_post.html, 125))
         except:
             sqla.session.rollback()
             parsed_topic["preview"] = ""
