@@ -130,7 +130,7 @@ body(role='document')
                   li.notification-li
                     a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
             span      
-              a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
+              a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")                
               ul.dropdown-menu(role='menu')
                 li
                   if current_user.navbar_top
@@ -165,7 +165,9 @@ body(role='document')
                 li.divider
                 li
                   a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
-            
+            span      
+                a.to-bottom.glyphicon.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', role='button', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
+
             button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
               span.sr-only Toggle navigation
               span.icon-bar
@@ -187,6 +189,8 @@ body(role='document')
                 a(href='/') Forum
               li#blog-li
                 a(href='/blogs') Blogs
+              li#recent-li
+                a(href='/recent') New Posts
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                   | Community 
@@ -389,7 +393,8 @@ body(role='document')
                 li.divider
                 li
                   a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
-            
+            span      
+                a.to-bottom.glyphicon.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', role='button', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
             button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
               span.sr-only Toggle navigation
               span.icon-bar
@@ -411,6 +416,8 @@ body(role='document')
                 a(href='/') Forum
               li#blog-li
                 a(href='/blogs') Blogs
+              li#recent-li
+                a(href='/recent') New Posts
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                   | Community 

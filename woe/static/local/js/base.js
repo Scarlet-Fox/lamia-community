@@ -17,6 +17,10 @@
       e.preventDefault();
       return window.scrollTo(0, 0);
     });
+    $(".to-bottom").click(function(e) {
+      e.preventDefault();
+      return window.scrollTo(0, document.body.scrollHeight);
+    });
     $(".go-to-profile").click(function(e) {
       if (window.logged_in) {
         return window.location = "/member/" + window.woe_is_me;

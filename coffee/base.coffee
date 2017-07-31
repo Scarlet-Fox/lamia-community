@@ -12,6 +12,10 @@ $ ->
     e.preventDefault()
     window.scrollTo 0, 0
 
+  $(".to-bottom").click (e) ->
+    e.preventDefault()
+    window.scrollTo 0, document.body.scrollHeight
+
   $(".go-to-profile").click (e) ->
     if window.logged_in
       window.location = "/member/"+window.woe_is_me
