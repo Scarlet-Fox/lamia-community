@@ -68,7 +68,7 @@ $ ->
         ['bold', 'italic', 'underline', 'strike'],
         [{ 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'font': ["regular", "caption", "caviar", "comic", "monotype", "monterrey", "opensans"] }],
+        [{ 'font': ["regular", "caption", "caviar", "comic", "monotype", "monterrey", "opensans", "zinniaseed"] }],
         [{ 'color': [] },],
         [{ 'align': [] }],
         ['link'],
@@ -76,7 +76,7 @@ $ ->
       ]
       
       Font = Quill.import('formats/font')
-      Font.whitelist = ['regular', 'caption', 'caviar', 'comic', 'monotype', 'monterrey', 'opensans']
+      Font.whitelist = ['regular', 'caption', 'caviar', 'comic', 'monotype', 'monterrey', 'opensans', 'zinniaseed']
       Quill.register(Font, true);
       
       Parchment = Quill.import('parchment')

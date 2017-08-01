@@ -139,6 +139,16 @@
     font-style: normal;
 }
 @font-face {
+    font-family: 'zinniaseed_regular';
+    src: url('/static/assets/webfont/zinniaseed_regular/Zinniaseed-Regular.eot');
+    src: url('/static/assets/webfont/zinniaseed_regular/Zinniaseed-Regular.eot?#iefix') format('embedded-opentype'),
+         url('/static/assets/webfont/zinniaseed_regular/Zinniaseed-Regular.woff') format('woff'),
+         url('/static/assets/webfont/zinniaseed_regular/Zinniaseed-Regular.ttf') format('truetype'),
+         url('/static/assets/webfont/zinniaseed_regular/Zinniaseed-Regular.svg#comic_reliefregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
     font-family: 'monterrey';
     src: url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.eot');
     src: url('/static/assets/webfont/monterrey/webfontkit-20150620-091638/monterrey-regular-webfont.eot?#iefix') format('embedded-opentype'),
@@ -1026,6 +1036,23 @@ h1.breadcrumb-h1 {
 }
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=monterrey]::before {
   font-family: 'monterrey';
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=zinniaseed]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=zinniaseed]::before {
+  content: 'Zinniaseed';
+}
+.ql-editor .ql-font-zinniaseed {
+  font-family: 'zinniaseed_regular';
+  font-size: 200%;
+}
+.ql-font-zinniaseed {
+  font-family: 'zinniaseed_regular';
+  font-size: 200%;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=zinniaseed]::before {
+  font-family: 'zinniaseed_regular';
+  font-size: 200%;
 }
 
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=opensans]::before,
