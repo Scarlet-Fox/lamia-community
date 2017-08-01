@@ -1045,14 +1045,17 @@ h1.breadcrumb-h1 {
 .ql-editor .ql-font-zinniaseed {
   font-family: 'zinniaseed_regular';
   font-size: 200%;
+  font-weight: 600;
 }
 .ql-font-zinniaseed {
   font-family: 'zinniaseed_regular';
   font-size: 200%;
+  font-weight: 600;
 }
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=zinniaseed]::before {
   font-family: 'zinniaseed_regular';
   font-size: 200%;
+  font-weight: 600;
 }
 
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=opensans]::before,
