@@ -547,11 +547,14 @@ def create_attachment():
         
         if orientation == '3':
             image.rotate(180)
+            image.orientation = 'undefined'
         elif orientation == '6':
             image.rotate(90)
+            image.orientation = 'undefined'
         elif orientation == '8':
             image.rotate(270)
-        
+            image.orientation = 'undefined'
+
         img_bin = image.make_blob()
         img_hash = hashlib.sha512(img_bin).hexdigest()
 
