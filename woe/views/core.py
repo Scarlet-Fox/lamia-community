@@ -556,13 +556,13 @@ def create_attachment():
             image.orientation = 'undefined'
 
         img_bin = image.make_blob()
-        img_hash = hashlib.sha512(img_bin).hexdigest()
+        # img_hash = hashlib.sha512(img_bin).hexdigest()
 
-        try:
-            attach = sqla.session.query(sqlm.Attachment).filter_by(file_hash=img_hash)[0]
-            return app.jsonify(attachment=str(attach.id), xsize=attach.x_size, ysize=attach.y_size)
-        except:
-            pass
+        # try:
+        #     attach = sqla.session.query(sqlm.Attachment).filter_by(file_hash=img_hash)[0]
+        #     return app.jsonify(attachment=str(attach.id), xsize=attach.x_size, ysize=attach.y_size)
+        # except:
+        #     pass
 
         time_snapshot = time.time()
         attach = sqlm.Attachment()
@@ -574,7 +574,7 @@ def create_attachment():
         attach.owner = current_user._get_current_object()
         attach.alt = filename
         attach.created_date = arrow.utcnow().datetime
-        attach.file_hash = img_hash
+        attach.file_hash = "disabled"
         attach.linked = False
         upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time_snapshot)+"_"+str(current_user.id)+filename)
         attach.path = str(time_snapshot)+"_"+str(current_user.id)+filename
