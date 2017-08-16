@@ -57,6 +57,7 @@ $ ->
       socket.on "event", (data) ->
         if data.post?
           if topic.page == topic.max_pages
+            data.post._is_logged_in = true
             $("#post-container").append topic.postHTML data.post
             window.addExtraHTML $("#post-"+data.post._id)
           else

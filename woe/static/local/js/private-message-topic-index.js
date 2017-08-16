@@ -74,6 +74,7 @@
         socket.on("event", function(data) {
           if (data.post != null) {
             if (topic.page === topic.max_pages) {
+              data.post._is_logged_in = true;
               $("#post-container").append(topic.postHTML(data.post));
               return window.addExtraHTML($("#post-" + data.post._id));
             } else {
