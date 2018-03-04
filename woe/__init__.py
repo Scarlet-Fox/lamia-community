@@ -1,7 +1,6 @@
 try:
     from psycopg2cffi import compat
     compat.register()
-    print "I like to run violently with scissors in my hand."
 except ImportError:
     pass
 
