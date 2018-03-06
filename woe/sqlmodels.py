@@ -1156,6 +1156,44 @@ blogcomment_boop_table = db.Table('blog_comment_boops', db.metadata,
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
         name="fk_boop_blogcomment_user", ondelete="CASCADE"), index=True))
 
+############################################################
+# Poll Models
+############################################################
+
+class PollVote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    voter_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_pollvote_voter", ondelete="CASCADE"), index=True)
+    voter = db.relationship("User", foreign_keys="PollVote.voter_id")
+        
+        
+    poll_id = db.Column(db.Integer, db.ForeignKey('poll.id',
+        name="fk_pollvote_poll", ondelete="CASCADE"), index=True)
+    poll = db.relationship("Poll", foreign_keys="PollVote.poll_id")
+        
+    created = db.Column(db.DateTime, index=True)
+        
+    __table_args__ = (db.UniqueConstraint('voter_id', 'poll_id', name='unique_poll_voter'),)
+
+class Poll(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
+        name="fk_poll_topic", ondelete="CASCADE"), index=True)
+    topic = db.relationship("Topic", foreign_keys="Poll.topic_id", cascade="delete")
+    
+    end_date = db.Column(db.DateTime, nullable=True)
+    votes_private_until_end = db.Column(db.Boolean, default=False)
+    
+    users_can_pick = db.Column(db.Integer)
+    can_change_vote = db.Column(db.Boolean, default=True)
+    votes_are_public = db.Column(db.Boolean, default=True)
+
+############################################################
+# Blog Models
+############################################################
+
 class BlogComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     blog_entry_id = db.Column(db.Integer, db.ForeignKey('blog_entry.id',
