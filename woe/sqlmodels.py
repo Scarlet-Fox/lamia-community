@@ -1166,18 +1166,29 @@ class PollVote(db.Model):
     voter_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_pollvote_voter", ondelete="CASCADE"), index=True)
     voter = db.relationship("User", foreign_keys="PollVote.voter_id")
-        
-        
+    
+    option_id = db.Column(db.Integer, db.ForeignKey('poll_option.id',
+        name="fk_pollvote_option", ondelete="CASCADE"), index=True)
+    option = db.relationship("PollOption", foreign_keys="PollVote.option_id", backref="option_votes")
+    
     poll_id = db.Column(db.Integer, db.ForeignKey('poll.id',
         name="fk_pollvote_poll", ondelete="CASCADE"), index=True)
     poll = db.relationship("Poll", foreign_keys="PollVote.poll_id")
-        
+    
     created = db.Column(db.DateTime, index=True)
+    
+class PollOption(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
         
-    __table_args__ = (db.UniqueConstraint('voter_id', 'poll_id', name='unique_poll_voter'),)
+    poll_id = db.Column(db.Integer, db.ForeignKey('poll.id',
+        name="fk_polloption_poll", ondelete="CASCADE"), index=True)
+    poll = db.relationship("Poll", foreign_keys="PollOption.poll_id")
+    
+    option_name = db.Column(db.String, default="")
 
 class Poll(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.String, default="")
 
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
         name="fk_poll_topic", ondelete="CASCADE"), index=True)

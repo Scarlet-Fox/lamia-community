@@ -809,6 +809,56 @@ def get_post_html_in_topic(slug, post):
 
     return app.jsonify(content=post.html, author=post.author.display_name)
 
+@app.route('/t/<slug>/polls', methods=['POST'])
+def topic_poll(slug):
+    try:
+        topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+
+    if current_user._get_current_object() in topic.banned:
+        return abort(403)
+        
+    if topic.category.restricted == True and not current_user.is_admin and not current_user in topic.category.allowed_users:
+        return abort(404)
+
+    if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
+        return abort(404)
+    
+    polls = sqla.session.query(sqlm.Poll).filter_by(topic=topic)
+    polls_response = []
+    
+    for poll in polls:
+        poll_dictionary = {}
+        poll_dictionary["show_results"] = False
+        poll_dictionary["closed"] = False
+        poll_dictionary["private_names"] = False
+        poll_dictionary["options"] = {}
+        
+        if poll.end_date != None and arrow.utcnow().datetime.replace(tzinfo=None) > poll.end_date:
+            poll_dictionary["closed"] = True
+            
+        if poll.votes_private_until_end:
+            if poll_dictionary["closed"] == True:
+                poll_dictionary["show_results"] = True
+            else:
+                poll_dictionary["show_results"] = False
+        
+        if not votes_are_public:
+            poll_dictionary["private_names"] = True
+        
+        poll_options = sqla.session.query(sqlm.PollOption).filter_by(poll=poll)
+        for option in poll_options:
+            poll_votes = option.option_votes
+            poll_dictionary["options"][option.option_name] = []
+            
+            for vote in poll_votes:
+                if poll_dictionary["private_names"]:
+                    poll_dictionary["options"][option.option_name].append("Anonymouse")
+                else:
+                    poll_dictionary["options"][option.option_name].append(voter.display_name)
+            
+
 @app.route('/t/<slug>', methods=['GET'], defaults={'page': 1, 'post': ""})
 @app.route('/t/<slug>/page/<page>', methods=['GET'], defaults={'post': ""})
 @app.route('/t/<slug>/page/<page>/post/<post>', methods=['GET'])
@@ -955,7 +1005,7 @@ def topic_index(slug, page, post):
     rp_topic = "false"
     if topic.category.slug in ["roleplays", "scenarios"]:
         rp_topic = "true"
-    
+        
     return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
