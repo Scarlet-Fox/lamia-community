@@ -12,13 +12,13 @@ ul.list-group
         b You have no signatures. Would you like to create one?
         br
         br
-        a.btn.btn-default.btn-primary(href="/member/{{profile.login_name}}/new-signature") Create a Signature
+        a.btn.btn-default.btn-primary(href="/member/{{profile.my_url}}/new-signature") Create a Signature
       else
         b {{profile.display_name}} has no signatures.
   else
     if current_user == profile
       li.list-group-item
-        a.btn.btn-default.btn-primary(href="/member/{{profile.login_name}}/new-signature") Create a Signature
+        a.btn.btn-default.btn-primary(href="/member/{{profile.my_url}}/new-signature") Create a Signature
     for signature in signatures
       li.list-group-item.section-header(style="margin-top: 10px;")= signature.name
       li.list-group-item
@@ -27,11 +27,11 @@ ul.list-group
           center
             br
             if signature.active
-              a.btn.btn-default.btn-xs.btn-primary.post-link(href="/member/{{profile.login_name}}/toggle-active-signature/{{signature.id}}") Make Inactive
+              a.btn.btn-default.btn-xs.btn-primary.post-link(href="/member/{{profile.my_url}}/toggle-active-signature/{{signature.id}}") Make Inactive
             else
-              a.btn.btn-default.btn-xs.post-link(href="/member/{{profile.login_name}}/toggle-active-signature/{{signature.id}}") Make Active
-            a.btn.btn-default.btn-xs(href="/member/{{profile.login_name}}/edit-signature/{{signature.id}}") Edit
-            a.btn.btn-default.btn-xs.post-link(href="/member/{{profile.login_name}}/delete-signature/{{signature.id}}") Delete
+              a.btn.btn-default.btn-xs.post-link(href="/member/{{profile.my_url}}/toggle-active-signature/{{signature.id}}") Make Active
+            a.btn.btn-default.btn-xs(href="/member/{{profile.my_url}}/edit-signature/{{signature.id}}") Edit
+            a.btn.btn-default.btn-xs.post-link(href="/member/{{profile.my_url}}/delete-signature/{{signature.id}}") Delete
 {% endblock %}
 
 {% block profile_sidebar %}

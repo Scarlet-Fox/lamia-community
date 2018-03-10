@@ -225,7 +225,7 @@ def validate_user(login_name):
             .filter(sqlm.User.hidden_last_seen > arrow.utcnow().replace(hours=-24).datetime.replace(tzinfo=None)) \
             .all(),
         category="new_member",
-        url="/member/"+unicode(user.login_name),
+        url="/member/"+unicode(user.my_url),
         title="%s has joined the forum! Greet them!" % (unicode(user.display_name),),
         description="",
         content=user,
@@ -295,7 +295,7 @@ def delete_signature(login_name, id):
 
     sqla.session.query(sqlm.Signature).filter_by(id=id).delete()
 
-    return app.jsonify(url="/member/"+unicode(user.login_name)+"/signatures")
+    return app.jsonify(url="/member/"+unicode(user.my_url)+"/signatures")
 
 @app.route('/member/<login_name>/toggle-active-signature/<id>', methods=['POST'])
 @login_required
@@ -317,7 +317,7 @@ def toggle_active_signature(login_name, id):
     sqla.session.add(signature)
     sqla.session.commit()
 
-    return app.jsonify(url="/member/"+unicode(user.login_name)+"/signatures")
+    return app.jsonify(url="/member/"+unicode(user.my_url)+"/signatures")
 
 @app.route('/member/<login_name>/edit-signature/<id>', methods=['GET', 'POST'])
 @login_required
@@ -343,7 +343,7 @@ def edit_signature(login_name, id):
         signature.active = form.active.data
         sqla.session.add(signature)
         sqla.session.commit()
-        return redirect("/member/"+unicode(user.login_name)+"/signatures")
+        return redirect("/member/"+unicode(user.my_url)+"/signatures")
     else:
         form.active.data = signature.active
         form.signature.data = signature.html
@@ -374,7 +374,7 @@ def new_signature(login_name):
         signature.created = arrow.utcnow().datetime.replace(tzinfo=None)
         sqla.session.add(signature)
         sqla.session.commit()
-        return redirect("/member/"+unicode(user.login_name)+"/signatures")
+        return redirect("/member/"+unicode(user.my_url)+"/signatures")
 
     return render_template("profile/new_signature.jade", form=form, profile=user, page_title="New Signature - %%GENERIC SITENAME%%")
 
@@ -686,7 +686,7 @@ def toggle_ignore_user(login_name):
         sqla.session.add(ignore_setting)
         sqla.session.commit()
 
-    return app.jsonify(url="/member/"+unicode(login_name))
+    return app.jsonify(url="/member/"+unicode(my_url))
 
 @app.route('/member/toggle-sounds', methods=['POST'])
 @login_required
@@ -746,7 +746,7 @@ def toggle_follow_user(login_name):
           author=current_user
           )
 
-    return app.jsonify(url="/member/"+unicode(login_name))
+    return app.jsonify(url="/member/"+unicode(my_url))
 
 @app.route('/member/<login_name>/change-avatar-title', methods=['GET', 'POST'])
 @login_required
@@ -789,7 +789,7 @@ def change_avatar_or_title(login_name):
         user.title = form.title.data
         sqla.session.add(user)
         sqla.session.commit()
-        return redirect("/member/"+user.login_name)
+        return redirect("/member/"+user.my_url)
     else:
         filename = None
         form.title.data = user.title
@@ -924,7 +924,7 @@ def remove_customizations_from_profile(login_name):
     sqla.session.add(user)
     sqla.session.commit()
 
-    return app.jsonify(url="/member/"+user.login_name+"/customize-profile")
+    return app.jsonify(url="/member/"+user.my_url+"/customize-profile")
 
 @app.route('/member/<login_name>/customize-profile', methods=['GET', 'POST'])
 @login_required
@@ -1054,7 +1054,7 @@ def change_user_settings(login_name):
         user.minimum_time_between_emails = form.minimum_time_between_emails.data
         sqla.session.add(user)
         sqla.session.commit()
-        return redirect("/member/"+user.login_name)
+        return redirect("/member/"+user.my_url)
     else:
         form.no_images.data = user.no_images
         form.time_zone.data = user.time_zone
@@ -1132,7 +1132,7 @@ def change_display_name_password(login_name):
         sqla.session.add(user)
         sqla.session.commit()
 
-        return redirect("/member/"+user.login_name)
+        return redirect("/member/"+user.my_url)
     else:
         form.display_name.data = user.display_name
         form.email.data = user.email_address
@@ -1186,4 +1186,4 @@ def remove_avatar(login_name):
     user.avatar_60_x, user.avatar_60_y = (60,60)
     sqla.session.add(user)
     sqla.session.commit()
-    return redirect("/member/"+user.login_name)
+    return redirect("/member/"+user.my_url)

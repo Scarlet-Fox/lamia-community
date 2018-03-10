@@ -811,7 +811,7 @@ def load_user(login_name):
         try:
             profile = sqla.session.query(sqlm.User).filter_by(login_name=request.path.split("/")[2])[0]
             user.last_seen_at = "Viewing user %s" % unicode(profile.display_name)
-            user.last_at_url = "/member/"+unicode(profile.login_name)
+            user.last_at_url = "/member/"+unicode(profile.my_url)
         except:
             pass
     elif request.path == ("/characters"):
@@ -968,7 +968,7 @@ def real_confirm_register(token):
             .filter(sqlm.User.hidden_last_seen > arrow.utcnow().replace(hours=-24).datetime.replace(tzinfo=None)) \
             .all(),
         category="new_member",
-        url="/member/"+unicode(user.login_name),
+        url="/member/"+unicode(user.my_url),
         title="%s has joined the forum! Greet them!" % (unicode(user.display_name),),
         description="",
         content=user,
@@ -1097,7 +1097,7 @@ def register():
             broadcast(
                 to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
                 category="mod",
-                url="/member/"+unicode(new_user.login_name),
+                url="/member/"+unicode(new_user.my_url),
                 title="%s has joined the forum. Please review!" % (unicode(new_user.display_name),),
                 description="",
                 content=new_user,
@@ -1107,7 +1107,7 @@ def register():
             broadcast(
                 to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
                 category="mod",
-                url="/member/"+unicode(new_user.login_name),
+                url="/member/"+unicode(new_user.my_url),
                 title="%s has joined the forum. MANUAL VALIDATION IS ON! So, review and validate." % (unicode(new_user.display_name),),
                 description="",
                 content=new_user,
@@ -1440,7 +1440,7 @@ def member_list_api():
                                                                         user.avatar_60_x,
                                                                         user.avatar_60_y,
                                                                         extra,
-                                                                        unicode(user.login_name),
+                                                                        unicode(user.my_url),
                                                                         unicode(user.display_name)),
                 humanize_time(user.joined),
                 human_last_seen,

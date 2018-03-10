@@ -34,7 +34,7 @@ ul.list-group
             .media-body
               .float-right
                 | &nbsp;&nbsp;&nbsp;
-                a.btn.btn-default.post-link(href="/member/{{friend.user.login_name}}/friends/{{friend.friend.login_name}}/cancel") Cancel
+                a.btn.btn-default.post-link(href="/member/{{friend.user.my_url}}/friends/{{friend.friend.my_url}}/cancel") Cancel
         hr
       for friend in incoming_friend_requests
         .row
@@ -46,9 +46,9 @@ ul.list-group
               a(href="{{url_for('view_profile', login_name=friend.user.login_name)}}")= friend.user.display_name
               .float-right
                 | &nbsp;&nbsp;&nbsp;
-                a.btn.btn-default.post-link(href="/member/{{friend.user.login_name}}/friends/{{friend.friend.login_name}}/approve") Approve
+                a.btn.btn-default.post-link(href="/member/{{friend.user.my_url}}/friends/{{friend.friend.my_url}}/approve") Approve
                 | &nbsp;&nbsp;&nbsp;
-                a.btn.btn-default.post-link(href="/member/{{friend.user.login_name}}/friends/{{friend.friend.login_name}}/deny") Deny
+                a.btn.btn-default.post-link(href="/member/{{friend.user.my_url}}/friends/{{friend.friend.my_url}}/deny") Deny
         hr
   if profile.friends():
     .row(style="margin-top: 10px;")

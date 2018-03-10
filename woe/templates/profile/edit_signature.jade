@@ -4,7 +4,7 @@
 ul.list-group
   li.list-group-item.section-header Edit Signature
   li.list-group-item
-    form#new-signature-form(method="post", action="/member/{{profile.login_name}}/edit-signature/{{signature.id}}")
+    form#new-signature-form(method="post", action="/member/{{profile.my_url}}/edit-signature/{{signature.id}}")
       {{ form_errors(form) }}
       .form-group
         {{ form.name.label(class="control-label") }}
@@ -20,7 +20,7 @@ ul.list-group
         button#commit-edit(type="submit").btn.btn-default Submit
         &nbsp;
         &nbsp;
-        a#cancel-edit(href="/member/{{profile.login_name}}/signatures").btn.btn-default Cancel
+        a#cancel-edit(href="/member/{{profile.my_url}}/signatures").btn.btn-default Cancel
 {% endblock %}
 
 {% block profile_sidebar %}

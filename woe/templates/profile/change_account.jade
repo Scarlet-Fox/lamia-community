@@ -6,7 +6,7 @@ ul.list-group
   li.list-group-item
     .row
       .col-lg-6.col-md-6.col-sm-8
-        form(action="/member/{{profile.login_name}}/change-account", method="post")
+        form(action="/member/{{profile.my_url}}/change-account", method="post")
           {{ form_errors(form) }}
           .form-group
             {{ form.current_password.label }}*

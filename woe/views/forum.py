@@ -1418,9 +1418,12 @@ def index():
                                 recent_post = category_child.recent_post
                         except:
                             pass
-                            
-                    category.recent_post = recent_post
-                    category.recent_topic = recent_post.topic
+                    
+                    try:
+                        category.recent_post = recent_post
+                        category.recent_topic = recent_post.topic
+                    except:
+                        pass
                 
                 # A simple hack.
                 try:

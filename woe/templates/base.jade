@@ -159,12 +159,12 @@ body(role='document')
                       span &nbsp;&nbsp;&nbsp;Hide Images
                 li.divider
                 li
-                  a(href='/member/{{current_user.login_name}}/change-account') Name &amp; Password
+                  a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
                 li
-                  a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
+                  a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
                 li.divider
                 li
-                  a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
+                  a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
             span      
                 a.to-bottom.glyphicon.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', role='button', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
 
@@ -230,7 +230,7 @@ body(role='document')
                 li.hidden-sm.hidden-md.hidden-lg
                   a(href='/messages') Messages
                 li.hidden-sm.hidden-md.hidden-lg
-                  a(href='/member/{{current_user.login_name}}/change-settings') Settings
+                  a(href='/member/{{current_user.my_url}}/change-settings') Settings
                 li.hidden-sm.hidden-md.hidden-lg
                   a(href='/member/{{current_user.login_name}}') Profile
                 li.hidden-sm.hidden-md.hidden-lg
@@ -286,12 +286,12 @@ body(role='document')
                             span &nbsp;&nbsp;&nbsp;Hide Images
                       li.divider
                       li
-                        a(href='/member/{{current_user.login_name}}/change-account') Name &amp; Password
+                        a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
                       li
-                        a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
+                        a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
                       li.divider
                       li
-                        a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
+                        a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
               else
                 li#sign-in-li.hidden-xs
                   a(href='/sign-in')
@@ -389,12 +389,12 @@ body(role='document')
                       span &nbsp;&nbsp;&nbsp;Hide Images
                 li.divider
                 li
-                  a(href='/member/{{current_user.login_name}}/change-account') Name &amp; Password
+                  a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
                 li
-                  a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
+                  a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
                 li.divider
                 li
-                  a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
+                  a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
             span      
                 a.to-bottom.glyphicon.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', role='button', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
             button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
@@ -459,7 +459,7 @@ body(role='document')
                 li.hidden-sm.hidden-md.hidden-lg
                   a(href='/messages') Messages
                 li.hidden-sm.hidden-md.hidden-lg
-                  a(href='/member/{{current_user.login_name}}/change-settings') Settings
+                  a(href='/member/{{current_user.my_url}}/change-settings') Settings
                 li.hidden-sm.hidden-md.hidden-lg
                   a(href='/member/{{current_user.login_name}}') Profile
                 li.hidden-sm.hidden-md.hidden-lg
@@ -479,7 +479,7 @@ body(role='document')
                       li
                         a(href='/messages') Messages
                       li
-                        a(href='/member/{{current_user.login_name}}/change-settings') Settings
+                        a(href='/member/{{current_user.my_url}}/change-settings') Settings
                       li
                         a(href='/member/{{current_user.login_name}}') Profile
                       li.divider
@@ -517,12 +517,12 @@ body(role='document')
                             span &nbsp;&nbsp;&nbsp;Hide Images
                       li.divider
                       li
-                        a(href='/member/{{current_user.login_name}}/change-account') Name &amp; Password
+                        a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
                       li
-                        a(href='/member/{{current_user.login_name}}/change-avatar-title') Avatar &amp; Title
+                        a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
                       li.divider
                       li
-                        a(href='/member/{{current_user.login_name}}/change-settings') Other Settings
+                        a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
               else
                 li#sign-in-li.hidden-xs
                   a(href='/sign-in')
@@ -632,7 +632,7 @@ body(role='document')
                         li
                           a.post-link(href="/change-theme/{{theme.id}}")= theme.name
                   li(role="presentation")
-                    a.text-muted.text-hide-overflow(href="/member/{{current_user.login_name}}/change-account") 
+                    a.text-muted.text-hide-overflow(href="/member/{{current_user.my_url}}/change-account") 
                       span.glyphicon.glyphicon-wrench
                       | &nbsp;&nbsp;&nbsp;&nbsp;Account
             .col-sm-3

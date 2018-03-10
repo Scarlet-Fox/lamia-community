@@ -8,7 +8,7 @@
       li.list-group-item
         .row
           .col-lg-6.col-md-6.col-sm-8
-            form(action="/member/{{profile.login_name}}/customize-profile", method="post", enctype="multipart/form-data")
+            form(action="/member/{{profile.my_url}}/customize-profile", method="post", enctype="multipart/form-data")
               {{ form_errors(form) }}
               .form-group
                 {{ form.banner.label }}
@@ -36,7 +36,7 @@
                 {{ form.use_text_shadow(class="form-control") }}
               button(type="submit").btn.btn-default Submit
               &nbsp;
-              a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/remove-customizations-profile") Remove Customizations
+              a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/remove-customizations-profile") Remove Customizations
       li.list-group-item
         p If you abuse your customizations, they will be removed. If you post something terrible, we will ban you without a moment's notice. There are no appeals to our bans and there is no arbitration process. Use responsibly. If you want to know if something is acceptable, contact Zoop. :)
     ul.list-group

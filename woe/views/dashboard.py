@@ -114,7 +114,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         "member_name": author.login_name,
         "member_pk": unicode(author.id),
         "member_disp_name": author.display_name,
-        "author_url": "/member/"+author.login_name,
+        "author_url": "/member/"+author.my_url,
         "time": humanize_time(now.datetime),
         "url": url,
         "stamp": humanize_time(timestamp),

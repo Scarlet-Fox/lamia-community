@@ -11,7 +11,7 @@ style!= profile.get_custom_css()
       li.list-group-item.section-header.category-section-header 
         h1.breadcrumb-h1 {{profile.display_name}}'s Profile
         {% if current_user == profile or current_user.is_admin %}
-        a(href="/member/{{profile.login_name}}/change-avatar-title")
+        a(href="/member/{{profile.my_url}}/change-avatar-title")
           span.glyphicon.glyphicon-cog.float-right
         {% endif %}
       li.list-group-item
@@ -26,7 +26,7 @@ style!= profile.get_custom_css()
                 | {{role.pre_html+role.role+role.post_html}}
           if current_user.is_authenticated() and current_user.is_admin and not profile.validated
             center
-              a.btn.btn-warning.post-link(href="/member/{{profile.login_name}}/validate-user") Validate User
+              a.btn.btn-warning.post-link(href="/member/{{profile.my_url}}/validate-user") Validate User
               br
               br
           if current_user.is_authenticated() and current_user != profile and current_user not in profile.ignoring()
@@ -35,20 +35,20 @@ style!= profile.get_custom_css()
               .btn-group
                 a.btn.btn-default(href="/new-message/{{profile.login_name}}") PM
                 if current_user not in profile.followed_by()
-                  a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Follow
+                  a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/toggle-follow") Follow
                 else
-                  a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-follow") Unfollow
+                  a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/toggle-follow") Unfollow
                 if not current_user in profile.rejected_friends()
                   if current_user in profile.pending_friends() 
                     a.btn.btn-default.post-link(href="#") Waiting
                   elif current_user not in profile.friends()
-                    a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/request-friend") Friend Request
+                    a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/request-friend") Friend Request
                   else
-                    a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/un-friend") Unfriend
+                    a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/un-friend") Unfriend
                 if profile not in current_user.ignoring()
-                  a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Ignore
+                  a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/toggle-ignore") Ignore
                 else
-                  a.btn.btn-default.post-link(href="/member/{{profile.login_name}}/toggle-ignore") Unignore
+                  a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/toggle-ignore") Unignore
                 br
                 br
                 center
@@ -61,19 +61,19 @@ style!= profile.get_custom_css()
           li(role="presentation")
             a(href="/member/{{profile.login_name}}") About Me
           li(role="presentation")
-            a(href="/member/{{profile.login_name}}/friends") Friends
+            a(href="/member/{{profile.my_url}}/friends") Friends
           {% if current_user == profile or current_user.is_admin  %}
           li(role="presentation")
-            a(href="/member/{{profile.login_name}}/change-account") Account
+            a(href="/member/{{profile.my_url}}/change-account") Account
           {% endif %}
           if current_user == profile or current_user.is_admin
             li(role="presentation")
-              a(href="/member/{{profile.login_name}}/signatures") Signatures
+              a(href="/member/{{profile.my_url}}/signatures") Signatures
           if current_user == profile or current_user.is_admin
             li(role="presentation")
-              a(href="/member/{{profile.login_name}}/change-settings") Settings
+              a(href="/member/{{profile.my_url}}/change-settings") Settings
             li(role="presentation")
-              a(href="/member/{{profile.login_name}}/customize-profile") Customize
+              a(href="/member/{{profile.my_url}}/customize-profile") Customize
     {% block profile_sidebar %}
     if ask_me
       ul.list-group
@@ -267,13 +267,13 @@ script(type="text/javascript").
     $("#about-me-cog-icon").click(function(e) {
       e.preventDefault();
       if( editor_live != true ) {
-        var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.login_name}}/edit-profile", true);
+        var editor = new InlineEditor("#user-profile-about-me", "/member/{{profile.my_url}}/edit-profile", true);
         editor_live = true;
-        $.get("/member/{{profile.login_name}}/edit-profile", {}, function(data) {
+        $.get("/member/{{profile.my_url}}/edit-profile", {}, function(data) {
           editor.setElementHtml(data.content);
         });
         editor.onSave(function (html) {
-          $.post("/member/{{profile.login_name}}/edit-profile", {"about_me": html},function(data) {
+          $.post("/member/{{profile.my_url}}/edit-profile", {"about_me": html},function(data) {
             $("#user-profile-about-me").html(data.about_me);
             editor.destroyEditor();
           });
