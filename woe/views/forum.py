@@ -458,7 +458,7 @@ def recent_posts(page):
         post.preview = unicode(BeautifulSoup(clean_html_parser.parse(post.html, _object=post)[:900]))+"..."
     
     return render_template("forum/recent_posts.jade",
-        page_title="Recent Posts - Casual Anime",
+        page_title="Recent Posts - %%GENERIC SITENAME%%",
         posts=recent_posts,
         pages=pages,
         page=page)
@@ -990,7 +990,7 @@ def topic_index(slug, page, post):
         rp_topic = "false"
         if topic.category.slug in ["roleplays"]:
             rp_topic = "true"
-        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
+        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
 
     topic.view_count = topic.view_count + 1
     try:
@@ -1006,7 +1006,7 @@ def topic_index(slug, page, post):
     if topic.category.slug in ["roleplays", "scenarios"]:
         rp_topic = "true"
         
-    return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - Casual Anime" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
+    return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
@@ -1392,7 +1392,7 @@ def category_index(slug):
         .join(sqlm.Topic.label).group_by(sqlm.Label.label) \
         .order_by(sqla.desc(sqla.func.count(sqlm.Topic.id))).all()
 
-    return render_template("forum/category.jade", page_title="%s - Casual Anime" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
+    return render_template("forum/category.jade", page_title="%s - %%GENERIC SITENAME%%" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
 
 @app.route('/')
 def index():
@@ -1473,7 +1473,10 @@ def index():
                     category.recent_post = None
                     
                 categories[section].append(category)
-            
+        
+        if len(categories[section]) == 0:
+            del categories[section]
+            sections.remove(section)
 
     online_users = sqla.session.query(sqlm.User) \
         .filter(sqlm.User.hidden_last_seen > arrow.utcnow() \
@@ -1575,7 +1578,7 @@ def index():
     status_update_count = sqla.session.query(sqlm.StatusUpdate).count()
     status_comments_count = sqla.session.query(sqlm.StatusComment).count()
         
-    render = render_template("index.jade", page_title="Casual Anime", meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
+    render = render_template("index.jade", page_title="%%GENERIC SITENAME%%", meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
         sections=sections, sub_categories=sub_categories,announcements=announcements,
         categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets, birthday_list=birthday_list,

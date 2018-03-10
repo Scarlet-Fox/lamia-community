@@ -2,16 +2,16 @@
 
 {% block content %}
 if not current_user.is_authenticated()
-  .row
-    .col-md-12
-      ul.list-group
-        li.list-group-item
-          center
-            h4 Hello and welcome to Casual Anime!
-            p We are an online community devoted to members of the anime fandom that aren't hardcore otakus and don't feel like they have to be. Casual Anime is a welcoming, low-drama refuge from the negativity and chaos that are common in mega-sized communities.
-            p Our forum features <a href="/blogs" target="_blank">blogs</a>, <a href="/member/zoop" target="_blank">profile customization</a>, and <a href="/t/lamia-forum-our-custom-forum-software" target="_blank">a wealth of other features</a>. 
-            p 
-              strong If you would like to learn more about us and join the site, then <a href="/register" style="color: blue;" >click here to get started.</a>
+  //- .row
+  //-   .col-md-12
+  //-     ul.list-group
+  //-       li.list-group-item
+  //-         center
+  //-           h4 Hello and welcome to GENERIC SITENAME!
+  //-           p We are an online community devoted to members of the anime fandom that aren't hardcore otakus and don't feel like they have to be. GENERIC SITENAME is a welcoming, low-drama refuge from the negativity and chaos that are common in mega-sized communities.
+  //-           p Our forum features <a href="/blogs" target="_blank">blogs</a>, <a href="/member/zoop" target="_blank">profile customization</a>, and <a href="/t/lamia-forum-our-custom-forum-software" target="_blank">a wealth of other features</a>.
+  //-           p
+  //-             strong If you would like to learn more about us and join the site, then <a href="/register" style="color: blue;" >click here to get started.</a>
 .row
   .col-md-8
     {% for section in sections %}
@@ -72,53 +72,55 @@ if not current_user.is_authenticated()
         li.list-group-item
           center
             a.btn.btn-primary(href="/blogs", style="margin-bottom: 5px; margin-top: 5px;") Browse All Blogs
-    .row
-      .col-md-6
-        ul.list-group
-          li.list-group-item.section-header.sidebar-section-header New Topics
-          for t in recently_created_topics
-            li.list-group-item
-              .media-left
-                span.subcategory-listing-recent-image
-                  a(href="{{url_for('view_profile', login_name=t.author.login_name)}}")
-                    img(src="{{t.author.get_avatar_url("40")}}", width="{{t.author.avatar_40_x}}", height="{{t.author.avatar_40_y}}", class="avatar-mini")
-              .media-body
-                a(href="/t/{{t.slug}}")= t.title|truncate(40)
-                br
-                a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
-      .col-md-6
-        ul.list-group
-          li.list-group-item.section-header.sidebar-section-header Recently Replied to Topics
-          for t in recently_replied_topics
-            li.list-group-item
-              .media-left
-                span.subcategory-listing-recent-image
-                  a(href="{{url_for('view_profile', login_name=t.recent_post.author.login_name)}}")
-                    img(src="{{t.recent_post.author.get_avatar_url("40")}}", width="{{t.recent_post.author.avatar_40_x}}", height="{{t.recent_post.author.avatar_40_y}}", class="avatar-mini")
-              .media-body
-                a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title|truncate(40)
-                br
-                a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
-    .row
-      .col-md-12.hidden-sm.hidden-xs
-        ul.list-group
-          li.list-group-item.section-header.sidebar-section-header Twitter
-          li.list-group-item(style="padding-left: 10px; padding-right: 10px;")
-            .row
-              for tweet in tweets
-                .col-lg-4(style="padding: 10px;")
-                  a(href="https://twitter.com/CasualAnimeFans", target="_blank")
-                    span.text-muted @CasualAnimeFans&nbsp;&nbsp;&nbsp;
-                  if tweet.retweeted
-                    span.glyphicon.glyphicon-retweet.text-muted
-                    span.text-muted &nbsp;Retweeted
-                  p {{tweet.text|twittercleaner}}
-                  div
-                    a(href="https://twitter.com/CasualAnimeFans/status/{{tweet.id}}", target="_blank")
-                        span.text-muted {{tweet.time|humanize_time}}
-            center
-            .row 
-              center <a href="https://twitter.com/CasualAnimeFans" class="twitter-follow-button" data-lang="en" data-show-count="true">Follow @CasualAnimeFans</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+    if recently_created_topics and recently_replied_topics
+      .row
+        .col-md-6
+          ul.list-group
+            li.list-group-item.section-header.sidebar-section-header New Topics
+            for t in recently_created_topics
+              li.list-group-item
+                .media-left
+                  span.subcategory-listing-recent-image
+                    a(href="{{url_for('view_profile', login_name=t.author.login_name)}}")
+                      img(src="{{t.author.get_avatar_url("40")}}", width="{{t.author.avatar_40_x}}", height="{{t.author.avatar_40_y}}", class="avatar-mini")
+                .media-body
+                  a(href="/t/{{t.slug}}")= t.title|truncate(40)
+                  br
+                  a(href="/t/{{t.slug}}/page/1/post/last_seen") {{t.created|humanize_time}}
+        .col-md-6
+          ul.list-group
+            li.list-group-item.section-header.sidebar-section-header Recently Replied to Topics
+            for t in recently_replied_topics
+              li.list-group-item
+                .media-left
+                  span.subcategory-listing-recent-image
+                    a(href="{{url_for('view_profile', login_name=t.recent_post.author.login_name)}}")
+                      img(src="{{t.recent_post.author.get_avatar_url("40")}}", width="{{t.recent_post.author.avatar_40_x}}", height="{{t.recent_post.author.avatar_40_y}}", class="avatar-mini")
+                .media-body
+                  a(href="/t/{{t.slug}}/page/1/post/latest_post")= t.title|truncate(40)
+                  br
+                  a(href="/t/{{t.slug}}/page/1/post/latest_post") {{t.recent_post.created|humanize_time}}
+    if tweets
+      .row
+        .col-md-12.hidden-sm.hidden-xs
+          ul.list-group
+            li.list-group-item.section-header.sidebar-section-header Twitter
+            li.list-group-item(style="padding-left: 10px; padding-right: 10px;")
+              .row
+                for tweet in tweets
+                  .col-lg-4(style="padding: 10px;")
+                    a(href="https://twitter.com/CasualAnimeFans", target="_blank")
+                      span.text-muted @CasualAnimeFans&nbsp;&nbsp;&nbsp;
+                    if tweet.retweeted
+                      span.glyphicon.glyphicon-retweet.text-muted
+                      span.text-muted &nbsp;Retweeted
+                    p {{tweet.text|twittercleaner}}
+                    div
+                      a(href="https://twitter.com/CasualAnimeFans/status/{{tweet.id}}", target="_blank")
+                          span.text-muted {{tweet.time|humanize_time}}
+              center
+              .row 
+                center <a href="https://twitter.com/CasualAnimeFans" class="twitter-follow-button" data-lang="en" data-show-count="true">Follow @CasualAnimeFans</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
   .col-md-4
     if announcements
       ul.list-group
@@ -132,36 +134,36 @@ if not current_user.is_authenticated()
               strong
                 a(href="/t/{{announcement.slug}}")= announcement.title
               div= announcement.created|humanize_time("MMM D YYYY")
-    
-    ul.list-group
-      li.list-group-item.section-header.sidebar-section-header Newest Status Updates
-      {% for status in status_updates %}
-      li.list-group-item.front-page-status.sidebar-status-section
-        .media-left.subcategory-listing-recent-image
-          a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
-            img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
-        .media-body
-          a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
-          span &nbsp;says{% if not status.attached_to_user %}:{% endif %}
-            if status.attached_to_user
-              | &nbsp;to 
-              a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
-              |:
-          span.discuss 
-            a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
-          br
-          p.status-message {{status.message}}
-          span.status-reply-time 
-            a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
-      {% endfor %}
-      if current_user.is_authenticated()
-        li.list-group-item
-          center
-            p
-            form.form-group.status-reply-box
-              input.form-control#status-new(type="text", maxlength="250")
-              br
-              button#new-status.btn.btn-primary(type="submit") Create a Status Update
+    if status_updates
+      ul.list-group
+        li.list-group-item.section-header.sidebar-section-header Newest Status Updates
+        {% for status in status_updates %}
+        li.list-group-item.front-page-status.sidebar-status-section
+          .media-left.subcategory-listing-recent-image
+            a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+              img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
+          .media-body
+            a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+            span &nbsp;says{% if not status.attached_to_user %}:{% endif %}
+              if status.attached_to_user
+                | &nbsp;to 
+                a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
+                |:
+            span.discuss 
+              a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
+            br
+            p.status-message {{status.message}}
+            span.status-reply-time 
+              a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
+        {% endfor %}
+        if current_user.is_authenticated()
+          li.list-group-item
+            center
+              p
+              form.form-group.status-reply-box
+                input.form-control#status-new(type="text", maxlength="250")
+                br
+                button#new-status.btn.btn-primary(type="submit") Create a Status Update
 
     if birthday_list
       ul.list-group
@@ -194,7 +196,7 @@ if not current_user.is_authenticated()
             else
               |but they have no welcome topic. :(
     ul.list-group
-      li.list-group-item.section-header Casual Anime Stats
+      li.list-group-item.section-header Forum Stats
       li.list-group-item 
         ul
           li {{topic_count|number_format}} <strong>topics</strong>

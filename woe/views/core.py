@@ -89,7 +89,7 @@ def server_error(e):
     except:
         sqla.session.rollback()
 
-    return render_template('500.jade', page_title="SERVER ERROR! - Casual Anime"), 500
+    return render_template('500.jade', page_title="SERVER ERROR! - %%GENERIC SITENAME%%"), 500
 
 @app.errorhandler(403)
 def unauthorized_access(e):
@@ -130,7 +130,7 @@ def unauthorized_access(e):
     except:
         sqla.session.rollback()
 
-    return render_template('403.jade', page_title="Page Not Found - Casual Anime"), 403
+    return render_template('403.jade', page_title="Page Not Found - %%GENERIC SITENAME%%"), 403
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -171,7 +171,7 @@ def page_not_found(e):
     except:
         sqla.session.rollback()
 
-    return render_template('404.jade', page_title="Page Not Found - Casual Anime"), 404
+    return render_template('404.jade', page_title="Page Not Found - %%GENERIC SITENAME%%"), 404
 
 @app.route('/under-construction')
 def under_construction():
@@ -907,7 +907,7 @@ def password_reset(token):
         login_user(user)
         return redirect("/")
 
-    return render_template("new_password.jade", page_title="Forgot Password - Casual Anime", form=form, token=token)
+    return render_template("new_password.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", form=form, token=token)
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -923,7 +923,7 @@ def forgot_password():
         send_mail_w_template(
             send_to=[form.user,],
             template="password_reset.txt",
-            subject="Password Reset Email - Casual Anime",
+            subject="Password Reset Email - %%GENERIC SITENAME%%",
             variables={
                 "display_name": unicode(form.user.display_name),
                 "address": app.config['BASE'] + "/password-reset/" + str(token)
@@ -931,9 +931,9 @@ def forgot_password():
         )
         sqla.session.add(form.user)
         sqla.session.commit()
-        return render_template("forgot_password_confirm.jade", page_title="Forgot Password - Casual Anime", profile=form.user)
+        return render_template("forgot_password_confirm.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", profile=form.user)
 
-    return render_template("forgot_password.jade", page_title="Forgot Password - Casual Anime", form=form)
+    return render_template("forgot_password.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", form=form)
 
 @app.route('/hello/<pk>')
 def confirm_register(pk):
@@ -945,7 +945,7 @@ def confirm_register(pk):
     if user.new_user_token == "":
         return abort(404)
     
-    return render_template("confirm_new_user.jade", page_title="Welcome! - Casual Anime", profile=user)
+    return render_template("confirm_new_user.jade", page_title="Welcome! - %%GENERIC SITENAME%%", profile=user)
     
 @app.route('/confirm-user/<token>')
 def real_confirm_register(token):
@@ -988,18 +988,20 @@ def real_confirm_register(token):
     sqla.session.add(user)
     sqla.session.commit()
     
-    return render_template("welcome_new_user.jade", page_title="Welcome! - Casual Anime", profile=user)
+    return render_template("welcome_new_user.jade", page_title="Welcome! - %%GENERIC SITENAME%%", profile=user)
 
-@app.route('/acknowledgement')
 def credits():
-    return render_template("acknowledgement.jade", page_title="Thank You - Casual Anime")
+    return render_template("acknowledgement.jade", page_title="Thank You - %%GENERIC SITENAME%%")
     
 @app.route('/stats')
 def stats():
     topten = sqla.session.query(sqlm.TopTen).all()
+    if len(topten) == 0:
+        abort(404)
+    
     all_stats = {}
     
-    for stat in topten:
+    for stat in topten:            
         db_users = []
         
         for user in stat.users:
@@ -1009,15 +1011,15 @@ def stats():
         stat.db_users = db_users
         all_stats[stat.name] = stat
     
-    return render_template("global_stats.jade", page_title="Stats - Casual Anime", all_stats=all_stats)
+    return render_template("global_stats.jade", page_title="Stats - %%GENERIC SITENAME%%", all_stats=all_stats)
 
 @app.route('/privacy')
 def privacy():
-    return render_template("privacy.jade", page_title="Privacy Policy - Casual Anime")
+    return render_template("privacy.jade", page_title="Privacy Policy - %%GENERIC SITENAME%%")
 
 @app.route('/rules')
 def rules():
-    return render_template("rules.jade", page_title="Site Rules - Casual Anime")
+    return render_template("rules.jade", page_title="Site Rules - %%GENERIC SITENAME%%")
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -1062,7 +1064,7 @@ def register():
         # send_mail_w_template(
         #     send_to=[new_user,],
         #     template="pending_validation.txt",
-        #     subject="Your Account is Being Reviewed - Casual Anime",
+        #     subject="Your Account is Being Reviewed - %%GENERIC SITENAME%%",
         #     variables={
         #         "_user": new_user,
         #     }
@@ -1085,7 +1087,7 @@ def register():
             send_mail_w_template(
                 send_to=[new_user,],
                 template="welcome_to_moe.txt",
-                subject="Welcome to Casual Anime!",
+                subject="Welcome to %%GENERIC SITENAME%%!",
                 variables={
                     "_user": new_user,
                     "address": app.config['BASE'] + "/confirm-user/" + str(token)
@@ -1114,7 +1116,7 @@ def register():
 
         return redirect('/hello/'+str(new_user.id))
 
-    return render_template("register.jade", page_title="Become One of Us - Casual Anime", form=form)
+    return render_template("register.jade", page_title="Become One of Us - %%GENERIC SITENAME%%", form=form)
 
 @app.route('/sign-in', methods=['GET', 'POST'])
 def sign_in():
@@ -1251,7 +1253,7 @@ def sign_in():
     
     flavor_text = random.choice(flavor_text)
 
-    return render_template("sign_in.jade", page_title="Sign In - Casual Anime", form=form, flavor_text=flavor_text)
+    return render_template("sign_in.jade", page_title="Sign In - %%GENERIC SITENAME%%", form=form, flavor_text=flavor_text)
 
 @app.route('/banned')
 def banned_user():
@@ -1313,7 +1315,7 @@ def user_list_api_variant():
 @app.route('/members', methods=["GET",])
 @login_required
 def show_memeber_listing():
-    return render_template("members.jade", page_title="Members - Casual Anime")
+    return render_template("members.jade", page_title="Members - %%GENERIC SITENAME%%")
 
 @app.route('/preview', methods=["POST",])
 @login_required

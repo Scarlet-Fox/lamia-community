@@ -435,6 +435,7 @@ user_role_table = db.Table('user_roles', db.metadata,
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    legacy_id = db.Column(db.Integer, index=True)
     roles = db.relationship("Role",
                     secondary=user_role_table,
                     backref="users")
@@ -499,6 +500,7 @@ class User(db.Model):
     minecraft = db.Column(db.String, default="", index=True)
     location = db.Column(db.String, default="", index=True)
     about_me = db.Column(db.Text, default="")
+    admin_comment = db.Column(db.Text, default="")
     anonymous_login = db.Column(db.Boolean, default=False, index=True)
     last_seen_ip_address = db.Column(db.Text, index=True)
 

@@ -64,7 +64,7 @@ def display_status_update(status):
 
     return render_template(
         "status_update.jade",
-        page_title="%s - %s's Status Update - Casual Anime" % (
+        page_title="%s - %s's Status Update - %%GENERIC SITENAME%%" % (
             get_preview(status.message, 50),
             unicode(status.author.display_name)
             ),
@@ -137,7 +137,7 @@ def status_update_index():
             parsed_statuses.append(parsed_status)
         return app.jsonify(status_updates=parsed_statuses)
     else:
-        return render_template("core/status_index.jade", page_title="Status Updates - Casual Anime", status_updates=status_updates, count=count, search=search, authors=json.dumps(authors))
+        return render_template("core/status_index.jade", page_title="Status Updates - %%GENERIC SITENAME%%", status_updates=status_updates, count=count, search=search, authors=json.dumps(authors))
 
 @app.route('/status/<status>/reply', methods=['POST'])
 @login_required

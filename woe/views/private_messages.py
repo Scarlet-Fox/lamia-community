@@ -414,7 +414,7 @@ def message_index(pk, page, post):
             .count()
 
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
-        return render_template("core/messages_topic.jade", page_title="%s - Casual Anime" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.id))
+        return render_template("core/messages_topic.jade", page_title="%s - %%GENERIC SITENAME%%" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.id))
 
     try:
         topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
@@ -423,7 +423,7 @@ def message_index(pk, page, post):
     except:
         pass
 
-    return render_template("core/messages_topic.jade", page_title="%s - Casual Anime" % (unicode(topic.title),), topic=topic, initial_page=page,)
+    return render_template("core/messages_topic.jade", page_title="%s - %%GENERIC SITENAME%%" % (unicode(topic.title),), topic=topic, initial_page=page,)
 
 @app.route('/new-message', methods=['POST'])
 @login_required
@@ -531,9 +531,9 @@ def create_message_index(target):
             pass
 
     if target_user:
-        return render_template("core/new_message.jade", target_user=target_user, page_title="New Private Message - Casual Anime")
+        return render_template("core/new_message.jade", target_user=target_user, page_title="New Private Message - %%GENERIC SITENAME%%")
     else:
-        return render_template("core/new_message.jade", target_user=False, page_title="New Private Message - Casual Anime")
+        return render_template("core/new_message.jade", target_user=False, page_title="New Private Message - %%GENERIC SITENAME%%")
 
 @app.route('/message-topics', methods=['POST'])
 @login_required
@@ -621,4 +621,4 @@ def messages_topics():
 @app.route('/messages', methods=['GET'])
 @login_required
 def messages_index():
-    return render_template("core/messages.jade", page_title="Your Private Messages - Casual Anime")
+    return render_template("core/messages.jade", page_title="Your Private Messages - %%GENERIC SITENAME%%")
