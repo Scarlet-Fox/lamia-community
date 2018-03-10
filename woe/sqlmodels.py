@@ -7,6 +7,7 @@ from flask.ext.login import current_user
 from wand.image import Image
 from threading import Thread
 import arrow, re, os, math, random
+import bcrypt as _bcrypt
 from mako.template import Template
 from mako.lookup import TemplateLookup
 from urllib import quote
@@ -641,17 +642,25 @@ class User(db.Model):
         self.password_hash = bcrypt.generate_password_hash(password.strip().encode('utf-8'),rounds).encode('utf-8')
 
     def check_password(self, password):
-        if self.legacy_password:
-            if ipb_password_check(self.ipb_salt, self.ipb_hash, password):
-                self.set_password(password)
-                self.legacy_password = False
-                self.ipb_salt = ""
-                self.ipb_hash = ""
-                return True
-            else:
-                return False
+        if "vb3~" in self.password_hash:
+            return False # Fix this later
+        elif "bb4~" in self.password_hash:
+            _salt = self.password_hash.replace("bb4~","").encode('utf-8')
+            _hashed = _bcrypt.hashpw(_bcrypt.hashpw(password.encode('utf-8'), _salt),_salt)
+            return _salt == _hashed.encode('utf-8')
         else:
             return bcrypt.check_password_hash(self.password_hash.encode('utf-8'), password.strip().encode('utf-8'))
+            
+        # if self.legacy_password:
+        #     if ipb_password_check(self.ipb_salt, self.ipb_hash, password):
+        #         self.set_password(password)
+        #         self.legacy_password = False
+        #         self.ipb_salt = ""
+        #         self.ipb_hash = ""
+        #         return True
+        #     else:
+        #         return False
+        # else:
 
     def is_anonymous(self):
         return False # Will only ever return False. Anonymous = guest user. We don't support those.
