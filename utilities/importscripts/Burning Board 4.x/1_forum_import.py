@@ -158,6 +158,8 @@ c.execute(
 link_errors = 0
 
 guest_account = User.query.filter_by(my_url="_guest_account_").one()
+category_cache = {}
+user_cache = {}
 
 for t in c.fetchall():
     new_topic = Topic(
@@ -170,30 +172,40 @@ for t in c.fetchall():
         created=arrow.get(t["time"]).datetime
     )
     
-    category=Category.query.filter_by(
-        slug=slugify(t["board_name"], max_length=100, word_boundary=True, save_order=True)
-    ).all()
+    if not category_cache.has_key(t["board_name"]):
+        category=Category.query.filter_by(
+            slug=slugify(t["board_name"], max_length=100, word_boundary=True, save_order=True)
+        ).all()
     
-    if len(category) == 0:
-        __board_name = slugify(t["board_name"], max_length=100, word_boundary=True, save_order=True)
+        if len(category) == 0:
+            __board_name = slugify(t["board_name"], max_length=100, word_boundary=True, save_order=True)
         
-        if settings_file["import_db_topic_board_name_mapping"].has_key(__board_name):
-            category=Category.query.filter_by(
-                slug=settings_file["import_db_topic_board_name_mapping"][__board_name]
-            ).all()
-        else:
-            print "Topic category not found - topic #%s" % (t["threadID"],)
+            if settings_file["import_db_topic_board_name_mapping"].has_key(__board_name):
+                category=Category.query.filter_by(
+                    slug=settings_file["import_db_topic_board_name_mapping"][__board_name]
+                ).all()
+            else:
+                print "Topic category not found - topic #%s" % (t["threadID"],)
+                continue
         
-    new_topic.category = category[0]
-    
-    author=User.query.filter_by(
-        legacy_id=t["userID"]
-    ).all()
-    
-    if len(author) == 0:
-        new_topic.author = guest_account
+        new_topic.category = category[0]
+        category_cache[t["board_name"]] = category[0]
     else:
-        new_topic.author = author[0]
+        new_topic.category = category_cache[t["board_name"]]
+    
+    if not user_cache.has_key(t["userID"]):
+        author=User.query.filter_by(
+            legacy_id=t["userID"]
+        ).all()
+        
+        if len(author) == 0:
+            new_topic.author = guest_account
+            user_cache[t["userID"]] = guest_account
+        else:
+            new_topic.author = author[0]
+            user_cache[t["userID"]] = author[0]
+    else:
+        new_topic.author = user_cache[t["userID"]]
     
     try:
         sqla.session.add(new_topic)
@@ -202,5 +214,66 @@ for t in c.fetchall():
         sqla.session.rollback()
         print e
         continue
+    
+    p=db.cursor()
+    p.execute(
+        """
+            SELECT * FROM zuforum.wbb1_post
+            WHERE threadID = %s
+            ORDER BY time ASC
+        """ % (t["threadID"],)
+    )
+    
+    for idx, _post in enumerate(p.fetchall()):
+        new_post = Post(
+            topic=new_topic,
+            html=_post["message"],
+            created=arrow.get(_post["time"]).datetime,
+            hidden=bool(_post["isDeleted"]) or bool(_post["isDisabled"]) or bool(_post["isClosed"]),
+            
+        )
+        
+        if _post["editorID"]:
+            new_post.modified = arrow.get(_post["lastEditTime"]).datetime
+            if not user_cache.has_key(_post["editorID"]):
+                editor=User.query.filter_by(
+                    legacy_id=_post["editorID"]
+                ).all()
+        
+                if len(editor) == 0:
+                    new_post.editor = guest_account
+                    user_cache[_post["editorID"]] = guest_account
+                else:
+                    new_post.editor = editor[0]
+                    user_cache[_post["editorID"]] = editor[0]
+            else:
+                new_post.editor = user_cache[_post["editorID"]]
+        
+        if _post["userID"]:
+            if not user_cache.has_key(_post["userID"]):
+                author=User.query.filter_by(
+                    legacy_id=_post["userID"]
+                ).all()
+        
+                if len(author) == 0:
+                    new_post.author = guest_account
+                    user_cache[_post["userID"]] = guest_account
+                else:
+                    new_post.author = author[0]
+                    user_cache[_post["userID"]] = author[0]
+            else:
+                new_post.author = user_cache[_post["userID"]]
+    
+        try:
+            sqla.session.add(new_post)
+            sqla.session.commit()
+            if idx == 0:
+                new_topic.recent_post = new_post
+                sqla.session.add(new_topic)
+                sqla.session.commit()
+        except IntegrityError as e:
+            sqla.session.rollback()
+            print e
+            continue
 
 c.close()
