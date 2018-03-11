@@ -20,6 +20,7 @@ app.get "/talker", (req, res) ->
 
 app.post "/talker/notify", (req, res) ->
   res.send 'ok'
+  console.log req
   for client in socketList
     try
       if client.user in req.body.users

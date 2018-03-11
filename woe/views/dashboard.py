@@ -12,6 +12,7 @@ from sqlalchemy.orm.attributes import flag_modified
 import time
 
 def send_message(data):
+    print app.settings_file["talker_path"]+"/notify"
     req = urllib2.Request(app.settings_file["talker_path"]+"/notify")
     req.add_header('Content-Type', 'application/json')
     response = urllib2.urlopen(req, py_json.dumps(data))
