@@ -99,9 +99,9 @@ pg_client.query _get_guest_query, (err, res) =>
             announcement = row.isAnnouncement
             hidden = row.isDeleted or row.isDisabled
             locked = row.isClosed or row.isDisabled
-            created = moment.utc(row.time).format()
+            created = row.time
             
-            _insert_into_db = 'INSERT INTO topic(id, sticky, announcement, hidden, locked, created, title, slug, category_id, author_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *'
+            _insert_into_db = 'INSERT INTO topic(id, sticky, announcement, hidden, locked, created, title, slug, category_id, author_id) VALUES($1, $2, $3, $4, $5, to_timestamp($6), $7, $8, $9, $10) RETURNING *'
             _values_into_db = [id, sticky, announcement, hidden, locked, created, title, slug, _category_id, _author_id]
           
             pg_client.query _insert_into_db, _values_into_db, (err, res) =>

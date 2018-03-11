@@ -60,11 +60,11 @@ pg_client.query _get_guest_query, (err, res) =>
             modified = null
             
           html = row.message
-          created = moment.utc(row.time).format()
+          created = row.time
           hidden = row.isDeleted or row.isDisabled or row.isClosed
           topic = row.threadID
           
-          _insert_into_db = 'INSERT INTO post(html, created, hidden, topic_id, author_id, editor_id, modified) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *'
+          _insert_into_db = 'INSERT INTO post(html, created, hidden, topic_id, author_id, editor_id, modified) VALUES($1, to_timestamp($2), $3, $4, $5, $6, $7) RETURNING *'
           _values_into_db = [html, created, hidden, topic, _author_id, _editor_id, modified]
           
           pg_client.query _insert_into_db, _values_into_db, (err, res) =>
