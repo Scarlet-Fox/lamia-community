@@ -503,18 +503,18 @@ def topic_posts(slug):
     posts = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
         .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
         .order_by(sqlm.Post.created) \
-        [(page-1)*pagination:page*pagination]
+        .paginate(page, pagination, False)
 
     parsed_posts = []
 
     first_post = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
         .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
-        .order_by(sqlm.Post.created)[0]
+        .order_by(sqlm.Post.created).paginate(1, pagination, False).items[0]
 
     author_signatures = {}
     author_signatures_id = {}
 
-    for post in posts:
+    for post in posts.items:
         clean_html_parser = ForumPostParser()
 
         active_rolls = [] # (roll_id, spec, flavor, outcome)
@@ -1308,7 +1308,7 @@ def category_topics(slug):
         topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
             sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label).join(sqlm.Topic.recent_post) \
         .order_by( \
-            sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created))[minimum:maximum]
+            sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created)).paginate(page, pagination, False)
         topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
             sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label) \
         .count()
@@ -1316,11 +1316,11 @@ def category_topics(slug):
         topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False) \
             .join(sqlm.Topic.recent_post) \
         .order_by( \
-            sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created))[minimum:maximum]
+            sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created)).paginate(page, pagination, False)
         topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False).count()
 
     parsed_topics = []
-    for topic in topics:
+    for topic in topics.items:
         if current_user._get_current_object() in topic.banned:
             continue
         parsed_topic = {}

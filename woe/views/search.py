@@ -178,12 +178,10 @@ def search_lookup():
     parsed_results = []
     if content_type == "posts":
         if current_user.is_admin:
-            #query_ = parse_search_string(query, model_, query_, ["html",]) \
             query_ = search(query_, query) \
                 .join(sqlm.Post.topic) \
                 .filter(model_.hidden==False)
         else:
-            #query_ = parse_search_string(query, model_, query_, ["html",]) \
             query_ = search(query_, query) \
                 .join(sqlm.Post.topic) \
                 .filter(sqlm.Topic.category.has(sqla.or_(
@@ -192,8 +190,8 @@ def search_lookup():
                 .filter(model_.hidden==False)
         count = query_.count()
 
-        results = query_.order_by(sqla.desc(model_.created))[(page-1)*pagination:pagination*page]
-        for result in results:
+        results = query_.order_by(sqla.desc(model_.created)).paginate(page, pagination, False)
+        for result in results.items:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.topic.title
@@ -217,7 +215,7 @@ def search_lookup():
                 .join(sqlm.Topic.recent_post) \
                 .order_by(sqla.desc(sqlm.Post.created)).paginate(page, pagination, False)
 
-        for result in results:
+        for result in results.items:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.title
