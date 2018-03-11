@@ -97,8 +97,8 @@ pg_client.query _get_guest_query, (err, res) =>
             id = row.threadID
             sticky = row.isSticky
             announcement = row.isAnnouncement
-            hidden = row.isDeleted
-            locked = row.isDisabled or row.isClosed
+            hidden = row.isDeleted or row.isDisabled
+            locked = row.isClosed or row.isDisabled
             created = moment.utc(row.time).format()
             
             _insert_into_db = 'INSERT INTO topic(id, sticky, announcement, hidden, locked, created, title, slug, category_id, author_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *'
