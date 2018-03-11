@@ -61,10 +61,24 @@
             return category.refreshTopics();
           }
         });
+        $("nav.pagination-listing").delegate("#go-to-end", "click", function(e) {
+          var element;
+          e.preventDefault();
+          element = $(this);
+          category.page = parseInt(category.max_pages);
+          return category.refreshTopics();
+        });
+        $("nav.pagination-listing").delegate("#go-to-start", "click", function(e) {
+          var element;
+          e.preventDefault();
+          element = $(this);
+          category.page = 1;
+          return category.refreshTopics();
+        });
       }
 
       Category.prototype.paginationHTMLTemplate = function() {
-        return "<ul class=\"pagination\">\n  <li>\n    <a href=\"\" aria-label=\"Previous\" id=\"previous-page\">\n      <span aria-hidden=\"true\">&laquo;</span>\n    </a>\n  </li>\n  {{#each pages}}\n  <li><a href=\"\" class=\"change-page page-link-{{this}}\">{{this}}</a></li>\n  {{/each}}\n  <li>\n    <a href=\"\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">&raquo;</span>\n    </a>\n  </li>\n</ul>";
+        return "<ul class=\"pagination\">\n  <li>\n    <a href=\"\" aria-label=\"Start\" id=\"go-to-start\">\n      <span aria-hidden=\"true\">Go to Start</span>\n    </a>\n  </li>\n  <li>\n    <a href=\"\" aria-label=\"Previous\" id=\"previous-page\">\n      <span aria-hidden=\"true\">&laquo;</span>\n    </a>\n  </li>\n  {{#each pages}}\n  <li><a href=\"\" class=\"change-page page-link-{{this}}\">{{this}}</a></li>\n  {{/each}}\n  <li>\n    <a href=\"\" aria-label=\"Next\" id=\"next-page\">\n      <span aria-hidden=\"true\">&raquo;</span>\n    </a>\n  </li>\n  <li>\n    <a href=\"\" aria-label=\"End\" id=\"go-to-end\">\n      <span aria-hidden=\"true\">Go to End</span>\n    </a>\n  </li>\n</ul>";
       };
 
       Category.prototype.topicHTMLTemplate = function() {

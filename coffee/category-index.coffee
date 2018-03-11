@@ -49,10 +49,27 @@ $ ->
           $(".change-page").parent().removeClass("active")
           category.page++
           do category.refreshTopics
+          
+      $("nav.pagination-listing").delegate "#go-to-end", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        category.page = parseInt(category.max_pages)
+        do category.refreshTopics
+
+      $("nav.pagination-listing").delegate "#go-to-start", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        category.page = 1
+        do category.refreshTopics
 
     paginationHTMLTemplate: () ->
       return """
           <ul class="pagination">
+            <li>
+              <a href="" aria-label="Start" id="go-to-start">
+                <span aria-hidden="true">Go to Start</span>
+              </a>
+            </li>
             <li>
               <a href="" aria-label="Previous" id="previous-page">
                 <span aria-hidden="true">&laquo;</span>
@@ -64,6 +81,11 @@ $ ->
             <li>
               <a href="" aria-label="Next" id="next-page">
                 <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+            <li>
+              <a href="" aria-label="End" id="go-to-end">
+                <span aria-hidden="true">Go to End</span>
               </a>
             </li>
           </ul>
