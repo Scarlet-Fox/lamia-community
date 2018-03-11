@@ -1013,14 +1013,6 @@ def stats():
     
     return render_template("global_stats.jade", page_title="Stats - %%GENERIC SITENAME%%", all_stats=all_stats)
 
-@app.route('/privacy')
-def privacy():
-    return render_template("privacy.jade", page_title="Privacy Policy - %%GENERIC SITENAME%%")
-
-@app.route('/rules')
-def rules():
-    return render_template("rules.jade", page_title="Site Rules - %%GENERIC SITENAME%%")
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated():
