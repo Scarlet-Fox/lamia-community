@@ -64,7 +64,16 @@
           center
             h5 <strong style="color: purple;">Looking for something? Use the search form to start searching!</strong>
           p The search form's query field accepts a few simple keyword modifiers. Put things in quotes "like this" to search for a specific group of words. Add a minus character to the front of a keyword -like -this to exclude it.
-        #search-results        
+        #search-results
+        #search-spinner(style="display: none;")
+          center
+            h1 <strong style="color: purple;">Searching</strong>
+            br
+            br
+            img(src="/static/search.gif")     
+            br
+            br
+            br
         .search-pagination   
 {% endblock %}
 

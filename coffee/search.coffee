@@ -231,7 +231,7 @@ $ ->
     $.post "/search", JSON.stringify(data), (data) ->
       console.log data
       if data.count == 0
-        $("#search-results").html("""<p>No results...</p>""")
+        $("#search-results").html("""<p>No results...</p><br><br>""")
 
         pagination_html = paginationTemplate {pages: 0}
 
@@ -245,6 +245,8 @@ $ ->
 
         $("#search-results-buffer").html(_html)
         $("#search-results-buffer").find("br").remove()
+        $("#search-spinner").hide()
+        $("#search-results").show()
         $("#search-results").html($("#search-results-buffer").html())
         $("#search-results-buffer").html("")
 
@@ -278,12 +280,17 @@ $ ->
 
         $("#results-header")[0].scrollIntoView()
         $(".search-pagination").html pagination_html
+        $(".search-pagination").show()
         $("#results-header").text("#{data.count} Search Results")
         $(".page-link-#{page}").parent().addClass("active")
 
   $("#search").click (e) ->
     e.preventDefault()
     page = 1
+    $("#search-results").hide()
+    $(".search-pagination").hide()
+    $("#search-spinner").show()
+    $("#results-header").text("Searching...")
     updateSearch()
 
   $("form").submit (e) ->
