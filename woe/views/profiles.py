@@ -686,7 +686,7 @@ def toggle_ignore_user(login_name):
         sqla.session.add(ignore_setting)
         sqla.session.commit()
 
-    return app.jsonify(url="/member/"+unicode(my_url))
+    return app.jsonify(url="/member/"+unicode(user.my_url))
 
 @app.route('/member/toggle-sounds', methods=['POST'])
 @login_required
@@ -746,7 +746,7 @@ def toggle_follow_user(login_name):
           author=current_user
           )
 
-    return app.jsonify(url="/member/"+unicode(my_url))
+    return app.jsonify(url="/member/"+unicode(user.my_url))
 
 @app.route('/member/<login_name>/change-avatar-title', methods=['GET', 'POST'])
 @login_required
