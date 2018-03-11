@@ -12,6 +12,10 @@ from mako.template import Template
 from mako.lookup import TemplateLookup
 from urllib import quote
 from BeautifulSoup import BeautifulSoup
+from sqlalchemy_searchable import make_searchable
+from sqlalchemy_utils.types import TSVectorType
+from flask.ext.sqlalchemy import BaseQuery
+from sqlalchemy_searchable import SearchQueryMixin
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
 
@@ -1125,7 +1129,14 @@ post_boop_table = db.Table('post_boops_from_users', db.metadata,
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
         name="fk_postboop_user", ondelete="CASCADE"), index=True))
 
+make_searchable(db.metadata)
+
+class PostQuery(BaseQuery, SearchQueryMixin):
+    pass
+
 class Post(db.Model):
+    query_class = PostQuery
+    
     id = db.Column(db.Integer, primary_key=True)
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
         name="fk_post_topic", ondelete="CASCADE"), index=True)
@@ -1152,6 +1163,8 @@ class Post(db.Model):
     avatar = db.relationship("Attachment", foreign_keys="Post.avatar_id")
 
     html = db.Column(db.Text)
+    search_vector = db.Column(TSVectorType('html'))
+    
     modified = db.Column(db.DateTime, nullable=True, index=True)
     created = db.Column(db.DateTime, index=True)
     hidden = db.Column(db.Boolean, default=False, index=True)
