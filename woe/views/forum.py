@@ -1410,7 +1410,7 @@ def index():
         
         if current_user.is_admin:
             for category in sqla.session.query(sqlm.Category) \
-                .filter_by(section=section).filter_by(parent=None) \
+                .filter_by(section=section).filter_by(parent=None, restricted=False) \
                 .order_by(sqlm.Category.weight).all():
                 if len(category.children) > 0:
                     sub_categories[category] = category.children
@@ -1443,7 +1443,7 @@ def index():
                 categories[section].append(category)
         else:
             _query = sqla.session.query(sqlm.Category) \
-                .filter_by(section=section).filter_by(parent=None)
+                .filter_by(section=section).filter_by(parent=None, restricted=False)
                 
             for category in _query.order_by(sqlm.Category.weight).all():
                 if current_user.is_authenticated() == True:
