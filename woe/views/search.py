@@ -6,6 +6,7 @@ from mongoengine.queryset import Q
 import arrow, json, pytz
 import woe.sqlmodels as sqlm
 from woe import sqla
+from sqlalchemy_searchable import search
 import HTMLParser
 
 @app.route('/search', methods=['GET',])
@@ -177,11 +178,13 @@ def search_lookup():
     parsed_results = []
     if content_type == "posts":
         if current_user.is_admin:
-            query_ = parse_search_string(query, model_, query_, ["html",]) \
+            #query_ = parse_search_string(query, model_, query_, ["html",]) \
+            query_ = search(query_, query) \
                 .join(sqlm.Post.topic) \
                 .filter(model_.hidden==False)
         else:
-            query_ = parse_search_string(query, model_, query_, ["html",]) \
+            #query_ = parse_search_string(query, model_, query_, ["html",]) \
+            query_ = search(query_, query) \
                 .join(sqlm.Post.topic) \
                 .filter(sqlm.Topic.category.has(sqla.or_(
                         sqlm.Category.restricted==False
@@ -207,12 +210,12 @@ def search_lookup():
         if current_user.is_admin:
             results = query_.filter(model_.hidden==False) \
                 .join(sqlm.Topic.recent_post) \
-                .order_by(sqla.desc(sqlm.Post.created))[(page-1)*pagination:pagination*page]
+                .order_by(sqla.desc(sqlm.Post.created)).paginate(page, pagination, False)
         else:
             results = query_.filter(model_.hidden==False) \
                 .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
                 .join(sqlm.Topic.recent_post) \
-                .order_by(sqla.desc(sqlm.Post.created))[(page-1)*pagination:pagination*page]
+                .order_by(sqla.desc(sqlm.Post.created)).paginate(page, pagination, False)
 
         for result in results:
             parsed_result = {}
