@@ -123,7 +123,7 @@ for u in c.fetchall():
     new_user.legacy_id = int(u["userID"])
     
     try:
-        new_user.birthday = arrow.get(u["userOption2"]).datetime
+        new_user.birthday = arrow.get(u["userOption2"]).replace(days=1).datetime
     except:
         pass # fuck that
     
