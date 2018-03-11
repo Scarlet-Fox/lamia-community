@@ -968,7 +968,10 @@ def topic_index(slug, page, post):
             post = ""
 
     if post != "":
-        topic.view_count = topic.view_count + 1
+        if topic.view_count:
+            topic.view_count = topic.view_count + 1
+        else:
+            topic.view_count = 1
         try:
             if topic.last_seen_by == None:
                 topic.last_seen_by = {}
@@ -1521,15 +1524,18 @@ def index():
     except:
         birthday_list = []
 
-    recently_replied_topics = sqla.session.query(sqlm.Topic) \
-        .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
-        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:5]
-
-    recently_created_topics = sqla.session.query(sqlm.Topic) \
-        .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
-        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-        .order_by(sqlm.Topic.created.desc())[:5]
+    recently_replied_topics = []
+    # recently_replied_topics = sqla.session.query(sqlm.Topic) \
+    #     .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
+    #     .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+    #     .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:5]
+    #
+    
+    recently_created_topics = []
+    # recently_created_topics = sqla.session.query(sqlm.Topic) \
+    #     .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
+    #     .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+    #     .order_by(sqlm.Topic.created.desc())[:5]
 
     # status_update_authors = sqla.session.query(sqlm.StatusUpdate.author_id.label("author_id"), sqla.func.max(sqlm.StatusUpdate.created).label("created")) \
     #     .group_by(sqlm.StatusUpdate.author_id) \
@@ -1575,8 +1581,8 @@ def index():
     
     tweets = sqla.session.query(sqlm.Tweet).order_by(sqla.desc(sqlm.Tweet.time))[:3]
     
-    post_count = sqla.session.query(sqlm.Post).count()
-    topic_count = sqla.session.query(sqlm.Topic).count()
+    post_count = 0 #sqla.session.query(sqlm.Post).count()
+    topic_count = 0 #sqla.session.query(sqlm.Topic).count()
     blog_entry_count = sqla.session.query(sqlm.BlogEntry).count()
     status_update_count = sqla.session.query(sqlm.StatusUpdate).count()
     status_comments_count = sqla.session.query(sqlm.StatusComment).count()
