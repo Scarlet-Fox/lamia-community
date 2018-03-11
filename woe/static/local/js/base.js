@@ -92,6 +92,7 @@
       } else {
         socket = io.connect($(".io-class").data("config"));
       }
+      window.socketio = socket;
     }
     notificationHTML = "<li class=\"notification-li\"><a href=\"{{url}}\" data-notification=\"{{_id}}\" class=\"notification-link dropdown-notif-{{_id}}-{{category}}\">{{text}}</a></li>";
     notificationTemplate = Handlebars.compile(notificationHTML);

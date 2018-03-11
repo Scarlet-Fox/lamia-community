@@ -106,6 +106,7 @@ $ ->
       socket = io.connect($(".io-class").data("config"), {path: $(".io-class").data("path")+"/socket.io"})
     else
       socket = io.connect($(".io-class").data("config"))
+    window.socketio = socket
 
   notificationHTML = """
       <li class="notification-li"><a href="{{url}}" data-notification="{{_id}}" class="notification-link dropdown-notif-{{_id}}-{{category}}">{{text}}</a></li>
