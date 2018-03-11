@@ -11,6 +11,7 @@ click==6.7
 colorama==0.3.9
 cssmin==0.2.0
 cssselect==1.0.1
+decorator==4.2.1
 dnspython==1.15.0
 Flask==0.12.2
 Flask-Admin==1.5.0
@@ -62,9 +63,13 @@ requests==2.18.1
 requests-oauthlib==0.8.0
 six==1.10.0
 SQLAlchemy==1.1.11
+SQLAlchemy-Searchable==1.0.3
+SQLAlchemy-Utils==0.33.0
 termstyle==0.1.11
 Unidecode==0.4.21
 urllib3==1.21.1
+validators==0.12.1
+virtualenv==15.1.0
 Wand==0.4.4
 webassets==0.12.1
 Werkzeug==0.12.2
