@@ -34,7 +34,6 @@ ipaddr==2.1.11
 ipwhois==0.15.1
 itsdangerous==0.24
 Jinja2==2.9.6
-lxml==3.8.0
 Mako==1.0.7
 MarkupSafe==1.0
 mongoengine==0.13.0
@@ -43,7 +42,7 @@ oauthlib==2.0.2
 olefile==0.44
 phpserialize==1.3
 Pillow==4.2.1
-psycopg2cffi==2.7.5
+psycopg2cffi==2.7.7
 pycparser==2.18
 pyjade==4.0.0
 pymongo==3.4.0
