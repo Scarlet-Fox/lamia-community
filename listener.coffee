@@ -20,7 +20,6 @@ app.get "/talker", (req, res) ->
 
 app.post "/talker/notify", (req, res) ->
   res.send 'ok'
-  console.log req
   for client in socketList
     try
       if client.user in req.body.users
@@ -38,6 +37,7 @@ app.post "/talker/notify", (req, res) ->
 
 io.on 'connection', (client) ->
   client.on "user", (data) ->
+    console.log data.user
     socketList.push client
     if socketList.length > 10000
       socketList.shift()

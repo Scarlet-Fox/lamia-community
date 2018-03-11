@@ -33,7 +33,7 @@
           {{character.species|e}}
           br
         strong Added by : 
-        a.hover_user(href="/member/{{character.author.login_name}}") {{character.author.display_name|e}}
+        a.hover_user(href="/member/{{character.author.my_url}}") {{character.author.display_name|e}}
         br
         if character.age or character.species
           hr
@@ -69,7 +69,7 @@
             br
           span!= character.parsed_other
         hr
-        i - <a href="/member/{{character.author.login_name}}">{{character.author.display_name|e}}</a>
+        i - <a href="/member/{{character.author.my_url}}">{{character.author.display_name|e}}</a>
     {% endblock %}
 {% endblock %}
 

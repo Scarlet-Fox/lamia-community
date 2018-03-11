@@ -45,7 +45,7 @@
             img(src="{{ status.author.get_avatar_url("60") }}", width="{{status.author.avatar_60_x}}", height="{{status.author.avatar_60_y}}")
           .media-body
             p
-              a.hover_user(href="/member/{{ status.author.login_name }}") {{ status.author.display_name }}
+              a.hover_user(href="/member/{{ status.author.my_url }}") {{ status.author.display_name }}
               span &nbsp;says
                 if status.attached_to_user
                   | &nbsp;to 
@@ -62,7 +62,7 @@
             img(src="{{ status.author.get_avatar_url("60") }}", width="{{status.author.avatar_60_x}}", height="{{status.author.avatar_60_y}}", class="avatar-mini")
           .media-body
             p
-              a.hover_user(href="/member/{{ status.author.login_name }}") {{ status.author.display_name }}
+              a.hover_user(href="/member/{{ status.author.my_url }}") {{ status.author.display_name }}
               span &nbsp;says
                 if status.attached_to_user
                   | &nbsp;to 

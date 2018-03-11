@@ -84,7 +84,7 @@ ul.list-group
           for blog in friend_blog_entries
             li.list-group-item(style="padding: 10px;")
               .media-left 
-                a(href="/member/{{blog.recent_entry.author.login_name}}")
+                a(href="/member/{{blog.recent_entry.author.my_url}}")
                   img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("60"), width=blog.recent_entry.author.avatar_60_x, height=blog.recent_entry.author.avatar_60_y)
               .media-body
                 strong

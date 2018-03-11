@@ -59,7 +59,7 @@ style!= profile.get_custom_css()
       li.list-group-item
         ul.nav.nav-tabs.nav-stacked(role="tablist", style="border: none !important;")
           li(role="presentation")
-            a(href="/member/{{profile.login_name}}") About Me
+            a(href="/member/{{profile.my_url}}") About Me
           li(role="presentation")
             a(href="/member/{{profile.my_url}}/friends") Friends
           {% if current_user == profile or current_user.is_admin  %}
@@ -145,10 +145,10 @@ style!= profile.get_custom_css()
         for visitor in recent_visitors
           li.list-group-item
             .media-left 
-              a.subcategory-listing-recent-image(href="/member/{{visitor[0].login_name}}")
+              a.subcategory-listing-recent-image(href="/member/{{visitor[0].my_url}}")
                 img.avatar-mini(src=visitor[0].get_avatar_url("60"), width=visitor[0].avatar_60_x, height=visitor[0].avatar_60_y)
             .media-body
-              a.hover_user(href="{{url_for('view_profile', login_name=visitor[0].login_name)}}") {{visitor[0].display_name}}
+              a.hover_user(href="{{url_for('view_profile', login_name=visitor[0].my_url)}}") {{visitor[0].display_name}}
               div {{visitor[1]|humanize_time}}
     if profile.last_seen_ip_address and current_user.is_admin
       ul.list-group

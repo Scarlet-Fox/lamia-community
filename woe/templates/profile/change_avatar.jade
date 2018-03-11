@@ -27,7 +27,7 @@ ul.list-group
       &nbsp;
       a.btn.btn-default#remove-avatar(href="") Remove Avatar
       &nbsp;
-      a.btn.btn-default(href="/member/{{profile.login_name}}") Cancel
+      a.btn.btn-default(href="/member/{{profile.my_url}}") Cancel
     br
 {% endblock %}
 
@@ -37,7 +37,7 @@ script(type="text/javascript").
     $("#remove-avatar").click(function(e) {
       e.preventDefault();
       $.post("/member/{{profile.my_url}}/remove-avatar", function(data) {
-        window.location = "/member/{{profile.login_name}}";
+        window.location = "/member/{{profile.my_url}}";
       });
     });
   });

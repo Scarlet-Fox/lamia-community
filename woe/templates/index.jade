@@ -62,11 +62,11 @@ if not current_user.is_authenticated()
               .col-sm-6.col-xs-8
                 .media-left
                   span.subcategory-listing-recent-image
-                    a(href="/member/{{blog.recent_entry.author.login_name}}")
+                    a(href="/member/{{blog.recent_entry.author.my_url}}")
                       img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("40"), width=blog.recent_entry.author.avatar_40_x, height=blog.recent_entry.author.avatar_40_y)
                 .media-body
                   span.subcategory-listing-recent
-                    a(href="/member/{{blog.recent_entry.author.login_name}}") {{blog.recent_entry.author.display_name}}
+                    a(href="/member/{{blog.recent_entry.author.my_url}}") {{blog.recent_entry.author.display_name}}
                     br
                     a(href="/blog/{{blog.slug}}/e/{{blog.recent_entry.slug}}") {{blog.recent_entry.published|humanize_time}}
         li.list-group-item
@@ -128,7 +128,7 @@ if not current_user.is_authenticated()
         for announcement in announcements
           li.list-group-item(style="padding: 10px;")
             .media-left 
-              a(href="/member/{{announcement.author.login_name}}")
+              a(href="/member/{{announcement.author.my_url}}")
                 img.avatar-mini(src=announcement.author.get_avatar_url("60"), width=announcement.author.avatar_60_x, height=announcement.author.avatar_60_y)
             .media-body
               strong
@@ -184,7 +184,7 @@ if not current_user.is_authenticated()
         li.list-group-item.section-header Newest Member
         li.list-group-item 
           .media-left 
-            a.subcategory-listing-recent-image(href="/member/{{newest_member.login_name}}")
+            a.subcategory-listing-recent-image(href="/member/{{newest_member.my_url}}")
               img.avatar-mini(src=newest_member.get_avatar_url("60"), width=newest_member.avatar_60_x, height=newest_member.avatar_60_y)
           .media-body Our newest member is 
             a.hover_user(href="{{url_for('view_profile', login_name=newest_member.login_name)}}") {{newest_member.display_name}} 

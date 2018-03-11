@@ -100,7 +100,7 @@ body(role='document')
         .container
           .navbar-header
             if current_user.is_authenticated()
-              a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.login_name}}')
+              a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.my_url}}')
                 img(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 7px; margin-left: 0px;', class="avatar-mini")
             a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/')
               span.glyphicon.glyphicon-home()
@@ -232,7 +232,7 @@ body(role='document')
                 li.hidden-sm.hidden-md.hidden-lg
                   a(href='/member/{{current_user.my_url}}/change-settings') Settings
                 li.hidden-sm.hidden-md.hidden-lg
-                  a(href='/member/{{current_user.login_name}}') Profile
+                  a(href='/member/{{current_user.my_url}}') Profile
                 li.hidden-sm.hidden-md.hidden-lg
                   a.sign-out(href='#') Sign Out
             ul.nav.navbar-nav.navbar-right.hidden-xs
@@ -250,7 +250,7 @@ body(role='document')
                       li
                         a(href='/messages') Messages
                       li
-                        a(href='/member/{{current_user.login_name}}') Profile
+                        a(href='/member/{{current_user.my_url}}') Profile
                       li.divider
                       li
                         a.sign-out(href='#') Sign Out
@@ -330,7 +330,7 @@ body(role='document')
         .container-fluid
           .navbar-header
             if current_user.is_authenticated()
-              a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.login_name}}')
+              a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.my_url}}')
                 img(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 7px; margin-left: 0px;', class="avatar-mini")
             a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/')
               span.glyphicon.glyphicon-home()
@@ -461,7 +461,7 @@ body(role='document')
                 li.hidden-sm.hidden-md.hidden-lg
                   a(href='/member/{{current_user.my_url}}/change-settings') Settings
                 li.hidden-sm.hidden-md.hidden-lg
-                  a(href='/member/{{current_user.login_name}}') Profile
+                  a(href='/member/{{current_user.my_url}}') Profile
                 li.hidden-sm.hidden-md.hidden-lg
                   a.sign-out(href='#') Sign Out
             ul.nav.navbar-nav.navbar-right.hidden-xs
@@ -481,7 +481,7 @@ body(role='document')
                       li
                         a(href='/member/{{current_user.my_url}}/change-settings') Settings
                       li
-                        a(href='/member/{{current_user.login_name}}') Profile
+                        a(href='/member/{{current_user.my_url}}') Profile
                       li.divider
                       li
                         a.sign-out(href='#') Sign Out
