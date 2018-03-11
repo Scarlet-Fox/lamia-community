@@ -134,8 +134,18 @@ $ ->
             topic.last = true
           topic.last_page = Math.ceil topic.last_page
           new_topic_html = new_topic_html + @topicHTML topic
-        pages = [1..Math.ceil data.count/@pagination]
-        @max_pages = pages[pages.length-1]
+        
+        pages = []
+        @max_pages = Math.ceil data.count/@pagination
+        if @max_pages > 5
+          if @page > 3 and @page < @max_pages-5
+            pages = [@page-2..@page+5]
+          else if @page > 3
+            pages = [@page-2..@max_pages]
+          else if @page <= 3
+            pages = [1..@page+5]
+        else
+          pages = [1..Math.ceil data.count/@pagination]
         pagination_html = @paginationHTML {pages: pages}
 
         $(".topic-listing").html(new_topic_html)

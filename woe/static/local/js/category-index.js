@@ -79,7 +79,7 @@
           pagination: this.pagination
         }), (function(_this) {
           return function(data) {
-            var i, j, k, len, pages, pagination_html, ref, ref1, results, topic;
+            var i, j, k, l, len, m, n, pages, pagination_html, ref, ref1, ref2, ref3, ref4, ref5, ref6, results, results1, results2, results3, topic;
             ref = data.topics;
             for (i = j = 0, len = ref.length; j < len; i = ++j) {
               topic = ref[i];
@@ -89,12 +89,35 @@
               topic.last_page = Math.ceil(topic.last_page);
               new_topic_html = new_topic_html + _this.topicHTML(topic);
             }
-            pages = (function() {
-              results = [];
-              for (var k = 1, ref1 = Math.ceil(data.count / _this.pagination); 1 <= ref1 ? k <= ref1 : k >= ref1; 1 <= ref1 ? k++ : k--){ results.push(k); }
-              return results;
-            }).apply(this);
-            _this.max_pages = pages[pages.length - 1];
+            pages = [];
+            _this.max_pages = Math.ceil(data.count / _this.pagination);
+            if (_this.max_pages > 5) {
+              if (_this.page > 3 && _this.page < _this.max_pages - 5) {
+                pages = (function() {
+                  results = [];
+                  for (var k = ref1 = _this.page - 2, ref2 = _this.page + 5; ref1 <= ref2 ? k <= ref2 : k >= ref2; ref1 <= ref2 ? k++ : k--){ results.push(k); }
+                  return results;
+                }).apply(this);
+              } else if (_this.page > 3) {
+                pages = (function() {
+                  results1 = [];
+                  for (var l = ref3 = _this.page - 2, ref4 = _this.max_pages; ref3 <= ref4 ? l <= ref4 : l >= ref4; ref3 <= ref4 ? l++ : l--){ results1.push(l); }
+                  return results1;
+                }).apply(this);
+              } else if (_this.page <= 3) {
+                pages = (function() {
+                  results2 = [];
+                  for (var m = 1, ref5 = _this.page + 5; 1 <= ref5 ? m <= ref5 : m >= ref5; 1 <= ref5 ? m++ : m--){ results2.push(m); }
+                  return results2;
+                }).apply(this);
+              }
+            } else {
+              pages = (function() {
+                results3 = [];
+                for (var n = 1, ref6 = Math.ceil(data.count / _this.pagination); 1 <= ref6 ? n <= ref6 : n >= ref6; 1 <= ref6 ? n++ : n--){ results3.push(n); }
+                return results3;
+              }).apply(this);
+            }
             pagination_html = _this.paginationHTML({
               pages: pages
             });
