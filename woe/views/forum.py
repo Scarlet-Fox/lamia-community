@@ -1416,9 +1416,6 @@ def index():
                     sub_categories[category] = category.children
                     recent_post = category.recent_post
                     for category_child in category.children:
-                        if category_child.restricted == True:
-                            continue
-                        
                         try:
                             if category_child.recent_post.created > recent_post.created:
                                 recent_post = category_child.recent_post
@@ -1460,7 +1457,7 @@ def index():
                     sub_categories[category] = category.children
                     recent_post = category.recent_post
                     for category_child in category.children:
-                        if category_child.restricted == True:
+                        if category.restricted == True:
                             continue
                             
                         try:
