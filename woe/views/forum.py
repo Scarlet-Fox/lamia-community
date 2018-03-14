@@ -1404,94 +1404,52 @@ def category_index(slug):
 
 @app.route('/')
 def index():
-    sections = []
-    categories = {}
-    sub_categories = {}
-
-    for section in sqla.session.query(sqlm.Section).order_by(sqlm.Section.weight).all():
-        sections.append(section)
-
-        categories[section] = []
+    hierarchy = OrderedDict()
+    children = OrderedDict()
+    
+    top_level_categories = sqla.engine.execute(
+        """
+        SELECT c.name AS category_name,
+        c.slug AS category_slug,
+        c.restricted AS restricted,
+        c.description AS category_description,
+        s.name AS section_name,
+        t.title AS last_topic_title,
+        t.slug AS last_topic_slug,
+        p.created AS last_topic_bumped,
+        CASE
+        WHEN u.avatar_extension != ''
+        THEN 'avatars/' || u.avatar_timestamp || u.id || '40' || u.avatar_extension 
+        ELSE 'no_profile_avatar_40.png'
+        END AS user_avatar,
+        u.my_url AS user_url,
+        parent.name AS parent_name
+        FROM category c
+        LEFT JOIN "section" s ON c.section_id = s.id
+        LEFT JOIN "category" parent ON c.parent_id = parent.id
+        JOIN "topic" t ON c.recent_topic_id = t.id
+        JOIN "post" p ON c.recent_post_id = p.id
+        JOIN "user" u ON p.author_id = u.id
+        ORDER BY s.weight, c.weight ASC
+        """
+    )
+    
+    for _category in top_level_categories:
+        category_dict = dict(_category)
+        if category_dict["restricted"] == True and not current_user.is_admin:
+            continue
         
-        if current_user.is_admin:
-            for category in sqla.session.query(sqlm.Category) \
-                .filter_by(section=section).filter_by(parent=None) \
-                .order_by(sqlm.Category.weight).all():
-                if len(category.children) > 0:
-                    sub_categories[category] = category.children
-                    recent_post = category.recent_post
-                    for category_child in category.children:
-                        try:
-                            if category_child.recent_post.created > recent_post.created:
-                                recent_post = category_child.recent_post
-                        except:
-                            pass
-                    
-                    try:
-                        category.recent_post = recent_post
-                        category.recent_topic = recent_post.topic
-                    except:
-                        pass
-                
-                # A simple hack.
-                try:
-                    if category.recent_topic.hidden == True:
-                        category.recent_topic = None
-                        category.recent_post = None
-                    else:
-                        if category.recent_post.hidden == True:
-                            category.recent_post = None
-                except:
-                    category.recent_topic = None
-                    category.recent_post = None
-                    
-                categories[section].append(category)
+        if category_dict["parent_name"] is None:
+            if not hierarchy.has_key(category_dict["section_name"]):
+                hierarchy[category_dict["section_name"]] = []
+        
+            hierarchy[category_dict["section_name"]].append(_category)
         else:
-            _query = sqla.session.query(sqlm.Category) \
-                .filter_by(section=section).filter_by(parent=None, restricted=False)
-                
-            for category in _query.order_by(sqlm.Category.weight).all():
-                if current_user.is_authenticated() == True:
-                    if category.restricted == True and not current_user in category.allowed_users:
-                        continue
-                else:
-                    if category.restricted == True:
-                        continue
-                        
-                if len(category.children) > 0:
-                    sub_categories[category] = category.children
-                    recent_post = category.recent_post
-                    for category_child in category.children:
-                        if category.restricted == True:
-                            continue
-                            
-                        try:
-                            if category_child.recent_post.created > recent_post.created:
-                                recent_post = category_child.recent_post
-                        except:
-                            pass
-                            
-                    category.recent_post = recent_post
-                    category.recent_topic = recent_post.topic
-                
-                # A simple hack.
-                try:
-                    if category.recent_topic.hidden == True:
-                        category.recent_topic = None
-                        category.recent_post = None
-                    else:
-                        if category.recent_post.hidden == True:
-                            category.recent_post = None
-                except:
-                    category.recent_topic = None
-                    category.recent_post = None
-                    
-                categories[section].append(category)
+            if not children.has_key(category_dict["parent_name"]):
+                children[category_dict["parent_name"]] = []
         
-        if len(categories[section]) == 0:
-            del categories[section]
-            sections.remove(section)
-
+            children[category_dict["parent_name"]].append(_category)
+    
     online_users = sqla.session.query(sqlm.User) \
         .filter(sqlm.User.hidden_last_seen > arrow.utcnow() \
         .replace(minutes=-15).datetime.replace(tzinfo=None)).all()
@@ -1524,13 +1482,13 @@ def index():
     except:
         timezone = "US/Pacific"
     
-    try:
-        birthday_list = sqla.session.query(sqlm.User) \
-            .filter(sqla.extract('month', sqlm.User.birthday) == arrow.utcnow().to(timezone).datetime.month) \
-            .filter(sqla.extract('day', sqlm.User.birthday) == arrow.utcnow().to(timezone).datetime.day) \
-            .order_by(sqlm.User.birthday.desc()).all()
-    except:
-        birthday_list = []
+    # try:
+    #     birthday_list = sqla.session.query(sqlm.User) \
+    #         .filter(sqla.extract('month', sqlm.User.birthday) == arrow.utcnow().to(timezone).datetime.month) \
+    #         .filter(sqla.extract('day', sqlm.User.birthday) == arrow.utcnow().to(timezone).datetime.day) \
+    #         .order_by(sqlm.User.birthday.desc()).all()
+    # except:
+    birthday_list = []
 
     recently_replied_topics = []
     # recently_replied_topics = sqla.session.query(sqlm.Topic) \
@@ -1558,12 +1516,12 @@ def index():
     
     status_updates = sqla.session.query(sqlm.StatusUpdate) \
         .filter(sqla.or_(sqlm.StatusUpdate.hidden == False, sqlm.StatusUpdate.hidden == None)) \
-        .order_by(sqla.desc(sqlm.StatusUpdate.created))[:6]
+        .order_by(sqla.desc(sqlm.StatusUpdate.created)).paginate(1, 6, False).items
 
     announcements = sqla.session.query(sqlm.Topic) \
         .filter_by(announcement=True, hidden=False) \
         .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-        .order_by(sqlm.Topic.created.desc())[:3]
+        .order_by(sqlm.Topic.created.desc()).paginate(1, 5, False).items
 
     if current_user.is_authenticated():
         blogs = sqla.session.query(sqlm.Blog) \
@@ -1596,8 +1554,8 @@ def index():
     status_comments_count = sqla.session.query(sqlm.StatusComment).count()
         
     render = render_template("index.jade", page_title="%%GENERIC SITENAME%%", meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
-        sections=sections, sub_categories=sub_categories,announcements=announcements,
-        categories=categories, status_updates=status_updates, online_users=online_users, blogs=blogs,
+        hierarchy=hierarchy,children=children,announcements=announcements,
+        status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets, birthday_list=birthday_list,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics,
         post_count=post_count, topic_count=topic_count, blog_entry_count=blog_entry_count, status_update_count=status_update_count, status_comments_count=status_comments_count)

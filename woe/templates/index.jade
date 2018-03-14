@@ -14,40 +14,41 @@ if not current_user.is_authenticated()
   //-             strong If you would like to learn more about us and join the site, then <a href="/register" style="color: blue;" >click here to get started.</a>
 .row
   .col-md-8
-    {% for section in sections %}
+    {% for section in hierarchy.keys() %}
     ul.list-group.category
-      li.list-group-item.section-header.category-section-header {{section.name}}
-      {% for category in categories[section] %}
+      li.list-group-item.section-header.category-section-header {{section}}
+      {% for category in hierarchy[section] %}
       li.list-group-item.subcategory.category-subcategories
         div
           .row
             .col-xs-4.col-sm-6
               span.subcategory-listing-name 
-                a(href="/category/{{category.slug}}", style="vertical-align: middle; padding-top: 15px; font-size: 18px;") {{category.name}}
-                if category.description
+                a(href="/category/{{category.category_slug}}", style="vertical-align: middle; padding-top: 15px; font-size: 18px;") {{category.category_name}}
+                if category.category_description
                   p(style="font-size: 12px;").hidden-xs
-                    a(href="/category/{{category.slug}}").text-muted= category.description
-                {% for subcategory in sub_categories[category] %}
+                    a(href="/category/{{category.slug}}").text-muted= category.category_description
+                {% for child in children[category.category_name] %}
                 {% if loop.first %}
                 p.small
                   &nbsp;
                   {% endif %}
-                  a(href="/category/{{subcategory.slug}}") {{subcategory.name}}{% if not loop.last %}, {% endif %}
+                  a(href="/category/{{child.category_slug}}") {{child.category_name}}{% if not loop.last %}, {% endif %}
                   {% endfor %}
-            {% if category.recent_post %}
+            {% if category.last_topic_title %}
             .col-sm-6.col-xs-8
               .media-left
                 span.subcategory-listing-recent-image
-                  a(href="{{url_for('view_profile', login_name=category.recent_post.author.login_name)}}")
-                    img(src="{{category.recent_post.author.get_avatar_url("40")}}", width="{{category.recent_post.author.avatar_40_x}}", height="{{category.recent_post.author.avatar_40_y}}", class="avatar-mini")
+                  a(href="{{url_for('view_profile', login_name=category.user_url)}}")
+                    img.avatar-mini(src="/static/{{category.user_avatar}}")
               .media-body
                 span.subcategory-listing-recent
-                  a(href="/t/{{category.recent_topic.slug}}/page/1/post/last_seen")= category.recent_topic.title|truncate(40)
+                  a(href="/t/{{category.last_topic_slug}}/page/1/post/last_seen")= category.last_topic_title|truncate(40)
                   br
-                  a(href="/t/{{category.recent_topic.slug}}/page/1/post/last_seen") {{category.recent_post.created|humanize_time}}
+                  a(href="/t/{{category.last_topic_slug}}/page/1/post/last_seen") {{category.last_topic_bumped|humanize_time}}
             {% endif %}
       {% endfor %}
     {% endfor %}
+    
     if blogs
       ul.list-group
         li.list-group-item.section-header Newest Blog Entries
