@@ -188,9 +188,14 @@ def search_lookup():
                         sqlm.Category.restricted==False
                     ))) \
                 .filter(model_.hidden==False)
-        count = query_.count()
+       
 
         results = query_.order_by(sqla.desc(model_.created)).paginate(page, pagination, False)
+        has_next = len(query_.order_by(sqla.desc(model_.created)).paginate(page, pagination+1, False).items) > len(results.items)
+        if has_next:
+            count = 21
+        else:
+            count = 20
         for result in results.items:
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
@@ -202,15 +207,16 @@ def search_lookup():
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
     elif content_type == "topics":
-        query_ = parse_search_string(query, model_, query_, ["title",])
+        query_ = parse_search_string(query, model_, query_, ["title",]) \
+            .filter(model_.hidden==False)
         count = query_.count()
         
         if current_user.is_admin:
-            results = query_.filter(model_.hidden==False) \
+            results = query_ \
                 .join(sqlm.Topic.recent_post) \
                 .order_by(sqla.desc(sqlm.Post.created)).paginate(page, pagination, False)
         else:
-            results = query_.filter(model_.hidden==False) \
+            results = query_ \
                 .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
                 .join(sqlm.Topic.recent_post) \
                 .order_by(sqla.desc(sqlm.Post.created)).paginate(page, pagination, False)
