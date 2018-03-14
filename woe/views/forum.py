@@ -1419,7 +1419,7 @@ def index():
         p.created AS last_topic_bumped,
         CASE
         WHEN u.avatar_extension != ''
-        THEN 'avatars/' || u.avatar_timestamp || u.id || '40' || u.avatar_extension 
+        THEN 'avatars/' || u.avatar_timestamp || u.id || '_40' || u.avatar_extension 
         ELSE 'no_profile_avatar_40.png'
         END AS user_avatar,
         u.my_url AS user_url,
