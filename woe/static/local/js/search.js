@@ -220,7 +220,7 @@
       return $.post("/search", JSON.stringify(data), function(data) {
         var _html, l, len3, m, n, o, p, pages, pagination_html, ref3, ref4, ref5, ref6, ref7, ref8, result, results, results1, results2, results3;
         console.log(data);
-        if (data.count + 0 === 0) {
+        if (data.count === 0) {
           $("#search-results-buffer").html("");
           $("#search-results").html("<h3>No results...</h3><br><br>");
           $("#search-spinner").hide();

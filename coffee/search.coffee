@@ -251,7 +251,7 @@ $ ->
 
     $.post "/search", JSON.stringify(data), (data) ->
       console.log data
-      if data.count+0 == 0
+      if data.count == 0
         $("#search-results-buffer").html("")
         $("#search-results").html("""<h3>No results...</h3><br><br>""")
         $("#search-spinner").hide()

@@ -191,9 +191,11 @@ def search_lookup():
        
 
         results = query_.order_by(sqla.desc(model_.created)).paginate(page, pagination, False)
-        has_next = len(query_.order_by(sqla.desc(model_.created)).paginate(page, pagination+1, False).items) > len(results.items)
+        has_next = len(query_.order_by(sqla.desc(model_.created)).paginate(pagination+1, 1, False).items) > 0
         if has_next:
             count = 21
+        elif len(results.items) == 0:
+            count = 0
         else:
             count = 20
         for result in results.items:
