@@ -51,7 +51,7 @@ for _id in topic_ids:
         )
         
     topic_post_count = sqla.engine.execute(
-        """SELECT COUNT(id) FROM post WHERE topic_id=%s AND hidden=False""" % _id[0]
+        """SELECT COUNT(id) FROM post WHERE topic_id=%s""" % _id[0]
     )
     for c in topic_post_count:
         sqla.engine.execute(
@@ -74,4 +74,5 @@ for _id in category_ids:
         sqla.engine.execute(
             """UPDATE category SET recent_topic_id=%s, recent_post_id=%s WHERE id=%s""" % (t[0], t[1], _id[0])
         )
+        
     

@@ -1297,7 +1297,44 @@ def category_topics(slug):
         prefixes = preferences.keys()
     else:
         prefixes = []
-
+    
+    """
+        SELECT t.id AS this_topic_id,
+        t.title AS topic_title,
+        t.slug AS topic_slug,
+        t.post_count AS topic_post_count,
+        t.view_count AS topic_view_count,
+        t.sticky AS topic_sticky,
+        t.locked AS topic_closed,
+        t.last_seen_by AS topic_last_seen_by,
+        l.pre_html AS topic_l_pre_html,
+        l.post_html AS topic_l_post_html,
+        l.label AS topic_l_prefix,
+        rp.created AS last_post_date,
+        fp.html AS first_post_html,
+        fpa.display_name AS first_post_author,
+        fp.created AS first_post_created,
+        rp.created AS topic_last_updated,
+        rpa.display_name AS last_post_author,
+        rpa.my_url AS last_post_link,
+        CASE
+            WHEN rpa.avatar_extension != ''
+            THEN 'avatars/' || rpa.avatar_timestamp || rpa.id || '_40' || rpa.avatar_extension 
+            ELSE 'no_profile_avatar_40.png'
+        END AS last_post_avatar
+        FROM "topic" t
+        LEFT JOIN "label" l ON t.label_id = l.id
+        JOIN "post" fp ON t.recent_post_id = fp.id
+        JOIN "post" rp ON t.recent_post_id = rp.id
+        JOIN "user" fpa ON fp.author_id = fpa.id
+        JOIN "user" rpa ON rp.author_id = rpa.id
+        WHERE t.hidden = False
+        AND t.category_id = 36
+        ORDER BY t.sticky DESC,
+        rp.created DESC
+        LIMIT 20 OFFSET 0
+    """
+    
     request_json = request.get_json(force=True)
     page = request_json.get("page", 1)
     pagination = request_json.get("pagination", 15)
