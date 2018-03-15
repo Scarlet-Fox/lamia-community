@@ -24,14 +24,14 @@ topic_ids = sqla.engine.execute(
 
 for _id in topic_ids:
     topic_recent_post = sqla.engine.execute(
-        """SELECT id FROM post WHERE topic_id=%s AND hidden=False ORDER BY created DESC LIMIT 1""" % _id[0]
+        """SELECT id, created FROM post WHERE topic_id=%s AND hidden=False ORDER BY created DESC LIMIT 1""" % _id[0]
     )
     
     p_idx = 0
     for p in topic_recent_post:
         p_idx += 1
         sqla.engine.execute(
-            """UPDATE topic SET recent_post_id=%s WHERE id=%s""" % (p[0], _id[0])
+            """UPDATE topic SET recent_post_id=%s, recent_post_time=to_timestamp(%s) WHERE id=%s""" % (p[0], arrow.get(p[1]).timestamp, _id[0])
         )
         
     topic_first_post = sqla.engine.execute(

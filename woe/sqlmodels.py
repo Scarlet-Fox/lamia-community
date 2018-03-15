@@ -15,6 +15,7 @@ from BeautifulSoup import BeautifulSoup
 from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types import TSVectorType
 from flask.ext.sqlalchemy import BaseQuery
+from sqlalchemy import Index
 from sqlalchemy_searchable import SearchQueryMixin
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
@@ -1097,7 +1098,10 @@ class Topic(db.Model):
     locked = db.Column(db.Boolean, default=False, index=True)
     created = db.Column(db.DateTime, index=True)
     post_count = db.Column(db.Integer, default=0)
+    recent_post_time = db.Column(db.DateTime, index=True)
     view_count = db.Column(db.Integer, default=0)
+    
+    __table_args__ = (Index('sticky_and_recent_post_time_idx', "sticky", "recent_post_time"), )
 
     def __repr__(self):
         return "<Topic: (title='%s', created='%s')>" % (self.title, self.created)
