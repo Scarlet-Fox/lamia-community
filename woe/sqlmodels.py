@@ -1082,6 +1082,11 @@ class Topic(db.Model):
     recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
         name="fk_topic_recentpost", ondelete="SET NULL"), index=True)
     recent_post = db.relationship("Post", foreign_keys="Topic.recent_post_id")
+    
+    first_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
+        name="fk_topic_firstpost", ondelete="SET NULL"), index=True)
+    first_post = db.relationship("Post", foreign_keys="Topic.first_post_id")
+    
     last_seen_by = db.Column(JSONB)
 
     title = db.Column(db.String, index=True)

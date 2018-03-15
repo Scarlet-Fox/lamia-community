@@ -33,6 +33,17 @@ for _id in topic_ids:
         sqla.engine.execute(
             """UPDATE topic SET recent_post_id=%s WHERE id=%s""" % (p[0], _id[0])
         )
+        
+    topic_first_post = sqla.engine.execute(
+        """SELECT id FROM post WHERE topic_id=%s AND hidden=False ORDER BY created ASC LIMIT 1""" % _id[0]
+    )
+    
+    p_idx = 0
+    for p in topic_first_post:
+        p_idx += 1
+        sqla.engine.execute(
+            """UPDATE topic SET first_post_id=%s WHERE id=%s""" % (p[0], _id[0])
+        )
     
     if p_idx == 0:
         sqla.engine.execute(

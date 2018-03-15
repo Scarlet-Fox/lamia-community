@@ -188,8 +188,7 @@ def search_lookup():
                         sqlm.Category.restricted==False
                     ))) \
                 .filter(model_.hidden==False)
-       
-
+        
         results = query_.order_by(sqla.desc(model_.created)).paginate(page, pagination, False)
         has_next = len(query_.order_by(sqla.desc(model_.created)).paginate(pagination+1, 1, False).items) > 0
         if has_next:
