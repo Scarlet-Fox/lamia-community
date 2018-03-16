@@ -35,13 +35,13 @@
     ul.list-group
       li.list-group-item
         .media-left
-          a(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")
+          a(href="{{url_for('view_profile', login_name=entry.author.my_url)}}")
             img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
         .media-body
           a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
           br
           | by 
-          a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
+          a.hover_user(href="{{url_for('view_profile', login_name=entry.author.my_url)}}")= entry.author.display_name
           if current_user.is_admin
             a.float-right(href="/admin/blogentry/edit/?id={{entry.id}}", target="_blank")
               span.glyphicon.glyphicon-cog
@@ -89,7 +89,7 @@
           .list-group-item.post-listing-info
             .row
               .col-xs-2
-                a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}") {{ comment.author.display_name }}
+                a.hover_user(href="{{url_for('view_profile', login_name=comment.author.my_url)}}") {{ comment.author.display_name }}
               .col-xs-10
                 {{ comment.created|humanize_time }}
                 if current_user.is_admin
@@ -98,7 +98,7 @@
           .list-group-item(style="padding: 20px;")
             .row.blog-comment
               .col-sm-2.hidden-xs.hidden-sm
-                a(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")
+                a(href="{{url_for('view_profile', login_name=comment.author.my_url)}}")
                   img.media-object.avatar-mini(src="{{ comment.author.get_avatar_url() }}", width=comment.author.avatar_full_x*0.70, height=comment.author.avatar_full_y*0.70, class="avatar-mini")
               .col-sm-10.col-xs-12!= comment.parsed
             .blog-options

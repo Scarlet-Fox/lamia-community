@@ -34,14 +34,14 @@
         if entry.draft
           li.list-group-item(style="background-color: #FFDCFF;")
             .media-left
-              a(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")
+              a(href="{{url_for('view_profile', login_name=entry.author.my_url)}}")
                 img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
             .media-body
               em
                 a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
                 br
                 | by 
-                a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
+                a.hover_user(href="{{url_for('view_profile', login_name=entry.author.my_url)}}")= entry.author.display_name
                 br
                 span.text-muted {{ entry.published|humanize_time }}
             hr
@@ -52,13 +52,13 @@
         else
           li.list-group-item
             .media-left
-              a(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")
+              a(href="{{url_for('view_profile', login_name=entry.author.my_url)}}")
                 img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
             .media-body
               a(href="/blog/{{blog.slug}}/e/{{entry.slug}}")= entry.title
               br
               | by 
-              a.hover_user(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")= entry.author.display_name
+              a.hover_user(href="{{url_for('view_profile', login_name=entry.author.my_url)}}")= entry.author.display_name
               br
               span.text-muted {{ entry.published|humanize_time }}
             hr
@@ -108,10 +108,10 @@
         li.list-group-item
           for comment in comments
             .media-left
-              a(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")
+              a(href="{{url_for('view_profile', login_name=comment.author.my_url)}}")
                 img.avatar-mini(src="{{comment.author.get_avatar_url("60")}}", width="{{comment.author.avatar_60_x}}", height="{{comment.author.avatar_60_y}}")
             .media-body
-              a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")= comment.author.display_name
+              a.hover_user(href="{{url_for('view_profile', login_name=comment.author.my_url)}}")= comment.author.display_name
               |  commented on 
               a(href="/blog/{{blog.slug}}/e/{{comment.blog_entry.slug}}")= comment.blog_entry.title
               br

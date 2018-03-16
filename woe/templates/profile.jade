@@ -207,14 +207,14 @@ style!= profile.get_custom_css()
             for status in recent_status_updates
               li.list-group-item.front-page-status.sidebar-status-section
                 .media-left
-                  a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+                  a(href="{{url_for('view_profile', login_name=status.author.my_url)}}")
                     img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
                 .media-body
-                  a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+                  a.hover_user(href="{{url_for('view_profile', login_name=status.author.my_url)}}") {{ status.author.display_name }}
                   span &nbsp;says
                     if status.attached_to_user
                       | &nbsp;to 
-                      a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
+                      a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.my_url)}}") {{ status.attached_to_user.display_name }}
                       |:
                   span.discuss 
                     a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
@@ -235,14 +235,14 @@ style!= profile.get_custom_css()
             for status in recent_status_updates_to_user
               li.list-group-item.front-page-status.sidebar-status-section
                 .media-left
-                  a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+                  a(href="{{url_for('view_profile', login_name=status.author.my_url)}}")
                     img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
                 .media-body
-                  a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+                  a.hover_user(href="{{url_for('view_profile', login_name=status.author.my_url)}}") {{ status.author.display_name }}
                   span &nbsp;says
                     if status.attached_to_user
                       | &nbsp;to 
-                      a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
+                      a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.my_url)}}") {{ status.attached_to_user.display_name }}
                       |:
                   span.discuss 
                     a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}

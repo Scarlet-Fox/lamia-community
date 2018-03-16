@@ -16,11 +16,11 @@
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
                     .media-left
-                      a(href="{{url_for('view_profile', login_name=user.login_name)}}")
+                      a(href="{{url_for('view_profile', login_name=user.my_url)}}")
                         img.media-object(src="{{ user.get_avatar_url("40") }}", width="{{ user.avatar_40_x }}", height="{{ user.avatar_40_y }}", class="avatar-mini")
                     .media-body
                       span
-                        a.hover_user(href="{{url_for('view_profile', login_name=user.login_name)}}")= user.display_name
+                        a.hover_user(href="{{url_for('view_profile', login_name=user.my_url)}}")= user.display_name
                   .col-xs-7
                     if all_stats["post_count"].counts[user.login_name] == 1
                       strong
@@ -37,11 +37,11 @@
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
                     .media-left
-                      a(href="{{url_for('view_profile', login_name=user.login_name)}}")
+                      a(href="{{url_for('view_profile', login_name=user.my_url)}}")
                         img.media-object(src="{{ user.get_avatar_url("40") }}", width="{{ user.avatar_40_x }}", height="{{ user.avatar_40_y }}", class="avatar-mini")
                     .media-body
                       span
-                        a.hover_user(href="{{url_for('view_profile', login_name=user.login_name)}}")= user.display_name
+                        a.hover_user(href="{{url_for('view_profile', login_name=user.my_url)}}")= user.display_name
                   .col-xs-7
                     if all_stats["topic_count"].counts[user.login_name] == 1
                       strong
@@ -58,11 +58,11 @@
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
                     .media-left
-                      a(href="{{url_for('view_profile', login_name=user.login_name)}}")
+                      a(href="{{url_for('view_profile', login_name=user.my_url)}}")
                         img.media-object(src="{{ user.get_avatar_url("40") }}", width="{{ user.avatar_40_x }}", height="{{ user.avatar_40_y }}", class="avatar-mini")
                     .media-body
                       span
-                        a.hover_user(href="{{url_for('view_profile', login_name=user.login_name)}}")= user.display_name
+                        a.hover_user(href="{{url_for('view_profile', login_name=user.my_url)}}")= user.display_name
                   .col-xs-7
                     if all_stats["word_count"].counts[user.login_name] == 1
                       strong
@@ -80,11 +80,11 @@
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
                     .media-left
-                      a(href="{{url_for('view_profile', login_name=user.login_name)}}")
+                      a(href="{{url_for('view_profile', login_name=user.my_url)}}")
                         img.media-object(src="{{ user.get_avatar_url("40") }}", width="{{ user.avatar_40_x }}", height="{{ user.avatar_40_y }}", class="avatar-mini")
                     .media-body
                       span
-                        a.hover_user(href="{{url_for('view_profile', login_name=user.login_name)}}")= user.display_name
+                        a.hover_user(href="{{url_for('view_profile', login_name=user.my_url)}}")= user.display_name
                   .col-xs-7
                     if all_stats["boops_given"].counts[user.login_name] == 1
                       strong
@@ -101,11 +101,11 @@
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
                     .media-left
-                      a(href="{{url_for('view_profile', login_name=user.login_name)}}")
+                      a(href="{{url_for('view_profile', login_name=user.my_url)}}")
                         img.media-object(src="{{ user.get_avatar_url("40") }}", width="{{ user.avatar_40_x }}", height="{{ user.avatar_40_y }}", class="avatar-mini")
                     .media-body
                       span
-                        a.hover_user(href="{{url_for('view_profile', login_name=user.login_name)}}")= user.display_name
+                        a.hover_user(href="{{url_for('view_profile', login_name=user.my_url)}}")= user.display_name
                   .col-xs-7
                     if all_stats["status_count"].counts[user.login_name] == 1
                       strong
@@ -122,11 +122,11 @@
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
                     .media-left
-                      a(href="{{url_for('view_profile', login_name=user.login_name)}}")
+                      a(href="{{url_for('view_profile', login_name=user.my_url)}}")
                         img.media-object(src="{{ user.get_avatar_url("40") }}", width="{{ user.avatar_40_x }}", height="{{ user.avatar_40_y }}", class="avatar-mini")
                     .media-body
                       span
-                        a.hover_user(href="{{url_for('view_profile', login_name=user.login_name)}}")= user.display_name
+                        a.hover_user(href="{{url_for('view_profile', login_name=user.my_url)}}")= user.display_name
                   .col-xs-7
                     if all_stats["status_comments_count"].counts[user.login_name] == 1
                       strong
@@ -144,11 +144,11 @@
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
                     .media-left
-                      a(href="{{url_for('view_profile', login_name=user.login_name)}}")
+                      a(href="{{url_for('view_profile', login_name=user.my_url)}}")
                         img.media-object(src="{{ user.get_avatar_url("40") }}", width="{{ user.avatar_40_x }}", height="{{ user.avatar_40_y }}", class="avatar-mini")
                     .media-body
                       span
-                        a.hover_user(href="{{url_for('view_profile', login_name=user.login_name)}}")= user.display_name
+                        a.hover_user(href="{{url_for('view_profile', login_name=user.my_url)}}")= user.display_name
                   .col-xs-7
                     if all_stats["blog_entries_count"].counts[user.login_name] == 1
                       strong
@@ -165,11 +165,11 @@
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
                     .media-left
-                      a(href="{{url_for('view_profile', login_name=user.login_name)}}")
+                      a(href="{{url_for('view_profile', login_name=user.my_url)}}")
                         img.media-object(src="{{ user.get_avatar_url("40") }}", width="{{ user.avatar_40_x }}", height="{{ user.avatar_40_y }}", class="avatar-mini")
                     .media-body
                       span
-                        a.hover_user(href="{{url_for('view_profile', login_name=user.login_name)}}")= user.display_name
+                        a.hover_user(href="{{url_for('view_profile', login_name=user.my_url)}}")= user.display_name
                   .col-xs-7
                     if all_stats["blog_comments_count"].counts[user.login_name] == 1
                       strong
@@ -186,11 +186,11 @@
                 .row(style="margin-bottom: 10px;")
                   .col-xs-5
                     .media-left
-                      a(href="{{url_for('view_profile', login_name=user.login_name)}}")
+                      a(href="{{url_for('view_profile', login_name=user.my_url)}}")
                         img.media-object(src="{{ user.get_avatar_url("40") }}", width="{{ user.avatar_40_x }}", height="{{ user.avatar_40_y }}", class="avatar-mini")
                     .media-body
                       span
-                        a.hover_user(href="{{url_for('view_profile', login_name=user.login_name)}}")= user.display_name
+                        a.hover_user(href="{{url_for('view_profile', login_name=user.my_url)}}")= user.display_name
                   .col-xs-7
                     if all_stats["attachment_count"].counts[user.login_name] == 1
                       strong

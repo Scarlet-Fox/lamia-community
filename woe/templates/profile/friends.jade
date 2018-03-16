@@ -12,7 +12,7 @@ ul.list-group
         .col-sm-12
           for friend in profile.friends()
             .float-left
-              a.hover_user(href="{{url_for('view_profile', login_name=friend.login_name)}}")
+              a.hover_user(href="{{url_for('view_profile', login_name=friend.my_url)}}")
                 img(src="{{friend.get_avatar_url("60")}}", width="{{friend.avatar_60_x}}", height="{{friend.avatar_60_y}}", class="avatar-mini")
     else
       center
@@ -25,10 +25,10 @@ ul.list-group
         .row
           .col-sm-12
             .media-left
-              a(href="{{url_for('view_profile', login_name=friend.friend.login_name)}}")
+              a(href="{{url_for('view_profile', login_name=friend.friend.my_url)}}")
                 img(src="{{friend.friend.get_avatar_url("60")}}", width="{{friend.friend.avatar_60_x}}", height="{{friend.friend.avatar_60_y}}", class="avatar-mini")
             .media-body
-              a(href="{{url_for('view_profile', login_name=friend.friend.login_name)}}")= friend.friend.display_name
+              a(href="{{url_for('view_profile', login_name=friend.friend.my_url)}}")= friend.friend.display_name
               div
                 em Waiting for {{friend.friend.display_name}}...
             .media-body
@@ -40,10 +40,10 @@ ul.list-group
         .row
           .col-sm-12
             .media-left
-              a(href="{{url_for('view_profile', login_name=friend.user.login_name)}}")
+              a(href="{{url_for('view_profile', login_name=friend.user.my_url)}}")
                 img(src="{{friend.user.get_avatar_url("60")}}", width="{{friend.user.avatar_60_x}}", height="{{friend.user.avatar_60_y}}", class="avatar-mini")
             .media-body
-              a(href="{{url_for('view_profile', login_name=friend.user.login_name)}}")= friend.user.display_name
+              a(href="{{url_for('view_profile', login_name=friend.user.my_url)}}")= friend.user.display_name
               .float-right
                 | &nbsp;&nbsp;&nbsp;
                 a.btn.btn-default.post-link(href="/member/{{friend.user.my_url}}/friends/{{friend.friend.my_url}}/approve") Approve
@@ -60,14 +60,14 @@ ul.list-group
           {% for status in friend_status_updates %}
           li.list-group-item.front-page-status.sidebar-status-section
             .media-left
-              a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+              a(href="{{url_for('view_profile', login_name=status.author.my_url)}}")
                 img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
             .media-body
-              a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}") {{ status.author.display_name }}
+              a.hover_user(href="{{url_for('view_profile', login_name=status.author.my_url)}}") {{ status.author.display_name }}
               span &nbsp;says
                 if status.attached_to_user
                   | &nbsp;to 
-                  a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
+                  a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.my_url)}}") {{ status.attached_to_user.display_name }}
                   |:
               span.discuss 
                 a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}

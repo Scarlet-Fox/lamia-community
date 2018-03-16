@@ -11,14 +11,14 @@
           .row
             .col-sm-12.blog-listing-info              
               .media-left 
-                a(href="{{url_for('view_profile', login_name=post.author.login_name)}}")
+                a(href="{{url_for('view_profile', login_name=post.author.my_url)}}")
                   img.avatar-mini(src=post.author.get_avatar_url("60"), width=post.author.avatar_60_x, height=post.author.avatar_60_y)
               .media-body
                 .blog-title
                   a(href="/t/{{post.topic.slug}}/page/1/post/{{post.id}}")= post.topic.title
                 div
                   | by&nbsp;
-                  a.hover_user(href="{{url_for('view_profile', login_name=post.author.login_name)}}") {{post.author.display_name}}
+                  a.hover_user(href="{{url_for('view_profile', login_name=post.author.my_url)}}") {{post.author.display_name}}
                 div= post.created|humanize_time
           .row
             .col-sm-12

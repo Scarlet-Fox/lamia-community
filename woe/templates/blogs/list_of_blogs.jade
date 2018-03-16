@@ -21,7 +21,7 @@ if current_user.is_authenticated()
           .row
             .col-sm-12.blog-listing-info              
               .media-left 
-                a(href="{{url_for('view_profile', login_name=entry.author.login_name)}}")
+                a(href="{{url_for('view_profile', login_name=entry.author.my_url)}}")
                   img.avatar-mini(src=entry.author.get_avatar_url("60"), width=entry.author.avatar_60_x, height=entry.author.avatar_60_y)
               .media-body
                 .blog-title
@@ -55,7 +55,7 @@ if current_user.is_authenticated()
         for blogentry in featured_blog_entries
           li.list-group-item(style="padding: 10px;")
             .media-left 
-              a(href="{{url_for('view_profile', login_name=blogentry.author.login_name)}}")
+              a(href="{{url_for('view_profile', login_name=blogentry.author.my_url)}}")
                 img.avatar-mini(src=blogentry.author.get_avatar_url("60"), width=blogentry.author.avatar_60_x, height=blogentry.author.avatar_60_y)
             .media-body
               strong
@@ -67,10 +67,10 @@ if current_user.is_authenticated()
       for comment in comments
         li.list-group-item(style="padding: 10px;")
           .media-left
-            a(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")
+            a(href="{{url_for('view_profile', login_name=comment.author.my_url)}}")
               img.avatar-mini(src="{{comment.author.get_avatar_url("60")}}", width="{{comment.author.avatar_60_x}}", height="{{comment.author.avatar_60_y}}")
           .media-body
-            a.hover_user(href="{{url_for('view_profile', login_name=comment.author.login_name)}}")= comment.author.display_name
+            a.hover_user(href="{{url_for('view_profile', login_name=comment.author.my_url)}}")= comment.author.display_name
             |  commented on 
             a(href="/blog/{{comment.blog.slug}}/e/{{comment.blog_entry.slug}}")= comment.blog_entry.title
             br
@@ -80,7 +80,7 @@ if current_user.is_authenticated()
       for blog in random_blogs
         li.list-group-item(style="padding: 10px;")
           .media-left 
-            a(href="{{url_for('view_profile', login_name=blog.recent_entry.author.login_name)}}")
+            a(href="{{url_for('view_profile', login_name=blog.recent_entry.author.my_url)}}")
               img.avatar-mini(src=blog.recent_entry.author.get_avatar_url("60"), width=blog.recent_entry.author.avatar_60_x, height=blog.recent_entry.author.avatar_60_y)
           .media-body
             strong

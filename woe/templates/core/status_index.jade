@@ -63,12 +63,12 @@
           ul.list-group
             li.list-group-item
               .media-left
-                a(href="{{url_for('view_profile', login_name=status.author.login_name)}}")
+                a(href="{{url_for('view_profile', login_name=status.author.my_url)}}")
                   img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{status.author.avatar_60_x}}px", height="{{status.author.avatar_60_y}}px", class="avatar-mini")
               .media-body
-                a.hover_user(href="{{url_for('view_profile', login_name=status.author.login_name)}}")= status.author.display_name
+                a.hover_user(href="{{url_for('view_profile', login_name=status.author.my_url)}}")= status.author.display_name
                 if status.attached_to_user != None
-                  span &nbsp;says to <a class="hover_user" href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}">{{status.attached_to_user.display_name|e}}</a>:
+                  span &nbsp;says to <a class="hover_user" href="{{url_for('view_profile', login_name=status.attached_to_user.my_url)}}">{{status.attached_to_user.display_name|e}}</a>:
                 else
                   span &nbsp;says:
                 span.discuss 

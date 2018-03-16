@@ -49,7 +49,7 @@
               span &nbsp;says
                 if status.attached_to_user
                   | &nbsp;to 
-                  a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
+                  a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.my_url)}}") {{ status.attached_to_user.display_name }}
                   |:
               span.status-time {{ status.created|humanize_time }} 
             if current_user.is_admin
@@ -66,7 +66,7 @@
               span &nbsp;says
                 if status.attached_to_user
                   | &nbsp;to 
-                  a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.login_name)}}") {{ status.attached_to_user.display_name }}
+                  a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.my_url)}}") {{ status.attached_to_user.display_name }}
                   |:
               span.status-time {{ status.created|humanize_time }} 
             if current_user.is_admin
@@ -103,10 +103,10 @@
         for participant in status.participants
           li.list-group-item
             .media-left
-              a(href="{{url_for('view_profile', login_name=participant.login_name)}}")
+              a(href="{{url_for('view_profile', login_name=participant.my_url)}}")
                 img.media-object(src="{{ participant.get_avatar_url("60") }}", width="{{ participant.avatar_60_x }}", height="{{ participant.avatar_60_y }}", class="avatar-mini")
             .media-body
-              a.hover_user(href="{{url_for('view_profile', login_name=participant.login_name)}}")= participant.display_name
+              a.hover_user(href="{{url_for('view_profile', login_name=participant.my_url)}}")= participant.display_name
               if current_user == participant:
                 br
               elif current_user != participant and (mod == True) and not status.attached_to_user:
