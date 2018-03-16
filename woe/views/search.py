@@ -203,7 +203,7 @@ def search_lookup():
             parsed_result["title"] = result.topic.title
             parsed_result["url"] = "/t/"+str(result.topic.slug)+"/page/1/post/"+str(result.id)
             parsed_result["description"] = result.html
-            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_profile_link"] = result.author.my_url
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
@@ -228,7 +228,7 @@ def search_lookup():
             parsed_result["title"] = result.title
             parsed_result["url"] = "/t/"+result.slug
             parsed_result["description"] = ""
-            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_profile_link"] = result.author.my_url
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = False
             parsed_results.append(parsed_result)
@@ -253,7 +253,7 @@ def search_lookup():
             parsed_result["title"] = result.title
             parsed_result["url"] = "/blog/"+unicode(result.blog.slug)+"/e/"+unicode(result.slug)
             parsed_result["description"] = result.html
-            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_profile_link"] = result.author.my_url
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
@@ -271,7 +271,7 @@ def search_lookup():
             parsed_result["title"] = result.message
             parsed_result["description"] = ""
             parsed_result["url"] = "/status/"+str(result.id)
-            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_profile_link"] = result.author.my_url
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = False
             parsed_results.append(parsed_result)
@@ -293,7 +293,7 @@ def search_lookup():
             parsed_result["title"] = result.pm.title
             parsed_result["description"] = result.message
             parsed_result["url"] = "/messages/"+str(result.pm.id)+"/page/1/post/"+str(result.id)
-            parsed_result["author_profile_link"] = result.author.login_name
+            parsed_result["author_profile_link"] = result.author.my_url
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)

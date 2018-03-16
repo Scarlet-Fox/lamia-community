@@ -233,7 +233,7 @@ def new_message_in_pm_topic(pk):
     parsed_post["user_title"] = message.author.title
     parsed_post["_id"] = message.id
     parsed_post["author_name"] = message.author.display_name
-    parsed_post["author_login_name"] = message.author.login_name
+    parsed_post["author_login_name"] = message.author.my_url
     post_count = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic).count()
 
     notify_users = []
@@ -305,7 +305,7 @@ def private_message_posts(pk):
         parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
-        parsed_post["author_login_name"] = post.author.login_name
+        parsed_post["author_login_name"] = post.author.my_url
         parsed_post["_id"] = post.id
 
         if current_user.is_authenticated():
@@ -526,7 +526,7 @@ def create_message_index(target):
 
     if target:
         try:
-            target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]
+            target_user = sqla.session.query(sqlm.User).filter_by(my_url=target)[0]
         except IndexError:
             pass
 
@@ -585,7 +585,7 @@ def messages_topics():
                 )[0]
 
         try:
-            _parsed["participants"] = [[u.author.login_name, u.author.display_name, ", "] for u in pm_participants]
+            _parsed["participants"] = [[u.author.my_url, u.author.display_name, ", "] for u in pm_participants]
             _parsed["participants"][-1][2] = ""
         except:
             continue
@@ -604,7 +604,7 @@ def messages_topics():
         _parsed["last_post_by"] = message.last_reply.author.display_name
         _parsed["last_post_x"] = message.last_reply.author.avatar_40_x
         _parsed["last_post_y"] = message.last_reply.author.avatar_40_y
-        _parsed["last_post_by_login_name"] = message.last_reply.author.login_name
+        _parsed["last_post_by_login_name"] = message.last_reply.author.my_url
         _parsed["last_post_author_avatar"] = message.last_reply.author.get_avatar_url("60")
         _parsed["message_count"] = "{:,}".format(message.count)
         _parsed["_id"] = message.id

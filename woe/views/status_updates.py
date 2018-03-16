@@ -26,7 +26,7 @@ def status_update_replies(status):
         parsed_reply = {}
         parsed_reply["text"] = reply.message
         parsed_reply["user_name"] = reply.author.display_name
-        parsed_reply["author_login_name"] = reply.author.login_name
+        parsed_reply["author_login_name"] = reply.author.my_url
         parsed_reply["user_avatar"] = reply.author.get_avatar_url("60")
         parsed_reply["user_avatar_x"] = reply.author.avatar_60_x
         parsed_reply["user_avatar_y"] = reply.author.avatar_60_y
@@ -121,13 +121,13 @@ def status_update_index():
             parsed_status = {}
 
             parsed_status["_id"] = status.id
-            parsed_status["profile_address"] = url_for('view_profile', login_name=status.author.login_name)
+            parsed_status["profile_address"] = url_for('view_profile', login_name=status.author.my_url)
             parsed_status["user_name"] = status.author.display_name
             parsed_status["message"] = status.message
             parsed_status["user_avatar"] = status.author.get_avatar_url("60")
             if status.attached_to_user != None:
                 parsed_status["attached_to_user"] = status.attached_to_user.display_name
-                parsed_status["attached_to_user_url"] = url_for('view_profile', login_name=status.attached_to_user.login_name)
+                parsed_status["attached_to_user_url"] = url_for('view_profile', login_name=status.attached_to_user.my_url)
             else:
                 parsed_status["attached_to_user"] = False
             parsed_status["user_avatar_x"] = status.author.avatar_60_x
@@ -214,7 +214,7 @@ def make_status_update_reply(status):
     parsed_reply["user_name"] = sc.author.display_name
     parsed_reply["user_avatar"] = sc.author.get_avatar_url("60")
     parsed_reply["user_avatar_x"] = sc.author.avatar_60_x
-    parsed_reply["author_login_name"] = sc.author.login_name
+    parsed_reply["author_login_name"] = sc.author.my_url
     parsed_reply["user_avatar_y"] = sc.author.avatar_60_y
     parsed_reply["time"] = humanize_time(sc.created)
 

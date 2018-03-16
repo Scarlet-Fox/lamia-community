@@ -225,7 +225,7 @@ def dashboard_notifications():
             parsed_["time"] = humanize_time(notification.created)
             parsed_["stamp"] = arrow.get(notification.created).timestamp
             parsed_["member_disp_name"] = notification.author.display_name
-            parsed_["member_name"] = notification.author.login_name
+            parsed_["member_name"] = notification.author.my_url
             parsed_["member_pk"] = unicode(notification.author.id)
             parsed_["text"] = notification.message
             parsed_["id"] = notification.id
