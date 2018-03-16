@@ -232,7 +232,7 @@ def get_user_info_api():
     user_name = urllib2.unquote(user_name)
 
     try:
-        user = sqla.session.query(sqlm.User).filter_by(login_name=user_name)[0]
+        user = sqla.session.query(sqlm.User).filter_by(my_url=user_name)[0]
     except:
         return app.jsonify(data=False)
 
@@ -262,7 +262,7 @@ def get_user_info_api():
         avatar_x=user.avatar_60_x,
         avatar_y=user.avatar_60_y,
         name=user.display_name,
-        login_name=user.login_name,
+        login_name=user.my_url,
         last_seen=humanize_time(user.last_seen),
         last_seen_at=last_at,
         last_seen_url=last_url,
