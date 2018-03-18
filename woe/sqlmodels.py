@@ -326,12 +326,12 @@ class EmailLog(db.Model):
     body = db.Column(db.Text, index=True)
     result = db.Column(db.Text)
 
-class Announcement(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    subject = db.Column(db.Text, index=True)
-    body = db.Column(db.Text, index=True)
-    draft = db.Column(db.Boolean, default=True, index=True)
-    sent = db.Column(db.DateTime, index=True)
+# class Notice(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     subject = db.Column(db.Text, index=True)
+#     body = db.Column(db.Text, index=True)
+#     draft = db.Column(db.Boolean, default=True, index=True)
+#     sent = db.Column(db.DateTime, index=True)
 
 ############################################################
 # Core User Models
@@ -1397,7 +1397,12 @@ class Report(db.Model):
     report_assigned_to = db.relationship("User", foreign_keys="Report.report_assigned_to_id")
     
     created = db.Column(db.DateTime, index=True)
-
+    resolved = db.Column(db.DateTime, index=True)
+    
+    marked_as_resolved_by_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_report_resolver", ondelete="CASCADE"), index=True)
+    mark_as_resolved_by = db.relationship("User", foreign_keys="Report.marked_as_resolved_by_id")
+    
     def __repr__(self):
         return "<Report: (content_type='%s', content_id='%s')>" % (self.content_type, self.content_id)
 
@@ -1471,4 +1476,38 @@ class Ban(db.Model):
     
     def __repr__(self):
         return "<Ban: (recipient='%s', expires='%s', forever='%s')>" % (self.recipient.display_name, self.expires, self.forever)
+    
+############################################################
+# Administration Models
+############################################################
+
+class ModActionLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    # TODO : Create signal processor for mod actions
+    moderator_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_modaction_log", ondelete="CASCADE"), index=True)
+    moderator = db.relationship("User", foreign_keys="ModActionLog.moderator_id")
+    created = db.Column(db.DateTime, index=True)
+    
+    CATEGORY_CHOICES = (
+        ('blog', 'Blog'),
+        ('blog_comment', 'Blog Comment'),
+        ('status_update', 'Status Update'),
+        ('status_comment', 'Status Comment'),
+        ('topic', 'Topic'),
+        ('post', 'Post'),
+        ('user', 'User Profile'),
+    )
+    category = db.Column(db.Text, index=True)
+    content_url = db.Column(db.String, default="", index=True)
+    
+    action_taken = db.Column(db.Text, index=True)
+    
+class Smiley(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    filename = db.Column(db.Text, index=True)
+    replaces_text = db.Column(db.Text, index=True)
+    
     
