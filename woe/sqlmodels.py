@@ -553,6 +553,11 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False, index=True)
     is_mod = db.Column(db.Boolean, default=False, index=True)
     
+    can_mod_forum = db.Column(db.Boolean, default=False, index=True)
+    can_mod_blogs = db.Column(db.Boolean, default=False, index=True)
+    can_mod_user_profiles = db.Column(db.Boolean, default=False, index=True)
+    can_mod_status_updates = db.Column(db.Boolean, default=False, index=True)
+    
     navbar_top = db.Column(db.Boolean, default=False, index=True)
 
     display_name_history = db.Column(JSONB)
@@ -1431,6 +1436,15 @@ class ReportComment(db.Model):
     
     def __repr__(self):
         return "<ReportComment: (created='%s', comment='%s')>" % (self.created, self.comment[0:30])
+
+class InfractionPreset(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    title = db.Column(db.String, index=True)
+    points = db.Column(db.Integer, default=0)
+        
+    def __repr__(self):
+        return "<Infraction Preset: (title='%s', points='%s')>" % (self.title, self.points)
 
 class Infraction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
