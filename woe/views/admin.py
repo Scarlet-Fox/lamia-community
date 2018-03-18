@@ -13,8 +13,10 @@ class AuthAdminIndexView(admin.AdminIndexView):
     def index(self):
         if not current_user.is_mod and not current_user.is_admin:
             return redirect("/")
-        return super(AuthAdminIndexView, self).index()
+            
+        return self.render('admin/index.html', arg1=42)
 
-admin = admin.Admin(app, index_view=AuthAdminIndexView())
+
+admin = admin.Admin(app, index_view=AuthAdminIndexView(), name="Staff CP")
 
 

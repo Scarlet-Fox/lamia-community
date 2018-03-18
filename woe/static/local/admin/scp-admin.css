@@ -1,0 +1,14 @@
+.panel-purple {
+  border-color: #b214e2;
+}
+.panel-purple > .panel-heading {
+  border-color: #b214e2;
+  color: white;
+  background-color: #b214e2;
+}
+.panel-purple > a {
+  color: #b214e2;
+}
+.panel-purple > a:hover {
+  color: #691184;
+}

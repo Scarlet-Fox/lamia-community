@@ -16,7 +16,13 @@
         {%if config.get('FLASK_ADMIN_SWATCH', 'default') == 'default' %}
         <link href="{{ admin_static.url(filename='bootstrap/bootstrap3/css/bootstrap-theme.min.css', v='3.3.5') }}" rel="stylesheet">
         {%endif%}
-        <link href="{{ admin_static.url(filename='admin/css/bootstrap3/admin.css', v='1.1.1') }}" rel="stylesheet">
+        <!-- <link href="{{ admin_static.url(filename='admin/css/bootstrap3/admin.css', v='1.1.1') }}" rel="stylesheet"> -->
+        <link href="/static/assets/admin/css/sb-admin-2.min.css" rel="stylesheet">
+        <link href="/static/local/admin/scp-admin.css" rel="stylesheet">
+        
+        <!-- Custom Fonts -->
+        <link href="/static/assets/admin/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
         {% if admin_view.extra_css %}
           {% for css_url in admin_view.extra_css %}
             <link href="{{ css_url }}" rel="stylesheet">

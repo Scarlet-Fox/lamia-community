@@ -1377,7 +1377,7 @@ class Report(db.Model):
         name="fk_report_content_author", ondelete="CASCADE"), index=True)
     content_author = db.relationship("User", foreign_keys="Report.content_author_id")
     reported_content_html = db.Column(db.Text)
-
+    
     report_message = db.Column(db.Text, index=True)
     report_author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_report_report_author", ondelete="CASCADE"), index=True)
