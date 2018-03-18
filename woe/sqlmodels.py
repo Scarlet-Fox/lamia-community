@@ -1419,11 +1419,11 @@ class ReportComment(db.Model):
     
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_reportcomment_author", ondelete="CASCADE"), index=True)
-    author = db.relationship("User", foreign_keys="Report.author_id")
+    author = db.relationship("User", foreign_keys="ReportComment.author_id")
     
     report_id = db.Column(db.Integer, db.ForeignKey('report.id',
         name="fk_reportcomment_report", ondelete="CASCADE"), index=True)
-    report = db.relationship("Report", foreign_keys="Report.report_id")
+    report = db.relationship("Report", foreign_keys="ReportComment.report_id")
     
     boops = db.relationship("User",
                     secondary=report_comment_boop_table,

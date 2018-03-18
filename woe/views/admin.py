@@ -17,3 +17,4 @@ class AuthAdminIndexView(admin.AdminIndexView):
 
 admin = admin.Admin(app, index_view=AuthAdminIndexView())
 
+
