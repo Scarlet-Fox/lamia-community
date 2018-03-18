@@ -743,50 +743,6 @@ class Signature(db.Model):
     active = db.Column(db.Boolean, default=True, index=True)
 
 ############################################################
-# Moderation Models
-############################################################
-
-class Report(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String, default="", index=True)
-    content_type = db.Column(db.String, default="", index=True)
-    content_id = db.Column(db.Integer, index=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_report_author", ondelete="CASCADE"), index=True)
-    author = db.relationship("User")
-
-    report = db.Column(db.Text, index=True)
-    content_html = db.Column(db.Text)
-
-    STATUS_CHOICES = (
-        ('ignored', 'Ignored'),
-        ('open', 'Open'),
-        ('feedback', 'Feedback Requested'),
-        ('waiting', 'Waiting'),
-        ('action taken', 'Action Taken')
-    )
-
-    status = db.Column(db.String, default="open", index=True)
-    created = db.Column(db.DateTime, index=True)
-
-    def __repr__(self):
-        return "<Report: (content_type='%s', content_id='%s')>" % (self.content_type, self.content_id)
-
-class ReportComment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    created = db.Column(db.DateTime, index=True)
-    comment = db.Column(db.Text, index=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_reportcomment_author", ondelete="CASCADE"), index=True)
-    author = db.relationship("User")
-    report_id = db.Column(db.Integer, db.ForeignKey('report.id',
-        name="fk_reportcomment_report", ondelete="CASCADE"), index=True)
-    report = db.relationship("Report")
-
-    def __repr__(self):
-        return "<ReportComment: (created='%s', comment='%s')>" % (self.created, self.comment[0:30])
-
-############################################################
 # Attachment Models
 ############################################################
 
@@ -1406,3 +1362,113 @@ def find_blog_entry_slug(title, blog):
             return try_slug(slug, blog, count+1)
 
     return try_slug(slug, blog)
+
+############################################################
+# Moderation Models
+############################################################
+
+class Report(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content_url = db.Column(db.String, default="", index=True)
+    content_type = db.Column(db.String, default="", index=True)
+    content_id = db.Column(db.Integer, index=True)
+    
+    content_author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_report_content_author", ondelete="CASCADE"), index=True)
+    content_author = db.relationship("User", foreign_keys="Report.content_author_id")
+    reported_content_html = db.Column(db.Text)
+
+    report_message = db.Column(db.Text, index=True)
+    report_author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_report_report_author", ondelete="CASCADE"), index=True)
+    report_author = db.relationship("User", foreign_keys="Report.content_author_id")
+
+    STATUS_CHOICES = (
+        ('ignored', 'Ignored'),
+        ('open', 'Open'),
+        ('feedback', 'Feedback Requested'),
+        ('waiting', 'Waiting'),
+        ('action taken', 'Action Taken')
+    )
+    status = db.Column(db.String, default="open", index=True)
+    
+    report_assigned_to_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_report_handler", ondelete="CASCADE"), index=True)
+    report_assigned_to = db.relationship("User", foreign_keys="Report.report_assigned_to_id")
+    
+    created = db.Column(db.DateTime, index=True)
+
+    def __repr__(self):
+        return "<Report: (content_type='%s', content_id='%s')>" % (self.content_type, self.content_id)
+
+report_comment_boop_table = db.Table('report_comment_boops_from_users', db.metadata,
+    db.Column('report_comment_id', db.Integer, db.ForeignKey('report_comment.id',
+        name="fk_reportboop_report", ondelete="CASCADE"), index=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_reportboop_user", ondelete="CASCADE"), index=True))
+
+class ReportComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created = db.Column(db.DateTime, index=True)
+    comment = db.Column(db.Text)
+    
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_reportcomment_author", ondelete="CASCADE"), index=True)
+    author = db.relationship("User", foreign_keys="Report.author_id")
+    
+    report_id = db.Column(db.Integer, db.ForeignKey('report.id',
+        name="fk_reportcomment_report", ondelete="CASCADE"), index=True)
+    report = db.relationship("Report", foreign_keys="Report.report_id")
+    
+    boops = db.relationship("User",
+                    secondary=report_comment_boop_table,
+                    backref="booped_report_comments")
+    
+    def __repr__(self):
+        return "<ReportComment: (created='%s', comment='%s')>" % (self.created, self.comment[0:30])
+
+class Infraction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    title = db.Column(db.String, index=True)
+    points = db.Column(db.Integer, default=0)
+    
+    report_id = db.Column(db.Integer, db.ForeignKey('report.id',
+        name="fk_infraction_report", ondelete="CASCADE"), index=True)
+    report = db.relationship("Report", foreign_keys="Infraction.report_id")
+    
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_infraction_author", ondelete="CASCADE"), index=True)
+    author = db.relationship("User", foreign_keys="Infraction.author_id")
+    
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_infraction_recipient", ondelete="CASCADE"), index=True)
+    recipient = db.relationship("User", foreign_keys="Infraction.recipient_id")
+    
+    deleted = db.Column(db.Boolean, default=False, index=True)
+    deleted_by_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_infraction_deleted_by", ondelete="CASCADE"), index=True)
+    deleted_by = db.relationship("User", foreign_keys="Infraction.deleted_by_id")
+    
+    created = db.Column(db.DateTime, index=True)
+    explanation = db.Column(db.Text)
+    expires = db.Column(db.DateTime, index=True)
+    
+    def __repr__(self):
+        return "<Infraction: (author='%s', recipient='%s', points='%s')>" % (self.author.display_name, self.recipient.display_name, self.points)
+        
+class Ban(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_ban_recipient", ondelete="CASCADE"), index=True)
+    recipient = db.relationship("User", foreign_keys="Ban.recipient_id")
+    
+    explanation = db.Column(db.Text)
+    expires = db.Column(db.DateTime, index=True)
+    forever = db.Column(db.Boolean, default=False, index=True)
+    created = db.Column(db.DateTime, index=True)
+    
+    def __repr__(self):
+        return "<Ban: (recipient='%s', expires='%s', forever='%s')>" % (self.recipient.display_name, self.expires, self.forever)
+    
