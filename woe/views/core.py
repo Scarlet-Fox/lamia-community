@@ -300,6 +300,8 @@ def make_report():
             return abort(500)
         content_id = content.id
         content_html = content.html
+        content_author = content.author
+        report_area = content.topic.category.slug
         url = "/t/%s/page/1/post/%s" % (content.topic.slug, content.id)
     elif _type == "status":
         try:
@@ -308,6 +310,8 @@ def make_report():
             return abort(500)
         content_id = content.id
         content_html = content.message
+        content_author = content.author
+        report_area = "status"
         url = "/status/%s" % (content.id,)
     elif _type == "blogentry":
         try:
@@ -316,6 +320,8 @@ def make_report():
             return abort(500)
         content_id = content.id
         content_html = content.html
+        content_author = content.author
+        report_area = "blogentry"
         url = "/blog/%s/e/%s" % (content.blog.slug,content.slug)
     elif _type == "blogcomment":
         try:
@@ -324,6 +330,8 @@ def make_report():
             return abort(500)
         content_id = content.id
         content_html = content.html
+        content_author = content.author
+        report_area = "blogcomment"
         url = "/blog/%s/e/%s" % (content.blog.slug,content.blog_entry.slug)
     elif _type == "pm":
         try:
@@ -332,6 +340,8 @@ def make_report():
             return abort(500)
         content_id = content.id
         content_html = content.message
+        content_author = content.author
+        report_area = "pm"
         url = "/messages/%s/page/1/post/%s" % (content.pm.id, content.id)
     elif _type == "profile":
         try:
@@ -340,28 +350,32 @@ def make_report():
             return abort(500)
         content_id = content.id
         content_html = content.about_me
+        content_author = content
+        report_area = "user"
         url = "/member/%s" % (content.my_url)
 
-    try:
-        report = sqla.session.query(sqlm.Report).filter_by(
-            content_type=_type,
-            content_id=content_id,
-            author=current_user._get_current_object()) \
-            .filter(sqlm.Report.created > arrow.utcnow().datetime.replace(tzinfo=None))[0]
-        return app.jsonify(status="reported")
-    except:
-        sqla.session.rollback()
-        pass
+    # try:
+    #     report = sqla.session.query(sqlm.Report).filter_by(
+    #         content_type=_type,
+    #         content_id=content_id,
+    #         content_author=current_user._get_current_object()) \
+    #         .filter(sqlm.Report.created > arrow.utcnow().datetime.replace(tzinfo=None))[0]
+    #     return app.jsonify(status="reported")
+    # except:
+    #     sqla.session.rollback()
+    #     pass
 
     report = sqlm.Report(
         content_type = _type,
-        url = url,
+        content_url = url,
         created = arrow.utcnow().datetime.replace(tzinfo=None),
         content_id = content_id,
-        author = current_user._get_current_object(),
-        report = text,
+        content_author = content_author,
+        report_author = current_user._get_current_object(),
         status = "open",
-        content_html = content_html
+        reported_content_html = content_html,
+        report_message = text,
+        report_area = report_area
     )
 
     sqla.session.add(report)

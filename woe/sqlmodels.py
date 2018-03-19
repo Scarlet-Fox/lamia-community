@@ -1376,6 +1376,7 @@ class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content_url = db.Column(db.String, default="", index=True)
     content_type = db.Column(db.String, default="", index=True)
+    report_area = db.Column(db.String, default="", index=True)
     content_id = db.Column(db.Integer, index=True)
     
     content_author_id = db.Column(db.Integer, db.ForeignKey('user.id',

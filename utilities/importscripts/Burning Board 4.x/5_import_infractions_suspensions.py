@@ -73,12 +73,9 @@ for s in c.fetchall():
         created = arrow.get(s["time"]).datetime
     )
     
-    expires = int(i["expires"])
-    
     if s["warningID"] != None:
-        new_suspension = Infraction.query.filter_by(id=warning_ids[int(s["warningID"])])[0]
-    else:
-        new_suspension = None
+        new_suspension.infraction = Infraction.query.filter_by(id=warning_ids[int(s["warningID"])])[0]
+    expires = int(s["expires"])
     
     if expires == 0:
         new_suspension.forever = True
