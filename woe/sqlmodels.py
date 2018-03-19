@@ -1501,6 +1501,17 @@ class Ban(db.Model):
 # Administration Models
 ############################################################
 
+class ModSelectedPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    mod_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_modselectedpost_author", ondelete="CASCADE"), index=True)
+    mod = db.relationship("User", foreign_keys="ModSelectedPost.mod_id")
+    
+    post_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_modselectedpost_post", ondelete="CASCADE"), index=True)
+    post = db.relationship("Post", foreign_keys="ModSelectedPost.post_id")
+
 class ModActionLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
