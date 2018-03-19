@@ -1453,7 +1453,7 @@ class Infraction(db.Model):
     points = db.Column(db.Integer, default=0)
     
     report_id = db.Column(db.Integer, db.ForeignKey('report.id',
-        name="fk_infraction_report", ondelete="CASCADE"), index=True)
+        name="fk_infraction_report", ondelete="CASCADE"), index=True, nullable=True)
     report = db.relationship("Report", foreign_keys="Infraction.report_id")
     
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
@@ -1466,12 +1466,13 @@ class Infraction(db.Model):
     
     deleted = db.Column(db.Boolean, default=False, index=True)
     deleted_by_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_infraction_deleted_by", ondelete="CASCADE"), index=True)
+        name="fk_infraction_deleted_by", ondelete="CASCADE"), index=True, nullable=True)
     deleted_by = db.relationship("User", foreign_keys="Infraction.deleted_by_id")
     
     created = db.Column(db.DateTime, index=True)
     explanation = db.Column(db.Text)
     expires = db.Column(db.DateTime, index=True)
+    forever = db.Column(db.Boolean, default=False, index=True)
     
     def __repr__(self):
         return "<Infraction: (author='%s', recipient='%s', points='%s')>" % (self.author.display_name, self.recipient.display_name, self.points)
@@ -1483,8 +1484,12 @@ class Ban(db.Model):
         name="fk_ban_recipient", ondelete="CASCADE"), index=True)
     recipient = db.relationship("User", foreign_keys="Ban.recipient_id")
     
+    infraction_id = db.Column(db.Integer, db.ForeignKey('infraction.id',
+        name="fk_ban_infraction", ondelete="CASCADE"), index=True, nullable=True)
+    infraction = db.relationship("Infraction", foreign_keys="Ban.infraction_id")
+    
     explanation = db.Column(db.Text)
-    expires = db.Column(db.DateTime, index=True)
+    expires = db.Column(db.DateTime, index=True, nullable=True)
     forever = db.Column(db.Boolean, default=False, index=True)
     created = db.Column(db.DateTime, index=True)
     
