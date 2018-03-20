@@ -656,7 +656,7 @@ body(role='document')
   script(type="text/javascript").
   if current_user.is_authenticated()
     script(type="text/javascript").
-      window.woe_is_me = "{{current_user.id+"-"+current_user.email_address}}";
+      window.woe_is_me = "{{current_user.id}}-{{current_user.email_address}}";
       window.my_tz = "{{current_user.time_zone}}";
       {% if current_user.is_authenticated() %}
       window.logged_in = true;
