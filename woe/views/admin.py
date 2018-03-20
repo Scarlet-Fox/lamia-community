@@ -37,3 +37,24 @@ class AuthAdminIndexView(admin.AdminIndexView):
 admin = admin.Admin(app, index_view=AuthAdminIndexView(), name="Staff CP")
 
 
+# TODO Moderation
+# TODO Add my reports list view
+# TODO Add global reports list view
+# TODO Add completed reports list view
+# TODO Add comment loading ajax view
+# TODO Add new comment ajax view
+# TODO Add individual report custom view
+# TODO Add active infraction list view
+# TODO Add most wanted listing
+# TODO Add listing of users by current infr
+# TODO Add ajax view for creating infraction
+# TODO Add view for active bans
+# TODO Add ajax view for modifying a ban
+# TODO Add chart to the front showing reports vs infractions
+# TODO Show recent moderation alerts
+# TODO Log all moderation actions
+# TODO Verify that all front end moderation actions are working
+# TODO Add mod actions that are missing
+# TODO Add status reply mod actions
+# TODO Add code for jump to status reply
+# TODO Write burning board status import script
