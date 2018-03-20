@@ -961,6 +961,12 @@ category_watchers_table = db.Table('category_watchers', db.metadata,
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
         name="fk_categorywatchers_user", ondelete="CASCADE"), index=True))
 
+category_mods_table = db.Table('category_moderators', db.metadata,
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id',
+        name="fk_categorymods_category", ondelete="CASCADE"), index=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_categorymods_user", ondelete="CASCADE"), index=True))
+
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -978,6 +984,8 @@ class Category(db.Model):
                     secondary=allowed_user_table)
     allowed_labels = db.relationship("Label",
                     secondary=allowed_label_table)
+    moderators = db.relationship("User",
+                    secondary=category_mods_table)
 
     recent_post_id = db.Column(db.Integer, db.ForeignKey('post.id',
         name="fk_category_recentpost", ondelete="SET NULL"), index=True)
