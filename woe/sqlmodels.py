@@ -721,6 +721,38 @@ class User(db.Model):
             db.session.rollback()
             return False
             
+    def get_modded_areas(self):
+        forum_categories = db.engine.execute(
+                """SELECT DISTINCT slug 
+                FROM (
+                    SELECT c.slug FROM section_moderators s
+                    JOIN category c ON s.section_id = c.section_id
+                    WHERE s.user_id = 45
+                    UNION
+                    SELECT cat.slug FROM category_moderators c
+                    JOIN category cat ON c.category_id = cat.id
+                    WHERE c.user_id = 45
+                ) sl"""
+            )
+            
+        my_areas = {}
+        for s in forum_categories:
+            my_areas[s[0]] = 1
+            
+        my_areas = my_areas.keys()
+        
+        if self.can_mod_blogs:
+            my_areas.append("blogentry")
+            my_areas.append("blogcomment")
+    
+        if self.can_mod_user_profiles:
+            my_areas.append("user")
+    
+        if self.can_mod_status_updates:
+            my_areas.append("status")
+            
+        return my_areas
+            
     def get_avatar_url(self, size=""):
         if current_user.no_images:
             return ""

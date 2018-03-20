@@ -22,29 +22,10 @@ class AuthAdminIndexView(admin.AdminIndexView):
         if current_user.is_admin:
             my_area_reports = all_active_reports
         else:
-            """SELECT DISTINCT slug 
-            FROM (
-                SELECT c.slug FROM section_moderators s
-                JOIN category c ON s.section_id = c.section_id
-                WHERE s.user_id = 45
-                UNION
-                SELECT cat.slug FROM category_moderators c
-                JOIN category cat ON c.category_id = cat.id
-                WHERE c.user_id = 45
-            ) sl"""
-            my_areas = {}
-        
-            if current_user.can_mod_blogs:
-                my_areas.append("blogentry")
-                my_areas.append("blogcomment")
-        
-            if current_user.can_mod_user_profiles:
-                my_areas.append("user")
-        
-            if current_user.can_mod_status_updates:
-                my_areas.append("status")
-                
-            my_area_reports = 0
+            my_area_reports = sqlm.Report.query.filter(
+                    sqlm.Report.status.in_(["open", "feedback", "waiting"]),
+                    sqlm.Report.report_area.in_(current_user.get_modded_areas())
+                ).count()
         
         return self.render('admin/index.html', 
                 all_active_reports=all_active_reports,
