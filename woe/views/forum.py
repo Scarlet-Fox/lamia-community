@@ -72,7 +72,7 @@ def toggle_follow_category(slug):
     except IndexError:
         return abort(404)
         
-    if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
+    if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
         return abort(404)
 
     if not current_user._get_current_object() in category.watchers:
@@ -471,7 +471,7 @@ def topic_posts(slug):
     except IndexError:
         return abort(404)
 
-    if topic.category.restricted == True and not current_user.is_admin and not current_user in topic.category.allowed_users:
+    if (topic.category.restricted == True and not current_user.is_admin) or current_user in topic.category.restricted_users:
         return abort(404)
         
     if current_user._get_current_object() in topic.banned:
@@ -824,7 +824,7 @@ def topic_poll(slug):
     if current_user._get_current_object() in topic.banned:
         return abort(403)
         
-    if topic.category.restricted == True and not current_user.is_admin and not current_user in topic.category.allowed_users:
+    if (topic.category.restricted == True and not current_user.is_admin) or current_user in topic.category.restricted_users:
         return abort(404)
 
     if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
@@ -877,7 +877,7 @@ def topic_index(slug, page, post):
     if current_user._get_current_object() in topic.banned:
         return abort(403)
         
-    if topic.category.restricted == True and not current_user.is_admin and not current_user in topic.category.allowed_users:
+    if (topic.category.restricted == True and not current_user.is_admin) or current_user in topic.category.restricted_users:
         return abort(404)
 
     if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
@@ -1025,7 +1025,7 @@ def category_filter_preferences(slug):
         return abort(404)
     if not current_user.is_authenticated():
         return app.jsonify(preferences={})
-    if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
+    if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
         return abort(404)
         
     if current_user.data is None:
@@ -1137,7 +1137,7 @@ def new_topic(slug):
             category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
         except IndexError:
             return abort(404)
-        if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
+        if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
             return abort(404)
             
         request_json = request.get_json(force=True)
@@ -1276,7 +1276,7 @@ def new_topic(slug):
     else:
         try:
             category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
-            if category.restricted == True and not current_user.is_admin and current_user not in category.allowed_users:
+            if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
                 return abort(404)
         except IndexError:
             return abort(404)
@@ -1289,7 +1289,7 @@ def category_topics(slug):
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
-    if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
+    if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
         return abort(404)
 
     if current_user.is_authenticated():
@@ -1418,7 +1418,7 @@ def category_index(slug):
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
-    if category.restricted == True and not current_user.is_admin and not current_user in category.allowed_users:
+    if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
         return abort(404)
 
     subcategories = sqla.session.query(sqlm.Category).filter_by(parent=category).all()

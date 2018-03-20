@@ -943,11 +943,11 @@ class Section(db.Model):
     def __repr__(self):
         return "<Section: (name='%s', weight='%s')>" % (self.name, self.weight)
 
-allowed_user_table = db.Table('category_allowed_users', db.metadata,
+restricted_user_table = db.Table('category_restricted_users', db.metadata,
     db.Column('category_id', db.Integer, db.ForeignKey('category.id',
-        name="fk_allowedcategoryuser_category", ondelete="CASCADE"), index=True),
+        name="fk_restrictedcategoryuser_category", ondelete="CASCADE"), index=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
-        name="fk_allowedcategoryuser_user", ondelete="CASCADE"), index=True))
+        name="fk_restrictedcategoryuser_user", ondelete="CASCADE"), index=True))
 
 allowed_label_table = db.Table('category_allowed_labels', db.metadata,
     db.Column('category_id', db.Integer, db.ForeignKey('category.id',
@@ -980,8 +980,8 @@ class Category(db.Model):
 
     watchers = db.relationship("User",
                     secondary=category_watchers_table)
-    allowed_users = db.relationship("User",
-                    secondary=allowed_user_table)
+    restricted_users = db.relationship("User",
+                    secondary=restricted_user_table)
     allowed_labels = db.relationship("Label",
                     secondary=allowed_label_table)
     moderators = db.relationship("User",
