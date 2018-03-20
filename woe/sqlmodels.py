@@ -934,12 +934,21 @@ class Label(db.Model):
     def __repr__(self):
         return "%s" % (self.label,)
 
+section_mods_table = db.Table('section_moderators', db.metadata,
+    db.Column('section_id', db.Integer, db.ForeignKey('section.id',
+        name="fk_sectionmods_section", ondelete="CASCADE"), index=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id',
+        name="fk_sectionmods_user", ondelete="CASCADE"), index=True))
+
 class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, index=True)
     slug = db.Column(db.String, unique=True)
     weight = db.Column(db.Integer, default=0, index=True)
 
+    moderators = db.relationship("User",
+                    secondary=section_mods_table)
+                    
     def __repr__(self):
         return "<Section: (name='%s', weight='%s')>" % (self.name, self.weight)
 
