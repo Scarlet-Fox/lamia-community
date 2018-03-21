@@ -69,7 +69,7 @@
     {% endif %}
 
     {% block model_list_table %}
-    <div class="table-responsive">
+    <div class="">
     <table class="table table-striped table-bordered table-hover model-list">
         <thead>
             <tr>
@@ -204,6 +204,14 @@
                 );
             {% endif %}
         })(jQuery);
+        
+        $(".model-list").dataTable({
+          "ordering": false,
+          "searching": false,
+          "paging": false,
+          "responsive": true,
+          "info": false
+        });
 
         // Catch exception when closing dialog with <esc> key
         // and prevent accidental deletions.

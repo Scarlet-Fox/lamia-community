@@ -12,3 +12,6 @@
 .panel-purple > a:hover {
   color: #691184;
 }
+.model-list {
+  width: 100% !important;
+}

@@ -42,6 +42,14 @@ class MyReportView(ModelView):
     can_delete = False
     column_list = ["report_author", "content_author", "report_area", "status"]
     column_labels = dict(content_author="The Defendent", report_author="The Accuser")
+    # TODO - unhardcode these urls
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js", 
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
     
     # def _user_formatter(view, context, model, name):
     #         if model.url:
