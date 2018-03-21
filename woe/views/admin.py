@@ -55,6 +55,8 @@ class MyReportView(ModelView):
     #     }    
     
     def get_query(self):
+        # TODO - Add "age" calculation to this query
+        # TODO - Add custom format for age that progressively reddens older reports
         if current_user.is_admin:
             return self.session.query(self.model)
         else:
