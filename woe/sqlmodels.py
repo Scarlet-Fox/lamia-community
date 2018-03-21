@@ -1436,7 +1436,7 @@ class Report(db.Model):
     report_message = db.Column(db.Text, index=True)
     report_author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_report_report_author", ondelete="CASCADE"), index=True)
-    report_author = db.relationship("User", foreign_keys="Report.content_author_id")
+    report_author = db.relationship("User", foreign_keys="Report.report_author_id")
 
     STATUS_CHOICES = (
         ('ignored', 'Ignored'),

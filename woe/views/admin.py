@@ -33,8 +33,46 @@ class AuthAdminIndexView(admin.AdminIndexView):
                 active_bans=active_bans,
                 my_area_reports=my_area_reports
             )
-
 admin = admin.Admin(app, index_view=AuthAdminIndexView(), name="Staff CP")
+
+class MyReportView(ModelView):
+    can_view_details = True
+    can_edit = False
+    can_create = False
+    can_delete = False
+    column_list = ["report_author", "content_author", "report_area", "status"]
+    column_labels = dict(content_author="The Defendent", report_author="The Accuser")
+    
+    # def _user_formatter(view, context, model, name):
+    #         if model.url:
+    #            markupstring = "<a href='%s'>%s</a>" % (model.url, model.urltitle)
+    #            return Markup(markupstring)
+    #         else:
+    #            return ""
+    #
+    #     column_formatters = {
+    #         'url': _user_formatter
+    #     }    
+    
+    def get_query(self):
+        if current_user.is_admin:
+            return self.session.query(self.model)
+        else:
+            return self.session.query(self.model).filter(
+                                self.model.status.in_(["open", "feedback", "waiting"]),
+                                self.model.report_area.in_(current_user.get_modded_areas())
+                            )
+    
+    def get_query_count(self):
+        return self.session.query(func.count('*')).select_from(self.model).filter(
+                            self.model.status.in_(["open", "feedback", "waiting"]),
+                            self.model.report_area.in_(current_user.get_modded_areas())
+                        )
+        
+    
+admin.add_view(MyReportView(sqlm.Report, sqla.session, name='My Reports', category="Moderation"))
+
+
 
 
 # TODO Moderation

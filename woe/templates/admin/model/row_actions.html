@@ -1,13 +1,13 @@
 {% import 'admin/lib.html' as lib with context %}
 
-{% macro link(action, url, icon_class=None) %}
+{% macro link(action, url, icon_class=None, text=None) %}
 <a class="icon" href="{{ url }}" title="{{ action.title or '' }}">
-  <span class="{{ icon_class or action.icon_class }}"></span>
+  <span class="{{ icon_class or action.icon_class }}"> {{ text or ''}}</span>
 </a>
 {% endmacro %}
 
 {% macro view_row(action, row_id, row) %}
-  {{ link(action, get_url('.details_view', id=row_id, url=return_url), 'fa fa-eye glyphicon glyphicon-eye-open') }}
+  {{ link(action, get_url('.details_view', id=row_id, url=return_url), 'fa fa-eye glyphicon glyphicon-eye-open', 'View') }}
 {% endmacro %}
 
 {% macro view_row_popup(action, row_id, row) %}

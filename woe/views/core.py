@@ -354,17 +354,17 @@ def make_report():
         report_area = "user"
         url = "/member/%s" % (content.my_url)
 
-    # try:
-    #     report = sqla.session.query(sqlm.Report).filter_by(
-    #         content_type=_type,
-    #         content_id=content_id,
-    #         content_author=current_user._get_current_object()) \
-    #         .filter(sqlm.Report.created > arrow.utcnow().datetime.replace(tzinfo=None))[0]
-    #     return app.jsonify(status="reported")
-    # except:
-    #     sqla.session.rollback()
-    #     pass
-
+    try:
+        report = sqla.session.query(sqlm.Report).filter_by(
+            content_type=_type,
+            content_id=content_id,
+            content_author=current_user._get_current_object()) \
+            .filter_by(status="open")[0]
+        return app.jsonify(status="reported")
+    except:
+        sqla.session.rollback()
+        pass
+    
     report = sqlm.Report(
         content_type = _type,
         content_url = url,
@@ -377,7 +377,7 @@ def make_report():
         report_message = text,
         report_area = report_area
     )
-
+    
     sqla.session.add(report)
     sqla.session.commit()
 

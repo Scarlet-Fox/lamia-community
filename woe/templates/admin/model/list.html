@@ -11,6 +11,9 @@
 {% endblock %}
 
 {% block body %}
+    <h3>{% if admin_view.category %}{{ admin_view.category }}: {% endif %}{{ admin_view.name }}</h3>
+    <hr>
+    
     {% block model_menu_bar %}
     <ul class="nav nav-tabs actions-nav">
         <li class="active">
