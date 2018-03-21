@@ -73,7 +73,9 @@ class MyReportView(ModelView):
 admin.add_view(MyReportView(sqlm.Report, sqla.session, name='My Reports', category="Moderation"))
 
 
-
+# TODO - Add "user" parser which would load avatars and such
+# TODO - Add "slug formatter" which would humanize slugs
+# TODO - Add indicators for report statuses
 
 # TODO Moderation
 # TODO Add my reports list view
