@@ -35,12 +35,41 @@ class AuthAdminIndexView(admin.AdminIndexView):
             )
 admin = admin.Admin(app, index_view=AuthAdminIndexView(), name="Staff CP")
 
+def _user_list_formatter(view, context, model, name):
+    user = getattr(model, name)
+    prettified_user = \
+    u"""<div><a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a><a class="hover_user" href="/member/%s">%s</a></div>""" \
+        % (unicode(user.my_url),
+        user.get_avatar_url("60"),
+        user.avatar_60_x,
+        user.avatar_60_y,
+        unicode(user.my_url),
+        unicode(user.display_name))
+        
+    return Markup(prettified_user)
+    
+def _unslugify_formatter(view, context, model, name):
+    field = getattr(model, name)
+    return field.replace("-", " ").title()
+
+def _report_status_formatter(view, context, model, name):
+    status = getattr(model, name)
+    _template = "<div style=\"font-size: 1.25em; font-weight: bold; color: %s;\"><i class=\"%s\"></i>&nbsp;%s</div>"
+    formats = {
+        "ignored": ("orange", "far fa-times-circle","Ignored",),
+        "open": ("red", "far fa-circle","Open",),
+        "feedback": ("orange", "far fa-question-circle","Feedback Requested",),
+        "waiting": ("orange", "far fa-clock","Waiting",),
+        "action taken": ("green", "far fa-check-circle","Done",)
+    }
+    return Markup(_template % formats[status])
+
 class MyReportView(ModelView):
     can_view_details = True
     can_edit = False
     can_create = False
     can_delete = False
-    column_list = ["report_author", "content_author", "report_area", "status"]
+    column_list = ["status", "report_area", "report_author", "content_author"]
     column_labels = dict(content_author="The Defendent", report_author="The Accuser")
     # TODO - unhardcode these urls
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
@@ -51,16 +80,12 @@ class MyReportView(ModelView):
         "/static/assets/datatables/dataTables.responsive.js"
         ]
     
-    # def _user_formatter(view, context, model, name):
-    #         if model.url:
-    #            markupstring = "<a href='%s'>%s</a>" % (model.url, model.urltitle)
-    #            return Markup(markupstring)
-    #         else:
-    #            return ""
-    #
-    #     column_formatters = {
-    #         'url': _user_formatter
-    #     }    
+    column_formatters = {
+        'report_author': _user_list_formatter,
+        'content_author': _user_list_formatter,
+        'report_area': _unslugify_formatter,
+        'status': _report_status_formatter
+    }    
     
     def get_query(self):
         # TODO - Add "age" calculation to this query
