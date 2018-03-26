@@ -321,7 +321,7 @@ def make_report():
         content_id = content.id
         content_html = content.html
         content_author = content.author
-        report_area = "blogentry"
+        report_area = "blog-entry"
         url = "/blog/%s/e/%s" % (content.blog.slug,content.slug)
     elif _type == "blogcomment":
         try:
@@ -331,7 +331,7 @@ def make_report():
         content_id = content.id
         content_html = content.html
         content_author = content.author
-        report_area = "blogcomment"
+        report_area = "blog-comment"
         url = "/blog/%s/e/%s" % (content.blog.slug,content.blog_entry.slug)
     elif _type == "pm":
         try:
@@ -341,7 +341,7 @@ def make_report():
         content_id = content.id
         content_html = content.message
         content_author = content.author
-        report_area = "pm"
+        report_area = "direct-message"
         url = "/messages/%s/page/1/post/%s" % (content.pm.id, content.id)
     elif _type == "profile":
         try:
@@ -351,7 +351,7 @@ def make_report():
         content_id = content.id
         content_html = content.about_me
         content_author = content
-        report_area = "user"
+        report_area = "user-profile"
         url = "/member/%s" % (content.my_url)
 
     try:

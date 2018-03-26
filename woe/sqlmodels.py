@@ -1443,15 +1443,18 @@ class Report(db.Model):
         ('open', 'Open'),
         ('feedback', 'Feedback Requested'),
         ('waiting', 'Waiting'),
-        ('action taken', 'Action Taken')
+        ('action taken', 'Action Taken'),
+        ('working', 'Working')
     )
     status = db.Column(db.String, default="open", index=True)
     
     report_assigned_to_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_report_handler", ondelete="CASCADE"), index=True)
     report_assigned_to = db.relationship("User", foreign_keys="Report.report_assigned_to_id")
+    report_comment_count = db.Column(db.Integer, index=True, default=0)
     
     created = db.Column(db.DateTime, index=True)
+    report_last_updated = db.Column(db.DateTime, index=True, default=created)
     resolved = db.Column(db.DateTime, index=True)
     
     marked_as_resolved_by_id = db.Column(db.Integer, db.ForeignKey('user.id',

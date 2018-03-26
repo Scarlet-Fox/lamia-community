@@ -8,6 +8,7 @@ from woe import sqla
 import woe.sqlmodels as sqlm
 from jinja2 import Markup
 import arrow
+from woe.utilities import humanize_time
 
 class AuthAdminIndexView(admin.AdminIndexView):
     @expose('/')
@@ -40,9 +41,9 @@ def _user_list_formatter(view, context, model, name):
     prettified_user = \
     u"""<div><a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a><a class="hover_user" href="/member/%s">%s</a></div>""" \
         % (unicode(user.my_url),
-        user.get_avatar_url("60"),
-        user.avatar_60_x,
-        user.avatar_60_y,
+        user.get_avatar_url("40"),
+        user.avatar_40_x,
+        user.avatar_40_y,
         unicode(user.my_url),
         unicode(user.display_name))
         
@@ -56,21 +57,44 @@ def _report_status_formatter(view, context, model, name):
     status = getattr(model, name)
     _template = "<div style=\"font-size: 1.25em; font-weight: bold; color: %s;\"><i class=\"%s\"></i>&nbsp;%s</div>"
     formats = {
-        "ignored": ("orange", "far fa-times-circle","Ignored",),
-        "open": ("red", "far fa-circle","Open",),
-        "feedback": ("orange", "far fa-question-circle","Feedback Requested",),
-        "waiting": ("orange", "far fa-clock","Waiting",),
-        "action taken": ("green", "far fa-check-circle","Done",)
+        "ignored": ("black", "far fa-times-circle","Ignored",),
+        "open": ("#800000", "far fa-circle","Open",),
+        "feedback": ("#804d00", "far fa-question-circle","Feedback Requested",),
+        "waiting": ("#000080", "far fa-clock","Waiting",),
+        "action taken": ("#008000", "far fa-check-circle","Done",),
+        "working": ("#660080", "far fa-play-circle","Working",)
     }
     return Markup(_template % formats[status])
+    
+def _age_from_time_formatter(view, context, model, name):
+    time = arrow.get(getattr(model, name))
+    now = arrow.utcnow()
+    
+    age = (now - time).days
+    if age < 1:
+        return "Today"
+        
+    return "%s days old" % (age, )
+
+def _null_number_formatter(view, context, model, name):
+    number = getattr(model, name)
+    if not number:
+        return 0
+    else:
+        return number
+        
+def _fancy_time_formatter(view, context, model, name):
+    time = getattr(model, name)
+    return humanize_time(time)
 
 class MyReportView(ModelView):
     can_view_details = True
     can_edit = False
     can_create = False
     can_delete = False
-    column_list = ["status", "report_area", "report_author", "content_author"]
-    column_labels = dict(content_author="The Defendent", report_author="The Accuser")
+    column_list = ["status", "report_area", "created", "report_comment_count", "report_last_updated", "content_author"]
+    column_labels = dict(content_author="Defendent", report_author="Accuser", created="Report Age",
+        report_comment_count="Comments", report_last_updated="Last Updated")
     # TODO - unhardcode these urls
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css"
@@ -84,12 +108,13 @@ class MyReportView(ModelView):
         'report_author': _user_list_formatter,
         'content_author': _user_list_formatter,
         'report_area': _unslugify_formatter,
-        'status': _report_status_formatter
+        'status': _report_status_formatter,
+        'created': _age_from_time_formatter,
+        'report_comment_count': _null_number_formatter,
+        'report_last_updated': _fancy_time_formatter
     }    
     
     def get_query(self):
-        # TODO - Add "age" calculation to this query
-        # TODO - Add custom format for age that progressively reddens older reports
         if current_user.is_admin:
             return self.session.query(self.model)
         else:
@@ -108,12 +133,7 @@ class MyReportView(ModelView):
 admin.add_view(MyReportView(sqlm.Report, sqla.session, name='My Reports', category="Moderation"))
 
 
-# TODO - Add "user" parser which would load avatars and such
-# TODO - Add "slug formatter" which would humanize slugs
-# TODO - Add indicators for report statuses
-
 # TODO Moderation
-# TODO Add my reports list view
 # TODO Add global reports list view
 # TODO Add completed reports list view
 # TODO Add comment loading ajax view
