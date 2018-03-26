@@ -1,6 +1,16 @@
 {% extends 'admin/master.html' %}
 {% import 'admin/lib.html' as lib with context %}
 
+{% block head %}
+  {% assets filters="cssmin", output="generated/"+current_user.get_text_id()+"woe-core.css",
+  "assets/bootstrap.css", "assets/quill2/quill.snow.css", 
+  "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
+  "assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
+  "assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css" %}
+  <link href="{{ASSET_URL}}" rel="stylesheet">
+  {% endassets %}
+{% endblock %}
+
 {% block body %}
   {% block navlinks %}
   <ul class="nav nav-tabs">
@@ -85,4 +95,14 @@
 {% block tail %}
   {{ super() }}
   <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+  {% assets filters="rjsmin", output="generated/editor.js",
+  "assets/quill2/quill.js", "assets/dropzone/dropzone.js", 
+  "assets/select2/select2.full.js", "local/js/inline-editor.js" %}
+  <script src="{{ASSET_URL}}"></script>
+  {% endassets %}
+  
+  {% assets filters="rjsmin", output="generated/report-details.js",
+  "local/js/report-details.js" %}
+  <script src="{{ASSET_URL}}"></script>
+  {% endassets %}
 {% endblock %}

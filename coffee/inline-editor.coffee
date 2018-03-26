@@ -348,7 +348,7 @@ $ ->
         draft_picks_html = draft_picks_html + """
             <div style="margin-top: 5px;">
             <a href="#" data-id="#{draft.id}" class="draft-select-#{@quillID} btn btn-xs btn-default">#{draft.time}</a>
-            <div class="content-spoiler" style="height: 150px;overflow: scroll;"><div>
+            <div class="content-spoiler" style="height: 150px;overflow: scroll; border: 1px lightgray solid !important; margin: 0px 0px 10px 0px; padding: 10px; display: none;"><div>
               #{draft.contents}
             </div></div>
             </div>

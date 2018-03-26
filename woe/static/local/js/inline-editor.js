@@ -391,7 +391,7 @@
         draft_picks_html = "";
         for (j = 0, len = drafts.length; j < len; j++) {
           draft = drafts[j];
-          draft_picks_html = draft_picks_html + ("<div style=\"margin-top: 5px;\">\n<a href=\"#\" data-id=\"" + draft.id + "\" class=\"draft-select-" + this.quillID + " btn btn-xs btn-default\">" + draft.time + "</a>\n<div class=\"content-spoiler\" style=\"height: 150px;overflow: scroll;\"><div>\n  " + draft.contents + "\n</div></div>\n</div>");
+          draft_picks_html = draft_picks_html + ("<div style=\"margin-top: 5px;\">\n<a href=\"#\" data-id=\"" + draft.id + "\" class=\"draft-select-" + this.quillID + " btn btn-xs btn-default\">" + draft.time + "</a>\n<div class=\"content-spoiler\" style=\"height: 150px;overflow: scroll; border: 1px lightgray solid !important; margin: 0px 0px 10px 0px; padding: 10px; display: none;\"><div>\n  " + draft.contents + "\n</div></div>\n</div>");
         }
         $("#draft-modal-" + this.quillID).html("<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n    <div class=\"modal-header\">\n      <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n      <h4 class=\"modal-title\">Restore Draft</h4>\n    </div>\n    <div class=\"modal-body\">\n      " + draft_picks_html + "\n    </div>\n    <div class=\"modal-footer\">\n      <button type=\"button\" class=\"btn btn-default\" id=\"manual-save-" + this.quillID + "\" >Manual Save</button>\n      <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n    </div>\n  </div>\n</div>");
         window.addExtraHTML("#draft-modal-" + this.quillID);
