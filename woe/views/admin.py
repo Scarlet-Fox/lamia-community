@@ -9,6 +9,9 @@ import woe.sqlmodels as sqlm
 from jinja2 import Markup
 import arrow
 from woe.utilities import humanize_time
+from woe.parsers import ForumPostParser
+
+_base_url = app.config['BASE']
 
 class AuthAdminIndexView(admin.AdminIndexView):
     @expose('/')
@@ -86,13 +89,24 @@ def _null_number_formatter(view, context, model, name):
 def _fancy_time_formatter(view, context, model, name):
     time = getattr(model, name)
     return humanize_time(time)
+    
+def _content_formatter(view, context, model, name):
+    _html = getattr(model, name)
+    
+    clean_html_parser = ForumPostParser()
+    return Markup(clean_html_parser.parse(_html).replace("parsed\"", "parsed\" style=\"max-height: 300px; overflow-y: scroll;\""))
 
 class MyReportView(ModelView):
     can_view_details = True
     can_edit = False
     can_create = False
     can_delete = False
+    details_template = 'admin/model/report_details.html'
     column_list = ["status", "report_area", "created", "report_comment_count", "report_last_updated", "content_author"]
+    column_details_list = [
+        "report_area", "created", "status", "report_author", "content_author",
+        "reported_content_html"
+    ]
     column_labels = dict(content_author="Defendent", report_author="Accuser", created="Report Age",
         report_comment_count="Comments", report_last_updated="Last Updated")
     # TODO - unhardcode these urls
@@ -111,7 +125,8 @@ class MyReportView(ModelView):
         'status': _report_status_formatter,
         'created': _age_from_time_formatter,
         'report_comment_count': _null_number_formatter,
-        'report_last_updated': _fancy_time_formatter
+        'report_last_updated': _fancy_time_formatter,
+        'reported_content_html': _content_formatter
     }    
     
     def get_query(self):

@@ -1461,6 +1461,9 @@ class Report(db.Model):
         name="fk_report_resolver", ondelete="CASCADE"), index=True)
     mark_as_resolved_by = db.relationship("User", foreign_keys="Report.marked_as_resolved_by_id")
     
+    def belongs_to(self, user):
+        return user.is_admin or self.report_area in user.get_modded_areas()
+    
     def __repr__(self):
         return "<Report: (content_type='%s', content_id='%s')>" % (self.content_type, self.content_id)
 

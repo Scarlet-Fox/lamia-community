@@ -1,0 +1,81 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  {% block navlinks %}
+  <ul class="nav nav-tabs">
+    <li>
+        <a href="{{ return_url }}">{{ _gettext('List') }}</a>
+    </li>
+    {%- if admin_view.can_create -%}
+    <li>
+        <a href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
+    </li>
+    {%- endif -%}
+    {%- if admin_view.can_edit -%}
+    <li>
+        <a href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
+    </li>
+    {%- endif -%}
+    <li class="active">
+        <a href="javascript:void(0)">{{ _gettext('Details') }}</a>
+    </li>
+  </ul>
+  {% endblock %}
+
+  <!-- {% block details_search %}
+    <div class="input-group fa_filter_container col-lg-6">
+      <span class="input-group-addon">{{ _gettext('Filter') }}</span>
+      <input id="fa_filter" type="text" class="form-control">
+    </div>
+  {% endblock %} -->
+
+  {% block details_table %}
+    <table class="table table-hover table-bordered searchable">
+    {% for c, name in details_columns %}
+      <tr>
+        <td>
+          <b>{{ name }}</b>
+        </td>
+        <td>
+        {{ get_value(model, c) }}
+        {% if name == "Report Area" %}
+          &nbsp;&nbsp;&nbsp;
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-xs btn-primary"><i class="fa fa-eye"></i>View Content</a>
+        {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    {% if model.belongs_to(current_user) %}
+      <tr>
+        <td>
+          <b>Controls</b>
+        </td>
+        <td>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-success"><i class="far fa-check-circle"></i> Mark as Done</a>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-warning"><i class="far fa-clock"></i> Put on Hold</a>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-default"><i class="far fa-question-circle"></i> Request Feedback</a>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-primary"><i class="far fa-play-circle"></i> Mark as In Progress</a>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-danger"><i class="far fa-times-circle"></i> Mark as Ignored</a>
+        </td>
+      </tr>
+    {% endif %}
+    </table>
+  {% endblock %}
+  
+  <li class="list-group-item section-header" id="comments" style="margin-top: 20px;">Comments</li>
+  <div class="list-group-item">
+    <div id="comments-box">
+      No comments have been made for this report.
+    </div>
+  </div>
+  <div class="list-group-item">
+    <div id="new-comment-box">
+    </div>
+  </div>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+{% endblock %}
