@@ -37,7 +37,7 @@
         <td>
           <b>{{ name }}</b>
         </td>
-        <td>
+        <td style="display: flex; justify-content: space-between;">
         {{ get_value(model, c) }}
         {% if name == "Report Area" %}
           &nbsp;&nbsp;&nbsp;
@@ -52,11 +52,18 @@
           <b>Controls</b>
         </td>
         <td>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-success"><i class="far fa-check-circle"></i> Mark as Done</a>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-warning"><i class="far fa-clock"></i> Put on Hold</a>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-default"><i class="far fa-question-circle"></i> Request Feedback</a>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-primary"><i class="far fa-play-circle"></i> Mark as In Progress</a>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-danger"><i class="far fa-times-circle"></i> Mark as Ignored</a>
+          <center>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-success" style="margin-top: 5px;">
+            <i class="far fa-check-circle"></i> Mark as Done</a>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-warning" style="margin-top: 5px;">
+            <i class="far fa-clock"></i> Put on Hold</a>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-default" style="margin-top: 5px;">
+            <i class="far fa-question-circle"></i> Request Feedback</a>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-primary" style="margin-top: 5px;">
+            <i class="far fa-play-circle"></i> Mark as In Progress</a>
+          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-danger" style="margin-top: 5px;">
+            <i class="far fa-times-circle"></i> Mark as Ignored</a>
+          </center>
         </td>
       </tr>
     {% endif %}
