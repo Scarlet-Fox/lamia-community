@@ -234,7 +234,7 @@ class ReportActionView(BaseView):
         if not status in [sc[0] for sc in sqlm.Report.STATUS_CHOICES]:
             return abort(404)
         
-        _model.report_last_updated = arrow.utcnow().datetime
+        _model.report_last_updated = arrow.utcnow().datetime.replace(tzinfo=None)
         _model.status = status
         
         sqla.session.add(_model)

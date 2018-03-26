@@ -1477,6 +1477,7 @@ class ReportComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, index=True)
     comment = db.Column(db.Text)
+    is_status_change = db.Column(db.Boolean, default=False)
     
     author_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_reportcomment_author", ondelete="CASCADE"), index=True)
