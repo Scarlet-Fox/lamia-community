@@ -1441,7 +1441,7 @@ def member_list_api():
         table_data.append(
             [
                 """<a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a>
-                <a class="hover_user" %s href="/member/%s">%s</a>""" % (unicode(user.login_name),
+                <a class="hover_user" %s href="/member/%s">%s</a>""" % (unicode(user.my_url),
                                                                         user.get_avatar_url("60"),
                                                                         user.avatar_60_x,
                                                                         user.avatar_60_y,
