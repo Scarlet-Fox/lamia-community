@@ -136,12 +136,12 @@ class MyReportView(ModelView):
         if current_user.is_admin:
             return self.session.query(self.model).filter(
                                 self.model.status.in_(["open", "feedback", "waiting", "working"]),
-                            )
+                            ).order_by(self.model.created)
         else:
             return self.session.query(self.model).filter(
                                 self.model.status.in_(["open", "feedback", "waiting", "working"]),
                                 self.model.report_area.in_(current_user.get_modded_areas())
-                            )
+                            ).order_by(self.model.created)
     
     def get_count_query(self):
         if current_user.is_admin:
@@ -153,7 +153,65 @@ class MyReportView(ModelView):
                                 self.model.status.in_(["open", "feedback", "waiting", "working"]),
                                 self.model.report_area.in_(current_user.get_modded_areas())
                             )
-                        
+                            
+class ReportArchiveView(ModelView):
+    can_view_details = True
+    can_edit = False
+    can_create = False
+    can_delete = False
+    details_template = 'admin/model/report_details.html'
+    column_list = ["status", "report_area", "created", "report_comment_count", "report_last_updated", "content_author"]
+    column_details_list = [
+        "report_area", "created", "status", "report_author", "content_author",
+        "reported_content_html"
+    ]
+    column_labels = dict(content_author="Defendent", report_author="Accuser", created="Report Age",
+        report_comment_count="Comments", report_last_updated="Last Updated")
+    # TODO - unhardcode these urls
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js", 
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+    
+    column_formatters = {
+        'report_author': _user_list_formatter,
+        'content_author': _user_list_formatter,
+        'report_area': _unslugify_formatter,
+        'status': _report_status_formatter,
+        'created': _age_from_time_formatter,
+        'report_comment_count': _null_number_formatter,
+        'report_last_updated': _fancy_time_formatter,
+        'reported_content_html': _content_formatter
+    }
+    
+    def is_accessible(self):
+        return current_user.is_admin or current_user.is_mod
+    
+    def get_query(self):
+        if current_user.is_admin:
+            return self.session.query(self.model).filter(
+                                sqla.not_(self.model.status.in_(["open", "feedback", "waiting", "working"])),
+                            ).order_by(self.model.report_last_updated)
+        else:
+            return self.session.query(self.model).filter(
+                                sqla.not_(self.model.status.in_(["open", "feedback", "waiting", "working"])),
+                                self.model.report_area.in_(current_user.get_modded_areas())
+                            ).order_by(self.model.report_last_updated)
+    
+    def get_count_query(self):
+        if current_user.is_admin:
+            return self.session.query(sqla.func.count('*')).select_from(self.model).filter(
+                                sqla.not_(self.model.status.in_(["open", "feedback", "waiting", "working"])),
+                            )
+        else:
+            return self.session.query(sqla.func.count('*')).select_from(self.model).filter(
+                                sqla.not_(self.model.status.in_(["open", "feedback", "waiting", "working"])),
+                                self.model.report_area.in_(current_user.get_modded_areas())
+                            )
+                            
 class ReportActionView(BaseView):
     def is_visible(self):
         return False
@@ -176,6 +234,7 @@ class ReportActionView(BaseView):
         if not status in [sc[0] for sc in sqlm.Report.STATUS_CHOICES]:
             return abort(404)
         
+        _model.report_last_updated = arrow.utcnow().datetime
         _model.status = status
         
         sqla.session.add(_model)
@@ -184,7 +243,8 @@ class ReportActionView(BaseView):
         return "ok"
     
 admin.add_view(ReportActionView(endpoint='report', name="Report Utilities"))
-admin.add_view(MyReportView(sqlm.Report, sqla.session, name='My Reports', category="Moderation", endpoint='myreports'))
+admin.add_view(MyReportView(sqlm.Report, sqla.session, name='My Reports', category="Moderation", endpoint='my-reports'))
+admin.add_view(ReportArchiveView(sqlm.Report, sqla.session, name='Archived Reports', category="Moderation", endpoint='report-archive'))
 
 
 # TODO Moderation

@@ -369,13 +369,15 @@ def make_report():
         content_type = _type,
         content_url = url,
         created = arrow.utcnow().datetime.replace(tzinfo=None),
+        report_last_updated = arrow.utcnow().datetime.replace(tzinfo=None),
         content_id = content_id,
         content_author = content_author,
         report_author = current_user._get_current_object(),
         status = "open",
         reported_content_html = content_html,
         report_message = text,
-        report_area = report_area
+        report_area = report_area,
+        report_comment_count = 0
     )
     
     sqla.session.add(report)
