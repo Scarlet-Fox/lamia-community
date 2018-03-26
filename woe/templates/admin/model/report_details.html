@@ -63,15 +63,15 @@
         </td>
         <td>
           <center>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-success" style="margin-top: 5px;">
+          <a href="{{ config.BASE }}/admin/report/mark-actiontaken/{{model.id}}" class="btn btn-success post-link-reload disabled" style="margin-top: 5px;">
             <i class="far fa-check-circle"></i> Mark as Done</a>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-warning" style="margin-top: 5px;">
+          <a href="{{ config.BASE }}/admin/report/mark-waiting/{{model.id}}" class="btn btn-warning post-link-reload disabled" style="margin-top: 5px;">
             <i class="far fa-clock"></i> Put on Hold</a>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-default" style="margin-top: 5px;">
+          <a href="{{ config.BASE }}/admin/report/mark-feedback/{{model.id}}" class="btn btn-default post-link-reload disabled" style="margin-top: 5px;">
             <i class="far fa-question-circle"></i> Request Feedback</a>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-primary" style="margin-top: 5px;">
+          <a href="{{ config.BASE }}/admin/report/mark-working/{{model.id}}" class="btn btn-primary post-link-reload disabled" style="margin-top: 5px;">
             <i class="far fa-play-circle"></i> Mark as In Progress</a>
-          <a href="{{ config.BASE }}{{ model.content_url }}" class="btn btn-danger" style="margin-top: 5px;">
+          <a href="{{ config.BASE }}/admin/report/mark-ignored/{{model.id}}" class="btn btn-danger post-link-reload disabled" style="margin-top: 5px;">
             <i class="far fa-times-circle"></i> Mark as Ignored</a>
           </center>
         </td>

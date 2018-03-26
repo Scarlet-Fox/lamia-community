@@ -2,7 +2,7 @@ from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from flask.ext.login import login_required, current_user
 import flask_admin as admin
-from flask_admin import helpers, expose
+from flask_admin import helpers, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
 from woe import sqla
 import woe.sqlmodels as sqlm
@@ -64,7 +64,7 @@ def _report_status_formatter(view, context, model, name):
         "open": ("#800000", "far fa-circle","Open",),
         "feedback": ("#804d00", "far fa-question-circle","Feedback Requested",),
         "waiting": ("#000080", "far fa-clock","Waiting",),
-        "action taken": ("#008000", "far fa-check-circle","Done",),
+        "actiontaken": ("#008000", "far fa-check-circle","Done",),
         "working": ("#660080", "far fa-play-circle","Working",)
     }
     return Markup(_template % formats[status])
@@ -127,25 +127,64 @@ class MyReportView(ModelView):
         'report_comment_count': _null_number_formatter,
         'report_last_updated': _fancy_time_formatter,
         'reported_content_html': _content_formatter
-    }    
+    }
+    
+    def is_accessible(self):
+        return current_user.is_admin or current_user.is_mod
     
     def get_query(self):
         if current_user.is_admin:
-            return self.session.query(self.model)
+            return self.session.query(self.model).filter(
+                                self.model.status.in_(["open", "feedback", "waiting", "working"]),
+                            )
         else:
             return self.session.query(self.model).filter(
-                                self.model.status.in_(["open", "feedback", "waiting"]),
+                                self.model.status.in_(["open", "feedback", "waiting", "working"]),
                                 self.model.report_area.in_(current_user.get_modded_areas())
                             )
     
-    def get_query_count(self):
-        return self.session.query(func.count('*')).select_from(self.model).filter(
-                            self.model.status.in_(["open", "feedback", "waiting"]),
-                            self.model.report_area.in_(current_user.get_modded_areas())
-                        )
+    def get_count_query(self):
+        if current_user.is_admin:
+            return self.session.query(sqla.func.count('*')).select_from(self.model).filter(
+                                self.model.status.in_(["open", "feedback", "waiting", "working"]),
+                            )
+        else:
+            return self.session.query(sqla.func.count('*')).select_from(self.model).filter(
+                                self.model.status.in_(["open", "feedback", "waiting", "working"]),
+                                self.model.report_area.in_(current_user.get_modded_areas())
+                            )
+                        
+class ReportActionView(BaseView):
+    def is_visible(self):
+        return False
         
+    @expose('/')
+    def index(self):
+        return ""
     
-admin.add_view(MyReportView(sqlm.Report, sqla.session, name='My Reports', category="Moderation"))
+    @expose('/mark-<status>/<idx>', methods=('POST', ))
+    def mark_done(self, idx, status):
+        _model = sqlm.Report.query.filter_by(id=idx)[0]
+        
+        if not current_user.is_admin and not _model.report_area in current_user.get_modded_areas():
+            return abort(404)
+    
+        print [sc[0] for sc in sqlm.Report.STATUS_CHOICES]
+        print status
+        print status in [sc[0] for sc in sqlm.Report.STATUS_CHOICES]
+        
+        if not status in [sc[0] for sc in sqlm.Report.STATUS_CHOICES]:
+            return abort(404)
+        
+        _model.status = status
+        
+        sqla.session.add(_model)
+        sqla.session.commit()
+        
+        return "ok"
+    
+admin.add_view(ReportActionView(endpoint='report', name="Report Utilities"))
+admin.add_view(MyReportView(sqlm.Report, sqla.session, name='My Reports', category="Moderation", endpoint='myreports'))
 
 
 # TODO Moderation

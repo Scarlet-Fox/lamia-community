@@ -171,11 +171,18 @@ $ ->
             $(".notification-dropdown").each () ->
               $(this).find(".notification-li").first().before(notificationTemplate(data))
 
+  $(".post-link").removeClass("disabled")
   $(".post-link").click (e) ->
     e.preventDefault()
     $.post $(this).attr("href"), (data) ->
       window.location = data.url
-      
+  
+  $(".post-link-reload").removeClass("disabled")
+  $(".post-link-reload").click (e) ->
+    e.preventDefault()
+    $.post $(this).attr("href"), (data) ->
+      do location.reload()
+  
   $(".toggle-link").click (e) ->
     e.preventDefault()
     $.post $(this).attr("href"), (data) ->

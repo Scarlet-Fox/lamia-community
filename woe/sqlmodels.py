@@ -1443,7 +1443,7 @@ class Report(db.Model):
         ('open', 'Open'),
         ('feedback', 'Feedback Requested'),
         ('waiting', 'Waiting'),
-        ('action taken', 'Action Taken'),
+        ('actiontaken', 'Action Taken'),
         ('working', 'Working')
     )
     status = db.Column(db.String, default="open", index=True)

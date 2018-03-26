@@ -172,10 +172,18 @@
         }
       });
     }
+    $(".post-link").removeClass("disabled");
     $(".post-link").click(function(e) {
       e.preventDefault();
       return $.post($(this).attr("href"), function(data) {
         return window.location = data.url;
+      });
+    });
+    $(".post-link-reload").removeClass("disabled");
+    $(".post-link-reload").click(function(e) {
+      e.preventDefault();
+      return $.post($(this).attr("href"), function(data) {
+        return location.reload()();
       });
     });
     $(".toggle-link").click(function(e) {
