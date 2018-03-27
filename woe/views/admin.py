@@ -106,7 +106,7 @@ class MyReportView(ModelView):
     column_list = ["status", "report_area", "created", "report_comment_count", "report_last_updated", "content_author"]
     column_details_list = [
         "report_area", "created", "status", "report_author", "content_author",
-        "reported_content_html"
+        "report_message", "reported_content_html"
     ]
     column_labels = dict(content_author="Defendent", report_author="Accuser", created="Report Age",
         report_comment_count="Comments", report_last_updated="Last Updated", reported_content_html="Reported Content")
