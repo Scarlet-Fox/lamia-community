@@ -1461,6 +1461,9 @@ class Report(db.Model):
         name="fk_report_resolver", ondelete="CASCADE"), index=True)
     mark_as_resolved_by = db.relationship("User", foreign_keys="Report.marked_as_resolved_by_id")
     
+    def comments(self):
+        return ReportComment.query.filter_by(report=self).order_by(db.asc("created"))
+    
     def belongs_to(self, user):
         return user.is_admin or self.report_area in user.get_modded_areas()
     
@@ -1571,25 +1574,14 @@ class ModSelectedPost(db.Model):
 class ModActionLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
-    # TODO : Create signal processor for mod actions
     moderator_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_modaction_log", ondelete="CASCADE"), index=True)
     moderator = db.relationship("User", foreign_keys="ModActionLog.moderator_id")
     created = db.Column(db.DateTime, index=True)
-    
-    CATEGORY_CHOICES = (
-        ('blog', 'Blog'),
-        ('blog_comment', 'Blog Comment'),
-        ('status_update', 'Status Update'),
-        ('status_comment', 'Status Comment'),
-        ('topic', 'Topic'),
-        ('post', 'Post'),
-        ('user', 'User Profile'),
-    )
-    category = db.Column(db.Text, index=True)
-    content_url = db.Column(db.String, default="", index=True)
-    
+    action_area = db.Column(db.String, default="", index=True)
     action_taken = db.Column(db.Text, index=True)
+    content_url = db.Column(db.String, default="", index=True)
+    content_report_url = db.Column(db.String, default="", index=True)
     
 class Smiley(db.Model):
     id = db.Column(db.Integer, primary_key=True)

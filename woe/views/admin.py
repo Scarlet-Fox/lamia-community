@@ -8,7 +8,7 @@ from woe import sqla
 import woe.sqlmodels as sqlm
 from jinja2 import Markup
 import arrow
-from woe.utilities import humanize_time
+from woe.utilities import humanize_time, ForumHTMLCleaner
 from woe.parsers import ForumPostParser
 
 _base_url = app.config['BASE']
@@ -101,6 +101,7 @@ class MyReportView(ModelView):
     can_edit = False
     can_create = False
     can_delete = False
+    column_default_sort = ('created', False)
     details_template = 'admin/model/report_details.html'
     column_list = ["status", "report_area", "created", "report_comment_count", "report_last_updated", "content_author"]
     column_details_list = [
@@ -108,7 +109,7 @@ class MyReportView(ModelView):
         "reported_content_html"
     ]
     column_labels = dict(content_author="Defendent", report_author="Accuser", created="Report Age",
-        report_comment_count="Comments", report_last_updated="Last Updated")
+        report_comment_count="Comments", report_last_updated="Last Updated", reported_content_html="Reported Content")
     # TODO - unhardcode these urls
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css"
@@ -136,12 +137,12 @@ class MyReportView(ModelView):
         if current_user.is_admin:
             return self.session.query(self.model).filter(
                                 self.model.status.in_(["open", "feedback", "waiting", "working"]),
-                            ).order_by(self.model.created)
+                            )
         else:
             return self.session.query(self.model).filter(
                                 self.model.status.in_(["open", "feedback", "waiting", "working"]),
                                 self.model.report_area.in_(current_user.get_modded_areas())
-                            ).order_by(self.model.created)
+                            )
     
     def get_count_query(self):
         if current_user.is_admin:
@@ -154,52 +155,19 @@ class MyReportView(ModelView):
                                 self.model.report_area.in_(current_user.get_modded_areas())
                             )
                             
-class ReportArchiveView(ModelView):
-    can_view_details = True
-    can_edit = False
-    can_create = False
-    can_delete = False
-    details_template = 'admin/model/report_details.html'
-    column_list = ["status", "report_area", "created", "report_comment_count", "report_last_updated", "content_author"]
-    column_details_list = [
-        "report_area", "created", "status", "report_author", "content_author",
-        "reported_content_html"
-    ]
-    column_labels = dict(content_author="Defendent", report_author="Accuser", created="Report Age",
-        report_comment_count="Comments", report_last_updated="Last Updated")
-    # TODO - unhardcode these urls
-    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
-        "/static/assets/datatables/dataTables.responsive.css"
-        ]
-    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js", 
-        "/static/assets/datatables/dataTables.bootstrap.js",
-        "/static/assets/datatables/dataTables.responsive.js"
-        ]
-    
-    column_formatters = {
-        'report_author': _user_list_formatter,
-        'content_author': _user_list_formatter,
-        'report_area': _unslugify_formatter,
-        'status': _report_status_formatter,
-        'created': _age_from_time_formatter,
-        'report_comment_count': _null_number_formatter,
-        'report_last_updated': _fancy_time_formatter,
-        'reported_content_html': _content_formatter
-    }
-    
-    def is_accessible(self):
-        return current_user.is_admin or current_user.is_mod
-    
+class ReportArchiveView(MyReportView):  
+    column_default_sort = ('report_last_updated', False)
+      
     def get_query(self):
         if current_user.is_admin:
             return self.session.query(self.model).filter(
                                 sqla.not_(self.model.status.in_(["open", "feedback", "waiting", "working"])),
-                            ).order_by(self.model.report_last_updated)
+                            )
         else:
             return self.session.query(self.model).filter(
                                 sqla.not_(self.model.status.in_(["open", "feedback", "waiting", "working"])),
                                 self.model.report_area.in_(current_user.get_modded_areas())
-                            ).order_by(self.model.report_last_updated)
+                            )
     
     def get_count_query(self):
         if current_user.is_admin:
@@ -212,6 +180,17 @@ class ReportArchiveView(ModelView):
                                 self.model.report_area.in_(current_user.get_modded_areas())
                             )
                             
+class AllOpenReportsView(MyReportView):    
+    def get_query(self):
+        return self.session.query(self.model).filter(
+                            self.model.status.in_(["open", "feedback", "waiting", "working"]),
+                        )
+    
+    def get_count_query(self):
+        return self.session.query(sqla.func.count('*')).select_from(self.model).filter(
+                            self.model.status.in_(["open", "feedback", "waiting", "working"]),
+                        )
+             
 class ReportActionView(BaseView):
     def is_visible(self):
         return False
@@ -219,32 +198,85 @@ class ReportActionView(BaseView):
     @expose('/')
     def index(self):
         return ""
-    
+        
+    @expose('/new-comment/<idx>', methods=('POST', ))
+    def add_comment(self, idx):
+        _model = sqlm.Report.query.filter_by(id=idx)[0]
+        
+        if not current_user.is_admin and not _model.report_area in current_user.get_modded_areas():
+            return abort(404)
+        
+        request_json = request.get_json(force=True)
+
+        if request_json.get("text", "").strip() == "":
+            return app.jsonify(no_content=True)
+        
+        cleaner = ForumHTMLCleaner()
+        try:
+            post_html = cleaner.clean(request_json.get("post", ""))
+        except:
+            return abort(500)
+        
+        _comment = sqlm.ReportComment(
+                created = arrow.utcnow().datetime.replace(tzinfo=None),
+                comment = post_html,
+                is_status_change = False,
+                author = current_user,
+                report = _model
+            )
+        
+        _model.report_last_updated = arrow.utcnow().datetime.replace(tzinfo=None)
+        _model.report_comment_count = sqla.session.query(sqla.func.count('*')).select_from(sqlm.ReportComment) \
+                .filter_by(report=_model, is_status_change=False)
+        
+        sqla.session.add(_comment)
+        sqla.session.add(_model)
+        sqla.session.commit()
+        
+        return app.jsonify(success=True)
+        
     @expose('/mark-<status>/<idx>', methods=('POST', ))
     def mark_done(self, idx, status):
         _model = sqlm.Report.query.filter_by(id=idx)[0]
         
         if not current_user.is_admin and not _model.report_area in current_user.get_modded_areas():
             return abort(404)
-    
-        print [sc[0] for sc in sqlm.Report.STATUS_CHOICES]
-        print status
-        print status in [sc[0] for sc in sqlm.Report.STATUS_CHOICES]
-        
+            
         if not status in [sc[0] for sc in sqlm.Report.STATUS_CHOICES]:
             return abort(404)
         
+        _fancy_status_names = dict((x, y) for x, y in sqlm.Report.STATUS_CHOICES)
+        
+        old_status = _model.status
         _model.report_last_updated = arrow.utcnow().datetime.replace(tzinfo=None)
         _model.status = status
+        _new_status = _fancy_status_names[status]
+        _old_status = _fancy_status_names[old_status]
+        
+        if status in ["actiontaken", "ignored"] and not old_status in ["actiontaken", "ignored"]:
+            _model.resolved = arrow.utcnow().datetime.replace(tzinfo=None)
+            _model.mark_as_resolved_by = current_user
         
         sqla.session.add(_model)
+        sqla.session.commit()
+        
+        _comment = sqlm.ReportComment(
+                created = arrow.utcnow().datetime.replace(tzinfo=None),
+                comment = "changed status from \"%s\" to \"%s\"" % (_old_status, _new_status),
+                is_status_change = True,
+                author = current_user,
+                report = _model
+            )
+        
+        sqla.session.add(_comment)
         sqla.session.commit()
         
         return "ok"
     
 admin.add_view(ReportActionView(endpoint='report', name="Report Utilities"))
-admin.add_view(MyReportView(sqlm.Report, sqla.session, name='My Reports', category="Moderation", endpoint='my-reports'))
-admin.add_view(ReportArchiveView(sqlm.Report, sqla.session, name='Archived Reports', category="Moderation", endpoint='report-archive'))
+admin.add_view(MyReportView(sqlm.Report, sqla.session, name='Open in My Area', category="Reports", endpoint='my-reports'))
+admin.add_view(AllOpenReportsView(sqlm.Report, sqla.session, name='All Open Reports', category="Reports", endpoint='all-reports'))
+admin.add_view(ReportArchiveView(sqlm.Report, sqla.session, name='Archived Reports', category="Reports", endpoint='report-archive'))
 
 
 # TODO Moderation

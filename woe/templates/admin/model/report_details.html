@@ -63,6 +63,7 @@
         </td>
         <td>
           <center>
+            {% if not model.status in ["actiontaken", "ignored"] %}
             <a href="{{ config.BASE }}/admin/report/mark-actiontaken/{{model.id}}" class="btn btn-success post-link-reload disabled" style="margin-top: 5px;">
               <i class="far fa-check-circle"></i> Mark as Done</a>
             <a href="{{ config.BASE }}/admin/report/mark-waiting/{{model.id}}" class="btn btn-warning post-link-reload disabled" style="margin-top: 5px;">
@@ -73,6 +74,10 @@
               <i class="far fa-play-circle"></i> Mark as In Progress</a>
             <a href="{{ config.BASE }}/admin/report/mark-ignored/{{model.id}}" class="btn btn-danger post-link-reload disabled" style="margin-top: 5px;">
               <i class="far fa-times-circle"></i> Mark as Ignored</a>
+            {% else %}
+            <a href="{{ config.BASE }}/admin/report/mark-open/{{model.id}}" class="btn btn-danger post-link-reload disabled" style="margin-top: 5px;">
+              <i class="far fa-circle"></i> Reopen this Report</a>
+            {% endif %}
           </center>
         </td>
       </tr>
@@ -83,12 +88,50 @@
   <li class="list-group-item section-header" id="comments" style="margin-top: 20px;">Comments</li>
   <div class="list-group-item">
     <div id="comments-box">
+        <!-- <div class="media">
+          <div class="media-left"></div>
+          <div class="media-body">
+            <h4 class="media-heading">Media heading</h4>
+            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+          </div>
+        </div> -->
+      {% set comments = model.comments() %}
+      {% for comment in comments %}
+        {% if comment.is_status_change %}
+          <div class="media">
+            <div class="media-left">
+                <a href="/member/{{comment.author.my_url}}">
+                  <img src="{{comment.author.get_avatar_url("40")}}" class="avatar-mini" style="margin-right: 15px;">
+                </a>
+            </div>
+            <div class="media-body">
+              <a class="hover_user" href="/member/{{comment.author.my_url}}">{{comment.author.display_name}}</a> {{comment.comment}}
+              <br><span class="text-muted">{{comment.created|humanize_time}}</span>
+            </div>
+          </div>
+        {% else %}
+          <div class="media">
+            <div class="media-left">
+                <a href="/member/{{comment.author.my_url}}">
+                  <img src="{{comment.author.get_avatar_url("40")}}" class="avatar-mini" style="margin-right: 15px;">
+                </a>
+            </div>
+            <div class="media-body">
+              <a class="hover_user" href="/member/{{comment.author.my_url}}">{{comment.author.display_name}}</a> {{comment.comment|post_parse|safe}}
+              <span class="text-muted">{{comment.created|humanize_time}}</span>
+            </div>
+          </div>
+        {% endif %}
+        <hr style="margin-top: 5px !important; margin-bottom: 5px !important;">
+      {% endfor %}
+      {% if not comments %}
       No comments have been made for this report.
+      {% endif %}
     </div>
   </div>
   {% if model.status != "actiontaken" and model.status != "ignored" %}
   <div class="list-group-item">
-    <div id="new-comment-box">
+    <div id="new-comment-box" data-id="{{model.id}}">
     </div>
   </div>
   {% endif %}

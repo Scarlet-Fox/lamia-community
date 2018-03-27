@@ -291,7 +291,6 @@ class ForumPostParser(object):
 
         # parse attachment tags
         attachment_bbcode_in_post = attachment_re.findall(html)
-
         for attachment_bbcode in attachment_bbcode_in_post:
             try:
                 attachment = sqla.session.query(sqlm.Attachment).filter_by(id=attachment_bbcode[0])[0]
@@ -303,7 +302,7 @@ class ForumPostParser(object):
                     sqla.session.rollback()
                     continue
             
-            if attachment.owner != _content_owner:
+            if attachment.owner != _content_owner and _content_owner != False:
                 continue
 
             if current_user.no_images:
@@ -640,3 +639,8 @@ class ForumPostParser(object):
                     """<a href="%s" target="_blank">View External Image : <br>%s.</a>""" % (plain_jane_image[1], plain_jane_image[1])
                 )
         return "<div class=\"parsed\">"+html+"</div>"
+        
+@app.template_filter('post_parse')
+def post_parse(_html):
+    clean_html_parser = ForumPostParser()
+    return clean_html_parser.parse(_html)
