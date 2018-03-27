@@ -280,11 +280,6 @@ admin.add_view(ReportArchiveView(sqlm.Report, sqla.session, name='Archived Repor
 
 
 # TODO Moderation
-# TODO Add global reports list view
-# TODO Add completed reports list view
-# TODO Add comment loading ajax view
-# TODO Add new comment ajax view
-# TODO Add individual report custom view
 # TODO Add active infraction list view
 # TODO Add most wanted listing
 # TODO Add listing of users by current infr
