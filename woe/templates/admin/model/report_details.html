@@ -118,7 +118,7 @@
             </div>
             <div class="media-body">
               <a class="hover_user" href="/member/{{comment.author.my_url}}">{{comment.author.display_name}}</a> {{comment.comment|post_parse|safe}}
-              <span class="text-muted">{{comment.created|humanize_time}}</span>
+              <br><span class="text-muted">{{comment.created|humanize_time}}</span>&nbsp;&nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs to-bottom">Jump to Bottom</a>
             </div>
           </div>
         {% endif %}
