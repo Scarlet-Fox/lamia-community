@@ -203,7 +203,7 @@ class ReportActionView(BaseView):
     def add_comment(self, idx):
         _model = sqlm.Report.query.filter_by(id=idx)[0]
         
-        if not current_user.is_admin and not _model.report_area in current_user.get_modded_areas():
+        if not current_user.is_admin and not current_user.is_mod:
             return abort(404)
         
         request_json = request.get_json(force=True)
