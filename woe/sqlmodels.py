@@ -482,6 +482,9 @@ class User(db.Model):
 
     phrase_last_updated = db.Column(db.DateTime, index=True)
     smileys_last_updated = db.Column(db.DateTime, index=True)
+    
+    lifetime_infraction_points = db.Column(db.Integer, index=True)
+    active_infraction_points = db.Column(db.Integer, index=True)
 
     how_did_you_find_us = db.Column(db.Text, default="", index=True)
     is_allowed_during_construction = db.Column(db.Boolean, default=False, index=True)

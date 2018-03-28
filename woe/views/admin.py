@@ -331,8 +331,34 @@ class InfractionView(ModelView):
             self.can_create = False
             
         return current_user.is_admin or current_user.is_mod
+
+class MostWanted(ModelView):
+    can_view_details = True
+    can_delete = False
+    can_edit = False
+    can_create = False
+    column_default_sort = ('lifetime_infraction_points', True)
+    column_list = ["display_name", "lifetime_infraction_points", "banned"]
     
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    def get_query(self):
+        return self.session.query(self.model).filter_by(banned=False)
+    
+    def get_count_query(self):
+        return self.session.query(sqla.func.count('*')).select_from(self.model).filter_by(banned=False)
+        
+    def is_accessible(self):
+        return current_user.is_admin or current_user.is_mod
+
 admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Recent Infractions', category="Infractions", endpoint='infractions'))
+admin.add_view(MostWanted(sqlm.User, sqla.session, name='Most Infracted', category="Infractions", endpoint='most-infractions'))
 
 # TODO Moderation
 # TODO Add most wanted listing
