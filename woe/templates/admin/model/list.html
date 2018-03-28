@@ -124,7 +124,7 @@
                 {% endif %}
                 {% block list_row_actions_column scoped %}
                     {% if admin_view.column_display_actions %}
-                    <td class="list-buttons-column">
+                    <td class="list-buttons-column" style="vertical-align: middle;">
                         {% block list_row_actions scoped %}
                           {% for action in list_row_actions %}
                           {{ action.render_ctx(get_pk_value(row), row) }}
@@ -135,7 +135,7 @@
                 {% endblock %}
 
                 {% for c, name in list_columns %}
-                    <td class="col-{{c}}">
+                    <td class="col-{{c}}" style="vertical-align: middle;">
                     {% if admin_view.is_editable(c) %}
                         {% set form = list_forms[get_pk_value(row)] %}
                         {% if form.csrf_token %}
