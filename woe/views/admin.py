@@ -357,7 +357,7 @@ class MostWanted(ModelView):
     def is_accessible(self):
         return current_user.is_admin or current_user.is_mod
 
-admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Recent Infractions', category="Infractions", endpoint='infractions'))
+admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Infraction Log', category="Infractions", endpoint='infractions'))
 admin.add_view(MostWanted(sqlm.User, sqla.session, name='Most Infracted', category="Infractions", endpoint='most-infractions'))
 
 # TODO Moderation
