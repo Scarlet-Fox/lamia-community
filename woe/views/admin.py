@@ -11,8 +11,22 @@ from jinja2 import Markup
 import arrow
 from woe.utilities import humanize_time, ForumHTMLCleaner
 from woe.parsers import ForumPostParser
-
 _base_url = app.config['BASE']
+
+
+from sqlalchemy import or_
+
+from flask.ext.admin._compat import as_unicode, string_types
+from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
+
+class StartsWithQueryAjaxModelLoader(QueryAjaxModelLoader):
+    def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
+        query = self.session.query(self.model)
+
+        filters = (field.startswith(u'%s' % term) for field in self._cached_fields)
+        query = query.filter(or_(*filters))
+
+        return query.offset(offset).limit(limit).all()
 
 class AuthAdminIndexView(admin.AdminIndexView):
     @expose('/')
@@ -293,9 +307,9 @@ class InfractionView(ModelView):
     column_list = ["title", "author", "recipient", "points", "created", "expires"]
     
     form_ajax_refs = {
-        'author': QueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
-        'recipient': QueryAjaxModelLoader('recipient', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
-        'deleted_by': QueryAjaxModelLoader('deleted_by', sqla.session, sqlm.User, fields=['display_name',], page_size=10)
+        'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+        'recipient': StartsWithQueryAjaxModelLoader('recipient', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+        'deleted_by': StartsWithQueryAjaxModelLoader('deleted_by', sqla.session, sqlm.User, fields=['display_name',], page_size=10)
     }
     column_formatters = {
             'author': _user_list_formatter,
@@ -319,8 +333,6 @@ class InfractionView(ModelView):
         return current_user.is_admin or current_user.is_mod
     
 admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Recent Infractions', category="Infractions", endpoint='infractions'))
-
-
 
 # TODO Moderation
 # TODO Add most wanted listing
