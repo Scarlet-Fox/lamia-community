@@ -4,6 +4,7 @@ from flask.ext.login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from woe import sqla
 import woe.sqlmodels as sqlm
 from jinja2 import Markup
@@ -89,7 +90,14 @@ def _null_number_formatter(view, context, model, name):
 def _fancy_time_formatter(view, context, model, name):
     time = getattr(model, name)
     return humanize_time(time)
-    
+
+def _fancy_time_formatter_for_expirations(view, context, model, name):
+    time = getattr(model, name)
+    if time:
+        return humanize_time(time)
+    else:
+        return "Never"
+
 def _content_formatter(view, context, model, name):
     _html = getattr(model, name)
     
@@ -278,9 +286,43 @@ admin.add_view(MyReportView(sqlm.Report, sqla.session, name='Open in My Area', c
 admin.add_view(AllOpenReportsView(sqlm.Report, sqla.session, name='All Open Reports', category="Reports", endpoint='all-reports'))
 admin.add_view(ReportArchiveView(sqlm.Report, sqla.session, name='Archived Reports', category="Reports", endpoint='report-archive'))
 
+class InfractionView(ModelView):
+    can_view_details = True
+    can_delete = False
+    column_default_sort = ('created', True)
+    column_list = ["title", "author", "recipient", "points", "created", "expires"]
+    
+    form_ajax_refs = {
+        'author': QueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+        'recipient': QueryAjaxModelLoader('recipient', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+        'deleted_by': QueryAjaxModelLoader('deleted_by', sqla.session, sqlm.User, fields=['display_name',], page_size=10)
+    }
+    column_formatters = {
+            'author': _user_list_formatter,
+            'recipient': _user_list_formatter,
+            'created': _age_from_time_formatter,
+            'expires': _fancy_time_formatter_for_expirations
+        }
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    def is_accessible(self):
+        if not current_user.is_admin:
+            self.can_edit = False
+            self.can_create = False
+            
+        return current_user.is_admin or current_user.is_mod
+    
+admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Recent Infractions', category="Infractions", endpoint='infractions'))
+
+
 
 # TODO Moderation
-# TODO Add active infraction list view
 # TODO Add most wanted listing
 # TODO Add listing of users by current infr
 # TODO Add ajax view for creating infraction
