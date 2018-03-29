@@ -11,6 +11,7 @@ from jinja2 import Markup
 import arrow
 from woe.utilities import humanize_time, ForumHTMLCleaner
 from woe.parsers import ForumPostParser
+from flask_admin.contrib.sqla.form import AdminModelConverter
 _base_url = app.config['BASE']
 
 
@@ -428,7 +429,7 @@ def check_setting(hierarchy, key, default_value, option_type, meta):
             sqla.session.rollback()
     
 check_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {})
-
+            
 class ConfigurationView(ModelView):
     can_delete = False
     edit_modal = True
@@ -444,8 +445,18 @@ class ConfigurationView(ModelView):
         "/static/assets/datatables/dataTables.responsive.js"
         ]
         
+    def edit_form(self, obj=None):
+        if obj.option_type == "toggle":
+            self.form_choices = {
+                    "value": [ ('yes', 'Yes'), ('no', 'No')]
+                }
+        self._edit_form_class = self.get_edit_form()
+        return super(ConfigurationView, self).edit_form(obj)
+        
+    def is_accessible(self):
+        return current_user.is_admin
+    
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site Settings", endpoint='configuration'))
-
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction

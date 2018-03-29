@@ -229,7 +229,7 @@ class SiteConfiguration(db.Model):
     option_type = db.Column(db.String)
 
     def __repr__(self):
-        return "<SiteConfiguration: (category='%s', key='%s', value='%s')>" % (self.category, self.key, self.value)
+        return "<SiteConfiguration: (hierarchy='%s', key='%s', value='%s')>" % (self.hierarchy, self.key, self.value)
     
 class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
