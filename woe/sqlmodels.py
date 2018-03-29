@@ -219,6 +219,7 @@ class SiteConfiguration(db.Model):
     key = db.Column(db.String, unique=True)
     value = db.Column(db.String)
     meta = db.Column(JSONB)
+    default = db.Column(db.String)
     
     TYPE_CHOICES = (
         ('toggle', 'Toggle'), # yes or no

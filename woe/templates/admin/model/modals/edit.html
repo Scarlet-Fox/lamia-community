@@ -8,7 +8,11 @@
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     {% block header_text %}
+      {% if request._key %}
+      <h3>{{ request._key }}</h3>
+      {% else %}
       <h3>{{ _gettext('Edit Record') + ' #' + request.args.get('id') }}</h3>
+      {% endif %}
     {% endblock %}
   </div>
   <div class="modal-body">

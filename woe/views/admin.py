@@ -408,10 +408,10 @@ class BanView(ModelView):
 admin.add_view(BanView(sqlm.Ban, sqla.session, name='Recent Bans', category="Bans", endpoint='recent-bans'))
 
 # If default settings don't exist, then create them
-def check_setting(hierarchy, key, default_value, option_type, meta):
+def check_setting(hierarchy, key, default_value, option_type, meta, default):
     try:
         _setting = sqlm.SiteConfiguration.query.filter_by(hierarchy=hierarchy, key=key)[0]
-    except IndexError:
+    except:
         sqla.session.rollback()
         
         try:
@@ -420,7 +420,8 @@ def check_setting(hierarchy, key, default_value, option_type, meta):
                     key=key,
                     value=default_value,
                     option_type=option_type,
-                    meta=meta
+                    meta=meta,
+                    default=default
                 )
             
             sqla.session.add(_setting)
@@ -428,14 +429,14 @@ def check_setting(hierarchy, key, default_value, option_type, meta):
         except:
             sqla.session.rollback()
     
-check_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {})
+check_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {}, "no")
             
 class ConfigurationView(ModelView):
     can_delete = False
     edit_modal = True
     can_create = False
-    column_list = ["hierarchy","key","value"]
-    form_excluded_columns = ["hierarchy","key","meta","option_type"]
+    column_list = ["hierarchy","key","value","default"]
+    form_excluded_columns = ["hierarchy","key","meta","option_type","default"]
     
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css"
@@ -451,6 +452,7 @@ class ConfigurationView(ModelView):
                     "value": [ ('yes', 'Yes'), ('no', 'No')]
                 }
         self._edit_form_class = self.get_edit_form()
+        request._key = obj.key
         return super(ConfigurationView, self).edit_form(obj)
         
     def is_accessible(self):
