@@ -349,10 +349,12 @@ class MostWanted(ModelView):
         ]
         
     def get_query(self):
-        return self.session.query(self.model).filter_by(banned=False)
+        return self.session.query(self.model).filter_by(banned=False) \
+            .filter(self.model.lifetime_infraction_points > 0)
     
     def get_count_query(self):
-        return self.session.query(sqla.func.count('*')).select_from(self.model).filter_by(banned=False)
+        return self.session.query(sqla.func.count('*')).select_from(self.model).filter_by(banned=False) \
+            .filter(self.model.lifetime_infraction_points > 0)
         
     def is_accessible(self):
         return current_user.is_admin or current_user.is_mod
@@ -360,9 +362,17 @@ class MostWanted(ModelView):
 class CurrentInfractions(MostWanted):
     column_default_sort = ('active_infraction_points', True)
     column_list = ["display_name", "active_infraction_points", "banned"]
+        
+    def get_query(self):
+        return self.session.query(self.model).filter_by(banned=False) \
+            .filter(self.model.active_infraction_points > 0)
+    
+    def get_count_query(self):
+        return self.session.query(sqla.func.count('*')).select_from(self.model).filter_by(banned=False) \
+            .filter(self.model.active_infraction_points > 0)
 
 admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Infraction Log', category="Infractions", endpoint='infractions'))
-admin.add_view(CurrentInfractions(sqlm.User, sqla.session, name='Infraction Count', category="Infractions", endpoint='active-infractions'))
+admin.add_view(CurrentInfractions(sqlm.User, sqla.session, name='Active Infractions', category="Infractions", endpoint='active-infractions'))
 admin.add_view(MostWanted(sqlm.User, sqla.session, name='Most Infracted', category="Infractions", endpoint='most-infractions'))
 
 # TODO Moderation
