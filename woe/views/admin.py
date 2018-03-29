@@ -429,6 +429,23 @@ def check_setting(hierarchy, key, default_value, option_type, meta):
     
 check_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {})
 
+class ConfigurationView(ModelView):
+    can_delete = False
+    edit_modal = True
+    can_create = False
+    column_list = ["hierarchy","key","value"]
+    form_excluded_columns = ["hierarchy","key","meta","option_type"]
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js", 
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site Settings", endpoint='configuration'))
+
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction

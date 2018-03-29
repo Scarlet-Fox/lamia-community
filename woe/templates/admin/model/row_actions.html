@@ -25,7 +25,7 @@
 {% endmacro %}
 
 {% macro edit_row_popup(action, row_id, row) %}
-  {{ lib.add_modal_button(url=get_url('.edit_view', id=row_id, url=return_url, modal=True), title=action.title, content='<span class="fa fa-pencil glyphicon glyphicon-pencil"></span>') }}
+  {{ lib.add_modal_button(url=get_url('.edit_view', id=row_id, url=return_url, modal=True), title=action.title, content='<div class="btn btn-default"><span class="fa fa-pencil glyphicon glyphicon-pencil"></span></div>') }}
 {% endmacro %}
 
 {% macro delete_row(action, row_id, row) %}
