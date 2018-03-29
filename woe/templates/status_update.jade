@@ -42,7 +42,7 @@
       if status.attached_to_user
         li.list-group-item.front-page-status.attached-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}")
           .media-left
-            img(src="{{ status.author.get_avatar_url("60") }}", width="{{status.author.avatar_60_x}}", height="{{status.author.avatar_60_y}}")
+            img(src="{{ status.author.get_avatar_url("60") }}", width="{{status.author.avatar_60_x}}", height="{{status.author.avatar_60_y}}", class="avatar-mini")
           .media-body
             p
               a.hover_user(href="/member/{{ status.author.my_url }}") {{ status.author.display_name }}
