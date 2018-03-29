@@ -406,6 +406,29 @@ class BanView(ModelView):
 
 admin.add_view(BanView(sqlm.Ban, sqla.session, name='Recent Bans', category="Bans", endpoint='recent-bans'))
 
+# If default settings don't exist, then create them
+def check_setting(hierarchy, key, default_value, option_type, meta):
+    try:
+        _setting = sqlm.SiteConfiguration.query.filter_by(hierarchy=hierarchy, key=key)[0]
+    except IndexError:
+        sqla.session.rollback()
+        
+        try:
+            _setting = sqlm.SiteConfiguration(
+                    hierarchy=hierarchy,
+                    key=key,
+                    value=default_value,
+                    option_type=option_type,
+                    meta=meta
+                )
+            
+            sqla.session.add(_setting)
+            sqla.session.commit()
+        except:
+            sqla.session.rollback()
+    
+check_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {})
+
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction

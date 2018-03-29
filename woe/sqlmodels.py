@@ -215,9 +215,18 @@ class SiteSetting(db.Model):
 
 class SiteConfiguration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String, unique=True)
+    hierarchy = db.Column(db.String, unique=True)
     key = db.Column(db.String, unique=True)
     value = db.Column(db.String)
+    meta = db.Column(JSONB)
+    
+    TYPE_CHOICES = (
+        ('toggle', 'Toggle'), # yes or no
+        ('text', 'Text'),
+        ('largetext', 'LargeText'),
+        ('dropdown', 'Dropdown') # meta = { options: ["option1", "option2", "option3"] }
+    )
+    option_type = db.Column(db.String)
 
     def __repr__(self):
         return "<SiteConfiguration: (category='%s', key='%s', value='%s')>" % (self.category, self.key, self.value)
