@@ -16,7 +16,7 @@ for infraction in sqlm.Infraction.query.all():
 
     user.lifetime_infraction_points += infraction.points
     
-    if arrow.now() < arrow.get(infraction.expires) or infraction.forever == True:
+    if arrow.now() < arrow.get(infraction.expires) and infraction.forever == False:
         user.active_infraction_points += infraction.points
         
     sqla.session.add(user)

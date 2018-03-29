@@ -356,13 +356,16 @@ class MostWanted(ModelView):
         
     def is_accessible(self):
         return current_user.is_admin or current_user.is_mod
+        
+class CurrentInfractions(MostWanted):
+    column_default_sort = ('active_infraction_points', True)
+    column_list = ["display_name", "active_infraction_points", "banned"]
 
 admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Infraction Log', category="Infractions", endpoint='infractions'))
+admin.add_view(CurrentInfractions(sqlm.User, sqla.session, name='Infraction Count', category="Infractions", endpoint='active-infractions'))
 admin.add_view(MostWanted(sqlm.User, sqla.session, name='Most Infracted', category="Infractions", endpoint='most-infractions'))
 
 # TODO Moderation
-# TODO Add most wanted listing
-# TODO Add listing of users by current infr
 # TODO Add ajax view for creating infraction
 # TODO Add view for active bans
 # TODO Add ajax view for modifying a ban
