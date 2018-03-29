@@ -103,3 +103,44 @@ blockquote {
     display: flex;
     align-items: center;
 }
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #f0f5ff;}
+
+.table-bordered {
+    background: #f5f8ff;
+}
+
+.nav-tabs
+    background-color: #f5f8ff;
+}
+
+.active {
+        background-color:black !important;
+}
+
+.nav-tabs>li.active>a,.nav-tabs>li.active>a:focus,.nav-tabs>li.active>a:hover {
+    background-color: #f5f8ff;
+}
+
+.list-group-item {
+    background-color: #f5f8ff;
+}
+
+.ql-editor {
+    background: white;
+}
+
+.inline-editor-buttons {
+    margin-top:10px;
+}
+
+a.hover_user{
+     font-weight:bold;
+}
+
+.to-bottom {
+    font-weight:bold;
+    font-size:11px;
+    color:#777;
+}
