@@ -375,9 +375,40 @@ admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Infraction Lo
 admin.add_view(CurrentInfractions(sqlm.User, sqla.session, name='Active Infractions', category="Infractions", endpoint='active-infractions'))
 admin.add_view(MostWanted(sqlm.User, sqla.session, name='Most Infracted', category="Infractions", endpoint='most-infractions'))
 
+class BanView(ModelView):
+    can_view_details = True
+    can_delete = False
+    column_default_sort = ('created', True)
+    column_list = ["recipient", "explanation", "created", "expires"]
+    
+    form_ajax_refs = {
+        'recipient': StartsWithQueryAjaxModelLoader('recipient', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+    column_formatters = {
+            'recipient': _user_list_formatter,
+            'created': _age_from_time_formatter,
+            'expires': _fancy_time_formatter_for_expirations
+        }
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    def is_accessible(self):
+        if not current_user.is_admin:
+            self.can_edit = False
+            self.can_create = False
+            
+        return current_user.is_admin or current_user.is_mod
+
+admin.add_view(BanView(sqlm.Ban, sqla.session, name='Recent Bans', category="Bans", endpoint='recent-bans'))
+
+
 # TODO Moderation
 # TODO Add ajax view for creating infraction
-# TODO Add view for active bans
 # TODO Add ajax view for modifying a ban
 # TODO Add chart to the front showing reports vs infractions
 # TODO Show recent moderation alerts
