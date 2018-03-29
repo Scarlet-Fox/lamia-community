@@ -211,8 +211,17 @@ class SiteSetting(db.Model):
     value = db.Column(db.String)
 
     def __repr__(self):
-        return "<SiteSetting: (name='%s', value='%s)>" % (self.name, self.value)
+        return "<SiteSetting: (name='%s', value='%s')>" % (self.name, self.value)
 
+class SiteConfiguration(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String, unique=True)
+    key = db.Column(db.String, unique=True)
+    value = db.Column(db.String)
+
+    def __repr__(self):
+        return "<SiteConfiguration: (category='%s', key='%s', value='%s')>" % (self.category, self.key, self.value)
+    
 class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
