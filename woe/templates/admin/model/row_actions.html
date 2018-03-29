@@ -7,13 +7,13 @@
 {% endmacro %}
 
 {% macro button(action, url, icon_class=None, text=None) %}
-<a class="btn btn-default" href="{{ url }}" title="{{ action.title or '' }}">
+<a class="btn btn-default" style="display: inline;" href="{{ url }}" title="{{ action.title or '' }}">
   <span class="{{ icon_class or action.icon_class }}"> {{ text or ''}}</span>
 </a>
 {% endmacro %}
 
 {% macro view_row(action, row_id, row) %}
-  {{ button(action, get_url('.details_view', id=row_id, url=return_url), 'fa fa-eye', 'View') }}
+  {{ button(action, get_url('.details_view', id=row_id, url=return_url), 'fa fa-eye', '') }}
 {% endmacro %}
 
 {% macro view_row_popup(action, row_id, row) %}
@@ -21,7 +21,7 @@
 {% endmacro %}
 
 {% macro edit_row(action, row_id, row) %}
-  {{ button(action, get_url('.edit_view', id=row_id, url=return_url), 'fa fa-pencil glyphicon glyphicon-pencil', 'Edit') }}
+  {{ button(action, get_url('.edit_view', id=row_id, url=return_url), 'fa fa-pencil glyphicon glyphicon-pencil', '') }}
 {% endmacro %}
 
 {% macro edit_row_popup(action, row_id, row) %}
