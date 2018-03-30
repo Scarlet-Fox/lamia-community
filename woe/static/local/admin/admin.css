@@ -144,3 +144,36 @@ a.hover_user{
     font-size:11px;
     color:#777;
 }
+
+form.admin-form.form-horizontal {
+    background-color: #f5f8ff;
+    padding-top: 35px;
+    padding-bottom: 5px;
+    padding-right: 35px;
+}
+
+form.admin-form.form-horizontal > .form-group> .col-md-offset-2.col-md-10.submit-row {
+    width: 100%;
+    margin-left: 0 !important;
+    text-align: center;
+}
+
+input#forever.form-control {
+    height: 20px;
+    vertical-align: middle !important;
+    border: none;
+    box-shadow: none !important;
+    text-align: left !important;
+}
+
+form.admin-form.form-horizontal > hr {
+    width: 100%;
+}
+
+.modal-body {
+    background-color: #f5f8ff;
+}
+
+.modal-header {
+    background-color: #f5f8ff;
+}
