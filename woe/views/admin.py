@@ -1,24 +1,41 @@
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
+from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField, IntegerField, DateField
 from flask.ext.login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose, BaseView, form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from woe import sqla
+from sqlalchemy.event import listens_for
 import woe.sqlmodels as sqlm
 from jinja2 import Markup
 import arrow
 from woe.utilities import humanize_time, ForumHTMLCleaner
 from woe.parsers import ForumPostParser
 from flask_admin.contrib.sqla.form import AdminModelConverter
-_base_url = app.config['BASE']
-
-
+import os, os.path
 from sqlalchemy import or_
-
 from flask.ext.admin._compat import as_unicode, string_types
 from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
+
+_base_url = app.config['BASE']
+
+@listens_for(sqlm.Smiley, 'after_delete')
+def del_image(mapper, connection, target):
+    if target.filename:
+        # Delete image
+        try:
+            os.remove(os.path.join(app.config["SMILEY_UPLOAD_DIR"], target.filename))
+        except OSError:
+            pass
+
+        # Delete thumbnail
+        try:
+            os.remove(os.path.join(app.config["SMILEY_UPLOAD_DIR"],
+                              form.thumbgen_filename(target.filename)))
+        except OSError:
+            pass
 
 class StartsWithQueryAjaxModelLoader(QueryAjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
@@ -118,6 +135,10 @@ def _content_formatter(view, context, model, name):
     
     clean_html_parser = ForumPostParser()
     return Markup(clean_html_parser.parse(_html).replace("parsed\"", "parsed\" style=\"max-height: 300px; overflow-y: scroll;\""))
+
+def _smiley_image_formatter(view, context, model, name):
+    _filename = getattr(model, name)
+    return Markup("<img style=\"max-height: 50px;\" src=\"/static/smilies/%s\">" % _filename)
 
 class MyReportView(ModelView):
     can_view_details = True
@@ -465,6 +486,12 @@ class ConfigurationView(ModelView):
         return current_user.is_admin
 
 class SmileyConfigView(ModelView):
+    edit_modal = True
+    create_modal = True
+    
+    column_list = ["replaces_text", "filename", "unlisted"]
+    column_default_sort = ('replaces_text', False)
+    
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css"
         ]
@@ -472,6 +499,21 @@ class SmileyConfigView(ModelView):
         "/static/assets/datatables/dataTables.bootstrap.js",
         "/static/assets/datatables/dataTables.responsive.js"
         ]
+        
+    column_labels = {
+            'replaces_text': 'Emoticon Code',
+            'filename': 'Smiley',
+            'unlisted': 'Unlisted?'
+        }
+    
+    column_formatters = {
+            'filename': _smiley_image_formatter,
+        }
+        
+    form_extra_fields = {
+            'filename': form.ImageUploadField('Smiley', base_path=app.config["SMILEY_UPLOAD_DIR"], url_relative_path="smilies/"),
+            'replaces_text': StringField()
+        }
         
     def is_accessible(self):
         return current_user.is_admin
