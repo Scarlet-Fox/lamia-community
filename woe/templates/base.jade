@@ -238,7 +238,7 @@ body(role='document')
             ul.nav.navbar-nav.navbar-right.hidden-xs
               if current_user.is_authenticated()
                 li
-                  img.go-to-profile(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 5px; margin-left: 15px;', class="avatar-mini")
+                  img.go-to-profile(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 4px; margin-left: 15px;', class="avatar-mini")
                 li.dropdown
                   a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                     | {{current_user.display_name}}
