@@ -430,13 +430,19 @@ def check_setting(hierarchy, key, default_value, option_type, meta, default):
             sqla.session.rollback()
     
 check_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {}, "no")
-            
+check_setting("core.lock-site", "Lock Site? (Under construction page.)", "no", "toggle", {}, "no")
+check_setting("twitter.twitter-consumer-key", "Twitter Consumer Key", "", "text", {}, "")
+check_setting("twitter.twitter-consumer-secret", "Twitter Consumer Secret", "", "text", {}, "")
+check_setting("twitter.twitter-access-token-key", "Twitter Access Token Key", "", "text", {}, "")
+check_setting("twitter.twitter-access-token-secret", "Twitter Access Token Secret", "", "text", {}, "")
+
 class ConfigurationView(ModelView):
     can_delete = False
     edit_modal = True
     can_create = False
     column_list = ["hierarchy","key","value","default"]
     form_excluded_columns = ["hierarchy","key","meta","option_type","default"]
+    column_default_sort = ('hierarchy', False)
     
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css"

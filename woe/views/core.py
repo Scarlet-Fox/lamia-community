@@ -177,6 +177,7 @@ def page_not_found(e):
 def under_construction():
     return render_template("under_construction.jade", page_title="We're working on the site!")
 
+# TODO link this to the db
 if app.settings_file.get("lockout_on", False):
     @app.before_request
     def lockdown_site():
