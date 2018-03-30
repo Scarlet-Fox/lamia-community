@@ -1607,8 +1607,9 @@ class ModActionLog(db.Model):
     
 class Smiley(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    
     filename = db.Column(db.Text, index=True)
     replaces_text = db.Column(db.Text, index=True)
-    
+
+    def __repr__(self):
+        return "<Smiley: (replaces_text='%s', filename='%s')>" % (self.replaces_text, self.filename)
     

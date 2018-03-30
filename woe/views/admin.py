@@ -2,7 +2,7 @@ from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from flask.ext.login import login_required, current_user
 import flask_admin as admin
-from flask_admin import helpers, expose, BaseView
+from flask_admin import helpers, expose, BaseView, form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from woe import sqla
@@ -463,8 +463,22 @@ class ConfigurationView(ModelView):
         
     def is_accessible(self):
         return current_user.is_admin
+
+class SmileyConfigView(ModelView):
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js", 
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    def is_accessible(self):
+        return current_user.is_admin
     
+
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site Settings", endpoint='configuration'))
+admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site Settings", endpoint='smiley-configuration'))
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction

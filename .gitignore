@@ -13,9 +13,6 @@ media
 migrations
 generated/
 .webassets-cache/
-uploads/
-avatars/
-customizations/
 config.json
 versions/
 _todo.txt
