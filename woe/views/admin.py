@@ -449,7 +449,7 @@ class BanView(ModelView):
             
         return current_user.is_admin or current_user.is_mod
 
-admin.add_view(BanView(sqlm.Ban, sqla.session, name='Recent Bans', category="Bans", endpoint='recent-bans'))
+admin.add_view(BanView(sqlm.Ban, sqla.session, name='Ban Log', category="Bans", endpoint='recent-bans'))
 
 # If default settings don't exist, then create them
 def check_setting(hierarchy, key, default_value, option_type, meta, default):
@@ -545,9 +545,12 @@ class SmileyConfigView(ModelView):
     def is_accessible(self):
         return current_user.is_admin
     
+class AttachmentView(ModelView):
+    pass
 
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
+admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachments', category="Site", endpoint='attachments'))
 
 ###################################################################################################
 # Administrative views : Forum-specific options, settings, and config
