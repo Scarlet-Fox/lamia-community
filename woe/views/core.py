@@ -44,10 +44,11 @@ def add_canonical_url():
 @app.before_request
 def check_ip_ban():
     if request.path != "/banned" and not request.path.startswith("/static/"):
-        try:
+        try: # TODO : wat
             ip_address = sqla.session.query(sqlm.IPAddress).filter_by(ip_address=request.remote_addr, banned=True)[0]
             return redirect("/banned", 307)
-        except IndexError:
+        except:
+            sqla.session.rollback()
             pass
 
 @app.errorhandler(500)

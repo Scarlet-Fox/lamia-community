@@ -73,56 +73,57 @@ def view_profile(login_name):
         user.parsed_about_me = parser.parse(user.about_me, _object=user)
     except:
         user.parsed_about_me = ""
+    # TODO STATS
 
-    post_count = sqlm.Post.query.filter_by(hidden=False, author=user).count()
-    topic_count = sqlm.Topic.query.filter_by(hidden=False, author=user).count()
-    status_update_created = sqlm.StatusUpdate.query.filter_by(hidden=False, author=user).count()
-    status_update_comments_created = sqlm.StatusComment.query.filter_by(hidden=False, author=user).count()
+    post_count = 0 # sqlm.Post.query.filter_by(hidden=False, author=user).count()
+    topic_count = 0 # sqlm.Topic.query.filter_by(hidden=False, author=user).count()
+    status_update_created = 0 # sqlm.StatusUpdate.query.filter_by(hidden=False, author=user).count()
+    status_update_comments_created = 0 # sqlm.StatusComment.query.filter_by(hidden=False, author=user).count()
     
     age = False
     if user.birthday:
         today = arrow.utcnow().datetime
         age = today.year - user.birthday.year - ((today.month, today.day) < (user.birthday.month, user.birthday.day))
-
+    
     boops_given = sqla.session.query(sqlm.post_boop_table).filter(sqlm.post_boop_table.c.user_id == user.id).count()
     boops_received = sqla.session.query(sqlm.post_boop_table) \
         .join(sqlm.Post) \
         .filter(sqlm.Post.author == user) \
         .count()
-
+    
     if user.data != None:
         favorite_phrase = user.data.get("favorite_phrase", [])
         favorite_emotes = ["""<img src="/static/emotes/%s" />""" % emote for emote in user.data.get("favorite_emotes", [])]
     else:
         favorite_phrase = []
         favorite_emotes = []
-
+    
     recent_visitor_logs = sqla.session.query(sqlm.SiteLog.user_id, sqla.func.max(sqlm.SiteLog.time).label("time")) \
         .filter(sqlm.SiteLog.user_id.isnot(None)) \
         .filter(sqlm.SiteLog.path.like("/member/"+unicode(user.my_url))) \
         .group_by(sqlm.SiteLog.user_id).order_by(sqla.desc(sqla.func.max(sqlm.SiteLog.time))).limit(5).subquery()
-
+    
     recent_visitors = sqla.session.query(sqlm.User, recent_visitor_logs.c.time) \
         .join(recent_visitor_logs, sqla.and_(
             recent_visitor_logs.c.user_id == sqlm.User.id,
             recent_visitor_logs.c.user_id != user.id
         ))[:5]
 
-    recent_posts = sqla.session.query(sqlm.Post).filter_by(author=user, hidden=False) \
-        .join(sqlm.Post.topic) \
-        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-        .order_by(sqla.desc(sqlm.Post.created))[:5]
+    recent_posts = [] #sqla.session.query(sqlm.Post).filter_by(author=user, hidden=False) \
+        # .join(sqlm.Post.topic) \
+        # .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+        # .order_by(sqla.desc(sqlm.Post.created))[:5]
 
-    recent_topics = sqla.session.query(sqlm.Topic).filter_by(author=user, hidden=False) \
-        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-        .order_by(sqla.desc(sqlm.Topic.created))[:5]
+    recent_topics = [] #sqla.session.query(sqlm.Topic).filter_by(author=user, hidden=False) \
+        # .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
+        # .order_by(sqla.desc(sqlm.Topic.created))[:5]
     
-    try:
-        label = sqla.session.query(sqlm.Label).filter_by(label="ask")[0]
-        ask_me = sqla.session.query(sqlm.Topic).filter_by(author=user, hidden=False, label=label) \
-            .order_by(sqla.desc(sqlm.Topic.created))[:5]
-    except IndexError:
-        ask_me = []
+    # try:
+    #     label = sqla.session.query(sqlm.Label).filter_by(label="ask")[0]
+    #     ask_me = sqla.session.query(sqlm.Topic).filter_by(author=user, hidden=False, label=label) \
+    #         .order_by(sqla.desc(sqlm.Topic.created))[:5]
+    # except IndexError:
+    ask_me = []
 
     recent_status_updates = sqla.session.query(sqlm.StatusUpdate) \
         .filter_by(author=user, hidden=False) \
