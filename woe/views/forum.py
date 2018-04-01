@@ -489,9 +489,8 @@ def topic_posts(slug):
         pagination = 20
         page = 1
 
-
-    post_count = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
-        .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)).count()
+    post_count = sqla.session.query(sqla.func.count('*')).select_from(sqlm.Post).filter_by(topic=topic) \
+        .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)).all()[0][0]
 
     max_page = math.ceil(float(post_count)/float(pagination))
     if page > max_page:
@@ -593,8 +592,9 @@ def topic_posts(slug):
         if post.post_history != None:
             try:
                 if len(post.post_history) > 0:
-                    parsed_post["modified_by"] = sqlm.User.query.filter_by(id=post.post_history[-1]["author"])[0].display_name
-            except IndexError:
+                    parsed_post["modified_by"] = sqlm.User.query.filter_by(id=post.post_history[-1]["author"]).one().display_name
+            except:
+                sqla.session.rollback()
                 pass
         parsed_post["html"] = clean_html_parser.parse(post.html, _object=post)
         parsed_post["roles"] = post.author.get_roles()

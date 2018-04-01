@@ -400,7 +400,7 @@ def humanize(time, format_str="MMM D YYYY, hh:mm a"):
         return ""
 
     try:
-        timezone = current_user._get_current_object().time_zone
+        timezone = current_user.time_zone
     except:
         timezone = "US/Pacific"
 
@@ -426,7 +426,7 @@ def humanize_time(time, format_str="MMM D YYYY, hh:mm a"):
         return ""
 
     try:
-        timezone = current_user._get_current_object().time_zone
+        timezone = current_user.time_zone
     except:
         timezone = "US/Pacific"
 
