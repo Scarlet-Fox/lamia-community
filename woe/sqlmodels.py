@@ -1068,6 +1068,9 @@ class Category(db.Model):
     topic_count = db.Column(db.Integer, default=0)
     post_count = db.Column(db.Integer, default=0)
     view_count = db.Column(db.Integer, default=0)
+    
+    def get_children(self):
+        return Category.query.filter_by(parent=self).order_by("weight")
 
     def __repr__(self):
         return "<Category: (name='%s', weight='%s')>" % (self.name, self.weight)

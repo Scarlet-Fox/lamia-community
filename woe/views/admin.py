@@ -527,6 +527,7 @@ class SectionView(ModelView):
     can_delete = False
     action_disallowed_list = ['delete']
     form_excluded_columns = ["weight"]
+    page_size = 1000
 
     form_ajax_refs = {
         'moderators': StartsWithQueryAjaxModelLoader('moderators', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
@@ -543,7 +544,7 @@ class SectionView(ModelView):
         ]
         
     @expose('/reorder', methods=('POST', ))
-    def add_comment(self):
+    def reorder_sections(self):
         request_json = request.get_json(force=True)
         
         current_order = 0
@@ -558,8 +559,81 @@ class SectionView(ModelView):
                 sqla.session.rollback()
         
         return "ok."
+
+class CategoryView(ModelView):
+    can_delete = False
+    list_template = 'admin/model/category-list.html'
+    page_size = 1000
+    
+    form_ajax_refs = {
+        'moderators': StartsWithQueryAjaxModelLoader('moderators', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+        'restricted_users': StartsWithQueryAjaxModelLoader('restricted_users', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+    
+    form_excluded_columns = ["recent_post", "recent_topic", "section", "parent", "watchers", "topic_count", "post_count", "view_count", "children"]
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css",
+        "/static/assets/Nestable2/jquery.nestable.min.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js", 
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js",
+        "/static/assets/Nestable2/jquery.nestable.min.js"
+        ]
+    
+    def get_query(self):
+        return self.session.query(self.model).join(sqlm.Section).order_by(sqlm.Section.weight, sqlm.Category.weight)
+    
+    def order_category(self, cid, raw_json, section=None, parent=None, weight=0, weight_adjustment=0):
+        weight += weight_adjustment
+        try:
+            category = sqlm.Category.query.filter_by(id=cid)[0]
+        except IndexError:
+            sqla.session.rollback()
+            return
+        print category
         
+        category.weight = weight
+        if section:
+            category.section = section
+            category.parent = None
+            
+        if parent:
+            category.parent = parent
+            category.section = None
+            
+        if raw_json.has_key("children"):
+            _child_weight = 0
+            for _child in raw_json["children"]:
+                self.order_category(_child["id"], _child, section=None, parent=category , weight=_child_weight)
+                _child_weight += 10
+            
+        sqla.session.add(category)
+        sqla.session.commit()
+            
+    @expose('/reorder', methods=('POST', ))
+    def reorder_categories(self):
+        request_json = request.get_json(force=True)
+        
+        for _section in request_json:
+            _category_weight = 0
+            try:
+                section = sqlm.Section.query.filter_by(id=_section["id"])[0]
+            except IndexError:
+                sqla.session.rollback()
+                continue
+            
+            for _category in _section["children"]:
+                self.order_category(_category["id"], _category, section=section, weight=_category_weight)
+                _category_weight += 10
+                
+            print section
+        
+        return "ok."
+
 admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum Settings", endpoint='sections'))
+admin.add_view(CategoryView(sqlm.Category, sqla.session, name='Categories', category="Forum Settings", endpoint='categories'))
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction
