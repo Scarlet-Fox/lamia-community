@@ -583,7 +583,9 @@ class CategoryView(ModelView):
         ]
     
     def get_query(self):
-        return self.session.query(self.model).join(sqlm.Section).order_by(sqlm.Section.weight, sqlm.Category.weight)
+        return self.session.query(self.model).outerjoin(sqlm.Section) \
+            .filter(sqlm.Category.parent_id == None) \
+            .order_by(sqlm.Section.weight, sqlm.Category.weight)
     
     def order_category(self, cid, raw_json, section=None, parent=None, weight=0, weight_adjustment=0):
         weight += weight_adjustment
