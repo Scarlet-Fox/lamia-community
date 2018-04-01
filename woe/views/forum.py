@@ -465,7 +465,6 @@ def recent_posts(page):
 
 @app.route('/t/<slug>/posts', methods=['POST'])
 def topic_posts(slug):
-    start = time.time()
     try:
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
@@ -514,8 +513,6 @@ def topic_posts(slug):
 
     author_signatures = {}
     author_signatures_id = {}
-    
-    t = time.time()
     
     for post in posts.items:
         clean_html_parser = ForumPostParser()
@@ -703,9 +700,6 @@ def topic_posts(slug):
         #         pass
 
         parsed_posts.append(parsed_post)
-    
-    print (time.time() - t) * 1000.0
-    print "^ ms"
     
     return app.jsonify(posts=parsed_posts, count=post_count)
 

@@ -13,24 +13,17 @@ from threading import Thread
 from woe import sqla
 import woe.sqlmodels as sqlm
 from urllib import urlencode
+import bbcode
 
 roll_re = re.compile(r'(\[roll=(\d+)d(\d+)(?:\+(\d+)|\-(\d+))?\](.*?)\[\/roll\])', re.DOTALL|re.IGNORECASE)
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)(:wrap)?\]')
-spoiler_re = re.compile(r'\[[sS][pP][oO][iI][lL][eE][rR]\](.*?)\[\/[sS][pP][oO][iI][lL][eE][rR]\]', re.DOTALL|re.IGNORECASE)
-adv_spoiler_re = re.compile(r'\[[sS][pP][oO][iI][lL][eE][rR]=(.*?)\](.*?)\[\/[sS][pP][oO][iI][lL][eE][rR]\]', re.DOTALL|re.IGNORECASE)
 center_re = re.compile(r'\[center\](.*?)\[\/center\]', re.DOTALL|re.IGNORECASE)
 image_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL|re.IGNORECASE)
 quote_re = re.compile(r'\[quote=?(.*?)\](.*)\[\/quote\]', re.DOTALL|re.IGNORECASE)
 font_re = re.compile(r'\[font=?(.*?)\](.*?)\[\/font\]', re.DOTALL|re.IGNORECASE)
-color_re = re.compile(r'\[color=?(.*?)\](.*?)\[\/color\]', re.DOTALL|re.IGNORECASE)
-size_re = re.compile(r'\[size=?(.*?)\](.*?)\[\/size\]', re.DOTALL|re.IGNORECASE)
 url_re = re.compile(r'\[url=?("?)(.*?)("?)\](.*?)\[\/url\]', re.DOTALL|re.IGNORECASE)
-bold_re = re.compile(r'\[b\](.*?)\[\/b\]', re.DOTALL|re.IGNORECASE)
-italic_re = re.compile(r'\[i\](.*?)\[\/i\]', re.DOTALL|re.IGNORECASE)
-strike_re = re.compile(r'\[s\](.*?)\[\/s\]', re.DOTALL|re.IGNORECASE)
 img_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL|re.IGNORECASE)
 html_img_re = re.compile(r'<img src=\"(.*?)\">', re.IGNORECASE)
-prefix_re = re.compile(r'(\[prefix=(.+?)\](.+?)\[\/prefix\])')
 progress_re = re.compile(r'(\[progressbar=(#?[a-zA-Z0-9]+)\](\d+?)\[\/progressbar\])', re.IGNORECASE)
 mention_re = re.compile("\[@(.*?)\]")
 deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\](.*?\[\/reply\])', re.DOTALL|re.IGNORECASE)
@@ -38,7 +31,7 @@ reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\]')
 legacy_postcharacter_re = re.compile(r'\[(post)?character=.*?\]')
 list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL|re.IGNORECASE)
 link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
-bbcode_re = re.compile("(\[(attachment|spoiler|center|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
+bbcode_re = re.compile("(\[(attachment|spoiler|center|align|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
 href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
 raw_image_re = re.compile("(<img src=\"(.*?)\"(?:.*)>)")
 youtube_re = re.compile("https?://(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?", re.IGNORECASE)
@@ -66,6 +59,61 @@ emoticon_codes = {
     ":lol:" : "biggrin.png",
     ":D" : "biggrin.png",
 }
+
+bbcode_parser = bbcode.Parser(escape_html=False, replace_links=False)
+bbcode_parser.add_simple_formatter('hr', '<hr />', standalone=True)
+bbcode_parser.add_simple_formatter('b', '<strong>%(value)s</strong>', escape_html=False)
+bbcode_parser.add_simple_formatter('i', '<em>%(value)s</em>', escape_html=False)
+bbcode_parser.add_simple_formatter('media', '%(value)s', escape_html=False)
+bbcode_parser.add_simple_formatter('s', '<span style="text-decoration: line-through;">%(value)s</span>', escape_html=False)
+bbcode_parser.add_simple_formatter('center', '<center>%(value)s</center>', escape_html=False)
+
+def render_spoiler_bbcode(tag_name, value, options, parent, context):
+    if options.get("spoiler", False):
+        return """<div class="content-spoiler" data-caption="%s"><div> <!-- spoiler div -->%s</div></div>""" % (options.get("spoiler"), value,)
+    else:
+        return """<div class="content-spoiler"><div> <!-- spoiler div -->%s</div></div>""" % (value,)
+
+bbcode_parser.add_formatter("spoiler", render_spoiler_bbcode, escape_html=False)
+
+def render_image_bbcode(tag_name, value, options, parent, context):
+    if context.get("strip_images", False):
+        return ""
+    else:
+        if options.get("img", False):
+            return """<img src="%s" style="max-width: 100%%;" />""" % options.get("img")
+        else:
+            return """<img src="%s" style="max-width: 100%%;" />""" % value
+    
+bbcode_parser.add_formatter("img", render_image_bbcode, escape_html=True)
+
+def render_prefix_bbcode(tag_name, value, options, parent, context):
+    return """
+        <span class="badge prefix" style="background:%s; font-size: 10px; font-weight: normal; vertical-align: top; margin-top: 2px;">%s</span>
+    """ % (options.get("color","grey"), value)
+
+bbcode_parser.add_formatter("prefix", render_prefix_bbcode, escape_html=True)
+
+def render_align_bbcode(tag_name, value, options, parent, context):
+    return """
+        <div style="text-align: %s;">%s</span>
+    """ % (options.get("align","left"), value)
+
+bbcode_parser.add_formatter("align", render_align_bbcode, escape_html=False)
+
+def render_color_bbcode(tag_name, value, options, parent, context):
+    return """
+        <span style="color: %spx;">%s</span>
+    """ % (options.get("color","blue"), value)
+
+bbcode_parser.add_formatter("color", render_color_bbcode, escape_html=False)
+
+def render_size_bbcode(tag_name, value, options, parent, context):
+    return """
+        <span style="font-size: %spx;">%s</span>
+    """ % (options.get("size","12"), value)
+
+bbcode_parser.add_formatter("size", render_size_bbcode, escape_html=False)
 
 def resize_image_save_custom(image_file_location, new_image_file, new_x_size, _id):
     from woe import sqla
@@ -129,7 +177,7 @@ class ForumPostParser(object):
         images_found = img_re.findall(html)
         skiplink = []
         for image in images_found:
-            html = html.replace("[img]%s[/img]" % image, """<img src="%s" style="max-width: 80%%; display: block;">""" % image, 1)
+            html = html.replace("[img]%s[/img]" % image, """<img src="%s" style="max-width: 100%%;">""" % image, 1)
             skiplink.append(image.strip())
 
         html_images_found = html_img_re.findall(html)
@@ -286,7 +334,7 @@ class ForumPostParser(object):
             else:
                 html = html.replace(
                     """<a href="%s">%s</a>""" % (filler, filler),
-                    """<a href="%s">%s</a>""" % (link_text, link[0].strip())
+                    """<a href="%s" target="_blank">%s</a>""" % (link_text, link[0].strip())
                 )
 
         # parse attachment tags
@@ -520,12 +568,6 @@ class ForumPostParser(object):
                 sqla.session.rollback()
                 html = html.replace("[@%s]" % unicode(mention), "", 1)
 
-        html = html.replace("[hr]", "<hr>")
-
-        prefix_bbcode_in_post = prefix_re.findall(html)
-        for prefix_bbcode in prefix_bbcode_in_post:
-            html = html.replace(prefix_bbcode[0], """<span class="badge prefix" style="background:%s; font-size: 10px; font-weight: normal; vertical-align: top; margin-top: 2px;">%s</span>""" % (prefix_bbcode[1], prefix_bbcode[2],))
-
         rolls = roll_re.findall(html)
         for roll in rolls:
             html = html.replace(roll[0], "")
@@ -544,19 +586,6 @@ class ForumPostParser(object):
                       </div>
                     </div>
                 """.replace("VALUEHERE", progress_bar_bbcode[2]).replace("COLORHERE", progress_bar_bbcode[1]))
-
-        size_bbcode_in_post = size_re.findall(html)
-        for size_bbcode in size_bbcode_in_post:
-            replace_ = "[size="+size_bbcode[0]+"]"+size_bbcode[1]+"[/size]"
-            try:
-                html = html.replace(replace_, """<span style="font-size: %spx;">%s</span>""" % (str(14+int(size_bbcode[0])), size_bbcode[1],))
-            except:
-                continue
-
-        color_bbcode_in_post = color_re.findall(html)
-        for color_bbcode in color_bbcode_in_post:
-            replace_ = "[color="+color_bbcode[0]+"]"+color_bbcode[1]+"[/color]"
-            html = html.replace(replace_, """<span style="color: %s;">%s</span>""" % (color_bbcode[0], color_bbcode[1],))
 
         font_bbcode_in_post = font_re.findall(html)
         for font_bbcode in font_bbcode_in_post:
@@ -584,44 +613,6 @@ class ForumPostParser(object):
             to_replace = to_replace + "[/quote]"
             html = html.replace(to_replace, """<blockquote data-author="%s" class="blockquote-reply"><div>%s</div></blockquote>""" % (unicode(quote_bbcode[0]), unicode(quote_bbcode[1])), 1)
 
-        # parse spoilers
-        spoiler_bbcode_in_post = spoiler_re.findall(html)
-        for spoiler_bbcode in spoiler_bbcode_in_post:
-            html = spoiler_re.sub("""<div class="content-spoiler"><div> <!-- spoiler div -->%s</div></div>""" % spoiler_bbcode, html, 1)
-            
-        spoiler_bbcode_in_post = adv_spoiler_re.findall(html)
-        for spoiler_bbcode in spoiler_bbcode_in_post:
-            try:
-                spoiler_bbcode_caption = cleaner.basic_escape(spoiler_bbcode[0])
-            except:
-                spoiler_bbcode_caption = ""
-            html = adv_spoiler_re.sub("""<div class="content-spoiler" data-caption="%s"><div> <!-- spoiler div -->%s</div></div>""" % (unicode(spoiler_bbcode_caption), unicode(spoiler_bbcode[1])), html, 1)
-
-        center_bbcode_in_post = center_re.findall(html)
-        for center_bbcode in center_bbcode_in_post:
-            html = html.replace("[center]%s[/center]" % center_bbcode, """<center><div> <!-- center div -->%s</div></center>""" % center_bbcode, 1)
-
-        if strip_images:
-            image_bbcode_in_post = image_re.findall(html)
-            for image_bbcode in image_bbcode_in_post:
-                html = html.replace("[img]%s[/img]" % image_bbcode, """<disabledimg src="%s" style="max-width: 100%%;" />""" % image_bbcode, 1)
-        else:
-            image_bbcode_in_post = image_re.findall(html)
-            for image_bbcode in image_bbcode_in_post:
-                html = html.replace("[img]%s[/img]" % image_bbcode, """<img src="%s" style="max-width: 100%%;" />""" % image_bbcode, 1)
-
-        strong_bbcode_in_post = bold_re.findall(html)
-        for strong_bbcode in strong_bbcode_in_post:
-            html = html.replace("[b]%s[/b]" % strong_bbcode, """<strong>%s</strong>""" % strong_bbcode, 1)
-
-        italic_bbcode_in_post = italic_re.findall(html)
-        for italic_bbcode in italic_bbcode_in_post:
-            html = html.replace("[i]%s[/i]" % italic_bbcode, """<em>%s</em>""" % italic_bbcode, 1)
-
-        strike_bbcode_in_post = strike_re.findall(html)
-        for strike_bbcode in strike_bbcode_in_post:
-            html = html.replace("[s]%s[/s]" % strike_bbcode, """<div style="text-decoration: line-through; display: inline !important;"><div style="display: inline !important;"><!-- strike span -->%s</div></div> <!-- /strike span -->""" % strike_bbcode, 1)
-
         list_bbcode_in_post = list_re.findall(html)
         for list_bbcode in list_bbcode_in_post:
             list_contents = ""
@@ -638,6 +629,8 @@ class ForumPostParser(object):
                     "%s" % plain_jane_image[0],
                     """<a href="%s" target="_blank">View External Image : <br>%s.</a>""" % (plain_jane_image[1], plain_jane_image[1])
                 )
+                
+        html = bbcode_parser.format(html, strip_images=strip_images)
         return "<div class=\"parsed\">"+html+"</div>"
         
 @app.template_filter('post_parse')
