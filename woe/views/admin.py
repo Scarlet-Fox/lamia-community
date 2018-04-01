@@ -18,8 +18,11 @@ import os, os.path
 from sqlalchemy import or_
 from flask.ext.admin._compat import as_unicode, string_types
 from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
-
 _base_url = app.config['BASE']
+
+###################################################################################################
+# Hooks, overrides, etc
+###################################################################################################
 
 @listens_for(sqlm.Smiley, 'after_delete')
 def del_image(mapper, connection, target):
@@ -46,6 +49,10 @@ class StartsWithQueryAjaxModelLoader(QueryAjaxModelLoader):
 
         return query.offset(offset).limit(limit).all()
 
+###################################################################################################
+# Base admin view (index)
+###################################################################################################
+
 class AuthAdminIndexView(admin.AdminIndexView):
     @expose('/')
     def index(self):
@@ -71,6 +78,10 @@ class AuthAdminIndexView(admin.AdminIndexView):
                 my_area_reports=my_area_reports
             )
 admin = admin.Admin(app, index_view=AuthAdminIndexView(), name="Staff CP")
+
+###################################################################################################
+# Column formatters
+###################################################################################################
 
 def _user_list_formatter(view, context, model, name):
     user = getattr(model, name)
@@ -139,6 +150,10 @@ def _content_formatter(view, context, model, name):
 def _smiley_image_formatter(view, context, model, name):
     _filename = getattr(model, name)
     return Markup("<img style=\"max-height: 50px;\" src=\"/static/smilies/%s\">" % _filename)
+
+###################################################################################################
+# Moderation views : reporting
+###################################################################################################
 
 class MyReportView(ModelView):
     can_view_details = True
@@ -322,6 +337,10 @@ admin.add_view(MyReportView(sqlm.Report, sqla.session, name='Open in My Area', c
 admin.add_view(AllOpenReportsView(sqlm.Report, sqla.session, name='All Open Reports', category="Reports", endpoint='all-reports'))
 admin.add_view(ReportArchiveView(sqlm.Report, sqla.session, name='Archived Reports', category="Reports", endpoint='report-archive'))
 
+###################################################################################################
+# Moderation views : infractions
+###################################################################################################
+
 class InfractionView(ModelView):
     can_view_details = True
     can_delete = False
@@ -397,6 +416,10 @@ admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Infraction Lo
 admin.add_view(CurrentInfractions(sqlm.User, sqla.session, name='Active Infractions', category="Infractions", endpoint='active-infractions'))
 admin.add_view(MostWanted(sqlm.User, sqla.session, name='Most Infracted', category="Infractions", endpoint='most-infractions'))
 
+###################################################################################################
+# Moderation views : bans
+###################################################################################################
+
 class BanView(ModelView):
     can_view_details = True
     can_delete = False
@@ -456,6 +479,10 @@ check_setting("twitter.twitter-consumer-key", "Twitter Consumer Key", "", "text"
 check_setting("twitter.twitter-consumer-secret", "Twitter Consumer Secret", "", "text", {}, "")
 check_setting("twitter.twitter-access-token-key", "Twitter Access Token Key", "", "text", {}, "")
 check_setting("twitter.twitter-access-token-secret", "Twitter Access Token Secret", "", "text", {}, "")
+
+###################################################################################################
+# Administrative views : site settings, options, and config
+###################################################################################################
 
 class ConfigurationView(ModelView):
     can_delete = False
@@ -521,6 +548,10 @@ class SmileyConfigView(ModelView):
 
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
+
+###################################################################################################
+# Administrative views : Forum-specific options, settings, and config
+###################################################################################################
 
 class SectionView(ModelView):
     list_template = 'admin/model/section-list.html'
