@@ -23,7 +23,7 @@
     });
     $(".go-to-profile").click(function(e) {
       if (window.logged_in) {
-        return window.location = "/member/" + window.woe_is_me;
+        return window.location = "/member/" + window.my_url;
       }
     });
     $(".sign-out").click(function(e) {

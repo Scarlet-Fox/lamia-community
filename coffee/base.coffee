@@ -18,7 +18,7 @@ $ ->
 
   $(".go-to-profile").click (e) ->
     if window.logged_in
-      window.location = "/member/"+window.woe_is_me
+      window.location = "/member/"+window.my_url
 
   $(".sign-out").click (e) ->
     e.preventDefault()
