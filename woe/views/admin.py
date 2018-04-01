@@ -543,6 +543,9 @@ class SectionView(ModelView):
         "/static/assets/Nestable2/jquery.nestable.min.js"
         ]
         
+    def is_accessible(self):
+        return current_user.is_admin
+        
     def get_query(self):
         return self.session.query(self.model).order_by("weight")
         
@@ -616,6 +619,9 @@ class CategoryView(ModelView):
             
         sqla.session.add(category)
         sqla.session.commit()
+        
+    def is_accessible(self):
+        return current_user.is_admin
             
     @expose('/reorder', methods=('POST', ))
     def reorder_categories(self):
