@@ -1529,6 +1529,7 @@ class InfractionPreset(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     title = db.Column(db.String, index=True)
+    default_explanation = db.Column(db.Text)
     points = db.Column(db.Integer, default=0)
         
     def __repr__(self):

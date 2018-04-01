@@ -335,6 +335,7 @@ admin.add_view(ReportArchiveView(sqlm.Report, sqla.session, name='Archived Repor
 class InfractionView(ModelView):
     can_view_details = True
     can_delete = False
+    can_create = False
     column_default_sort = ('created', True)
     column_list = ["title", "author", "recipient", "points", "created", "expires"]
     
@@ -403,9 +404,21 @@ class CurrentInfractions(MostWanted):
         return self.session.query(sqla.func.count('*')).select_from(self.model).filter_by(banned=False) \
             .filter(self.model.active_infraction_points > 0)
 
+class InfractionPresetView(ModelView):
+    column_list = ["title", "points"]
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+
 admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Infraction Log', category="Infractions", endpoint='infractions'))
 admin.add_view(CurrentInfractions(sqlm.User, sqla.session, name='Active Infractions', category="Infractions", endpoint='active-infractions'))
 admin.add_view(MostWanted(sqlm.User, sqla.session, name='Most Infracted', category="Infractions", endpoint='most-infractions'))
+admin.add_view(InfractionPresetView(sqlm.InfractionPreset, sqla.session, name='Infraction Presets', category="Infractions", endpoint='infraction-presets'))
 
 ###################################################################################################
 # Moderation views : bans
@@ -541,7 +554,15 @@ class AttachmentView(ModelView):
     can_create = False
     can_view_details = True
     can_edit = False
-    
+
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
     column_list = ["owner", "path", "size_in_bytes", "created_date"]
     form_excluded_columns = ["owner", "character", "character_gallery","character_gallery_weight","character_avatar"]
         
@@ -568,6 +589,14 @@ class SwearFilterView(ModelView):
         'replace_with': StringField()
     }
     
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
     def create_model(self, form):
         """
             Create model from form.
@@ -600,7 +629,7 @@ class SwearFilterView(ModelView):
     
     def is_accessible(self):
         return current_user.is_admin
-    
+
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
 admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachment List', category="Site", endpoint='attachments'))
