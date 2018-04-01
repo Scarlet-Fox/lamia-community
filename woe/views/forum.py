@@ -502,6 +502,8 @@ def topic_posts(slug):
     posts = sqla.session.query(sqlm.Post).filter_by(topic=topic) \
         .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
         .order_by(sqlm.Post.created) \
+        .options(joinedload(sqlm.Post.author)) \
+        .options(joinedload(sqlm.Post.boops)) \
         .paginate(page, pagination, False)
 
     parsed_posts = []
