@@ -455,36 +455,6 @@ class BanView(ModelView):
 
 admin.add_view(BanView(sqlm.Ban, sqla.session, name='Ban Log', category="Bans", endpoint='recent-bans'))
 
-# If default settings don't exist, then create them
-def check_setting(hierarchy, key, default_value, option_type, meta, default):
-    try:
-        _setting = sqlm.SiteConfiguration.query.filter_by(hierarchy=hierarchy, key=key)[0]
-    except:
-        sqla.session.rollback()
-        
-        try:
-            _setting = sqlm.SiteConfiguration(
-                    hierarchy=hierarchy,
-                    key=key,
-                    value=default_value,
-                    option_type=option_type,
-                    meta=meta,
-                    default=default
-                )
-            
-            sqla.session.add(_setting)
-            sqla.session.commit()
-        except:
-            sqla.session.rollback()
-    
-check_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {}, "no")
-check_setting("core.lock-site", "Lock Site? (Under construction page.)", "no", "toggle", {}, "no")
-check_setting("core.swear-filter-default", "Swear filter on by default?", "yes", "toggle", {}, "yes")
-check_setting("twitter.twitter-consumer-key", "Twitter Consumer Key", "", "text", {}, "")
-check_setting("twitter.twitter-consumer-secret", "Twitter Consumer Secret", "", "text", {}, "")
-check_setting("twitter.twitter-access-token-key", "Twitter Access Token Key", "", "text", {}, "")
-check_setting("twitter.twitter-access-token-secret", "Twitter Access Token Secret", "", "text", {}, "")
-
 ###################################################################################################
 # Administrative views : site settings, options, and config
 ###################################################################################################
