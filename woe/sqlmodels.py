@@ -1033,6 +1033,7 @@ category_mods_table = db.Table('category_moderators', db.metadata,
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    disabled = db.Column(db.Boolean, default=False, index=True)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('category.id',
         name="fk_category_categoryparent", ondelete="SET NULL"), index=True)
