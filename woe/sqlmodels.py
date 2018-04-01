@@ -6,7 +6,7 @@ from woe import bcrypt
 from flask.ext.login import current_user
 from wand.image import Image
 from threading import Thread
-import arrow, re, os, math, random
+import arrow, re, os, math, random, os.path
 import bcrypt as _bcrypt
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -17,6 +17,7 @@ from sqlalchemy_utils.types import TSVectorType
 from flask.ext.sqlalchemy import BaseQuery
 from sqlalchemy import Index
 from sqlalchemy_searchable import SearchQueryMixin
+from sqlalchemy.event import listens_for
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
 
@@ -1618,4 +1619,35 @@ class Smiley(db.Model):
     
     def __repr__(self):
         return "<Smiley: (replaces_text='%s', filename='%s')>" % (self.replaces_text, self.filename)
-    
+
+@listens_for(Smiley, 'after_delete')
+def del_smiley_image(mapper, connection, target):
+    if target.filename:
+        # Delete image
+        try:
+            os.remove(os.path.join(app.config["SMILEY_UPLOAD_DIR"], target.filename))
+        except OSError:
+            pass
+
+        # Delete thumbnail
+        try:
+            os.remove(os.path.join(app.config["SMILEY_UPLOAD_DIR"],
+                              form.thumbgen_filename(target.filename)))
+        except OSError:
+            pass
+            
+@listens_for(Attachment, 'after_delete')
+def del_attachment_image(mapper, connection, target):
+    if target.path:
+        # Delete image
+        try:
+            os.remove(os.path.join(app.config["ATTACHMENTS_UPLOAD_DIR"], target.path))
+        except OSError:
+            pass
+
+        # Delete thumbnail (there probably isn't one)
+        try:
+            os.remove(os.path.join(app.config["ATTACHMENTS_UPLOAD_DIR"],
+                              form.thumbgen_filename(target.path)))
+        except OSError:
+            pass

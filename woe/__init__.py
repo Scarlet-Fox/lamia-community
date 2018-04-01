@@ -31,6 +31,7 @@ app.config["AVATAR_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'avatars')
 app.config["MAKO_EMAIL_TEMPLATE_DIR"] = path.join(app.root_path, 'templates', 'email')
 app.config["CUSTOMIZATIONS_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'customizations')
 app.config["SMILEY_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'smilies')
+app.config["ATTACHMENTS_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'uploads')
 app.config["MAX_CONTENT_LENGTH"] = 1000000000
 app.config['DEBUG'] = settings_file["debug"]
 app.config['TEMPLATES_AUTO_RELOAD'] = settings_file["debug"]

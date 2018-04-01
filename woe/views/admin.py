@@ -7,7 +7,6 @@ from flask_admin import helpers, expose, BaseView, form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from woe import sqla
-from sqlalchemy.event import listens_for
 import woe.sqlmodels as sqlm
 from jinja2 import Markup
 import arrow
@@ -21,24 +20,8 @@ from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 _base_url = app.config['BASE']
 
 ###################################################################################################
-# Hooks, overrides, etc
+# Special classes
 ###################################################################################################
-
-@listens_for(sqlm.Smiley, 'after_delete')
-def del_image(mapper, connection, target):
-    if target.filename:
-        # Delete image
-        try:
-            os.remove(os.path.join(app.config["SMILEY_UPLOAD_DIR"], target.filename))
-        except OSError:
-            pass
-
-        # Delete thumbnail
-        try:
-            os.remove(os.path.join(app.config["SMILEY_UPLOAD_DIR"],
-                              form.thumbgen_filename(target.filename)))
-        except OSError:
-            pass
 
 class StartsWithQueryAjaxModelLoader(QueryAjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
@@ -150,6 +133,14 @@ def _content_formatter(view, context, model, name):
 def _smiley_image_formatter(view, context, model, name):
     _filename = getattr(model, name)
     return Markup("<img style=\"max-height: 50px;\" src=\"/static/smilies/%s\">" % _filename)
+
+def _attachment_image_formatter(view, context, model, name):
+    _filename = getattr(model, name)
+    return Markup("<img style=\"max-height: 50px;\" src=\"/static/uploads/%s\">" % _filename)
+    
+def _file_size_formatter(view, context, model, name):
+    _size = getattr(model, name)
+    return "{:.1f} MB".format(float(_size)/1024/1024)
 
 ###################################################################################################
 # Moderation views : reporting
@@ -546,7 +537,28 @@ class SmileyConfigView(ModelView):
         return current_user.is_admin
     
 class AttachmentView(ModelView):
-    pass
+    can_create = False
+    can_view_details = True
+    can_edit = False
+    
+    column_list = ["owner", "path", "size_in_bytes", "created_date"]
+    form_excluded_columns = ["owner", "character", "character_gallery","character_gallery_weight","character_avatar"]
+        
+    form_extra_fields = {
+        'path': form.ImageUploadField('Attachment', base_path=app.config["ATTACHMENTS_UPLOAD_DIR"], url_relative_path="uploads/"),
+    }
+    
+    column_default_sort = ('created_date', False)
+    
+    column_formatters = {
+        'owner': _user_list_formatter,
+        'path': _attachment_image_formatter,
+        'created_date': _fancy_time_formatter,
+        'size_in_bytes': _file_size_formatter
+    }
+    
+    def is_accessible(self):
+        return current_user.is_admin
 
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
