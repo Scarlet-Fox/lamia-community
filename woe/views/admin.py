@@ -562,7 +562,7 @@ class AttachmentView(ModelView):
 
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
-admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachments', category="Site", endpoint='attachments'))
+admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachment List', category="Site", endpoint='attachments'))
 
 ###################################################################################################
 # Administrative views : Forum-specific options, settings, and config
