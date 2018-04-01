@@ -1619,6 +1619,14 @@ class Smiley(db.Model):
     
     def __repr__(self):
         return "<Smiley: (replaces_text='%s', filename='%s')>" % (self.replaces_text, self.filename)
+    
+class SwearFilter(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    word = db.Column(db.Text, index=True)
+    replace_with = db.Column(db.Text, index=True)
+    
+    def __repr__(self):
+        return "<SwearFilter: (word='%s', replace_with='%s')>" % (self.word, self.replace_with)
 
 @listens_for(Smiley, 'after_delete')
 def del_smiley_image(mapper, connection, target):

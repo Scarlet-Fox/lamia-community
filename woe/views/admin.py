@@ -466,6 +466,7 @@ def check_setting(hierarchy, key, default_value, option_type, meta, default):
     
 check_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {}, "no")
 check_setting("core.lock-site", "Lock Site? (Under construction page.)", "no", "toggle", {}, "no")
+check_setting("core.swear-filter-default", "Swear filter on by default?", "yes", "toggle", {}, "yes")
 check_setting("twitter.twitter-consumer-key", "Twitter Consumer Key", "", "text", {}, "")
 check_setting("twitter.twitter-consumer-secret", "Twitter Consumer Secret", "", "text", {}, "")
 check_setting("twitter.twitter-access-token-key", "Twitter Access Token Key", "", "text", {}, "")
@@ -560,9 +561,50 @@ class AttachmentView(ModelView):
     def is_accessible(self):
         return current_user.is_admin
 
+class SwearFilterView(ModelView):
+    page_size = 100
+    
+    form_extra_fields = {
+        'replace_with': StringField()
+    }
+    
+    def create_model(self, form):
+        """
+            Create model from form.
+
+            :param form:
+                Form instance
+        """
+        try:
+            _last_model = None
+            for _word in form.word.data.split("\n"):
+                model = self.model()
+                model.replace_with = form.replace_with.data
+                model.word = _word.lower().strip()
+                self.session.add(model)
+                self._on_model_change(form, model, True)
+                self.session.commit()
+                _last_model = model
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to create record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to create record.')
+
+            self.session.rollback()
+
+            return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return _last_model
+    
+    def is_accessible(self):
+        return current_user.is_admin
+    
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
 admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachment List', category="Site", endpoint='attachments'))
+admin.add_view(SwearFilterView(sqlm.SwearFilter, sqla.session, name='Swear Filtering', category="Site", endpoint='swear-filter'))
 
 ###################################################################################################
 # Administrative views : Forum-specific options, settings, and config
