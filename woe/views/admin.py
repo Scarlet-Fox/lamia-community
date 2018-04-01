@@ -543,6 +543,9 @@ class SectionView(ModelView):
         "/static/assets/Nestable2/jquery.nestable.min.js"
         ]
         
+    def get_query(self):
+        return self.session.query(self.model).order_by("weight")
+        
     @expose('/reorder', methods=('POST', ))
     def reorder_sections(self):
         request_json = request.get_json(force=True)
