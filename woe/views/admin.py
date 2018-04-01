@@ -600,10 +600,36 @@ class SwearFilterView(ModelView):
     def is_accessible(self):
         return current_user.is_admin
 
+class IPAddressView(ModelView):
+    column_default_sort = ('last_seen', True)
+    can_delete = False
+    can_create = False
+    edit_modal = True
+    
+    form_excluded_columns = ["user", "ip_address", "last_seen"]
+    
+    form_ajax_refs = {
+        'user': StartsWithQueryAjaxModelLoader('user', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+    
+    column_formatters = {
+        'user': _user_list_formatter,
+        'last_seen': _fancy_time_formatter
+    }
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
 admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachment List', category="Site", endpoint='attachments'))
 admin.add_view(SwearFilterView(sqlm.SwearFilter, sqla.session, name='Swear Filtering', category="Site", endpoint='swear-filter'))
+admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, name='IP Addresses', category="Site", endpoint='ip-addresses'))
 
 ###################################################################################################
 # Administrative views : Forum-specific options, settings, and config
