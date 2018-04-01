@@ -278,6 +278,7 @@ class IPAddress(db.Model):
         name="fk_ipaddress_user", ondelete="CASCADE"), index=True)
     user = db.relationship("User")
     banned = db.Column(db.Boolean, default=False, index=True)
+    note = db.Column(db.Text)
 
     __table_args__ = (db.UniqueConstraint('user_id', 'id', name='unique_user_ip_addy'),)
 

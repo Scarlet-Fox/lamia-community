@@ -68,6 +68,9 @@ admin = admin.Admin(app, index_view=AuthAdminIndexView(), name="Staff CP")
 
 def _user_list_formatter(view, context, model, name):
     user = getattr(model, name)
+    if not user:
+        return ""
+        
     prettified_user = \
     u"""<div><a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a><a class="hover_user" href="/member/%s">%s</a></div>""" \
         % (unicode(user.my_url),
@@ -602,11 +605,11 @@ class SwearFilterView(ModelView):
 
 class IPAddressView(ModelView):
     column_default_sort = ('last_seen', True)
-    can_delete = False
-    can_create = False
+    can_delete = True
+    can_create = True
     edit_modal = True
     
-    form_excluded_columns = ["user", "ip_address", "last_seen"]
+    form_excluded_columns = ["user", "last_seen"]
     
     form_ajax_refs = {
         'user': StartsWithQueryAjaxModelLoader('user', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
@@ -624,7 +627,41 @@ class IPAddressView(ModelView):
         "/static/assets/datatables/dataTables.bootstrap.js",
         "/static/assets/datatables/dataTables.responsive.js"
         ]
+        
+    def create_model(self, form):
+        """
+            Create model from form.
 
+            :param form:
+                Form instance
+        """
+        try:
+            _last_model = None
+            for _address in form.ip_address.data.split("\n"):
+                model = self.model()
+                model.banned = form.banned.data
+                model.note = form.note.data
+                model.ip_address = _address.lower().strip()
+                self.session.add(model)
+                self._on_model_change(form, model, True)
+                self.session.commit()
+                _last_model = model
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to create record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to create record.')
+
+            self.session.rollback()
+
+            return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return _last_model
+
+    def is_accessible(self):
+        return current_user.is_admin
+        
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
 admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachment List', category="Site", endpoint='attachments'))
