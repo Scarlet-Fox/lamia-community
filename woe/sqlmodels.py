@@ -999,6 +999,7 @@ class Section(db.Model):
     name = db.Column(db.String, index=True)
     slug = db.Column(db.String, unique=True)
     weight = db.Column(db.Integer, default=0, index=True)
+    disabled = db.Column(db.Boolean, default=False, index=True)
 
     moderators = db.relationship("User",
                     secondary=section_mods_table)

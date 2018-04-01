@@ -522,6 +522,45 @@ class SmileyConfigView(ModelView):
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site Settings", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site Settings", endpoint='smiley-configuration'))
 
+class SectionView(ModelView):
+    list_template = 'admin/model/section-list.html'
+    can_delete = False
+    action_disallowed_list = ['delete']
+    form_excluded_columns = ["weight"]
+
+    form_ajax_refs = {
+        'moderators': StartsWithQueryAjaxModelLoader('moderators', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css",
+        "/static/assets/Nestable2/jquery.nestable.min.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js", 
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js",
+        "/static/assets/Nestable2/jquery.nestable.min.js"
+        ]
+        
+    @expose('/reorder', methods=('POST', ))
+    def add_comment(self):
+        request_json = request.get_json(force=True)
+        
+        current_order = 0
+        for _section in request_json:
+            try:
+                section = sqlm.Section.query.filter_by(id=_section["id"])[0]
+                section.weight = current_order
+                current_order += 10
+                sqla.session.add(section)
+                sqla.session.commit()
+            except IndexError:
+                sqla.session.rollback()
+        
+        return "ok."
+        
+admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum Settings", endpoint='sections'))
+
 # TODO Moderation
 # TODO Add ajax view for creating infraction
 # TODO Add ajax view for modifying a ban
