@@ -519,8 +519,8 @@ class SmileyConfigView(ModelView):
         return current_user.is_admin
     
 
-admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site Settings", endpoint='configuration'))
-admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site Settings", endpoint='smiley-configuration'))
+admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
+admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
 
 class SectionView(ModelView):
     list_template = 'admin/model/section-list.html'
@@ -634,8 +634,8 @@ class CategoryView(ModelView):
         
         return "ok."
 
-admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum Settings", endpoint='sections'))
-admin.add_view(CategoryView(sqlm.Category, sqla.session, name='Categories', category="Forum Settings", endpoint='categories'))
+admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum", endpoint='sections'))
+admin.add_view(CategoryView(sqlm.Category, sqla.session, name='Categories', category="Forum", endpoint='categories'))
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction
