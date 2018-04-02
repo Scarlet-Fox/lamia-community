@@ -69,10 +69,14 @@ bbcode_parser = bbcode.Parser(escape_html=False, replace_links=True, linker=lami
 bbcode_parser.add_simple_formatter('hr', '<hr />', standalone=True)
 bbcode_parser.add_simple_formatter('b', '<strong>%(value)s</strong>', escape_html=False)
 bbcode_parser.add_simple_formatter('i', '<em>%(value)s</em>', escape_html=False)
+bbcode_parser.add_simple_formatter('indent', '<div class="well"><div>%(value)s</div></div>', escape_html=False)
 bbcode_parser.add_simple_formatter('media', '%(value)s', escape_html=False)
 bbcode_parser.add_simple_formatter('s', '<span style="text-decoration: line-through;">%(value)s</span>', escape_html=False)
 bbcode_parser.add_simple_formatter('center', '<center>%(value)s</center>', escape_html=False)
 bbcode_parser.add_simple_formatter("right", '<div style="text-align: right;"><div>%(value)s</div></div>', escape_html=False)
+bbcode_parser.add_simple_formatter("truespoiler", """
+        <span style='color:#000000; background:#000000' onmouseover="style.color='#ffffff'" onmouseout="style.color='#000000'">%(value)s</span>
+    """, escape_html=False)
 
 def _render_list(name, value, options, parent, context):
             list_type = options['list'] if (options and 'list' in options) else '*'
@@ -91,23 +95,13 @@ bbcode_parser.add_simple_formatter('*', '<li>%(value)s</li>', newline_closes=Tru
 
 bbcode_parser.add_simple_formatter('u', '<u>%(value)s</u>', escape_html=False)
 
-# TODO : [code]
 # TODO : [quote]
-# TODO : [indent]
-# TODO : [font]
-# TODO : [truespoiler]
-        #
-        # font_bbcode_in_post = font_re.findall(html)
-        # for font_bbcode in font_bbcode_in_post:
-        #     replace_ = "[font="+font_bbcode[0]+"]"+font_bbcode[1]+"[/font]"
-        #     html = html.replace(replace_, """%s""" % (font_bbcode[1],))
-        #
-        # font_bbcode_in_post = font_re.findall(html)
-        # for font_bbcode in font_bbcode_in_post:
-        #     replace_ = "[font="+font_bbcode[0]+"]"+font_bbcode[1]+"[/font]"
-        #     html = html.replace(replace_, """%s""" % (font_bbcode[1],))
 
-
+def render_code_bbcode(tag_name, value, options, parent, context):
+    print value
+    return """<code> <!-- code div -->%s</code>""" % (value,)
+bbcode_parser.add_formatter('code', render_code_bbcode, render_embedded=False, replace_cosmetic=False, escape_html=False)    
+            
 def render_spoiler_bbcode(tag_name, value, options, parent, context):
     if options.get("spoiler", False):
         return """<div class="content-spoiler" data-caption="%s"><div> <!-- spoiler div -->%s</div></div>""" % (options.get("spoiler"), value,)
@@ -156,6 +150,13 @@ def render_size_bbcode(tag_name, value, options, parent, context):
     """ % (options.get("size","12"), value)
 
 bbcode_parser.add_formatter("size", render_size_bbcode, escape_html=False)
+
+def render_font_bbcode(tag_name, value, options, parent, context):
+    return """
+        <span style="font-family: %s;"><span>%s</span></span>
+    """ % (options.get("font",""), value)
+
+bbcode_parser.add_formatter("font", render_font_bbcode, escape_html=False)
 
 def resize_image_save_custom(image_file_location, new_image_file, new_x_size, _id):
     from woe import sqla
@@ -489,6 +490,9 @@ class ForumPostParser(object):
 
                 
         html = bbcode_parser.format(html, strip_images=strip_images)
+        
+        for _code, _html in _mangled_html_links:
+            html = html.replace(_code, _html, 1)
 
         if current_user.no_images:
             for plain_jane_image in raw_image_re.findall(html):
@@ -496,9 +500,6 @@ class ForumPostParser(object):
                     "%s" % plain_jane_image[0],
                     """<a href="%s" target="_blank">View External Image : <br>%s.</a>""" % (plain_jane_image[1], plain_jane_image[1])
                 )
-        
-        for _code, _html in _mangled_html_links:
-            html = html.replace(_code, _html, 1)
             
         return "<div class=\"parsed\">"+html+"</div>"
         
