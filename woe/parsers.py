@@ -15,23 +15,13 @@ import woe.sqlmodels as sqlm
 from urllib import urlencode
 import bbcode
 
-roll_re = re.compile(r'(\[roll=(\d+)d(\d+)(?:\+(\d+)|\-(\d+))?\](.*?)\[\/roll\])', re.DOTALL|re.IGNORECASE)
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)(:wrap)?\]')
-center_re = re.compile(r'\[center\](.*?)\[\/center\]', re.DOTALL|re.IGNORECASE)
-image_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL|re.IGNORECASE)
 quote_re = re.compile(r'\[quote=?(.*?)\](.*)\[\/quote\]', re.DOTALL|re.IGNORECASE)
-font_re = re.compile(r'\[font=?(.*?)\](.*?)\[\/font\]', re.DOTALL|re.IGNORECASE)
-url_re = re.compile(r'\[url=?("?)(.*?)("?)\](.*?)\[\/url\]', re.DOTALL|re.IGNORECASE)
-img_re = re.compile(r'\[img\](.*?)\[\/img\]', re.DOTALL|re.IGNORECASE)
-html_img_re = re.compile(r'<img src=\"(.*?)\">', re.IGNORECASE)
 progress_re = re.compile(r'(\[progressbar=(#?[a-zA-Z0-9]+)\](\d+?)\[\/progressbar\])', re.IGNORECASE)
 mention_re = re.compile("\[@(.*?)\]")
 deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\](.*?\[\/reply\])', re.DOTALL|re.IGNORECASE)
 reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\]')
-legacy_postcharacter_re = re.compile(r'\[(post)?character=.*?\]')
-list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL|re.IGNORECASE)
-link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
-bbcode_re = re.compile("(\[(attachment|spoiler|center|align|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
+
 youtube_re = re.compile("https?://(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?", re.IGNORECASE)
 dailymotion_re = re.compile("(?:dailymotion\.com(?:\/video|\/hub)|dai\.ly)\/([0-9a-z]+)(?:[\-_0-9a-zA-Z]+#video=([a-z0-9]+))?", re.IGNORECASE)
 vimeo_re = re.compile("(?:https?:\/\/)?(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|)(\d+)(?:$|\/|\?)", re.IGNORECASE)
@@ -39,6 +29,8 @@ soundcloud_re = re.compile("(?:(?:https:\/\/)|(?:http:\/\/)|(?:www.)|(?:\s))+(?:
 spotify_re = re.compile("spotify\.com/(album|track|user/[^/]+/playlist)/([a-zA-Z0-9]+)", re.IGNORECASE)
 vine_re = re.compile("(?:vine\.co/v/|www\.vine\.co/v/)(.*)", re.IGNORECASE)
 giphy_re = re.compile("(?:giphy\.com/gifs/|gph\.is/)(?:.*)-(.*)", re.IGNORECASE)
+
+html_img_re = re.compile(r'<img src=\"(.*?)\">', re.IGNORECASE)
 href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
 
 emoticon_codes = {
@@ -71,6 +63,7 @@ bbcode_parser.add_simple_formatter('b', '<strong>%(value)s</strong>', escape_htm
 bbcode_parser.add_simple_formatter('i', '<em>%(value)s</em>', escape_html=False)
 bbcode_parser.add_simple_formatter('indent', '<div class="well"><div>%(value)s</div></div>', escape_html=False)
 bbcode_parser.add_simple_formatter('media', '%(value)s', escape_html=False)
+bbcode_parser.add_simple_formatter('roll', '', escape_html=False)
 bbcode_parser.add_simple_formatter('s', '<span style="text-decoration: line-through;">%(value)s</span>', escape_html=False)
 bbcode_parser.add_simple_formatter('center', '<center>%(value)s</center>', escape_html=False)
 bbcode_parser.add_simple_formatter("right", '<div style="text-align: right;"><div>%(value)s</div></div>', escape_html=False)
@@ -316,9 +309,6 @@ class ForumPostParser(object):
                 html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
                 continue
 
-        #clean up old char tags
-        html = legacy_postcharacter_re.sub("", html)
-
         def process_reply(reply, html, container=False):
             if container:
                 string_to_replace = "[reply=%s:%s%s]%s" % (reply[0],reply[1],reply[2], reply[3])
@@ -448,14 +438,10 @@ class ForumPostParser(object):
         for mention in mentions:
             try:
                 user = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
-                html = html.replace("[@%s]" % unicode(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.login_name, user.display_name), 1)
+                html = html.replace("[@%s]" % unicode(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.my_url, user.display_name), 1)
             except:
                 sqla.session.rollback()
                 html = html.replace("[@%s]" % unicode(mention), "", 1)
-
-        rolls = roll_re.findall(html)
-        for roll in rolls:
-            html = html.replace(roll[0], "")
 
         progress_bar_bbcode_in_post = progress_re.findall(html)
         for progress_bar_bbcode in progress_bar_bbcode_in_post:
