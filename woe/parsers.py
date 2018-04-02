@@ -16,7 +16,7 @@ from urllib import urlencode
 import bbcode
 
 attachment_re = re.compile(r'\[attachment=(.+?):(\d+)(:wrap)?\]')
-quote_re = re.compile(r'\[quote=?(.*?)\](.*)\[\/quote\]', re.DOTALL|re.IGNORECASE)
+#quote_re = re.compile(r'\[quote=?(.*?)\](.*)\[\/quote\]', re.DOTALL|re.IGNORECASE)
 progress_re = re.compile(r'(\[progressbar=(#?[a-zA-Z0-9]+)\](\d+?)\[\/progressbar\])', re.IGNORECASE)
 mention_re = re.compile("\[@(.*?)\]")
 deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\](.*?\[\/reply\])', re.DOTALL|re.IGNORECASE)
@@ -29,6 +29,7 @@ soundcloud_re = re.compile("(?:(?:https:\/\/)|(?:http:\/\/)|(?:www.)|(?:\s))+(?:
 spotify_re = re.compile("spotify\.com/(album|track|user/[^/]+/playlist)/([a-zA-Z0-9]+)", re.IGNORECASE)
 vine_re = re.compile("(?:vine\.co/v/|www\.vine\.co/v/)(.*)", re.IGNORECASE)
 giphy_re = re.compile("(?:giphy\.com/gifs/|gph\.is/)(?:.*)-(.*)", re.IGNORECASE)
+_domain_re = re.compile(r'(?im)(?:www\d{0,3}[.]|[a-z0-9.\-]+[.](?:com|net|org|edu|biz|gov|mil|info|io|name|me|tv|us|uk|mobi))')
 
 html_img_re = re.compile(r'<img src=\"(.*?)\">', re.IGNORECASE)
 href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
@@ -57,11 +58,12 @@ def lamia_linker(url):
         href = 'http://' + href
     return '<a href="%s">%s</a>' % (href, url)
 
-bbcode_parser = bbcode.Parser(escape_html=False, replace_links=True, linker=lamia_linker)
+bbcode_parser = bbcode.Parser(install_defaults=False, escape_html=False, replace_links=True, linker=lamia_linker)
 bbcode_parser.add_simple_formatter('hr', '<hr />', standalone=True)
 bbcode_parser.add_simple_formatter('b', '<strong>%(value)s</strong>', escape_html=False)
 bbcode_parser.add_simple_formatter('i', '<em>%(value)s</em>', escape_html=False)
 bbcode_parser.add_simple_formatter('indent', '<div class="well"><div>%(value)s</div></div>', escape_html=False)
+
 bbcode_parser.add_simple_formatter('media', '%(value)s', escape_html=False)
 bbcode_parser.add_simple_formatter('roll', '', escape_html=False)
 bbcode_parser.add_simple_formatter('s', '<span style="text-decoration: line-through;">%(value)s</span>', escape_html=False)
@@ -86,9 +88,25 @@ bbcode_parser.add_formatter('list', _render_list, transform_newlines=False, stri
 bbcode_parser.add_simple_formatter('*', '<li>%(value)s</li>', newline_closes=True, transform_newlines=False,
     same_tag_closes=True, strip=True, escape_html=False)
 
-bbcode_parser.add_simple_formatter('u', '<u>%(value)s</u>', escape_html=False)
+def _render_url(name, value, options, parent, context):
+    if options and 'url' in options:
+        # Option values are not escaped for HTML output.
+        href = bbcode_parser._replace(options['url'], bbcode_parser.REPLACE_ESCAPE)
+    else:
+        href = value
+    # Completely ignore javascript: and data: "links".
+    if re.sub(r'[^a-z0-9+]', '', href.lower().split(':', 1)[0]) in ('javascript', 'data', 'vbscript'):
+        return ''
+    # Only add the missing http:// if it looks like it starts with a domain name.
+    if '://' not in href and _domain_re.match(href):
+        href = 'http://' + href
+    return '<a href="%s">%s</a>' % (href, value)
+bbcode_parser.add_formatter('url', _render_url, replace_links=False, replace_cosmetic=False)
 
-# TODO : [quote]
+bbcode_parser.add_simple_formatter('u', '<u>%(value)s</u>', escape_html=False)
+        
+bbcode_parser.add_simple_formatter('quote', '<blockquote><div>%(value)s</div></blockquote>', strip=True,
+            swallow_trailing_newline=True, escape_html=False)
 
 def render_code_bbcode(tag_name, value, options, parent, context):
     print value
@@ -463,17 +481,6 @@ class ForumPostParser(object):
             for smiley in emoticon_codes.keys():
                 img_html = """<img src="%s" />""" % (os.path.join("/static/emotes",emoticon_codes[smiley]),)
                 html = html.replace(smiley, img_html)
-
-        quote_bbcode_in_post = quote_re.findall(html)
-        for quote_bbcode in quote_bbcode_in_post:
-            if quote_bbcode[0] == "":
-                to_replace = "[quote]"
-            else:
-                to_replace = "[quote=%s]" % quote_bbcode[0]
-            to_replace = to_replace + quote_bbcode[1]
-            to_replace = to_replace + "[/quote]"
-            html = html.replace(to_replace, """<blockquote data-author="%s" class="blockquote-reply"><div>%s</div></blockquote>""" % (unicode(quote_bbcode[0]), unicode(quote_bbcode[1])), 1)
-
                 
         html = bbcode_parser.format(html, strip_images=strip_images)
         
