@@ -5,6 +5,7 @@ moment = require('moment')
 
 config = JSON.parse(fs.readFileSync('config.json', 'utf8'))
 
+# TODO : replace newlines with <br>
 
 pg_client = new Client
   user: config.pg_user

@@ -328,7 +328,7 @@ def edit_signature(login_name, id):
     except IndexError:
         abort(404)
 
-    if user != current_user:
+    if user != current_user and not current_user.is_admin:
         abort(404)
 
     try:

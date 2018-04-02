@@ -32,8 +32,6 @@ legacy_postcharacter_re = re.compile(r'\[(post)?character=.*?\]')
 list_re = re.compile(r'\[list\](.*?)\[\/list\]', re.DOTALL|re.IGNORECASE)
 link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 bbcode_re = re.compile("(\[(attachment|spoiler|center|align|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
-href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
-raw_image_re = re.compile("(<img src=\"(.*?)\"(?:.*)>)")
 youtube_re = re.compile("https?://(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?", re.IGNORECASE)
 dailymotion_re = re.compile("(?:dailymotion\.com(?:\/video|\/hub)|dai\.ly)\/([0-9a-z]+)(?:[\-_0-9a-zA-Z]+#video=([a-z0-9]+))?", re.IGNORECASE)
 vimeo_re = re.compile("(?:https?:\/\/)?(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|)(\d+)(?:$|\/|\?)", re.IGNORECASE)
@@ -41,6 +39,7 @@ soundcloud_re = re.compile("(?:(?:https:\/\/)|(?:http:\/\/)|(?:www.)|(?:\s))+(?:
 spotify_re = re.compile("spotify\.com/(album|track|user/[^/]+/playlist)/([a-zA-Z0-9]+)", re.IGNORECASE)
 vine_re = re.compile("(?:vine\.co/v/|www\.vine\.co/v/)(.*)", re.IGNORECASE)
 giphy_re = re.compile("(?:giphy\.com/gifs/|gph\.is/)(?:.*)-(.*)", re.IGNORECASE)
+href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
 
 emoticon_codes = {
     ":anger:" : "angry.png",
@@ -60,13 +59,54 @@ emoticon_codes = {
     ":D" : "biggrin.png",
 }
 
-bbcode_parser = bbcode.Parser(escape_html=False, replace_links=False)
+def lamia_linker(url):
+    href = url
+    if '://' not in href:
+        href = 'http://' + href
+    return '<a href="%s">%s</a>' % (href, url)
+
+bbcode_parser = bbcode.Parser(escape_html=False, replace_links=True, linker=lamia_linker)
 bbcode_parser.add_simple_formatter('hr', '<hr />', standalone=True)
 bbcode_parser.add_simple_formatter('b', '<strong>%(value)s</strong>', escape_html=False)
 bbcode_parser.add_simple_formatter('i', '<em>%(value)s</em>', escape_html=False)
 bbcode_parser.add_simple_formatter('media', '%(value)s', escape_html=False)
 bbcode_parser.add_simple_formatter('s', '<span style="text-decoration: line-through;">%(value)s</span>', escape_html=False)
 bbcode_parser.add_simple_formatter('center', '<center>%(value)s</center>', escape_html=False)
+bbcode_parser.add_simple_formatter("right", '<div style="text-align: right;"><div>%(value)s</div></div>', escape_html=False)
+
+def _render_list(name, value, options, parent, context):
+            list_type = options['list'] if (options and 'list' in options) else '*'
+            css_opts = {
+                '1': 'decimal', '01': 'decimal-leading-zero',
+                'a': 'lower-alpha', 'A': 'upper-alpha',
+                'i': 'lower-roman', 'I': 'upper-roman',
+            }
+            tag = 'ol' if list_type in css_opts else 'ul'
+            css = ' style="list-style-type:%s;"' % css_opts[list_type] if list_type in css_opts else ''
+            return '<%s%s><div>%s</div></%s>' % (tag, css, value, tag)
+bbcode_parser.add_formatter('list', _render_list, transform_newlines=False, strip=True, swallow_trailing_newline=True, escape_html=False)
+# Make sure transform_newlines = False for [*], so [code] tags can be embedded without transformation.
+bbcode_parser.add_simple_formatter('*', '<li>%(value)s</li>', newline_closes=True, transform_newlines=False,
+    same_tag_closes=True, strip=True, escape_html=False)
+
+bbcode_parser.add_simple_formatter('u', '<u>%(value)s</u>', escape_html=False)
+
+# TODO : [code]
+# TODO : [quote]
+# TODO : [indent]
+# TODO : [font]
+# TODO : [truespoiler]
+        #
+        # font_bbcode_in_post = font_re.findall(html)
+        # for font_bbcode in font_bbcode_in_post:
+        #     replace_ = "[font="+font_bbcode[0]+"]"+font_bbcode[1]+"[/font]"
+        #     html = html.replace(replace_, """%s""" % (font_bbcode[1],))
+        #
+        # font_bbcode_in_post = font_re.findall(html)
+        # for font_bbcode in font_bbcode_in_post:
+        #     replace_ = "[font="+font_bbcode[0]+"]"+font_bbcode[1]+"[/font]"
+        #     html = html.replace(replace_, """%s""" % (font_bbcode[1],))
+
 
 def render_spoiler_bbcode(tag_name, value, options, parent, context):
     if options.get("spoiler", False):
@@ -75,6 +115,7 @@ def render_spoiler_bbcode(tag_name, value, options, parent, context):
         return """<div class="content-spoiler"><div> <!-- spoiler div -->%s</div></div>""" % (value,)
 
 bbcode_parser.add_formatter("spoiler", render_spoiler_bbcode, escape_html=False)
+bbcode_parser.add_formatter("espoiler", render_spoiler_bbcode, escape_html=False)
 
 def render_image_bbcode(tag_name, value, options, parent, context):
     if context.get("strip_images", False):
@@ -85,7 +126,7 @@ def render_image_bbcode(tag_name, value, options, parent, context):
         else:
             return """<img src="%s" style="max-width: 100%%;" />""" % value
     
-bbcode_parser.add_formatter("img", render_image_bbcode, escape_html=True)
+bbcode_parser.add_formatter("img", render_image_bbcode, escape_html=True, replace_links=False)
 
 def render_prefix_bbcode(tag_name, value, options, parent, context):
     return """
@@ -96,21 +137,22 @@ bbcode_parser.add_formatter("prefix", render_prefix_bbcode, escape_html=True)
 
 def render_align_bbcode(tag_name, value, options, parent, context):
     return """
-        <div style="text-align: %s;">%s</span>
+        <div style="text-align: %s;"><div>%s</div></div>
     """ % (options.get("align","left"), value)
 
 bbcode_parser.add_formatter("align", render_align_bbcode, escape_html=False)
+bbcode_parser.add_formatter("left", render_align_bbcode, escape_html=False)
 
 def render_color_bbcode(tag_name, value, options, parent, context):
     return """
-        <span style="color: %spx;">%s</span>
+        <span style="color: %s;"><span>%s</span></span>
     """ % (options.get("color","blue"), value)
 
 bbcode_parser.add_formatter("color", render_color_bbcode, escape_html=False)
 
 def render_size_bbcode(tag_name, value, options, parent, context):
     return """
-        <span style="font-size: %spx;">%s</span>
+        <span style="font-size: %spt;"><span>%s</span></span>
     """ % (options.get("size","12"), value)
 
 bbcode_parser.add_formatter("size", render_size_bbcode, escape_html=False)
@@ -172,171 +214,13 @@ class ForumPostParser(object):
                     _content_owner = _object
                 else:
                     _content_owner = False
-        
-        # parse images
-        images_found = img_re.findall(html)
-        skiplink = []
-        for image in images_found:
-            html = html.replace("[img]%s[/img]" % image, """<img src="%s" style="max-width: 100%%;">""" % image, 1)
-            skiplink.append(image.strip())
 
-        html_images_found = html_img_re.findall(html)
-        for image in html_images_found:
-            skiplink.append(image.strip())
-
-        url_bbcode_in_post = url_re.findall(html)
-        for url_bbcode in url_bbcode_in_post:
-            if url_bbcode[1] == "":
-                to_replace = "[url]"
-            else:
-                to_replace = "[url=%s]" % (url_bbcode[0]+url_bbcode[1]+url_bbcode[2])
-            to_replace = to_replace + url_bbcode[3]
-            to_replace = to_replace + "[/url]"
-            if url_bbcode[0] == "":
-                html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[3])), 1)
-            else:
-                html = html.replace(to_replace, """<a href="%s">%s</a>""" % (unicode(url_bbcode[3]), unicode(url_bbcode[1])), 1)
-
-        # parse urls
-        all_bbcode = bbcode_re.findall(html)
+        _mangled_html_links = []
         all_html_links = href_re.findall(html)
-        parse_for_urls = html
-
-        for bbcode in all_bbcode:
-            parse_for_urls = parse_for_urls.replace(bbcode[0], "")
-
-        for bbcode in all_html_links:
-            parse_for_urls = parse_for_urls.replace(bbcode[0], "")
-
-        links_in_clean_text = link_re.findall(parse_for_urls)
-        for i, link in enumerate(links_in_clean_text):
-            if link[0].strip() in skiplink:
-                continue
-            filler = "LINKTEXT+3235763519_"+str(i)
-
-            html = html.replace(link[0], """<a href="%s">%s</a>""" % (filler, filler))
-
-        for i, link in enumerate(links_in_clean_text):
-            filler = "LINKTEXT+3235763519_"+str(i)
-
-            if link[0].lower().startswith("www"):
-                link_text = "http://"+link[0]
-            else:
-                link_text = link[0]
-
-            youtube_match = youtube_re.search(link_text)
-            dailymotion_match = dailymotion_re.search(link_text)
-            vimeo_match = vimeo_re.search(link_text)
-            soundcloud_match = soundcloud_re.search(link_text)
-            spotify_match = spotify_re.search(link_text)
-            vine_match = vine_re.search(link_text)
-            giphy_match = giphy_re.search(link_text)
-
-            if youtube_match:
-                video = youtube_match.groups()[0]
-
-                if not current_user.no_images:
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        """<iframe style="max-width: 100%%" width="560" height="315" src="https://www.youtube.com/embed/%s" frameborder="0" allowfullscreen></iframe>""" % (video, )
-                    )
-                else:
-                    link_ = """<a href="https://www.youtube.com/watch?v=%s" target="_blank">Youtube Link (Embed)</a>""" % (video,)
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        link_
-                    )
-
-            elif dailymotion_match:
-                video = dailymotion_match.groups()[0]
-
-                if not current_user.no_images:
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        """<iframe style="max-width: 100%%" frameborder="0" width="480" height="270" src="//www.dailymotion.com/embed/video/%s" allowfullscreen></iframe>""" % (video, )
-                    )
-                else:
-                    link_ = """<a href="http://www.dailymotion.com/video/%s" target="_blank">Dailymotion Link (Embed)</a>""" % (video,)
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        link_
-                    )
-            elif vimeo_match:
-                video = vimeo_match.groups()[0]
-
-                if not current_user.no_images:
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        """<iframe style="max-width: 100%%" src="https://player.vimeo.com/video/%s?color=ffffff&title=0&byline=0&portrait=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""" % (video, )
-                    )
-                else:
-                    link_ = """<a href="https://vimeo.com/%s" target="_blank">Vimeo Link (Embed)</a>""" % (video,)
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        link_
-                    )
-            elif soundcloud_match:
-                sound_user = soundcloud_match.groups()[0]
-                sound_track = soundcloud_match.groups()[1]
-                options = urlencode({
-                    "url": "https://soundcloud.com/"+sound_user+"/"+sound_track
-                    })
-
-                if not current_user.no_images:
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        """<iframe style="max-width: 100%%" width="100%%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?%s&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"></iframe>""" % (options,)
-                    )
-                else:
-                    link_ = """<a href="https://soundcloud.com/%s/%s" target="_blank">Soundcloud Link (%s/%s)</a>""" % (sound_user,sound_track,sound_user,sound_track)
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        link_
-                    )
-            elif spotify_match:
-                uri = spotify_match.groups()[0]
-                track = spotify_match.groups()[1]
-                uri = "spotify:"+uri.replace("/", ":")+":"+track
-
-                if not current_user.no_images:
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        """<iframe style="max-width: 100%%" src="https://embed.spotify.com/?uri=%s" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>""" % (uri,)
-                    )
-            elif vine_match:
-                video = vine_match.groups()[0]
-
-                if not current_user.no_images:
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        """<iframe style="max-width: 100%%" src="https://vine.co/v/%s/embed/simple?autoplay=0" width="400" height="400" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>""" % (video, )
-                    )
-                else:
-                    link_ = """<a href="https://vine.co/v/%s" target="_blank">Vine Link (Embed)</a>""" % (video,)
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        link_
-                    )
-            elif giphy_match:
-                giph = giphy_match.groups()[0]
-
-                if not current_user.no_images:
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        """<iframe src="//giphy.com/embed/%s" width="480" height="460" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="http://giphy.com/gifs/%s">via GIPHY</a></p>""" % (giph, giph)
-                    )
-                else:
-                    link_ = """<a href="http://giphy.com/gifs/%s" target="_blank">Giphy Link (Embed)</a>""" % (giph,)
-                    html = html.replace(
-                        """<a href="%s">%s</a>""" % (filler, filler),
-                        link_
-                    )
-            else:
-                html = html.replace(
-                    """<a href="%s">%s</a>""" % (filler, filler),
-                    """<a href="%s" target="_blank">%s</a>""" % (link_text, link[0].strip())
-                )
-
+        for i, _html_link in enumerate(all_html_links):
+            _mangled_html_links.append(["mangled-%s" % i, _html_link[0]])
+            html = html.replace(_html_link[0], "mangled-%s" % i, 1)
+        
         # parse attachment tags
         attachment_bbcode_in_post = attachment_re.findall(html)
         for attachment_bbcode in attachment_bbcode_in_post:
@@ -587,16 +471,6 @@ class ForumPostParser(object):
                     </div>
                 """.replace("VALUEHERE", progress_bar_bbcode[2]).replace("COLORHERE", progress_bar_bbcode[1]))
 
-        font_bbcode_in_post = font_re.findall(html)
-        for font_bbcode in font_bbcode_in_post:
-            replace_ = "[font="+font_bbcode[0]+"]"+font_bbcode[1]+"[/font]"
-            html = html.replace(replace_, """%s""" % (font_bbcode[1],))
-
-        font_bbcode_in_post = font_re.findall(html)
-        for font_bbcode in font_bbcode_in_post:
-            replace_ = "[font="+font_bbcode[0]+"]"+font_bbcode[1]+"[/font]"
-            html = html.replace(replace_, """%s""" % (font_bbcode[1],))
-
         # parse smileys
         if not current_user.no_images:
             for smiley in emoticon_codes.keys():
@@ -613,15 +487,8 @@ class ForumPostParser(object):
             to_replace = to_replace + "[/quote]"
             html = html.replace(to_replace, """<blockquote data-author="%s" class="blockquote-reply"><div>%s</div></blockquote>""" % (unicode(quote_bbcode[0]), unicode(quote_bbcode[1])), 1)
 
-        list_bbcode_in_post = list_re.findall(html)
-        for list_bbcode in list_bbcode_in_post:
-            list_contents = ""
-            for list_item in list_bbcode.replace("<div>", "").replace("</div>", "").split("[*]"):
-                list_item = list_item.strip()
-                if list_item == "":
-                    continue
-                list_contents += """<li>%s</li>""" % list_item
-            html = html.replace("[list]%s[/list]" % list_bbcode, """<ul> <!-- list -->%s</ul>""" % list_contents, 1)
+                
+        html = bbcode_parser.format(html, strip_images=strip_images)
 
         if current_user.no_images:
             for plain_jane_image in raw_image_re.findall(html):
@@ -629,8 +496,10 @@ class ForumPostParser(object):
                     "%s" % plain_jane_image[0],
                     """<a href="%s" target="_blank">View External Image : <br>%s.</a>""" % (plain_jane_image[1], plain_jane_image[1])
                 )
-                
-        html = bbcode_parser.format(html, strip_images=strip_images)
+        
+        for _code, _html in _mangled_html_links:
+            html = html.replace(_code, _html, 1)
+            
         return "<div class=\"parsed\">"+html+"</div>"
         
 @app.template_filter('post_parse')
