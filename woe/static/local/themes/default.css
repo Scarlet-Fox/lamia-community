@@ -201,7 +201,7 @@ body {
 }
 
 a {
-    color: #834392;
+    color: #337ab7;
     -ms-word-break: break-all;
     /* Be VERY careful with this, breaks normal words wh_erever */
     word-break: break-all;
@@ -398,6 +398,7 @@ background-color: rgb(248, 248, 248);}
   box-shadow: 0px 2px 2px rgba(0,0,0,0.1);
   padding: 1px;
   border: 1px solid #d5d5d5;
+  border-radius: 10px;
 }
 
 .image-box {
@@ -585,7 +586,7 @@ blockquote {
   background-color: #eee;
 }
 .post-member-avatar {
-  margin-top: 5px;
+    margin-top:20px;
 }
 .post-member-self-title {
   color: #777;
@@ -762,16 +763,17 @@ a.inherit_colors {
   word-break: break-word;
 }
 .post-member-avatar {
-  border: 1px solid #d5d5d5;
+  border: 1px solid #5452a28a;
   padding: 1px;
-  box-shadow: 0px 2px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.37);
 }
 .avatar-mini {
-  border: 1px solid #d5d5d5;
-  box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+    border: 1px solid #5452a28a;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.37);
   padding: 1px;
   z-index: 5;
   vertical-align: middle;
+  border-radius: 10px;
 }
 .popover {
   max-width: 100% !important;
@@ -806,8 +808,8 @@ a.inherit_colors {
   position: relative;
   float: left;
   padding: 9px 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-top: 7px;
+  margin-bottom: 0px;
   background-color: transparent;
   background-image: none;
   border: 1px solid transparent;
@@ -907,6 +909,8 @@ td {
   background-color: #eee;
   margin-top: 10px;
   margin-bottom: 10px;
+  padding-top:8px;
+  padding-bottom:5px;
 }
 .blog-read-more {
   font-size: 16px;
@@ -1054,7 +1058,7 @@ h1.breadcrumb-h1 {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    
+
 }
 
 .blog-description img {
@@ -1062,9 +1066,10 @@ h1.breadcrumb-h1 {
 }
 
 .attached-status {
-  background-color: rgb(253, 242, 255);
+    background-color: rgb(235, 241, 255);
+    padding-bottom:15px !important;
 }
-
+a
 .join-us-link {
   color: blue !important;
 }
