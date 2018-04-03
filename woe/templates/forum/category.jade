@@ -39,7 +39,7 @@
               .subcategory-listing-recent-image
                 if subcategory.recent_post != None
                   a(href="{{url_for('view_profile', login_name=subcategory.recent_post.author.my_url)}}")
-                    img(src="{{subcategory.recent_post.author.get_avatar_url("60")}}", width="{{ subcategory.recent_post.author.avatar_60_x }}", height="{{ subcategory.recent_post.author.avatar_60_y }}")
+                    img.avatar-mini(src="{{subcategory.recent_post.author.get_avatar_url("60")}}", width="{{ subcategory.recent_post.author.avatar_60_x }}", height="{{ subcategory.recent_post.author.avatar_60_y }}")
               .subcategory-listing-recent
                 a(href="/t/{{subcategory.recent_topic.slug}}/page/1/post/last_seen")= subcategory.recent_topic.title
                 br
