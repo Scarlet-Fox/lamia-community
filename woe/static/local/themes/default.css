@@ -1074,93 +1074,255 @@ a
   color: blue !important;
 }
 
+[type="checkbox"] {
+    width: initial;
+}
+ 
+.profile-page-avatar.profile-avatar {
+    margin-top: 10px;
+}
+ 
+.profile-avatar {
+    border-radius: 10px;
+}
+ 
+.avatar-mini {
+    border: 1px solid #5452a28a;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.37);
+    border-radius: 10px;
+}
+ 
+.post-member-avatar {
+    border: 1px solid #5452a28a;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.37);
+    border-radius: 15px;
+}
+ 
+form.form-group.status-reply-box {
+    padding-top: 15px;
+}
+ 
+.media-body {
+    vertical-align: middle;
+}
+ 
+.status-reply {
+    padding-top: 10px;
+}
+ 
+.status-reply > .media-body > p >.hover_user {
+    font-weight: bold;
+}
+ 
+li.list-group-item.status-reply-form > form.form-inline {
+    padding-top: 10px;
+}
+ 
+.hover_user {
+    font-weight: bold;
+}
+ 
+a {
+    color: #337ab7;
+}
+ 
+a:hover {
+    color:#834392 !important;
+}
+ 
+.attached-status {
+    background-color: rgb(235, 241, 255);
+    padding-bottom:15px !important;
+}
+ 
+li.list-group-item.front-page-status.sidebar-status-section {
+    padding-top: 15px;
+    padding-bottom: 10px;
+}
+ 
+li.list-group-item.subcategory.category-subcategories > div > div.row > div.col-sm-6.col-xs-8 > div.media-left {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+ 
+li.list-group-item.front-page-status.sidebar-status-section > div.media-body > p.status-message {
+    font-size: 13px;
+    line-height: 1.1;
+}
+ 
+li#status.list-group-item.front-page-status {
+    padding-top: 15px;
+    padding-bottom: 0;
+}
+ 
+.status-reply > div.media-left.subcategory-listing-recent-image {
+    padding-top: 4px;
+}
+ 
+div.col-md-4.col-sm-6.status-index-panel.shuffle-item.filtered > ul.list-group > li.list-group-item > div.media-left {
+    padding-top: 4px;
+}
+ 
+div#search-results-buffer {
+    min-height:284px;
+    padding-top:11%;
+    text-align:center;
+}
+ 
+.post-content {
+ 
+    margin-top:25px;
+    min-height:108px;
+}
+.post-member-avatar {
+    height:150px;
+    width:150px;
+    margin-top:20px;
+}
+ 
+#user-profile-about-me.post-content {
+margin-bottom:25px;
+}
+ 
+a:hover, a:focus {
+    color: #ba88db !important;
+    text-decoration: none;
+}
+ 
+li.list-group-item.post-listing-info > div.row > div.col-md-3.col-xs-8 > b > a.hover_user {
+    width:100px;
+    overflow:ellipsis;
+}
+ 
+.blog-listing-info {
+    padding-top:8px;
+    padding-bottom:5px;
+}
+ 
+.list-group-item.topic-listing {
+    min-height:200px;
+}
+ 
+ul.list-group.category > li.list-group-item.topic-listing {
+    padding-top:15px;
+    padding-bottom:15px;
+}
+ 
+li.list-group-item.topic-listing > div.row > div.col-xs-3.hidden-xs.hidden-sm {
+    padding-top:15px;
+}
+ 
+li.list-group-item.topic-listing > div.row > div.col-xs-6.col-sm-4.hidden-xs {
+    padding-top:15px;
+}
+ 
+.topic-listing-username {
+    font-size: 95%;
+    color: #337ab7 !important;
+}
+ 
+ul.nav.navbar-nav {
+    font-weight:bold;
+}
+ 
+.mini-notification-button {
+    margin-top: 7px;
+    margin-bottom: 0px;
+}
+ 
+ 
+ 
+img.go-to-profile.avatar-mini {
+       box-shadow:none;
+}
+ 
+li#forum-li.active > a {
+    max-height:48px !important;
+}
+ 
 a.dropdown-toggle.glyphicon.glyphicon-cog {
     padding-top: 13px !important;
     padding-bottom: 17px !important;
 }
-
+ 
 a.button.mini-notification-button.collapsed.hidden-xs {
-    padding-top:8px !important;
+    padding-top:8px;
 }
-
+ 
 li#dashboard-li.dropdown.hidden-xs > a.dropdown-toggle.notification-dropdown-toggle {
-    padding-top: 12px !important;
-    width:40px !important;
+    padding-top: 12px;
+    width:40px;
 }
-
+ 
 a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg {
     height: 40px !important;
     width: 40px !important;
-    min-height:40px !important;
-    min-width:40px !important;
+    min-height:40px;
+    min-width:40px;
 }
-
+ 
 a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg {
-    width:40px !important;
-    height:40px !important;
+    width:40px;
+    height:40px;
 }
-
+ 
 a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button {
-    margin-top:6px !important;
+    margin-top:6px;
     height:40px !important;
     width:40px !important;
-
+ 
 }
-
+ 
 a.button.mini-notification-button.collapsed.dropdown-toggle.notification-dropdown-toggle.hidden-sm.hidden-md.hidden-lg {
     margin-top:px;
-    height:40px !important;
-    width:40px !important;
+    height:40px;
+    width:40px;
 }
-
+ 
 a.to-bottom.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button {
-    margin-top:6px !important;
-    height:40px !important;
-    width:40px !important;
+    margin-top:6px;
+    height:40px;
+    width:40px;
 }
-
-img.go-to-profile.avatar-mini {
-       box-shadow:none;
-}
-
+ 
 button.navbar-toggle.collapsed {
-    margin-top:7px !important;
-    height:40px !important;
-    width:40px !important;
-    padding-left:8px !important;
+    margin-top:7px;
+    height:40px;
+    width:40px;
+    padding-left:8px
 }
-
+ 
 button.navbar-toggle {
-    margin-top:7px !important;
-    height:40px !important;
-    width:40px !important;
-    padding-left:8px !important;
+    margin-top:7px;
+    height:40px;
+    width:40px;
+    padding-left:8px
 }
-
+ 
 a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg > span.glyphicon.glyphicon-home {
    padding-left:1px !important;
    padding-top:2px !important;
 }
-
+ 
 a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg > span.glyphicon.glyphicon-envelope {
-    padding-left:2px !important;
-    padding-top: 2px !important;
+    padding-left:2px;
+    padding-top: 2px;
 }
-
+ 
 a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg > span.badge.notification-counter {
-    margin-left: -2px !important;
-    margin-top: -3px !important;
+    margin-left: -2px;
+    margin-top: -3px;
 }
-
+ 
 a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button {
-    padding-left:12px !important;
+    padding-left:12px;
     padding-top:12px !important;
 }
-
+ 
 a.to-bottom.glyphicon.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button {
-    padding-left:11px !important;
+    padding-left:11px;
 }
-
+ 
 a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg > img.avatar-mini {
   box-shadow:none !important;
 }
