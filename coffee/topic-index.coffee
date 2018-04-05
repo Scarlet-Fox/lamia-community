@@ -528,7 +528,7 @@ $ ->
             </li>
             <li class="list-group-item post-listing-post">
               <div class="row">
-                <div class="col-md-2" style="text-align: center;">
+                <div class="col-md-3" style="text-align: center;">
                   {{#unless character_avatar}}
                     <a href="/member/{{author_login_name}}"><img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm"></a>
                   {{else}}
@@ -558,7 +558,7 @@ $ ->
                   <div class="post-meta">
                   </div>
                 </div>
-                <div class="col-md-10 post-right">
+                <div class="col-md-9 post-right">
                   <div class="post-content" id="post-{{_id}}">
                     {{{html}}}
                   </div>
