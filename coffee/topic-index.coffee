@@ -157,7 +157,7 @@ $ ->
           if post_object? and post_object == $("#post-#{element.data("pk")}")[0]
             my_content = "[reply=#{element.data("pk")}:post:#{data.author}]\n#{highlighted_text}\n[/reply]"
           else
-            my_content = "[reply=#{element.data("pk")}:post:#{data.author}]\n\n"
+            my_content = "[reply=#{element.data("pk")}:post:#{data.author}][/reply]\n\n"
 
           x = window.scrollX
           y = window.scrollY
