@@ -216,6 +216,7 @@ a {
 
 .post-content a {
     color: #0670BB;
+    overflow:hidden;
 }
 
 .btn-group, .btn-group-vertical
