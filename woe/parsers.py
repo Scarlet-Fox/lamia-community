@@ -15,12 +15,8 @@ import woe.sqlmodels as sqlm
 from urllib import urlencode
 import bbcode
 
-attachment_re = re.compile(r'\[attachment=(.+?):(\d+)(:wrap)?\]')
 #quote_re = re.compile(r'\[quote=?(.*?)\](.*)\[\/quote\]', re.DOTALL|re.IGNORECASE)
-progress_re = re.compile(r'(\[progressbar=(#?[a-zA-Z0-9]+)\](\d+?)\[\/progressbar\])', re.IGNORECASE)
 mention_re = re.compile("\[@(.*?)\]")
-deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\](.*?\[\/reply\])', re.DOTALL|re.IGNORECASE)
-reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\]')
 
 youtube_re = re.compile("https?://(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?", re.IGNORECASE)
 dailymotion_re = re.compile("(?:dailymotion\.com(?:\/video|\/hub)|dai\.ly)\/([0-9a-z]+)(?:[\-_0-9a-zA-Z]+#video=([a-z0-9]+))?", re.IGNORECASE)
@@ -70,7 +66,7 @@ bbcode_parser.add_simple_formatter('s', '<span style="text-decoration: line-thro
 bbcode_parser.add_simple_formatter('center', '<center>%(value)s</center>', escape_html=False)
 bbcode_parser.add_simple_formatter("right", '<div style="text-align: right;"><div>%(value)s</div></div>', escape_html=False)
 bbcode_parser.add_simple_formatter("truespoiler", """
-        <span style='color:#000000; background:#000000' onmouseover="style.color='#ffffff'" onmouseout="style.color='#000000'">%(value)s</span>
+        <span class="truespoiler">%(value)s</span>
     """, escape_html=False)
 
 def _render_list(name, value, options, parent, context):
@@ -169,6 +165,25 @@ def render_font_bbcode(tag_name, value, options, parent, context):
 
 bbcode_parser.add_formatter("font", render_font_bbcode, escape_html=False)
 
+def render_progressbar_bbcode(tag_name, value, options, parent, context):
+    try:
+        _color = options.get("color", "red")
+        _value = int(options.get("value", "0"))
+    except:
+        return ""
+        
+    return """
+            <div class="progress" style="border-radius: 0px; max-width: 75%;">
+              <div class="progress-bar" role="progressbar"
+              aria-valuenow="VALUEHERE" aria-valuemin="0"
+              aria-valuemax="100"
+              style="width: VALUEHERE%; background-color: COLORHERE; border-radius: 0px;">
+                VALUEHERE%
+              </div>
+            </div>
+        """.replace("VALUEHERE", str(_value)).replace("COLORHERE", _color)
+bbcode_parser.add_formatter("progressbar", render_progressbar_bbcode, standalone=True)
+
 def resize_image_save_custom(image_file_location, new_image_file, new_x_size, _id):
     from woe import sqla
     import woe.sqlmodels as sqlm
@@ -209,6 +224,197 @@ def resize_image_save_custom(image_file_location, new_image_file, new_x_size, _i
         sqla.session.commit()
         return False
 
+def render_attachment_bbcode(tag_name, value, options, parent, context):
+    _options = options.get("attachment","").split(":")
+    _content_owner = context.get("content_owner", False)
+    
+    if context.get("strip_images", False):
+        return ""
+    
+    try:
+        _attachment_id = _options[0]
+    except:
+        return ""
+        
+    try:
+        _attachment_size = int(_options[1])
+    except:
+        ignore_size = True
+        
+    try:
+        _attachment_wrap = _options[2]
+    except:
+        _attachment_wrap = "wrap"
+        
+    try:
+        attachment = sqla.session.query(sqlm.Attachment).filter_by(id=_attachment_id)[0]
+    except:
+        sqla.session.rollback()
+        return ""
+        
+    if current_user.no_images:
+        return """<a href="/static/uploads/%s" target="_blank">View Attachment.%s (%sKB)</a>""" % (quote(attachment.path.encode('utf-8')), attachment.extension, int(float(attachment.size_in_bytes)/1024))
+
+    if _attachment_size == attachment.x_size:
+        ignore_size = True
+    else:
+        ignore_size = False
+        if _attachment_size < 5:
+            _attachment_size = 5
+        if _attachment_size > 700:
+            _attachment_size = 700 # TODO: Max attachment width should be configurable
+
+    if _attachment_wrap == "wrap":
+        image_formatting_class = " image-wrap"
+    else:
+        image_formatting_class = ""
+
+    if attachment.size_in_bytes < 1024*1024*10 or attachment.do_not_convert:
+        url = os.path.join("/static/uploads", attachment.path)
+        show_box = "no"
+
+        if ignore_size:
+            return """
+            <img class="attachment-image%s" src="%s" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+            """ % (image_formatting_class, quote(url.encode('utf-8')), show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
+        else:
+            return """
+            <img class="attachment-image%s" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
+            """ % (image_formatting_class, quote(url.encode('utf-8')), _attachment_size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
+    else:
+        filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
+        sizepath = os.path.join(os.getcwd(), "woe/static/uploads",
+            ".".join(filepath.split(".")[:-1])+".custom_size."+_attachment_size+"."+filepath.split(".")[-1])
+        
+        show_box = "yes"
+
+        if os.path.exists(sizepath):
+            url = os.path.join("/static/uploads",
+                ".".join(attachment.path.split(".")[:-1])+".custom_size."+_attachment_size+"."+attachment.path.split(".")[-1])
+            try:
+                new_size = os.path.getsize(sizepath.replace(".gif", ".animated.gif"))
+            except:
+                new_size = attachment.size_in_bytes
+            if attachment.extension == "gif":
+                return """
+                <div class="click-to-play">
+                    <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s" data-resized-size="%s">
+                    <p class="text-warning">This file is %sKB large, click to play.</p>
+                </div>
+                """ % (image_formatting_class, quote(url.encode('utf-8')), _attachment_size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(new_size)/1024), int(float(new_size)/1024), int(float(new_size)/1024))
+            elif attachment.extension != "gif":
+                return """
+                <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
+                """ % (image_formatting_class, quote(url.encode('utf-8')), _attachment_size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
+        else:
+            thread = Thread(target=resize_image_save_custom, args=(filepath, sizepath, size, attachment.id, ))
+            thread.start()
+            url = os.path.join("/static/uploads", attachment.path)
+            return """
+            <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
+            """ % (image_formatting_class, quote(url.encode('utf-8')), _attachment_size, "no", attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
+
+bbcode_parser.add_formatter("attachment", render_attachment_bbcode, standalone=True)
+
+deluxe_reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\](.*?\[\/reply\])', re.DOTALL|re.IGNORECASE)
+reply_re = re.compile(r'\[reply=(.+?):(post|pm|blogcomment)(:.+?)?\]')
+def render_reply_bbcode(tag_name, value, options, parent, context):
+    _options = options.get("reply","").split(":")
+    inner_html = value
+    
+    try:
+        _content_id = int(_options[0])
+    except:
+        return ""
+        
+    try:
+        _content_type = _options[1]
+    except:
+        return ""
+    
+    if _content_type == "post":
+        try:
+            _replying_to = sqla.session.query(sqlm.Post).filter_by(id=_content_id)[0]
+        except:
+            sqla.session.rollback()
+            return ""
+        
+        # TODO : Validate permissions
+        
+        _display_name = _replying_to.author.display_name
+        try:
+            if _replying_to.character is not None:
+                _display_name = _replying_to.character.name
+        except:
+            pass
+            
+        if inner_html == "":
+            inner_html = bbcode_parser.format(_replying_to.html, strip_images=True, content_owner=context.get("content_owner"))
+
+        return """
+        <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
+        %s
+        </div></blockquote>
+        """ % (
+            arrow.get(_replying_to.created).timestamp,
+            "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.id),
+            _display_name,
+            "/member/%s" % _replying_to.author.login_name,
+            re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
+        )
+        
+    if reply[1] == "blogcomment":
+        try:
+            _replying_to = sqla.session.query(sqlm.BlogComment).filter_by(id=_content_id)[0]
+        except:
+            sqla.session.rollback()
+            return ""
+        
+        # TODO : Validate permissions
+        
+        _display_name = _replying_to.author.display_name
+        if inner_html == "":
+            inner_html = bbcode_parser.format(_replying_to.html, strip_images=True, content_owner=context.get("content_owner"))
+            
+        return """
+        <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
+        %s
+        </div></blockquote>
+        """ % (
+            arrow.get(_replying_to.created).timestamp,
+            "/blog/test/e/%s/page/1" % (_replying_to.blog_entry.slug),
+            _display_name,
+            "/member/%s" % _replying_to.author.login_name,
+            re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
+        )
+        
+    if reply[1] == "pm":
+        try:
+            _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=_content_id)[0]
+            pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
+                pm = _replying_to.pm,
+                author = current_user._get_current_object()
+            )[0]
+        except:
+            sqla.session.rollback()
+            return ""
+            
+        if inner_html == "":
+            inner_html = bbcode_parser.format(_replying_to.html, strip_images=True, content_owner=context.get("content_owner"))
+            
+        return """
+        <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
+        %s
+        </div></blockquote>
+        """ % (
+            arrow.get(_replying_to.created).timestamp,
+            "/messages/%s/page/1/post/%s" % (_replying_to.pm.id, _replying_to.id),
+            _replying_to.author.display_name,
+            "/member/%s" % _replying_to.author.login_name,
+            re.sub(reply_re, "", inner_html)
+        )
+bbcode_parser.add_formatter("reply", render_reply_bbcode, escape_html=False)
+
 class ForumPostParser(object):
     def __init__(self):
         pass
@@ -233,225 +439,6 @@ class ForumPostParser(object):
             _mangled_html_links.append(["mangled-%s" % i, _html_link[0]])
             html = html.replace(_html_link[0], "mangled-%s" % i, 1)
         
-        # parse attachment tags
-        attachment_bbcode_in_post = attachment_re.findall(html)
-        for attachment_bbcode in attachment_bbcode_in_post:
-            try:
-                attachment = sqla.session.query(sqlm.Attachment).filter_by(id=attachment_bbcode[0])[0]
-            except:
-                sqla.session.rollback()
-                try:
-                    attachment = sqla.session.query(sqlm.Attachment).filter_by(old_mongo_hash=attachment_bbcode[0])[0]
-                except:
-                    sqla.session.rollback()
-                    continue
-            
-            if attachment.owner != _content_owner and _content_owner != False:
-                continue
-
-            if current_user.no_images:
-                link_html = """<a href="/static/uploads/%s" target="_blank">View Attachment.%s (%sKB)</a>""" % (quote(attachment.path.encode('utf-8')), attachment.extension, int(float(attachment.size_in_bytes)/1024))
-                html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), link_html, 1)
-                continue
-
-            try:
-                size = attachment_bbcode[1]
-                if int(size) == int(attachment.x_size):
-                    ignore_size = True
-                else:
-                    ignore_size = False
-                    if int(size) < 5:
-                        size = "5"
-                    if int(size) > 700:
-                        size = "700"
-            except:
-                ignore_size = True
-
-            if attachment_bbcode[2] == ":wrap":
-                image_formatting_class = " image-wrap"
-            else:
-                image_formatting_class = ""
-
-            if attachment.size_in_bytes < 1024*1024*10 or attachment.do_not_convert:
-                url = os.path.join("/static/uploads", attachment.path)
-                show_box = "no"
-
-                if ignore_size:
-                    image_html = """
-                    <img class="attachment-image%s" src="%s" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                    """ % (image_formatting_class, quote(url.encode('utf-8')), show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
-                    html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html, 1)
-                    continue
-                else:
-                    image_html = """
-                    <img class="attachment-image%s" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
-                    """ % (image_formatting_class, quote(url.encode('utf-8')), size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
-                    html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html, 1)
-                    continue
-
-            filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
-            sizepath = os.path.join(os.getcwd(), "woe/static/uploads",
-                ".".join(filepath.split(".")[:-1])+".custom_size."+size+"."+filepath.split(".")[-1])
-
-            show_box = "yes"
-
-            if os.path.exists(sizepath):
-                url = os.path.join("/static/uploads",
-                    ".".join(attachment.path.split(".")[:-1])+".custom_size."+size+"."+attachment.path.split(".")[-1])
-                try:
-                    new_size = os.path.getsize(sizepath.replace(".gif", ".animated.gif"))
-                except:
-                    new_size = attachment.size_in_bytes
-                if attachment.extension == "gif":
-                    image_html = """
-                    <div class="click-to-play">
-                        <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s" data-resized-size="%s">
-                        <p class="text-warning">This file is %sKB large, click to play.</p>
-                    </div>
-                    """ % (image_formatting_class, quote(url.encode('utf-8')), size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(new_size)/1024), int(float(new_size)/1024), int(float(new_size)/1024))
-                    html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
-                    continue
-                elif attachment.extension != "gif":
-                    image_html = """
-                    <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
-                    """ % (image_formatting_class, quote(url.encode('utf-8')), size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
-                    html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
-                    continue
-            else:
-                thread = Thread(target=resize_image_save_custom, args=(filepath, sizepath, size, attachment.id, ))
-                thread.start()
-                url = os.path.join("/static/uploads", attachment.path)
-                image_html = """
-                <img class="attachment-image%s" src="%s" width="%spx" data-first_click="yes" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s">
-                """ % (image_formatting_class, quote(url.encode('utf-8')), size, "no", attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
-                html = html.replace("[attachment=%s:%s%s]" % (attachment_bbcode[0], attachment_bbcode[1], attachment_bbcode[2]), image_html)
-                continue
-
-        def process_reply(reply, html, container=False):
-            if container:
-                string_to_replace = "[reply=%s:%s%s]%s" % (reply[0],reply[1],reply[2], reply[3])
-            else:
-                string_to_replace = "[reply=%s:%s%s]" % (reply[0],reply[1],reply[2])
-
-            if reply[1] == "post":
-                try:
-                    r_id = int(reply[0])
-                    _replying_to = sqla.session.query(sqlm.Post).filter_by(id=r_id)[0]
-                except:
-                    sqla.session.rollback()
-
-                    try:
-                        _replying_to = sqla.session.query(sqlm.Post).filter_by(old_mongo_hash=reply[0])[0]
-                    except:
-                        sqla.session.rollback()
-                        return
-
-                _display_name = _replying_to.author.display_name
-                try:
-                    if _replying_to.character is not None:
-                        _display_name = _replying_to.character.name
-                except:
-                    pass
-
-                if container:
-                    inner_html = reply[3].replace("[spoiler]", "").replace("[/spoiler]", "")
-                else:
-                    inner_html = _replying_to.html.replace("[spoiler]", "").replace("[/spoiler]", "")
-
-                return html.replace(string_to_replace, """
-                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
-                %s
-                </div></blockquote>
-                """ % (
-                    arrow.get(_replying_to.created).timestamp,
-                    "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.id),
-                    _display_name,
-                    "/member/%s" % _replying_to.author.login_name,
-                    re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
-                ))
-                
-            if reply[1] == "blogcomment":
-                try:
-                    r_id = int(reply[0])
-                    _replying_to = sqla.session.query(sqlm.BlogComment).filter_by(id=r_id)[0]
-                except:
-                    sqla.session.rollback()
-
-                _display_name = _replying_to.author.display_name
-
-                if container:
-                    inner_html = reply[3].replace("[spoiler]", "").replace("[/spoiler]", "")
-                else:
-                    inner_html = _replying_to.html.replace("[spoiler]", "").replace("[/spoiler]", "")
-                    
-                return html.replace(string_to_replace, """
-                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
-                %s
-                </div></blockquote>
-                """ % (
-                    arrow.get(_replying_to.created).timestamp,
-                    "/blog/test/e/%s/page/1" % (_replying_to.blog_entry.slug),
-                    _display_name,
-                    "/member/%s" % _replying_to.author.login_name,
-                    re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
-                ))
-                
-            if reply[1] == "pm":
-                try:
-                    r_id = int(reply[0])
-                    _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=reply[0])[0]
-                    pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
-                        pm = _replying_to.pm,
-                        author = current_user._get_current_object()
-                    )[0]
-                except:
-                    sqla.session.rollback()
-
-                    try:
-                        _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(old_mongo_hash=reply[0])[0]
-                        pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
-                            pm = _replying_to.pm,
-                            author = current_user._get_current_object()
-                        )[0]
-                    except:
-                        sqla.session.rollback()
-                        return html
-
-                if container:
-                    inner_html = reply[3].replace("[/reply]","")
-                else:
-                    inner_html = _replying_to.message.replace("[/reply]","")
-
-                return html.replace(string_to_replace, """
-                <blockquote data-time="%s" data-link="%s" data-author="%s" data-authorlink="%s" class="blockquote-reply"><div>
-                %s
-                </div></blockquote>
-                """ % (
-                    arrow.get(_replying_to.created).timestamp,
-                    "/messages/%s/page/1/post/%s" % (_replying_to.pm.id, _replying_to.id),
-                    _replying_to.author.display_name,
-                    "/member/%s" % _replying_to.author.login_name,
-                    re.sub(reply_re, "", inner_html)
-                ))
-
-        def _look_for_quote_replies(reply, html):
-            interior_replies = deluxe_reply_re.findall(reply)
-
-            if len(interior_replies) > 0:
-                for reply in interior_replies:
-                    _interior_interior_replies = deluxe_reply_re.findall(reply[3])
-                    if len(_interior_interior_replies) > 0:
-                        html = _look_for_quote_replies(reply[3], html)
-                    else:
-                        html = process_reply(reply, html, container=True)
-            return html
-
-        html = _look_for_quote_replies(html, html)
-
-        replies = reply_re.findall(html)
-        for reply in replies:
-            html = process_reply(reply, html)
-
         mentions = mention_re.findall(html)
         for mention in mentions:
             try:
@@ -461,28 +448,13 @@ class ForumPostParser(object):
                 sqla.session.rollback()
                 html = html.replace("[@%s]" % unicode(mention), "", 1)
 
-        progress_bar_bbcode_in_post = progress_re.findall(html)
-        for progress_bar_bbcode in progress_bar_bbcode_in_post:
-            html = html.replace(
-                progress_bar_bbcode[0],
-                """
-                    <div class="progress" style="border-radius: 0px; max-width: 75%;">
-                      <div class="progress-bar" role="progressbar"
-                      aria-valuenow="VALUEHERE" aria-valuemin="0"
-                      aria-valuemax="100"
-                      style="width: VALUEHERE%; background-color: COLORHERE; border-radius: 0px;">
-                        VALUEHERE%
-                      </div>
-                    </div>
-                """.replace("VALUEHERE", progress_bar_bbcode[2]).replace("COLORHERE", progress_bar_bbcode[1]))
-
         # parse smileys
         if not current_user.no_images:
             for smiley in emoticon_codes.keys():
                 img_html = """<img src="%s" />""" % (os.path.join("/static/emotes",emoticon_codes[smiley]),)
                 html = html.replace(smiley, img_html)
                 
-        html = bbcode_parser.format(html, strip_images=strip_images)
+        html = bbcode_parser.format(html, strip_images=strip_images, content_owner=_content_owner)
         
         for _code, _html in _mangled_html_links:
             html = html.replace(_code, _html, 1)

@@ -6,7 +6,7 @@ $ ->
     window.my_tz = "US/Pacific"
 
   $(".href_span").click (e) ->
-    window.location = $(this).attr("href")
+    window.location = $(this).attr("href")    
 
   $(".to-top").click (e) ->
     e.preventDefault()

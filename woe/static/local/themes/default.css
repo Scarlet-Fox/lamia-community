@@ -1326,3 +1326,31 @@ a.to-bottom.glyphicon.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.
 a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg > img.avatar-mini {
   box-shadow:none !important;
 }
+
+.truespoiler {
+  color: black;
+  background-color: black;
+}
+
+.truespoiler a {
+  color: black;
+  background-color: black;
+}
+
+.truespoiler img {
+  opacity: 0.1;
+}
+
+span.truespoiler:hover {
+  color: inherit;
+  background-color: inherit;
+}
+
+.truespoiler a:hover {
+  color: inherit;
+  background-color: inherit;
+}
+
+.truespoiler img:hover {
+  opacity: 1;
+}
