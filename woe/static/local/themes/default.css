@@ -1189,6 +1189,7 @@ div#search-results-buffer {
  
 #user-profile-about-me.post-content {
 margin-bottom:25px;
+overflow:hidden;
 }
  
 a:hover, a:focus {
