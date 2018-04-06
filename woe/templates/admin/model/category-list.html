@@ -16,13 +16,33 @@
       &nbsp;&nbsp;&nbsp;
       {% block list_row_actions_column scoped %}
           {% if admin_view.column_display_actions %}
-          <td class="list-buttons-column" style="vertical-align: middle;">
-              {% block list_row_actions scoped %}
-                {% for action in list_row_actions %}
-                {{ action.render_ctx(get_pk_value(row), row) }}
-                {% endfor %}
-              {% endblock %}
-          </td>
+          <span class="list-buttons-column" style="vertical-align: middle;">
+          </span>
+          &nbsp;&nbsp;&nbsp;
+          <span class="list-buttons-column" style="vertical-align: middle;">
+              <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                {% block list_row_actions scoped %}
+                  {% for action in list_row_actions %}
+                  {{ action.render_ctx(get_pk_value(row), row) }}
+                  {% endfor %}
+                {% endblock %}
+                {% if row.can_view_topics == True or row.can_view_topics == None %}
+                  <button type="button" class="btn btn-default" style="color: green;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can view?"><i class="fas fa-eye"></i> </button>
+                {% else %}
+                  <button type="button" class="btn btn-default" style="color: red;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can view?"><i class="fas fa-eye-slash"></i> </button>
+                {% endif %}
+                {% if row.can_create_topics == True or row.can_create_topics == None %}
+                  <button type="button" class="btn btn-default" style="color: green;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can make topics?"><i class="fas fa-unlock-alt"></i> </button>
+                {% else %}
+                  <button type="button" class="btn btn-default" style="color: red;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can make topics?"><i class="fas fa-lock"></i> </button>
+                {% endif %}
+                {% if row.can_post_in_topics == True or row.can_post_in_topics == None %}
+                  <button type="button" class="btn btn-default" style="color: green;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can post?"><i class="fas fa-comments"></i> </button>
+                {% else %}
+                  <button type="button" class="btn btn-default" style="color: red;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can post?"><i class="far fa-comments"></i> </button>
+                {% endif %}
+              </div>
+          </span>
           {%- endif -%}
       {% endblock %}
       
@@ -216,7 +236,11 @@
           "info": false
         });
         {% endif %}
-
+        
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        })
+        
         // Catch exception when closing dialog with <esc> key
         // and prevent accidental deletions.
         function safeConfirm(msg) {

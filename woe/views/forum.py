@@ -16,6 +16,7 @@ import woe.sqlmodels as sqlm
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm import joinedload
 from BeautifulSoup import BeautifulSoup
+from sqlalchemy.sql import text
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')

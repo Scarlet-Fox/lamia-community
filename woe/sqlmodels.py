@@ -1035,6 +1035,21 @@ category_mods_table = db.Table('category_moderators', db.metadata,
     db.Column('user_id', db.Integer, db.ForeignKey('user.id',
         name="fk_categorymods_user", ondelete="CASCADE"), index=True))
 
+class CategoryPermissionOverride(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id',
+        name="fk_categorypermission_category", ondelete="CASCADE"), index=True)
+    category = db.relationship("Category")
+    
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id',
+        name="fk_categorypermission_role", ondelete="CASCADE"), index=True)
+    role = db.relationship("Role")
+    
+    can_create_topics = db.Column(db.Boolean, default=False, index=True)
+    can_post_in_topics = db.Column(db.Boolean, default=False, index=True)
+    can_view_topics = db.Column(db.Boolean, default=False, index=True)
+
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     disabled = db.Column(db.Boolean, default=False, index=True)
@@ -1073,6 +1088,10 @@ class Category(db.Model):
     topic_count = db.Column(db.Integer, default=0)
     post_count = db.Column(db.Integer, default=0)
     view_count = db.Column(db.Integer, default=0)
+    
+    can_create_topics = db.Column(db.Boolean, default=False, index=True)
+    can_post_in_topics = db.Column(db.Boolean, default=False, index=True)
+    can_view_topics = db.Column(db.Boolean, default=False, index=True)
     
     def get_children(self):
         return Category.query.filter_by(parent=self).order_by("weight")
