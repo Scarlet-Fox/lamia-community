@@ -18,6 +18,7 @@ from flask.ext.sqlalchemy import BaseQuery
 from sqlalchemy import Index
 from sqlalchemy_searchable import SearchQueryMixin
 from sqlalchemy.event import listens_for
+from sqlalchemy.sql import text
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
 
@@ -747,16 +748,17 @@ class User(db.Model):
             
     def get_modded_areas(self):
         forum_categories = db.engine.execute(
-                """SELECT DISTINCT slug 
+                text("""SELECT DISTINCT slug 
                 FROM (
                     SELECT c.slug FROM section_moderators s
                     JOIN category c ON s.section_id = c.section_id
-                    WHERE s.user_id = 45
+                    WHERE s.user_id = :uid
                     UNION
                     SELECT cat.slug FROM category_moderators c
                     JOIN category cat ON c.category_id = cat.id
-                    WHERE c.user_id = 45
-                ) sl"""
+                    WHERE c.user_id = :uid
+                ) sl"""),
+                uid=self.id
             )
             
         my_areas = {}
