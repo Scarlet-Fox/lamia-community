@@ -27,19 +27,19 @@
                   {% endfor %}
                 {% endblock %}
                 {% if row.can_view_topics == True or row.can_view_topics == None %}
-                  <button type="button" class="btn btn-default" style="color: green;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can view?"><i class="fas fa-eye"></i> </button>
+                  <button type="button" class="btn btn-default toggle-view" style="color: green;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can view?"><i class="fas fa-eye"></i> </button>
                 {% else %}
-                  <button type="button" class="btn btn-default" style="color: red;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can view?"><i class="fas fa-eye-slash"></i> </button>
+                  <button type="button" class="btn btn-default toggle-view" style="color: red;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can view?"><i class="fas fa-eye-slash"></i> </button>
                 {% endif %}
                 {% if row.can_create_topics == True or row.can_create_topics == None %}
-                  <button type="button" class="btn btn-default" style="color: green;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can make topics?"><i class="fas fa-unlock-alt"></i> </button>
+                  <button type="button" class="btn btn-default toggle-topics" style="color: green;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can make topics?"><i class="fas fa-unlock-alt"></i> </button>
                 {% else %}
-                  <button type="button" class="btn btn-default" style="color: red;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can make topics?"><i class="fas fa-lock"></i> </button>
+                  <button type="button" class="btn btn-default toggle-topics" style="color: red;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can make topics?"><i class="fas fa-lock"></i> </button>
                 {% endif %}
                 {% if row.can_post_in_topics == True or row.can_post_in_topics == None %}
-                  <button type="button" class="btn btn-default" style="color: green;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can post?"><i class="fas fa-comments"></i> </button>
+                  <button type="button" class="btn btn-default toggle-posts" style="color: green;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can post?"><i class="fas fa-comments"></i> </button>
                 {% else %}
-                  <button type="button" class="btn btn-default" style="color: red;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can post?"><i class="far fa-comments"></i> </button>
+                  <button type="button" class="btn btn-default toggle-posts" style="color: red;" data-id="{{row.id}}" data-toggle="tooltip" data-placement="top" title="Users can post?"><i class="far fa-comments"></i> </button>
                 {% endif %}
               </div>
           </span>
@@ -210,6 +210,54 @@
                 );
             {% endif %}
         })(jQuery);
+        
+        $(".toggle-view").click(function(e) {
+          var element = $(this);
+          var _db_id = element.data("id");
+          if (element.children("i").hasClass("fa-eye")) {
+            element.children("i").removeClass("fas").removeClass("fa-eye");
+            element.children("i").addClass("fas").addClass("fa-eye-slash");
+            element.css("color", "red");
+          } else {
+            element.children("i").removeClass("fas").removeClass("fa-eye-slash");
+            element.children("i").addClass("fas").addClass("fa-eye");
+            element.css("color", "green");
+          }
+          $.post("/admin/categories/toggle-view/"+_db_id, JSON.stringify({}), function(response) {});
+          e.preventDefault(); 
+        })
+        
+        $(".toggle-topics").click(function(e) {
+          var element = $(this);
+          var _db_id = element.data("id");
+          if (element.children("i").hasClass("fa-unlock-alt")) {
+            element.children("i").removeClass("fas").removeClass("fa-unlock-alt");
+            element.children("i").addClass("fas").addClass("fa-lock");
+            element.css("color", "red");
+          } else {
+            element.children("i").removeClass("fas").removeClass("fa-lock");
+            element.children("i").addClass("fas").addClass("fa-unlock-alt");
+            element.css("color", "green");
+          }
+          $.post("/admin/categories/toggle-topics/"+_db_id, JSON.stringify({}), function(response) {});
+          e.preventDefault(); 
+        })
+        
+        $(".toggle-posts").click(function(e) {
+          var element = $(this);
+          var _db_id = element.data("id");
+          if (element.children("i").hasClass("fas")) {
+            element.children("i").removeClass("fas").removeClass("fa-comments");
+            element.children("i").addClass("far").addClass("fa-comments");
+            element.css("color", "red");
+          } else {
+            element.children("i").removeClass("fas").removeClass("fa-comments");
+            element.children("i").addClass("fas").addClass("fa-comments");
+            element.css("color", "green");
+          }
+          $.post("/admin/categories/toggle-posts/"+_db_id, JSON.stringify({}), function(response) {});
+          e.preventDefault(); 
+        })
         
         $('.dd').nestable({ 
           callback: function(l,e){

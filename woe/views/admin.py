@@ -772,7 +772,61 @@ class CategoryView(ModelView):
         
     def is_accessible(self):
         return current_user.is_admin
-            
+        
+    @expose('/toggle-view/<id>', methods=('POST', ))
+    def toggle_view(self, id):
+        try:
+            category = sqlm.Category.query.filter_by(id=id)[0]
+        except IndexError:
+            sqla.session.rollback()
+            return False
+        
+        if category.can_view_topics == None:
+            category.can_view_topics = True
+        
+        category.can_view_topics = not category.can_view_topics
+        
+        sqla.session.add(category)
+        sqla.session.commit()
+        
+        return "ok."
+        
+    @expose('/toggle-topics/<id>', methods=('POST', ))
+    def toggle_topics(self, id):
+        try:
+            category = sqlm.Category.query.filter_by(id=id)[0]
+        except IndexError:
+            sqla.session.rollback()
+            return False
+        
+        if category.can_create_topics == None:
+            category.can_create_topics = True
+        
+        category.can_create_topics = not category.can_create_topics
+        
+        sqla.session.add(category)
+        sqla.session.commit()
+        
+        return "ok."
+        
+    @expose('/toggle-posts/<id>', methods=('POST', ))
+    def toggle_posts(self, id):
+        try:
+            category = sqlm.Category.query.filter_by(id=id)[0]
+        except IndexError:
+            sqla.session.rollback()
+            return False
+        
+        if category.can_post_in_topics == None:
+            category.can_post_in_topics = True
+        
+        category.can_post_in_topics = not category.can_post_in_topics
+        
+        sqla.session.add(category)
+        sqla.session.commit()
+        
+        return "ok."
+        
     @expose('/reorder', methods=('POST', ))
     def reorder_categories(self):
         request_json = request.get_json(force=True)
