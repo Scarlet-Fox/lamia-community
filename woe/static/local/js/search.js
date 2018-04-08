@@ -61,7 +61,7 @@
         },
         cache: true
       },
-      minimumInputLength: 2
+      minimumInputLength: 3
     });
     if (window.categories.length > 0) {
       ref1 = window.categories;
@@ -103,7 +103,7 @@
         },
         cache: true
       },
-      minimumInputLength: 2
+      minimumInputLength: 3
     });
     $("#category-select").select2({
       ajax: {
@@ -125,7 +125,7 @@
         },
         cache: true
       },
-      minimumInputLength: 2
+      minimumInputLength: 3
     });
     $("#blog-select").select2({
       ajax: {
@@ -147,7 +147,7 @@
         },
         cache: true
       },
-      minimumInputLength: 2
+      minimumInputLength: 3
     });
     $("#pm-topic-select").select2({
       ajax: {
@@ -169,7 +169,7 @@
         },
         cache: true
       },
-      minimumInputLength: 2
+      minimumInputLength: 3
     });
     $("#search-for").val(window.search_for);
     $("#content-search").val(window.content_type);

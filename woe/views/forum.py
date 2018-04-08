@@ -90,21 +90,22 @@ class CategoryPermissionCalculator(object):
 @login_required
 def category_list_api():
     query = request.args.get("q", "")[0:300]
-    if len(query) < 2:
+    if len(query) < 3:
         return app.jsonify(results=[])
     results = []
     
     if current_user._get_current_object().is_admin:
         q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
     else:
-        if current_user.is_authenticated() == True:
-            q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",]).all()
+        q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
+        _cat_perms = current_user.get_category_permission_subquery()
+        
+        q_ = q_ \
+            .join(_cat_perms, _cat_perms.c.category_id == sqlm.Category.id) \
+            .filter(_cat_perms.c.category_can_view_topics == True).all()
         
         for c in q_:
-            if c.restricted == True:
-                continue
-            else:
-                results.append({"text": unicode(c.name), "id": str(c.id)})
+            results.append({"text": unicode(c.name), "id": str(c.id)})
         
     return app.jsonify(results=results)
 
@@ -112,7 +113,7 @@ def category_list_api():
 @login_required
 def topic_list_api():
     query = request.args.get("q", "")[0:300]
-    if len(query) < 2:
+    if len(query) < 3:
         return app.jsonify(results=[])
     results = []
     
@@ -120,12 +121,14 @@ def topic_list_api():
         q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic), ["title",])
     else:
         q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic) , ["title",])
+        _cat_perms = current_user.get_category_permission_subquery()
+        
+        q_ = q_ \
+            .join(_cat_perms, _cat_perms.c.category_id == sqlm.Topic.category_id) \
+            .filter(_cat_perms.c.category_can_view_topics == True).all()
         
         for t in q_:
-            if t.category.restricted == True:
-                continue
-            else:
-                results.append({"text": unicode(t.title), "id": str(t.id)})
+            results.append({"text": unicode(t.title), "id": str(t.id)})
         
     return app.jsonify(results=results)
 
