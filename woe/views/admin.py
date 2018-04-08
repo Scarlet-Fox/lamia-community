@@ -81,10 +81,30 @@ def _user_list_formatter(view, context, model, name):
         unicode(user.display_name))
         
     return Markup(prettified_user)
-    
+
+def _user_formatter(view, context, model, name):
+    user = model
+    if not user:
+        return ""
+        
+    prettified_user = \
+    u"""<div><a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a><a class="hover_user" href="/member/%s">%s</a></div>""" \
+        % (unicode(user.my_url),
+        user.get_avatar_url("40"),
+        user.avatar_40_x,
+        user.avatar_40_y,
+        unicode(user.my_url),
+        unicode(user.display_name))
+        
+    return Markup(prettified_user)
+
 def _unslugify_formatter(view, context, model, name):
     field = getattr(model, name)
     return field.replace("-", " ").title()
+
+def _unslugify_list_formatter(view, context, model, name):
+    field = getattr(model, name)
+    return ", ".join([x.replace("-", " ").title() for x in field])
 
 def _report_status_formatter(view, context, model, name):
     status = getattr(model, name)
@@ -872,17 +892,46 @@ class RoleEditorView(ModelView):
         'users': StartsWithQueryAjaxModelLoader('users', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
     }
     
+        
+    column_labels = {
+        'role': "Display",
+    }
+    
+    def is_accessible(self):
+        return current_user.is_admin
+
+class UserAdministrationView(ModelView):
+    column_list = ["display_name", "email_address", "last_seen_ip_address"]
+    
+    column_formatters = {
+        'role': _role_formatter,
+    }
+    
     def is_accessible(self):
         return current_user.is_admin
     
 class StaffView(ModelView):
-    column_list = ["display_name", "login_name", "is_admin", "is_mod", "can_mod_forum", 
-        "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates"]
+    column_list = ["display_name", "is_admin", "is_mod", "can_mod_forum", 
+        "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates", "get_modded_areas"]
     column_filters = ["display_name",]
     form_create_rules = ("display_name", "is_admin", "is_mod", "can_mod_forum", 
         "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates")
     form_edit_rules = ("display_name", "is_admin", "is_mod", "can_mod_forum", 
         "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates")
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+    
+    
+    column_formatters = {
+        'display_name': _user_formatter,
+        'get_modded_areas': _unslugify_list_formatter
+    }
     
     def get_query(self):
         return self.session.query(self.model).filter(
@@ -905,9 +954,10 @@ class StaffView(ModelView):
 
 admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum", endpoint='sections'))
 admin.add_view(CategoryView(sqlm.Category, sqla.session, name='Categories', category="Forum", endpoint='categories'))
-admin.add_view(RoleEditorView(sqlm.Role, sqla.session, name='User Roles', category="Forum", endpoint='roles'))
-admin.add_view(StaffView(sqlm.User, sqla.session, name='Manage Staff', category="Forum", endpoint='manage-staff'))
 admin.add_view(CategoryPermissionOverrideView(sqlm.CategoryPermissionOverride, sqla.session, name='Permission Overrides', category="Forum", endpoint='perm-overrides'))
+admin.add_view(RoleEditorView(sqlm.Role, sqla.session, name='User Roles', category="Forum", endpoint='roles'))
+admin.add_view(UserAdministrationView(sqlm.User, sqla.session, name='Manage Users', category="Forum", endpoint='manage-users'))
+admin.add_view(StaffView(sqlm.User, sqla.session, name='Manage Staff', category="Forum", endpoint='manage-staff'))
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction

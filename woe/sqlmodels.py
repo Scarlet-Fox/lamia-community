@@ -749,7 +749,8 @@ class User(db.Model):
         except:
             db.session.rollback()
             return False
-            
+    
+    @property
     def get_modded_areas(self):
         forum_categories = db.engine.execute(
                 text("""SELECT DISTINCT slug 

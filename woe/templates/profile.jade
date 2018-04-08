@@ -19,11 +19,11 @@ style!= profile.get_custom_css()
           img.center-block.profile-page-avatar.profile-avatar(src="{{profile.get_avatar_url()}}", width="{{profile.avatar_full_x}}", height="{{profile.avatar_full_y}}")
           if profile.title
             span.text-muted= profile.title
-          for role in profile.roles
+          for role in profile.get_roles()
             br
             span
               strong
-                | {{role.pre_html+role.role+role.post_html}}
+                | {{role}}
           if current_user.is_authenticated() and current_user.is_admin and not profile.validated
             center
               a.btn.btn-warning.post-link(href="/member/{{profile.my_url}}/validate-user") Validate User
