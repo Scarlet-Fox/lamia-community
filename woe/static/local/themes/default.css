@@ -1170,12 +1170,12 @@ div.col-md-4.col-sm-6.status-index-panel.shuffle-item.filtered > ul.list-group >
     padding-top: 4px;
 }
  
-div#search-results-buffer {
+/*div#search-results-buffer {
     min-height:284px;
     padding-top:11%;
     text-align:center;
 }
- 
+*/ 
 .post-content {
  
     margin-top:25px;

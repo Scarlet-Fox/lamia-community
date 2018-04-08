@@ -48,43 +48,43 @@ class CategoryPermissionCalculator(object):
                     "can_view_topics": _category_perm[3]
                 }
             
-        self.user_role_permissions
+        self.user_role_permissions = user_role_permissions
         
-    def can_view_topics(self, category):
+    def can_view_topics(self, category_id, category_can_view_topics):
         if self.user_is_admin:
             return True
         
-        if not self.user_role_permissions.has_key(category.id):
-            if category.can_view_topics != None:
-                return category.can_view_topics
+        if not self.user_role_permissions.has_key(category_id):
+            if category_can_view_topics != None:
+                return category_can_view_topics
             else:
                 return True
             
-        return self.user_role_permissions[category.id]["can_view_topics"]
+        return self.user_role_permissions[category_id]["can_view_topics"]
         
-    def can_post_in_topics(self, category):
+    def can_post_in_topics(self, category_id, category_can_post_in_topics):
         if self.user_is_admin:
             return True
         
-        if not self.user_role_permissions.has_key(category.id):
-            if category.can_post_in_topics != None:
-                return category.can_post_in_topics
+        if not self.user_role_permissions.has_key(category_id):
+            if category_can_post_in_topics != None:
+                return category_can_post_in_topics
             else:
                 return True
             
-        return self.user_role_permissions[category.id]["can_post_in_topics"]
+        return self.user_role_permissions[category_id]["can_post_in_topics"]
         
-    def can_create_topics(self, category):
+    def can_create_topics(self, category_id, category_can_create_topics):
         if self.user_is_admin:
             return True
         
-        if not self.user_role_permissions.has_key(category.id):
-            if category.can_create_topics != None:
-                return category.can_create_topics
+        if not self.user_role_permissions.has_key(category_id):
+            if category_can_create_topics != None:
+                return category_can_create_topics
             else:
                 return True
             
-        return self.user_role_permissions[category.id]["can_create_topics"]
+        return self.user_role_permissions[category_id]["can_create_topics"]
     
 @app.route('/category-list-api', methods=['GET'])
 @login_required
@@ -1507,6 +1507,8 @@ def index():
         t.title AS last_topic_title,
         t.slug AS last_topic_slug,
         p.created AS last_topic_bumped,
+        c.id AS category_id,
+        c.can_view_topics AS category_can_view_topics,
         CASE
         WHEN u.avatar_extension != ''
         THEN 'avatars/' || u.avatar_timestamp || u.id || '_40' || u.avatar_extension 
@@ -1524,9 +1526,11 @@ def index():
         """
     )
     
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    
     for _category in top_level_categories:
         category_dict = dict(_category)
-        if category_dict["restricted"] == True and not current_user.is_admin:
+        if not cat_perm_calculus.can_view_topics(category_dict["category_id"], category_dict["category_can_view_topics"]):
             continue
         
         if category_dict["parent_name"] is None:

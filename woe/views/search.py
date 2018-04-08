@@ -182,11 +182,12 @@ def search_lookup():
                 .join(sqlm.Post.topic) \
                 .filter(model_.hidden==False)
         else:
+            _cat_perms = current_user.get_category_permission_subquery()
+            
             query_ = search(query_, query) \
                 .join(sqlm.Post.topic) \
-                .filter(sqlm.Topic.category.has(sqla.or_(
-                        sqlm.Category.restricted==False
-                    ))) \
+                .join(_cat_perms, _cat_perms.c.category_id == sqlm.Topic.category_id) \
+                .filter(_cat_perms.c.category_can_view_topics == True) \
                 .filter(model_.hidden==False)
         
         results = query_.order_by(sqla.desc(model_.created)).paginate(page, pagination, False)
@@ -210,6 +211,14 @@ def search_lookup():
     elif content_type == "topics":
         query_ = parse_search_string(query, model_, query_, ["title",]) \
             .filter(model_.hidden==False)
+            
+        if not current_user.is_admin:
+            _cat_perms = current_user.get_category_permission_subquery()
+
+            query_ = query_ \
+                .join(_cat_perms, _cat_perms.c.category_id == sqlm.Topic.category_id) \
+                .filter(_cat_perms.c.category_can_view_topics == True)
+        
         count = query_.count()
         
         if current_user.is_admin:
@@ -218,7 +227,6 @@ def search_lookup():
                 .order_by(sqla.desc(sqlm.Post.created)).paginate(page, pagination, False)
         else:
             results = query_ \
-                .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
                 .join(sqlm.Topic.recent_post) \
                 .order_by(sqla.desc(sqlm.Post.created)).paginate(page, pagination, False)
 
