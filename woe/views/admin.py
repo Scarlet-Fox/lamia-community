@@ -902,6 +902,10 @@ class RoleEditorView(ModelView):
 
 class UserAdministrationView(ModelView):
     column_list = ["display_name", "email_address", "last_seen_ip_address"]
+    column_filters = ["display_name",]
+    
+    form_create_rules = ("display_name", "login_name","email_address")
+    form_edit_rules = ("display_name", "login_name","email_address")
     
     column_formatters = {
         'role': _role_formatter,
