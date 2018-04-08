@@ -603,7 +603,35 @@ class User(db.Model):
                 return unicode(self.login_name)
             except:
                 return unicode(self.id)
+    
+    def get_category_permission_subquery(self):
+        _category_general_perms = db.session.query(
+                Category.id.label("category_id"),
+                Category.can_view_topics.label("category_can_view_topics"),
+                Category.can_post_in_topics.label("category_can_post_in_topics"),
+                Category.can_create_topics.label("category_can_create_topics")
+            )
+            
+        _user_role_perms = db.session.query(
+                CategoryPermissionOverride.category_id.label("category_id"),
+                CategoryPermissionOverride.can_view_topics.label("category_can_view_topics"),
+                CategoryPermissionOverride.can_post_in_topics.label("category_can_post_in_topics"),
+                CategoryPermissionOverride.can_create_topics.label("category_can_create_topics")
+            ).filter(
+                user_role_table.c.user_id == self.id
+            ).distinct()
+        
+        allperms = _category_general_perms.union(_user_role_perms).subquery("allperms")
 
+        user_category_perms = db.session.query(
+                allperms.c.category_id.label("category_id"),
+                db.func.coalesce(db.func.bool_or(allperms.c.category_can_view_topics), True).label("category_can_view_topics"),
+                db.func.coalesce(db.func.bool_or(allperms.c.category_can_post_in_topics), True).label("category_can_post_in_topics"),
+                db.func.coalesce(db.func.bool_or(allperms.c.category_can_create_topics), True).label("category_can_create_topics")
+            ).group_by("category_id").subquery("user_category_perms")
+            
+        return user_category_perms
+        
     def get_custom_css(self):
         if current_user.no_images:
             return ""
