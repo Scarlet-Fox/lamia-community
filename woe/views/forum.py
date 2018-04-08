@@ -22,6 +22,70 @@ mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
 roll_re = re.compile(r'\[roll=(\d+)d(\d+)(?:\+(\d+)|\-(\d+))?\](.*?)\[\/roll\]', re.I)
 
+class CategoryPermissionCalculator(object):
+    def __init__(self, user):
+        self.user_is_admin = user.is_admin
+        
+        raw_user_role_permissions = sqla.engine.execute(
+            text("""SELECT category_id, bool_or(can_create_topics), bool_or(can_post_in_topics), bool_or(can_view_topics)
+                FROM ( 
+                    SELECT c.id AS category_id, cpo.can_create_topics, cpo.can_post_in_topics, cpo.can_view_topics
+                	FROM user_roles ur
+                	JOIN category_permission_override cpo ON ur.role_id = cpo.role_id
+                	JOIN category c ON c.id = cpo.category_id
+                    WHERE user_id = :uid
+                ) perms
+                GROUP BY category_id"""),
+                uid=user.id
+            )
+        
+        user_role_permissions = {}
+    
+        for _category_perm in raw_user_role_permissions:
+            user_role_permissions[_category_perm[0]] = {
+                    "can_create_topics": _category_perm[1],
+                    "can_post_in_topics": _category_perm[2],
+                    "can_view_topics": _category_perm[3]
+                }
+            
+        self.user_role_permissions
+        
+    def can_view_topics(self, category):
+        if self.user_is_admin:
+            return True
+        
+        if not self.user_role_permissions.has_key(category.id):
+            if category.can_view_topics:
+                return category.can_view_topics
+            else:
+                return False
+            
+        return self.user_role_permissions[category.id]["can_view_topics"]
+        
+    def can_post_in_topics(self, category):
+        if self.user_is_admin:
+            return True
+        
+        if not self.user_role_permissions.has_key(category.id):
+            if category.can_post_in_topics:
+                return category.can_post_in_topics
+            else:
+                return False
+            
+        return self.user_role_permissions[category.id]["can_post_in_topics"]
+        
+    def can_create_topics(self, category):
+        if self.user_is_admin:
+            return True
+        
+        if not self.user_role_permissions.has_key(category.id):
+            if category.can_create_topics:
+                return category.can_create_topics
+            else:
+                return False
+            
+        return self.user_role_permissions[category.id]["can_create_topics"]
+    
 @app.route('/category-list-api', methods=['GET'])
 @login_required
 def category_list_api():
