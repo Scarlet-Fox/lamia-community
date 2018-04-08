@@ -910,20 +910,35 @@ class RoleEditorView(ModelView):
         return current_user.is_admin
 
 class UserAdministrationView(ModelView):
-    column_list = ["display_name", "email_address", "last_seen_ip_address"]
-    column_filters = ["display_name",]
+    can_create = False
+    edit_template = 'admin/model/edit_user.html'
     
-    form_create_rules = ("display_name", "login_name","email_address")
-    form_edit_rules = ("display_name", "login_name","email_address")
+    column_list = ["display_name", "email_address", "joined", "last_seen", "last_seen_ip_address", "is_mod", "is_admin"]
+    column_filters = ["display_name","is_mod", "is_admin"]
+    
+    form_edit_rules = ("display_name", "login_name","email_address", "is_admin", "is_mod", "can_mod_forum", 
+        "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates")
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
     
     column_formatters = {
         'role': _role_formatter,
+        'joined': _fancy_time_formatter,
+        'last_seen': _fancy_time_formatter
     }
     
     def is_accessible(self):
         return current_user.is_admin
     
 class StaffView(ModelView):
+    can_create = False
+    
     column_list = ["display_name", "is_admin", "is_mod", "can_mod_forum", 
         "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates", "get_modded_areas"]
     column_filters = ["display_name",]
@@ -939,7 +954,6 @@ class StaffView(ModelView):
         "/static/assets/datatables/dataTables.bootstrap.js",
         "/static/assets/datatables/dataTables.responsive.js"
         ]
-    
     
     column_formatters = {
         'display_name': _user_formatter,
