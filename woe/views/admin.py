@@ -282,6 +282,9 @@ class ReportActionView(BaseView):
     def index(self):
         return ""
         
+    def is_accessible(self):
+        return current_user.is_admin or current_user.is_mod
+        
     @expose('/new-comment/<idx>', methods=('POST', ))
     def add_comment(self, idx):
         _model = sqlm.Report.query.filter_by(id=idx)[0]
@@ -429,6 +432,9 @@ class CurrentInfractions(MostWanted):
     column_default_sort = ('active_infraction_points', True)
     column_list = ["display_name", "active_infraction_points", "banned"]
         
+    def is_accessible(self):
+        return current_user.is_admin or current_user.is_mod
+        
     def get_query(self):
         return self.session.query(self.model).filter_by(banned=False) \
             .filter(self.model.active_infraction_points > 0)
@@ -439,6 +445,9 @@ class CurrentInfractions(MostWanted):
 
 class InfractionPresetView(ModelView):
     column_list = ["title", "points"]
+        
+    def is_accessible(self):
+        return current_user.is_admin
     
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css"
