@@ -879,6 +879,10 @@ class StaffView(ModelView):
     column_list = ["display_name", "login_name", "is_admin", "is_mod", "can_mod_forum", 
         "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates"]
     column_filters = ["display_name",]
+    form_create_rules = ("display_name", "is_admin", "is_mod", "can_mod_forum", 
+        "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates")
+    form_edit_rules = ("display_name", "is_admin", "is_mod", "can_mod_forum", 
+        "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates")
     
     def get_query(self):
         return self.session.query(self.model).filter(
