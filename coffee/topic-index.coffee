@@ -547,12 +547,11 @@ $ ->
                     {{/if}}
                     {{/if}}
                     {{#if roles}}
-                    <a class="btn btn-default toggle-show-roles-button btn-xs" style="margin-top: 5px;">Community Roles</a>
-                    <div class="roles-div" style="display: none;">
+                    <center>
                     {{#each roles}}
-                    <b>{{{this}}}</b><br>
+                    <span class="site-role">{{{this}}}</span><br>
                     {{/each}}
-                    </div>
+                    </center>
                     {{/if}}
                     <hr></span>
                   <div class="post-meta">

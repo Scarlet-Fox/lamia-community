@@ -361,8 +361,9 @@ class EmailLog(db.Model):
 
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, default="", unique=True)
     pre_html = db.Column(db.String, default="")
-    role = db.Column(db.String, default="", unique=True)
+    role = db.Column(db.String, default="")
     post_html = db.Column(db.String, default="")
 
     def __repr__(self):
@@ -710,7 +711,10 @@ class User(db.Model):
     def get_roles(self):
         my_roles = []
         for role in self.roles:
-            my_roles.append(role.pre_html+role.role+role.post_html)
+            _pre_html = role.pre_html if role.pre_html else ""
+            _role = role.role if role.role else ""
+            _post_html = role.post_html if role.post_html else ""
+            my_roles.append(_pre_html+_role+_post_html)
         return my_roles
 
     def get_notification_count(self):
@@ -1049,6 +1053,9 @@ class CategoryPermissionOverride(db.Model):
     can_create_topics = db.Column(db.Boolean, default=False, index=True)
     can_post_in_topics = db.Column(db.Boolean, default=False, index=True)
     can_view_topics = db.Column(db.Boolean, default=False, index=True)
+
+    def __repr__(self):
+        return "<CategoryPermissionOverride: (role='%s', category='%s')>" % (self.role, self.category)
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,8 +1,33 @@
+###############################################################################
+# Misc patching
+###############################################################################
+
 try:
     from psycopg2cffi import compat
     compat.register()
 except ImportError:
     pass
+
+# -*- coding: utf-8 -*-
+from sqlalchemy.orm.util import identity_key
+from flask_admin.contrib.sqla.fields import text_type
+
+from flask_admin.contrib.sqla import fields
+from wtforms.ext.sqlalchemy import fields as wtfs_fields
+
+
+def get_pk_from_identity(obj):
+    res = identity_key(instance=obj)
+    cls, key = res[0], res[1]
+    return text_type(':'.join(text_type(x) for x in key))
+
+
+fields.get_pk_from_identity = get_pk_from_identity
+wtfs_fields.get_pk_from_identity = get_pk_from_identity
+
+###############################################################################
+# The actual app
+###############################################################################
 
 from werkzeug.contrib.fixers import ProxyFix
 from flask import Flask

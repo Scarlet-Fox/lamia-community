@@ -145,6 +145,13 @@ def _file_size_formatter(view, context, model, name):
     _size = getattr(model, name)
     return "{:.1f} MB".format(float(_size)/1024/1024)
 
+def _category_name_render(view, context, model, name):
+    _name = getattr(model, name)
+    return "<strong>%s</strong>" % (_name,)
+    
+def _role_render(view, context, model, name):
+    return "%s%s%s" % (model.pre_html, role, model.post_html)
+    
 ###################################################################################################
 # Moderation views : reporting
 ###################################################################################################
@@ -847,8 +854,22 @@ class CategoryView(ModelView):
         
         return "ok."
 
+class CategoryPermissionOverrideView(ModelView):
+    pass
+
+class RoleEditorView(ModelView):
+    form_ajax_refs = {
+        'users': StartsWithQueryAjaxModelLoader('users', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+    
+class UserAdministrationView(ModelView):
+    pass
+
 admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum", endpoint='sections'))
 admin.add_view(CategoryView(sqlm.Category, sqla.session, name='Categories', category="Forum", endpoint='categories'))
+admin.add_view(RoleEditorView(sqlm.Role, sqla.session, name='User Roles', category="Forum", endpoint='roles'))
+admin.add_view(UserAdministrationView(sqlm.User, sqla.session, name='User Administration', category="Forum", endpoint='user-admin'))
+admin.add_view(CategoryPermissionOverrideView(sqlm.CategoryPermissionOverride, sqla.session, name='Permission Overrides', category="Forum", endpoint='perm-overrides'))
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction
