@@ -55,10 +55,10 @@ class CategoryPermissionCalculator(object):
             return True
         
         if not self.user_role_permissions.has_key(category.id):
-            if category.can_view_topics:
+            if category.can_view_topics != None:
                 return category.can_view_topics
             else:
-                return False
+                return True
             
         return self.user_role_permissions[category.id]["can_view_topics"]
         
@@ -67,10 +67,10 @@ class CategoryPermissionCalculator(object):
             return True
         
         if not self.user_role_permissions.has_key(category.id):
-            if category.can_post_in_topics:
+            if category.can_post_in_topics != None:
                 return category.can_post_in_topics
             else:
-                return False
+                return True
             
         return self.user_role_permissions[category.id]["can_post_in_topics"]
         
@@ -79,10 +79,10 @@ class CategoryPermissionCalculator(object):
             return True
         
         if not self.user_role_permissions.has_key(category.id):
-            if category.can_create_topics:
+            if category.can_create_topics != None:
                 return category.can_create_topics
             else:
-                return False
+                return True
             
         return self.user_role_permissions[category.id]["can_create_topics"]
     
