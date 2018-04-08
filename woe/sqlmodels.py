@@ -1523,7 +1523,7 @@ class Report(db.Model):
         return ReportComment.query.filter_by(report=self).order_by(db.asc("created"))
     
     def belongs_to(self, user):
-        return user.is_admin or self.report_area in user.get_modded_areas()
+        return user.is_admin or self.report_area in user.get_modded_areas
     
     def __repr__(self):
         return "<Report: (content_type='%s', content_id='%s')>" % (self.content_type, self.content_id)

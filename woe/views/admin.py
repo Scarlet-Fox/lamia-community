@@ -51,7 +51,7 @@ class AuthAdminIndexView(admin.AdminIndexView):
         else:
             my_area_reports = sqlm.Report.query.filter(
                     sqlm.Report.status.in_(["open", "feedback", "waiting"]),
-                    sqlm.Report.report_area.in_(current_user.get_modded_areas())
+                    sqlm.Report.report_area.in_(current_user.get_modded_areas)
                 ).count()
         
         return self.render('admin/index.html', 
@@ -224,7 +224,7 @@ class MyReportView(ModelView):
         else:
             return self.session.query(self.model).filter(
                                 self.model.status.in_(["open", "feedback", "waiting", "working"]),
-                                self.model.report_area.in_(current_user.get_modded_areas())
+                                self.model.report_area.in_(current_user.get_modded_areas)
                             )
     
     def get_count_query(self):
@@ -235,7 +235,7 @@ class MyReportView(ModelView):
         else:
             return self.session.query(sqla.func.count('*')).select_from(self.model).filter(
                                 self.model.status.in_(["open", "feedback", "waiting", "working"]),
-                                self.model.report_area.in_(current_user.get_modded_areas())
+                                self.model.report_area.in_(current_user.get_modded_areas)
                             )
                             
 class ReportArchiveView(MyReportView):  
@@ -249,7 +249,7 @@ class ReportArchiveView(MyReportView):
         else:
             return self.session.query(self.model).filter(
                                 sqla.not_(self.model.status.in_(["open", "feedback", "waiting", "working"])),
-                                self.model.report_area.in_(current_user.get_modded_areas())
+                                self.model.report_area.in_(current_user.get_modded_areas)
                             )
     
     def get_count_query(self):
@@ -260,7 +260,7 @@ class ReportArchiveView(MyReportView):
         else:
             return self.session.query(sqla.func.count('*')).select_from(self.model).filter(
                                 sqla.not_(self.model.status.in_(["open", "feedback", "waiting", "working"])),
-                                self.model.report_area.in_(current_user.get_modded_areas())
+                                self.model.report_area.in_(current_user.get_modded_areas)
                             )
                             
 class AllOpenReportsView(MyReportView):
@@ -322,7 +322,7 @@ class ReportActionView(BaseView):
     def mark_done(self, idx, status):
         _model = sqlm.Report.query.filter_by(id=idx)[0]
         
-        if not current_user.is_admin and not _model.report_area in current_user.get_modded_areas():
+        if not current_user.is_admin and not _model.report_area in current_user.get_modded_areas:
             return abort(404)
             
         if not status in [sc[0] for sc in sqlm.Report.STATUS_CHOICES]:
