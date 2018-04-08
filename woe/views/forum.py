@@ -516,7 +516,7 @@ def recent_posts(page):
         .join(sqlm.Post.topic) \
         .filter(sqlm.Post.created > _starting) \
         .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
-        .order_by(sqla.desc(sqlm.Post.created)) \
+        .order_by(sqla.desc(sqlm.Post.created))
         
     if not current_user.is_admin:
         if not current_user.is_authenticated():
