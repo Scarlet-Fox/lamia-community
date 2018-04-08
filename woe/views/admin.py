@@ -145,12 +145,15 @@ def _file_size_formatter(view, context, model, name):
     _size = getattr(model, name)
     return "{:.1f} MB".format(float(_size)/1024/1024)
 
-def _category_name_render(view, context, model, name):
+def _category_name_formatter(view, context, model, name):
     _name = getattr(model, name)
     return "<strong>%s</strong>" % (_name,)
     
-def _role_render(view, context, model, name):
-    return "%s%s%s" % (model.pre_html, role, model.post_html)
+def _role_formatter(view, context, model, name):
+    _pre_html = model.pre_html if model.pre_html else ""
+    _role = model.role if model.role else ""
+    _post_html = model.post_html if model.post_html else ""
+    return Markup("%s%s%s" % (_pre_html, _role, _post_html))
     
 ###################################################################################################
 # Moderation views : reporting
@@ -240,7 +243,7 @@ class ReportArchiveView(MyReportView):
                                 self.model.report_area.in_(current_user.get_modded_areas())
                             )
                             
-class AllOpenReportsView(MyReportView):    
+class AllOpenReportsView(MyReportView):
     def get_query(self):
         return self.session.query(self.model).filter(
                             self.model.status.in_(["open", "feedback", "waiting", "working"]),
@@ -855,20 +858,51 @@ class CategoryView(ModelView):
         return "ok."
 
 class CategoryPermissionOverrideView(ModelView):
-    pass
+    def is_accessible(self):
+        return current_user.is_admin
 
 class RoleEditorView(ModelView):
+    column_list = ["name", "role",]
+    
+    column_formatters = {
+        'role': _role_formatter,
+    }
+        
     form_ajax_refs = {
         'users': StartsWithQueryAjaxModelLoader('users', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
     }
     
-class UserAdministrationView(ModelView):
-    pass
+    def is_accessible(self):
+        return current_user.is_admin
+    
+class StaffView(ModelView):
+    column_list = ["display_name", "login_name", "is_admin", "is_mod", "can_mod_forum", 
+        "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates"]
+    column_filters = ["display_name",]
+    
+    def get_query(self):
+        return self.session.query(self.model).filter(
+                            sqla.or_(
+                                self.model.is_mod == True,
+                                self.model.is_admin == True
+                            )
+                        )
+    
+    def get_count_query(self):
+        return self.session.query(sqla.func.count('*')).select_from(self.model).filter(
+                            sqla.or_(
+                                self.model.is_mod == True,
+                                self.model.is_admin == True
+                            )
+                        )
+    
+    def is_accessible(self):
+        return current_user.is_admin
 
 admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum", endpoint='sections'))
 admin.add_view(CategoryView(sqlm.Category, sqla.session, name='Categories', category="Forum", endpoint='categories'))
 admin.add_view(RoleEditorView(sqlm.Role, sqla.session, name='User Roles', category="Forum", endpoint='roles'))
-admin.add_view(UserAdministrationView(sqlm.User, sqla.session, name='User Administration', category="Forum", endpoint='user-admin'))
+admin.add_view(StaffView(sqlm.User, sqla.session, name='Manage Staff', category="Forum", endpoint='manage-staff'))
 admin.add_view(CategoryPermissionOverrideView(sqlm.CategoryPermissionOverride, sqla.session, name='Permission Overrides', category="Forum", endpoint='perm-overrides'))
 
 # TODO Moderation

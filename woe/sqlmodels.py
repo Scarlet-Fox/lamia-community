@@ -367,7 +367,7 @@ class Role(db.Model):
     post_html = db.Column(db.String, default="")
 
     def __repr__(self):
-        return "<Role: (role='%s')>" % (self.role,)
+        return "%s" % (self.name,)
 
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1104,7 +1104,7 @@ class Category(db.Model):
         return Category.query.filter_by(parent=self).order_by("weight")
 
     def __repr__(self):
-        return "<Category: (name='%s', weight='%s')>" % (self.name, self.weight)
+        return "%s" % (self.name,)
 
 topic_watchers_table = db.Table('topic_watchers', db.metadata,
     db.Column('topic_id', db.Integer, db.ForeignKey('topic.id',
