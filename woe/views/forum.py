@@ -140,7 +140,11 @@ def toggle_follow_category(slug):
     except IndexError:
         return abort(404)
         
-    if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(category.id, category.can_view_topics):
+        return abort(404)
+        
+    if current_user in category.restricted_users:
         return abort(404)
 
     if not current_user._get_current_object() in category.watchers:
@@ -165,6 +169,10 @@ def toggle_follow_topic(slug):
     try:
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
+        return abort(404)
+        
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(topic.category.id, topic.category.can_view_topics):
         return abort(404)
 
     if current_user._get_current_object() in topic.banned:
@@ -206,6 +214,10 @@ def new_post_in_topic(slug):
 
     if current_user._get_current_object() in topic.banned:
         return abort(403)
+        
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_post_in_topics(topic.category.id, topic.category.can_post_in_topics):
+        return abort(404)
 
     if topic.locked or topic.hidden:
         return app.jsonify(closed_topic=True, closed_message="This topic is closed.")
@@ -466,6 +478,10 @@ def toggle_post_boop():
 
     if current_user._get_current_object() == post.author:
         return abort(404)
+        
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(post.topic.category.id, post.topic.category.can_view_topics):
+        return abort(404)
 
     if current_user._get_current_object() in post.boops:
         post.boops.remove(current_user._get_current_object())
@@ -498,22 +514,25 @@ def recent_posts(page):
     
     recent_posts = sqla.session.query(sqlm.Post) \
         .join(sqlm.Post.topic) \
-        .filter(sqlm.Topic.category.has(sqla.or_(
-                sqlm.Category.restricted==False
-            ))) \
         .filter(sqlm.Post.created > _starting) \
         .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
         .order_by(sqla.desc(sqlm.Post.created)) \
-        [(page-1)*pagination:page*pagination]
         
-    recent_posts_count = sqla.session.query(sqlm.Post) \
-        .join(sqlm.Post.topic) \
-        .filter(sqlm.Topic.category.has(sqla.or_(
-                sqlm.Category.restricted==False
-            ))) \
-        .filter(sqlm.Post.created > _starting) \
-        .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
-        .order_by(sqla.desc(sqlm.Post.created)).count()
+    if not current_user.is_admin:
+        if not current_user.is_authenticated():
+            recent_posts = recent_posts.filter(sqlm.Topic.category.has(sqla.or_(
+                    sqlm.Category.can_view_topics==True,
+                    sqlm.Category.can_view_topics==None
+                )))
+        else:
+            _cat_perms = current_user.get_category_permission_subquery()
+            recent_posts = recent_posts \
+                .join(_cat_perms, _cat_perms.c.category_id == sqlm.Topic.category_id) \
+                .filter(_cat_perms.c.category_can_view_topics == True)
+            
+    recent_posts_count = recent_posts.count()
+    
+    recent_posts = recent_posts[(page-1)*pagination:page*pagination]
         
     pages = int(math.ceil(float(recent_posts_count)/float(pagination)))
     if pages > 10:
@@ -537,14 +556,18 @@ def topic_posts(slug):
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
+        
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(topic.category.id, topic.category.can_view_topics):
+        return abort(404)
 
-    if (topic.category.restricted == True and not current_user.is_admin) or current_user in topic.category.restricted_users:
+    if current_user in topic.category.restricted_users:
         return abort(404)
         
     if current_user._get_current_object() in topic.banned:
         return abort(403)
 
-    if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
+    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
         return abort(404)
 
     request_json = request.get_json(force=True)
@@ -778,6 +801,13 @@ def edit_topic_post_html(slug):
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
+        
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_post_in_topics(topic.category.id, topic.category.can_post_in_topics):
+        return app.jsonify(error="You do not have permission to do this action.")
+        
+    if topic.locked and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
+        return app.jsonify(error="This topic is locked.")
 
     request_json = request.get_json(force=True)
 
@@ -787,7 +817,7 @@ def edit_topic_post_html(slug):
     except:
         return abort(404)
 
-    if current_user._get_current_object() != post.author and (current_user._get_current_object().is_admin != True and current_user._get_current_object().is_mod != True):
+    if current_user._get_current_object() != post.author and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
         return abort(404)
 
     if request_json.get("text", "").strip() == "":
@@ -869,6 +899,10 @@ def get_post_html_in_topic(slug, post):
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
+        
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(topic.category.id, topic.category.can_view_topics):
+        return abort(404)
 
     try:
         post = sqla.session.query(sqlm.Post).filter_by(topic=topic, id=post) \
@@ -888,10 +922,10 @@ def topic_poll(slug):
     if current_user._get_current_object() in topic.banned:
         return abort(403)
         
-    if (topic.category.restricted == True and not current_user.is_admin) or current_user in topic.category.restricted_users:
+    if current_user in topic.category.restricted_users:
         return abort(404)
 
-    if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
+    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
         return abort(404)
     
     polls = sqla.session.query(sqlm.Poll).filter_by(topic=topic)
@@ -940,11 +974,15 @@ def topic_index(slug, page, post):
 
     if current_user._get_current_object() in topic.banned:
         return abort(403)
-        
-    if (topic.category.restricted == True and not current_user.is_admin) or current_user in topic.category.restricted_users:
-        return abort(404)
 
-    if topic.hidden and not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod):
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(topic.category.id, topic.category.can_view_topics):
+        return abort(404)
+  
+    if current_user in topic.category.restricted_users:
+        return abort(403)
+
+    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
         return abort(404)
 
     try:
@@ -952,25 +990,25 @@ def topic_index(slug, page, post):
     except:
         page = 1
     
-    if current_user.is_authenticated():
-        more_topics = sqla.session.query(sqlm.Topic) \
-            .filter(sqlm.Topic.id != topic.id) \
-            .filter(sqlm.Topic.hidden == False) \
-            .filter(sqlm.Topic.recent_post.has(sqlm.Post.author != current_user)) \
-            .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="welcome")) \
-            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="faq-help")) \
-            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="news")) \
-            .order_by(sqla.func.random())[:5]
-    else:
-        more_topics = sqla.session.query(sqlm.Topic) \
-            .filter(sqlm.Topic.id != topic.id) \
-            .filter(sqlm.Topic.hidden == False) \
-            .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="welcome")) \
-            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="faq-help")) \
-            .filter(sqlm.Topic.category.has(sqlm.Category.slug!="news")) \
-            .order_by(sqla.func.random())[:5]
+    more_topics = [] # TODO : Make this actually useful
+    
+    # if current_user.is_authenticated():
+    #     more_topics = sqla.session.query(sqlm.Topic) \
+    #         .filter(sqlm.Topic.id != topic.id) \
+    #         .filter(sqlm.Topic.hidden == False) \
+    #         .filter(sqlm.Topic.recent_post.has(sqlm.Post.author != current_user)) \
+    #         .filter(sqlm.Topic.category.has(sqlm.Category.slug!="welcome")) \
+    #         .filter(sqlm.Topic.category.has(sqlm.Category.slug!="faq-help")) \
+    #         .filter(sqlm.Topic.category.has(sqlm.Category.slug!="news")) \
+    #         .order_by(sqla.func.random())[:5]
+    # else:
+    #     more_topics = sqla.session.query(sqlm.Topic) \
+    #         .filter(sqlm.Topic.id != topic.id) \
+    #         .filter(sqlm.Topic.hidden == False) \
+    #         .filter(sqlm.Topic.category.has(sqlm.Category.slug!="welcome")) \
+    #         .filter(sqlm.Topic.category.has(sqlm.Category.slug!="faq-help")) \
+    #         .filter(sqlm.Topic.category.has(sqlm.Category.slug!="news")) \
+    #         .order_by(sqla.func.random())[:5]
             
     request.canonical = app.config['BASE'] + "/t/%s/page/%s" % (slug, page)
 
@@ -1089,7 +1127,12 @@ def category_filter_preferences(slug):
         return abort(404)
     if not current_user.is_authenticated():
         return app.jsonify(preferences={})
-    if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
+
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(category.id, category.can_view_topics):
+        return abort(404)
+        
+    if current_user in category.restricted_users:
         return abort(404)
         
     if current_user.data is None:
@@ -1127,6 +1170,10 @@ def edit_topic(slug):
         return abort(404)
 
     category = topic.category
+
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_create_topics(category.id, category.can_create_topics):
+        return abort(404)
 
     if request.method == 'POST':
         if current_user._get_current_object() != topic.author:
@@ -1196,12 +1243,18 @@ def edit_topic(slug):
 @app.route('/category/<slug>/new-topic', methods=['GET', 'POST'])
 @login_required
 def new_topic(slug):
+    try:
+        category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
+    except IndexError:
+        return abort(404)
+        
     if request.method == 'POST':
-        try:
-            category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
-        except IndexError:
+
+        cat_perm_calculus = CategoryPermissionCalculator(current_user)
+        if not cat_perm_calculus.can_create_topics(category.id, category.can_create_topics):
             return abort(404)
-        if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
+            
+        if current_user in category.restricted_users:
             return abort(404)
             
         request_json = request.get_json(force=True)
@@ -1338,11 +1391,11 @@ def new_topic(slug):
 
         return app.jsonify(url="/t/"+new_topic.slug)
     else:
-        try:
-            category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
-            if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
-                return abort(404)
-        except IndexError:
+        cat_perm_calculus = CategoryPermissionCalculator(current_user)
+        if not cat_perm_calculus.can_create_topics(category.id, category.can_create_topics):
+            return abort(404)
+            
+        if current_user in category.restricted_users:
             return abort(404)
 
         return render_template("forum/new_topic.jade", page_title="Create New Topic", category=category)
@@ -1353,7 +1406,11 @@ def category_topics(slug):
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
-    if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
+    if current_user in category.restricted_users:
+        return abort(404)
+        
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(category.id, category.can_view_topics):
         return abort(404)
 
     if current_user.is_authenticated():
@@ -1482,7 +1539,11 @@ def category_index(slug):
         category = sqla.session.query(sqlm.Category).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
-    if (category.restricted == True and not current_user.is_admin) or current_user in category.restricted_users:
+    if current_user in category.restricted_users:
+        return abort(404)
+        
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(category.id, category.can_view_topics):
         return abort(404)
 
     subcategories = sqla.session.query(sqlm.Category).filter_by(parent=category).all()
@@ -1616,9 +1677,25 @@ def index():
         .order_by(sqla.desc(sqlm.StatusUpdate.created)).paginate(1, 6, False).items
 
     announcements = sqla.session.query(sqlm.Topic) \
-        .filter_by(announcement=True, hidden=False) \
-        .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-        .order_by(sqlm.Topic.created.desc()).paginate(1, 5, False).items
+        .filter_by(announcement=True, hidden=False)
+        # .filter(sqlm.Topic.category.has(sqla.or_(
+        #     sqlm.Category.can_view_topics==True,
+        #     sqlm.Category.can_view_topics==None
+        # )))
+
+    if not current_user.is_admin:
+        if not current_user.is_authenticated():
+            announcements = announcements.filter(sqlm.Topic.category.has(sqla.or_(
+                    sqlm.Category.can_view_topics==True,
+                    sqlm.Category.can_view_topics==None
+                )))
+        else:
+            _cat_perms = current_user.get_category_permission_subquery()
+            announcements = announcements \
+                .join(_cat_perms, _cat_perms.c.category_id == sqlm.Topic.category_id) \
+                .filter(_cat_perms.c.category_can_view_topics == True)
+        
+    announcements = announcements.order_by(sqlm.Topic.created.desc()).paginate(1, 5, False).items
 
     if current_user.is_authenticated():
         blogs = sqla.session.query(sqlm.Blog) \
