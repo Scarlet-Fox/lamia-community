@@ -1,6 +1,6 @@
 from woe import login_manager, app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, CategoryPermissionCalculator
 from flask.ext.login import login_required, current_user
 import arrow, urllib2
 from threading import Thread
@@ -45,7 +45,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
     for u in to:
         try:
             if not type(u) == sqlm.User:
-                user = sqla.session.query(sqlm.User).filter_by(banned=False).filter_by(login_name=to)[0]
+                user = sqla.session.query(sqlm.User).filter_by(banned=False).filter_by(login_name=u)[0]
             else:
                 user = u
             try:
@@ -56,18 +56,15 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         except IndexError:
             continue
         
-        # Hack for hidden areas of the forum
-        try:
-            if (content.category.restricted == True and not user.is_admin) or user in content.category.restricted_users:
-                continue
-        except:
-            pass
-            
-        try:
-            if (content.topic.category.restricted == True and not user.is_admin) or user in content.topic.category.restricted_users:
-                continue
-        except:
-            pass
+        if type(content) == sqlm.Category:
+            cat_perm_calculus = CategoryPermissionCalculator(user)
+            if not cat_perm_calculus.can_view_topics(content.id, content.can_view_topics):
+                return abort(404)
+                
+        if type(content) == sqlm.Topic:
+            cat_perm_calculus = CategoryPermissionCalculator(user)
+            if not cat_perm_calculus.can_view_topics(content.category.id, content.category.can_view_topics):
+                return abort(404)
 
         if user.notification_preferences is None:
             user.notification_preferences = {}
