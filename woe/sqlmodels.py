@@ -371,48 +371,53 @@ class Role(db.Model):
 
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.Text)
-    snippet = db.Column(db.Text)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_notification_user", ondelete="CASCADE"), index=True)
-    user = db.relationship("User", backref="notifications", foreign_keys="Notification.user_id")
-
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_notification_author", ondelete="CASCADE"), index=True)
-    author = db.relationship("User", foreign_keys="Notification.author_id")
-
-    NOTIFICATION_CATEGORIES = (
-        ("blog", "Blog Entries", "new blog entries on subscribed blogs", "detailed", "blog entry", "blog entries"),
-        ("blogcomments", "Blog Comments", "new blog comments on subscribed entries", "detailed", "blog comment", "blog comments"),
-        ("topic", "Topics", "new posts in followed topics", "listed", "topic", "topics"),
-        ("pm", "Private Messages", "new private messages and replies", "detailed", "private message", "private messages"),
-        ("mention", "Mentioned", "topic mentions", "listed", "mention", "mentions"),
-        ("topic_reply", "Topic Replies", "replies to you in a topic", "detailed", "topic reply", "topic replies"),
-        ("boop", "Boops", "all boops received", "summarized", "boop", "boops"),
-        ("mod", "Moderation", "moderation related", "listed", "mod action", "mod actions"),
-        ("status", "Status Updates", "all status update notifications", "listed", "status", "statuses"),
-        ("profile_comment","Profile Comments", "comments on your profile", "detailed", "comment", "comments"),
-        ("new_member", "New Members", "new member announcements", "listed", "new member", "new members"),
-        ("user_activity", "Followed User Activity", "new topics and statuses by followed members", "listed", "followed activity", "followed activities"),
-        ("friend", "Friend Requests", "new friend requests and approvals", "listed", "friend", "friends"),
-        ("followed", "Followed", "when your blog, status, profile or topics are followed", "listed", "followed", "followed")
-        # ("announcement", "Announcements"),
-        # ("rules_updated", "Rule Update"),
-        # ("faqs", "FAQs Updated"),
-        # ("streaming", "Streaming"),
-        # ("other", "Other")
+    title = db.Column(db.Text)
+    preview = db.Column(db.Text)
+    
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_notification_recipient", ondelete="CASCADE"), index=True)
+    recipient = db.relationship("User", foreign_keys="Notification.recipient_id")
+    
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_notification_sender", ondelete="CASCADE"), index=True)
+    sender = db.relationship("User", foreign_keys="Notification.sender_id")
+    
+    NOTIFICATION_ACTIONS = (
+        "create",
+        "reply",
+        "mention",
+        "boop",
+        "subscribe",
+        "friend_request",
+        "follow",
+        "infract",
+        "ban_received",
+        "new_member",
+        "hide",
+        "edit",
+        "report",
+        "report_change",
+        "ban_given",
+        "general"
+    )
+    
+    NOTIFICATION_CONTENT_TYPES = (
+        "blog",
+        "status_update",
+        "private_message",
+        "topic",
+        "general"
     )
 
-    # TODO: message_frequency = db.Column(db.Integer)
-
-    category = db.Column(db.String, default="", index=True)
+    action = db.Column(db.String, default="", index=True)
+    content_type = db.Column(db.String, default="", index=True)
+    
     created = db.Column(db.DateTime, index=True)
-    url = db.Column(db.String, default="", index=True)
+    path = db.Column(db.String, default="", index=True)
+    
     acknowledged = db.Column(db.Boolean, default=False, index=True)
     seen = db.Column(db.Boolean, default=False, index=True)
     emailed = db.Column(db.Boolean, default=False, index=True)
-    priority = db.Column(db.Integer, default=0, index=True)
 
 class IgnoringUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
