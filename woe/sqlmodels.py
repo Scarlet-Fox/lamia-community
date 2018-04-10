@@ -371,6 +371,10 @@ class Role(db.Model):
 
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    actor = db.Column(db.Text)
+    actor_avatar_path = db.Column(db.Text)
+    actor_path = db.Column(db.Text)
+    
     message = db.Column(db.Text)
     snippet = db.Column(db.Text)
 
