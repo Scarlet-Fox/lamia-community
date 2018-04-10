@@ -11,6 +11,7 @@ from woe import sqla
 from flask.ext.login import current_user
 from mongoengine.queryset import Q
 from BeautifulSoup import BeautifulSoup
+from sqlalchemy.sql import text
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 spec_characters = re.compile('&[a-z0-9]{2,5};')
