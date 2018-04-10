@@ -6,22 +6,34 @@ and this project (loosely) adheres to [Semantic Versioning](http://semver.org/sp
 
 ## [Unreleased]
 ### Added
-- Item
+- Full permissions system for categories
+- Standard administrator panel
+- Standard mod panel with reports
+- Site configuration panel
+- Drag and drop category ordering in admin interface
+- Workflow for reports screen
+- Tied in postgresql full text search for posts
+- Import scripts for Burning Board posts, topics, users, signatures
+- Added a theme to the admin interface and made other visual improvements
 
 ### Changed
-- Item
+- Dramatically improved bbcode parsing and compatibility
+- Improved queries across the site, generally increasing performance
+- Visual improvements to search page
+- Subcategories on front page and improvements to category/subcategory hiding
 
 ### Deprecated
-- Item
+- Using user urls instead of login names for addresses (login name is now pretty useless)
 
 ### Removed
-- Item
+- Removed hard coded attributes and pages
+- Nuked the old administration panel
 
 ### Fixed
-- Item
+- Numerous improvements and modifications to default theme
 
 ### Security
-- Item
+- Tweaked the key used for real time communications
 
 ## [Original Codebase] - 2017-08-15
 ### Added
@@ -30,6 +42,8 @@ and this project (loosely) adheres to [Semantic Versioning](http://semver.org/sp
 - Forum roleplay features
 - Status update features
 - User profile features
+
+-------
 
 ## [VERSION] - YYYY-MM-DD [TEMPLATE]
 ### Added
