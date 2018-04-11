@@ -84,9 +84,6 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         new_notification = sqlm.Notification(
             category = category,
             user = user,
-            actor = author.display_name,
-            actor_avatar_path = author.get_avatar_url("40"),
-            actor_path = "/member/"+author.my_url,
             author = author,
             created = now.datetime.replace(tzinfo=None),
             url = url,

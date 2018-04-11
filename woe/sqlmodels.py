@@ -20,6 +20,7 @@ from sqlalchemy_searchable import SearchQueryMixin
 from sqlalchemy.event import listens_for
 from sqlalchemy.sql import text
 from collections import OrderedDict
+from sqlalchemy.orm import joinedload
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
 
@@ -757,28 +758,31 @@ class User(db.Model):
         return Notification.query.filter_by(acknowledged=False, user=self).count()
 
     def get_recent_notifications(self, count=15):
-        _notifications = Notification.query.filter_by(acknowledged=False, user=self).order_by(db.desc(Notification.created)).limit(count*2)
+        _notifications = Notification.query.filter_by(acknowledged=False, user=self) \
+            .options(joinedload(Notification.author))\
+            .order_by(db.desc(Notification.created)).limit(count)
         notification_dict = OrderedDict()
 
         for n in _notifications:
             _key = n.url+"-"+n.message
             if not notification_dict.has_key(_key):
-                _n = {
-                    "actors": [(n.actor, n.actor_path),],
-                    "count": 1,
-                    "url": n.url,
-                    "id": n.id,
-                    "message": n.message,
-                    "sender_url": n.actor_path,
-                    "sender_name": n.actor,
-                    "sender_avatar": n.actor_avatar_path
-                }
-                notification_dict[_key] = _n
+                if len(notification_dict) < 5:
+                    _n = {
+                        "actors": [(n.actor, n.actor_path),],
+                        "count": 1,
+                        "url": n.url,
+                        "id": n.id,
+                        "message": n.message,
+                        "sender_url": n.author.my_url,
+                        "sender_name": n.author.display_name,
+                        "sender_avatar": n.author.get_avatar_url("40")
+                    }
+                    notification_dict[_key] = _n
             else:
                 notification_dict[_key]["actors"].append((n.actor, n.actor_path))
                 notification_dict[_key]["count"] += 1
         
-        return notification_dict[:5]
+        return notification_dict
 
     def get_id(self):
         return self.login_name
