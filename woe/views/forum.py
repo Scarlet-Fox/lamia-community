@@ -121,7 +121,7 @@ def toggle_follow_topic(slug):
               to=[topic.author,],
               category="followed",
               url="/t/%s" % (str(topic.slug),),
-              title="%s followed topic %s" % (unicode(current_user.display_name), unicode(topic.title)),
+              title="followed topic %s" % (unicode(topic.title)),
               description="",
               content=topic,
               author=current_user
@@ -345,7 +345,7 @@ def new_post_in_topic(slug):
       to=to_notify_m.values(),
       category="mention",
       url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
-      title="%s mentioned you in %s" % (unicode(new_post.author.display_name), unicode(topic.title)),
+      title="mentioned you in %s" % (unicode(topic.title)),
       description=new_post.html,
       content=new_post,
       author=new_post.author
@@ -363,7 +363,7 @@ def new_post_in_topic(slug):
       to=to_notify.values(),
       category="topic_reply",
       url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
-      title="%s replied to you in %s" % (unicode(new_post.author.display_name), unicode(topic.title)),
+      title="replied to you in %s" % (unicode(topic.title)),
       description=new_post.html,
       content=new_post,
       author=new_post.author
@@ -394,7 +394,7 @@ def new_post_in_topic(slug):
         to=notify_users,
         category="topic",
         url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
-        title="%s has replied to %s" % (unicode(new_post.author.display_name), unicode(topic.title)),
+        title="replied to %s" % (unicode(topic.title)),
         description=new_post.html,
         content=topic,
         author=new_post.author
@@ -427,7 +427,7 @@ def toggle_post_boop():
             to=[post.author,],
             category="boop",
             url="/t/%s/page/1/post/%s" % (str(post.topic.slug), str(post.id)),
-            title="%s has booped your post in %s!" % (unicode(current_user._get_current_object().display_name), unicode(post.topic.title)),
+            title="has booped your post in %s!" % (unicode(post.topic.title)),
             description="",
             content=post,
             author=current_user._get_current_object()
@@ -1270,7 +1270,7 @@ def new_topic(slug):
           to=send_notify_to_users,
           category="user_activity",
           url="/t/"+unicode(new_topic.slug),
-          title="%s created a new topic %s" % (unicode(new_post.author.display_name), unicode(new_topic.title)),
+          title="created a new topic %s" % (unicode(new_topic.title)),
           description=new_post.html,
           content=new_topic,
           author=new_post.author
@@ -1288,7 +1288,7 @@ def new_topic(slug):
           to=to_notify.values(),
           category="mention",
           url="/t/"+unicode(new_topic.slug),
-          title="%s mentioned you in new topic %s" % (unicode(new_post.author.display_name), unicode(new_topic.title)),
+          title="mentioned you in new topic %s" % (unicode(new_topic.title)),
           description=new_post.html,
           content=new_topic,
           author=new_post.author
@@ -1319,7 +1319,7 @@ def new_topic(slug):
           to=notify_users,
           category="topic",
           url="/t/%s" % (str(new_topic.slug),),
-          title="Topic posted in %s : %s" % (unicode(category.name), unicode(new_topic.title)),
+          title="posted a topic in %s : %s" % (unicode(category.name), unicode(new_topic.title)),
           description=new_post.html,
           content=new_topic,
           author=new_post.author
