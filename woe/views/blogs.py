@@ -178,7 +178,7 @@ def toggle_follow_blog(slug):
           to=[blog.author,],
           category="followed",
           url="/blog/%s" % (str(blog.slug),),
-          title="%s followed blog %s" % (unicode(current_user.display_name), unicode(blog.name)),
+          title="followed blog %s" % (unicode(blog.name)),
           description="",
           content=blog,
           author=current_user
@@ -225,7 +225,7 @@ def toggle_follow_blog_entry(slug, entry_slug):
           to=[entry.author,],
           category="followed",
           url="/blog/%s/e/%s" % (str(blog.slug),str(entry.slug)),
-          title="%s followed blog entry %s" % (unicode(current_user.display_name), unicode(entry.title)),
+          title="followed blog entry %s" % (unicode(entry.title)),
           description="",
           content=entry,
           author=current_user
@@ -326,7 +326,7 @@ def new_blog_entry(slug):
                     to=[blog.author,],
                     category="blog",
                     url="""/blog/%s/e/%s""" % (slug, entry.slug),
-                    title="%s posted %s on blog %s" % (unicode(current_user._get_current_object().display_name), unicode(entry.title), unicode(blog.name)),
+                    title="posted %s on blog %s" % (unicode(entry.title), unicode(blog.name)),
                     description=entry.html,
                     content=entry,
                     author=current_user._get_current_object()
@@ -349,7 +349,7 @@ def new_blog_entry(slug):
               to=to_notify_m.values(),
               category="mention",
               url="""/blog/%s/e/%s""" % (slug, entry.slug),
-              title="%s mentioned you in blog %s" % (unicode(e.author.display_name), unicode(entry.title)),
+              title="mentioned you in blog %s" % (unicode(entry.title)),
               description=e.html,
               content=e,
               author=e.author
@@ -360,7 +360,7 @@ def new_blog_entry(slug):
                     to=_to_notify,
                     category="blog",
                     url="""/blog/%s/e/%s""" % (slug, entry.slug),
-                    title="%s posted %s on blog %s" % (unicode(current_user._get_current_object().display_name), unicode(entry.title), unicode(blog.name)),
+                    title="posted %s on blog %s" % (unicode(entry.title), unicode(blog.name)),
                     description=entry.html,
                     content=entry,
                     author=current_user._get_current_object()
@@ -584,7 +584,7 @@ def boop_blog_entry(slug, entry_slug):
             to=[entry.author,],
             category="boop",
             url="/blog/%s/e/%s" % (str(blog.slug), str(entry.slug)),
-            title="%s has booped your blog entry %s" % (unicode(current_user._get_current_object().display_name), unicode(entry.title)),
+            title="booped your blog entry %s" % (unicode(entry.title)),
             description=entry.html,
             content=entry,
             author=current_user._get_current_object()
@@ -629,7 +629,7 @@ def boop_blog_entry_comment(slug, entry_slug, comment_id):
             to=[comment.author,],
             category="boop",
             url="/blog/%s/e/%s" % (str(blog.slug), str(entry.slug)),
-            title="%s has booped your blog comment on %s" % (unicode(current_user._get_current_object().display_name), unicode(entry.title)),
+            title="booped your blog comment on %s" % (unicode(entry.title)),
             description=comment.html,
             content=comment,
             author=current_user._get_current_object()
@@ -763,7 +763,7 @@ def create_blog_comment(slug, entry_slug, page):
       to=to_notify.values(),
       category="topic_reply",
       url="""/blog/%s/e/%s""" % (slug, entry.slug),
-      title="%s replied to you in %s" % (unicode(e.author.display_name), unicode(entry.title)),
+      title="replied to you in %s" % (unicode(entry.title)),
       description=new_blog_comment.html,
       content=new_blog_comment,
       author=new_blog_comment.author
@@ -781,7 +781,7 @@ def create_blog_comment(slug, entry_slug, page):
       to=to_notify_m.values(),
       category="mention",
       url="""/blog/%s/e/%s""" % (slug, entry.slug),
-      title="%s mentioned you in a comment on %s" % (unicode(e.author.display_name), unicode(entry.title)),
+      title="mentioned you in a comment on %s" % (unicode(entry.title)),
       description=new_blog_comment.html,
       content=new_blog_comment,
       author=new_blog_comment.author
@@ -791,7 +791,7 @@ def create_blog_comment(slug, entry_slug, page):
         to=[entry.author,],
         category="blogcomments",
         url="""/blog/%s/e/%s/page/%s#comments""" % (slug, entry_slug, max_pages),
-        title="%s has commented on your blog entry %s" % (unicode(current_user._get_current_object().display_name), unicode(entry.title)),
+        title="commented on your blog entry %s" % (unicode(entry.title)),
         description=new_blog_comment.html,
         content=new_blog_comment,
         author=current_user._get_current_object()
@@ -802,7 +802,7 @@ def create_blog_comment(slug, entry_slug, page):
             to=[blog.author,],
             category="blogcomments",
             url="""/blog/%s/e/%s/page/%s#comments""" % (slug, entry_slug, max_pages),
-            title="%s has commented on blog entry %s" % (unicode(current_user._get_current_object().display_name), unicode(entry.title)),
+            title="commented on blog entry %s" % (unicode(entry.title)),
             description=new_blog_comment.html,
             content=new_blog_comment,
             author=current_user._get_current_object()
@@ -818,7 +818,7 @@ def create_blog_comment(slug, entry_slug, page):
             to=_to_notify,
             category="blogcomments",
             url="""/blog/%s/e/%s/page/%s#comments""" % (slug, entry_slug, max_pages),
-            title="%s has commented on %s's blog entry %s" % (unicode(current_user._get_current_object().display_name), unicode(entry.author.display_name),unicode(entry.title)),
+            title="commented on %s's blog entry %s" % (unicode(entry.author.display_name),unicode(entry.title)),
             description=new_blog_comment.html,
             content=new_blog_comment,
             author=current_user._get_current_object()
