@@ -227,7 +227,7 @@ def validate_user(login_name):
             .all(),
         category="new_member",
         url="/member/"+unicode(user.my_url),
-        title="%s has joined the forum! Greet them!" % (unicode(user.display_name),),
+        title="joined the forum! Greet them!",
         description="",
         content=user,
         author=user
@@ -456,7 +456,7 @@ def request_friendship(login_name):
               to=[user,],
               category="friend",
               url="/member/%s/friends" % (str(user.my_url)),
-              title="%s has sent you a friend request" % (unicode(current_user.display_name),),
+              title="sent you a friend request",
               description="",
               content=current_user,
               author=current_user
@@ -589,7 +589,7 @@ def approve_friend(user, friend):
       to=[user,],
       category="friend",
       url="/member/%s/friends" % (str(user.my_url)),
-      title="%s has approved your friend request" % (unicode(friend.display_name),),
+      title="approved your friend request",
       description="",
       content=friend,
       author=friend
@@ -741,7 +741,7 @@ def toggle_follow_user(login_name):
           to=[user,],
           category="followed",
           url="/member/%s" % (str(user.my_url)),
-          title="%s followed your profile" % (unicode(current_user.display_name),),
+          title="followed your profile",
           description="",
           content=user,
           author=current_user
