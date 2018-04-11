@@ -219,12 +219,14 @@ a {
     overflow:hidden;
 }
 
-.btn-group, .btn-group-vertical
-{
-text-shadow:none;
+.btn-group, .btn-group-vertical {
+  text-shadow:none;
 }
+
 .dropdown-menu {
-    text-shadow: none; }
+    min-width: 300px !important;
+    text-shadow: none; 
+}
 
 .badge.prefix {
     border-radius: 3px;

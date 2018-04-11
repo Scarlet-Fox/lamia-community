@@ -126,9 +126,27 @@ body(role='document')
                     span.badge.float-right{{current_user.unread_private_messages()}}
                     | Messages&nbsp;
                 li.divider
-                for notification in current_user.get_recent_notifications(15)
+                for k, notification in current_user.get_recent_notifications(15).items()
                   li.notification-li
-                    a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
+                    .media
+                      .media-left
+                        a(href='{{notification["sender_url"]}}')
+                          img.avatar-mini(src='{{notification["sender_avatar"]}}')
+                      .media-body
+                        if notification["count"] == 1
+                          a.hover_user(href='{{notification["sender_url"]}}')= notification["sender_name"]
+                        if notification["count"] > 1 and notification["count"] < 3
+                          a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                          | &nbsp;and&nbsp;
+                          a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                        if notification["count"] >= 3
+                          a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                          |,&nbsp;
+                          a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                          |,&nbsp;and
+                          |{{notification["count"] - 2}} more
+                        br
+                        a.notification-link(href='{{notification["url"]}}', data-notification='{{notification["id"]}}')= notification["message"]
             span      
               a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")                
               ul.dropdown-menu(role='menu')
@@ -322,9 +340,27 @@ body(role='document')
                         span.badge.float-right{{current_user.unread_private_messages()}}
                         | Messages&nbsp;
                     li.divider
-                    for notification in current_user.get_recent_notifications(15)
+                    for k, notification in current_user.get_recent_notifications(15).items()
                       li.notification-li
-                        a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
+                        .media
+                          .media-left
+                            a(href='{{notification["sender_url"]}}')
+                              img.avatar-mini(src='{{notification["sender_avatar"]}}')
+                          .media-body
+                            if notification["count"] == 1
+                              a.hover_user(href='{{notification["sender_url"]}}')= notification["sender_name"]
+                            if notification["count"] > 1 and notification["count"] < 3
+                              a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                              | &nbsp;and&nbsp;
+                              a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                            if notification["count"] >= 3
+                              a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                              |,&nbsp;
+                              a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                              |,&nbsp;and
+                              |{{notification["count"] - 2}} more
+                            br
+                            a.notification-link(href='{{notification["url"]}}', data-notification='{{notification["id"]}}')= notification["message"]
     else
       nav.navbar.navbar-default
         .container-fluid
@@ -356,9 +392,27 @@ body(role='document')
                     span.badge.float-right{{current_user.unread_private_messages()}}
                     | Messages&nbsp;
                 li.divider
-                for notification in current_user.get_recent_notifications(15)
+                for k, notification in current_user.get_recent_notifications(15).items()
                   li.notification-li
-                    a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
+                    .media
+                      .media-left
+                        a(href='{{notification["sender_url"]}}')
+                          img.avatar-mini(src='{{notification["sender_avatar"]}}')
+                      .media-body
+                        if notification["count"] == 1
+                          a.hover_user(href='{{notification["sender_url"]}}')= notification["sender_name"]
+                        if notification["count"] > 1 and notification["count"] < 3
+                          a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                          | &nbsp;and&nbsp;
+                          a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                        if notification["count"] >= 3
+                          a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                          |,&nbsp;
+                          a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                          |,&nbsp;and
+                          |{{notification["count"] - 2}} more
+                        br
+                        a.notification-link(href='{{notification["url"]}}', data-notification='{{notification["id"]}}')= notification["message"]
             span      
               a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
               ul.dropdown-menu(role='menu')
@@ -553,9 +607,27 @@ body(role='document')
                         span.badge.float-right{{current_user.unread_private_messages()}}
                         | Messages&nbsp;
                     li.divider
-                    for notification in current_user.get_recent_notifications(15)
+                    for k, notification in current_user.get_recent_notifications(15).items()
                       li.notification-li
-                        a.notification-link(href='{{notification.url}}', data-notification="{{notification.id}}")= notification.message
+                        .media
+                          .media-left
+                            a(href='{{notification["sender_url"]}}')
+                              img.avatar-mini(src='{{notification["sender_avatar"]}}')
+                          .media-body
+                            if notification["count"] == 1
+                              a.hover_user(href='{{notification["sender_url"]}}')= notification["sender_name"]
+                            if notification["count"] > 1 and notification["count"] < 3
+                              a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                              | &nbsp;and&nbsp;
+                              a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                            if notification["count"] >= 3
+                              a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                              |,&nbsp;
+                              a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                              |,&nbsp;and
+                              |{{notification["count"] - 2}} more
+                            br
+                            a.notification-link(href='{{notification["url"]}}', data-notification='{{notification["id"]}}')= notification["message"]
     #content-border
       {% block content %}
       {% endblock %}

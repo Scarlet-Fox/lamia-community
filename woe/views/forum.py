@@ -171,7 +171,7 @@ def new_post_in_topic(slug):
 
     try:
         users_last_post = sqla.session.query(sqlm.Post).filter_by(author=current_user._get_current_object()) \
-            .order_by(sqla.desc(sqlm.Post.created))[0]
+            .order_by(sqla.desc(sqlm.Post.created)).limit(1)[0]
         difference = (arrow.utcnow().datetime - arrow.get(users_last_post.created).datetime).seconds
         if difference < 30 and not current_user._get_current_object().is_admin:
             return app.jsonify(error="Please wait %s seconds before posting again." % (30 - difference))
@@ -427,7 +427,7 @@ def toggle_post_boop():
             to=[post.author,],
             category="boop",
             url="/t/%s/page/1/post/%s" % (str(post.topic.slug), str(post.id)),
-            title="has booped your post in %s!" % (unicode(post.topic.title)),
+            title="booped your post in %s!" % (unicode(post.topic.title)),
             description="",
             content=post,
             author=current_user._get_current_object()
