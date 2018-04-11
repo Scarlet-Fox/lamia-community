@@ -235,8 +235,7 @@ def make_status_update_reply(status):
         to=send_notify_to_users,
         category="status",
         url="/status/"+str(status.id),
-        title="%s replied to %s's status update" % (
-            unicode(current_user._get_current_object().display_name),
+        title="replied to %s's status update" % (
             unicode(status.author.display_name),
             ),
         description=status.message,
@@ -255,7 +254,7 @@ def make_status_update_reply(status):
                 to=[status.author],
                 category="status",
                 url="/status/"+str(status.id),
-                title="%s replied to your status update" % (unicode(current_user._get_current_object().display_name)),
+                title="replied to your status update",
                 description=status.message,
                 content=status,
                 author=current_user._get_current_object()
@@ -266,7 +265,7 @@ def make_status_update_reply(status):
                     to=[status.author],
                     category="status",
                     url="/status/"+str(status.id),
-                    title="%s replied to your status update" % (unicode(current_user._get_current_object().display_name)),
+                    title="replied to your status update",
                     description=status.message,
                     content=status,
                     author=current_user._get_current_object()
@@ -322,7 +321,7 @@ def create_new_status(target):
           to=[target_user,],
           category="profile_comment",
           url="/status/"+unicode(status.id),
-          title="%s has commented on your profile" % (unicode(status.author.display_name),),
+          title="commented on your profile",
           description=status.message,
           content=status,
           author=status.author
@@ -339,7 +338,7 @@ def create_new_status(target):
       to=send_notify_to_users,
       category="user_activity",
       url="/status/"+unicode(status.id),
-      title="%s created a status update" % (unicode(status.author.display_name),),
+      title="created a status update",
       description=status.message,
       content=status,
       author=status.author
@@ -443,7 +442,7 @@ def toggle_status_hide(status):
             to=list(sqla.session.query(sqlm.User).filter_by(is_admin=True)),
             category="mod",
             url="/status/"+str(status.id),
-            title="%s's status update hidden" % (unicode(status.author.display_name),),
+            title="status update hidden",
             description=status.message,
             content=status,
             author=current_user._get_current_object()
