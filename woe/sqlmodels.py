@@ -373,9 +373,6 @@ class Role(db.Model):
 
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    actor = db.Column(db.Text)
-    actor_avatar_path = db.Column(db.Text)
-    actor_path = db.Column(db.Text)
     
     message = db.Column(db.Text)
     snippet = db.Column(db.Text)
@@ -768,7 +765,7 @@ class User(db.Model):
             if not notification_dict.has_key(_key):
                 if len(notification_dict) < 5:
                     _n = {
-                        "actors": [(n.actor, n.actor_path),],
+                        "actors": [(n.author.display_name, n.author.my_url),],
                         "count": 1,
                         "url": n.url,
                         "id": n.id,
@@ -779,7 +776,7 @@ class User(db.Model):
                     }
                     notification_dict[_key] = _n
             else:
-                notification_dict[_key]["actors"].append((n.actor, n.actor_path))
+                notification_dict[_key]["actors"].append([n.author.display_name, n.author.my_url])
                 notification_dict[_key]["count"] += 1
         
         return notification_dict
