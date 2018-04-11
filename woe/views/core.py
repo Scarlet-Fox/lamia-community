@@ -389,7 +389,7 @@ def make_report():
         to=list(sqla.session.query(sqlm.User).filter_by(is_admin=True).all()),
         category="mod",
         url=url,
-        title="A %s was reported by %s" % (_type, unicode(current_user._get_current_object().display_name)),
+        title="reported a %s" % (_type),
         description=text,
         content=report,
         author=current_user._get_current_object()
@@ -987,7 +987,7 @@ def real_confirm_register(token):
             .all(),
         category="new_member",
         url="/member/"+unicode(user.my_url),
-        title="%s has joined the forum! Greet them!" % (unicode(user.display_name),),
+        title="has joined the forum! Greet them!",
         description="",
         content=user,
         author=user
@@ -1108,7 +1108,7 @@ def register():
                 to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
                 category="mod",
                 url="/member/"+unicode(new_user.my_url),
-                title="%s has joined the forum. Please review!" % (unicode(new_user.display_name),),
+                title="has joined the forum. Please review!",
                 description="",
                 content=new_user,
                 author=new_user
@@ -1118,7 +1118,7 @@ def register():
                 to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
                 category="mod",
                 url="/member/"+unicode(new_user.my_url),
-                title="%s has joined the forum. MANUAL VALIDATION IS ON! So, review and validate." % (unicode(new_user.display_name),),
+                title="has joined the forum. MANUAL VALIDATION IS ON! So, review and validate.",
                 description="",
                 content=new_user,
                 author=new_user
