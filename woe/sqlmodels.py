@@ -1,6 +1,6 @@
 from woe import sqla as db
 from sqlalchemy.dialects.postgresql import JSONB
-from woe.utilities import ipb_password_check
+from woe.utilities import ipb_password_check, md5
 from slugify import slugify
 from woe import bcrypt
 from flask.ext.login import current_user
@@ -594,6 +594,10 @@ class User(db.Model):
 
     # Migration related
     old_mongo_hash = db.Column(db.String, nullable=True, index=True)
+    
+    @property
+    def listener_token(self):
+        return md5(self.login_name+self.email_address+self.password_hash)
 
     def ignoring(self):
         return [u.ignoring for u in self.ignored_users]
@@ -761,7 +765,7 @@ class User(db.Model):
         notification_dict = OrderedDict()
 
         for n in _notifications:
-            _key = n.url+"-"+n.message
+            _key = md5(n.url+n.message)
             if not notification_dict.has_key(_key):
                 if len(notification_dict) < 5:
                     _n = {
@@ -772,7 +776,8 @@ class User(db.Model):
                         "message": n.message,
                         "sender_url": n.author.my_url,
                         "sender_name": n.author.display_name,
-                        "sender_avatar": n.author.get_avatar_url("40")
+                        "sender_avatar": n.author.get_avatar_url("40"),
+                        "ref": _key
                     }
                     notification_dict[_key] = _n
             else:

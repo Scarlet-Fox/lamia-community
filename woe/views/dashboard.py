@@ -1,6 +1,6 @@
 from woe import login_manager, app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, CategoryPermissionCalculator
+from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, CategoryPermissionCalculator, md5
 from flask.ext.login import login_required, current_user
 import arrow, urllib2
 from threading import Thread
@@ -12,7 +12,6 @@ from sqlalchemy.orm.attributes import flag_modified
 import time
 
 def send_message(data):
-    print app.settings_file["talker_path"]+"/notify"
     req = urllib2.Request(app.settings_file["talker_path"]+"/notify")
     req.add_header('Content-Type', 'application/json')
     response = urllib2.urlopen(req, py_json.dumps(data))
@@ -95,12 +94,10 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         sqla.session.add(new_notification)
         sqla.session.commit()
 
-        reference = hashlib.md5(url).hexdigest()
-
-        send_to_logins.append(u.login_name)
-        notification_counts[u.login_name] = u.get_notification_count()
-        notification_ids[u.login_name] = new_notification.id
-        dashboard_notifications[u.login_name] = u.get_dashboard_notifications()
+        send_to_logins.append(u.listener_token)
+        notification_counts[u.listener_token] = u.get_notification_count()
+        notification_ids[u.listener_token] = new_notification.id
+        dashboard_notifications[u.listener_token] = u.get_dashboard_notifications()
         timestamp = new_notification.created
 
     data = {
@@ -119,9 +116,10 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         "stamp": humanize_time(timestamp),
         "text": title,
         "priority": priority,
-        "id": notification_ids
+        "id": notification_ids,
+        "ref": reference
     }
-    data["reference"] = reference
+    data["ref"] = md5(url+title)
 
     thread = Thread(target=send_message, args=(data, ))
     thread.start()

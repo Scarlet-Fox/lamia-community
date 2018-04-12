@@ -94,7 +94,7 @@
       }
       window.socketio = socket;
     }
-    notificationHTML = "<li class=\"notification-li\"><a href=\"{{url}}\" data-notification=\"{{_id}}\" class=\"notification-link dropdown-notif-{{_id}}-{{category}}\">{{text}}</a></li>";
+    notificationHTML = "<li data-notification-count=\"{{my_count}}\" data-notification-ref=\"{{ref}}\" class=\"notification-li\">\n  <div class=\"media\">\n    <div class=\"media-left\"><a href=\"test\"><img src=\"{{author_avatar}}\" class=\"avatar-mini\"></a>\n    </div>\n    <div class=\"media-body\">\n      <span class=\"who\">{{{who}}}</span>\n      <br>\n      <a href=\"{{url}}\" data-notification=\"{{_id}}\" class=\"notification-link dropdown-notif-{{_id}}-{{category}}\">{{text}}</a>\n    </div>\n  </div>\n</li>";
     notificationTemplate = Handlebars.compile(notificationHTML);
     if (window.logged_in) {
       socket.emit("user", {
@@ -154,18 +154,43 @@
             } else {
               document.title = ("(" + data.count + ") - ") + document.title;
             }
-            if ($($(".notification-dropdown")[0]).find(".notification-li").length > 14) {
+            if ($($(".notification-dropdown")[0]).find(".notification-li").length > 4) {
               $(".notification-dropdown").each(function() {
                 return $(this).find(".notification-li")[$(this).find(".notification-li").length - 1].remove();
               });
             }
             if ($($(".notification-dropdown")[0]).find(".notification-li").length === 0) {
               return $(".notification-dropdown").each(function() {
+                data.my_count = 1;
+                data.who = "<a href=\"" + data.author_url + "\" class=\"hover_user\">" + data.author + "</a>";
                 return $(this).append(notificationTemplate(data));
               });
             } else {
               return $(".notification-dropdown").each(function() {
-                return $(this).find(".notification-li").first().before(notificationTemplate(data));
+                var _found_it, notification_lis;
+                notification_lis = $(this).find(".notification-li");
+                _found_it = false;
+                return notification_lis.each(function() {
+                  var _count, _li, _ref, _who;
+                  _li = $(this);
+                  _count = parseInt(_li.data("notification-count"));
+                  _ref = _li.data("notification-ref");
+                  if (_ref === data.ref) {
+                    _found_it = true;
+                    _who = _li.find(".who");
+                    _li.data("notification-count", _count + 1);
+                    if (_count === 1) {
+                      _who.append(" and " + ("<a href=\"" + data.author_url + "\" class=\"hover_user\">" + data.author + "</a>"));
+                    }
+                    if (_count === 2) {
+                      _who.html(_who.html().replace(" and ", ", "));
+                      _who.append(", and <span class=\"count\">" + (_count - 1) + "</span> more");
+                    }
+                    if (_count > 2) {
+                      return _who.find(".count").html(_count - 1);
+                    }
+                  }
+                });
               });
             }
           }
