@@ -826,6 +826,10 @@ a.inherit_colors {
   color: #777;
 }
 
+.notification-li {
+  padding: 5px;
+}
+
 .notification-li a {
   max-width: 420px !important;
   text-overflow: ellipsis !important;

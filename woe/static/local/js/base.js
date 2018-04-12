@@ -165,13 +165,30 @@
                 data.who = "<a href=\"" + data.author_url + "\" class=\"hover_user\">" + data.author + "</a>";
                 return $(this).append(notificationTemplate(data));
               });
+            } else if ($($(".notification-dropdown")[0]).find("[data-notification-ref=\"" + data.ref + "\"]").length === 0) {
+              return $(".notification-dropdown").each(function() {
+                var first_notification_li, notification_lis;
+                notification_lis = $(this).find(".notification-li");
+                first_notification_li = false;
+                if (notification_lis.length > 0) {
+                  first_notification_li = $(notification_lis[0]);
+                }
+                data.my_count = 1;
+                data.who = "<a href=\"" + data.author_url + "\" class=\"hover_user\">" + data.author + "</a>";
+                if (first_notification_li) {
+                  return $(first_notification_li).before(notificationTemplate(data));
+                }
+              });
             } else {
               return $(".notification-dropdown").each(function() {
-                var _found_it, notification_lis;
+                var first_notification_li, notification_lis;
                 notification_lis = $(this).find(".notification-li");
-                _found_it = false;
+                first_notification_li = false;
+                if (notification_lis.length > 0) {
+                  first_notification_li = $(notification_lis[0]);
+                }
                 return notification_lis.each(function() {
-                  var _count, _li, _ref, _who;
+                  var _count, _found_it, _li, _ref, _who;
                   _li = $(this);
                   _count = parseInt(_li.data("notification-count"));
                   _ref = _li.data("notification-ref");
@@ -187,7 +204,10 @@
                       _who.append(", and <span class=\"count\">" + (_count - 1) + "</span> more");
                     }
                     if (_count > 2) {
-                      return _who.find(".count").html(_count - 1);
+                      _who.find(".count").html(_count - 1);
+                    }
+                    if (first_notification_li) {
+                      return _li.insertBefore(first_notification_li);
                     }
                   }
                 });

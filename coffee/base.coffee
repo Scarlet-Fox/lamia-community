@@ -173,16 +173,30 @@ $ ->
           if $($(".notification-dropdown")[0]).find(".notification-li").length > 4
             $(".notification-dropdown").each () ->
               $(this).find(".notification-li")[$(this).find(".notification-li").length-1].remove()
-
+          
           if $($(".notification-dropdown")[0]).find(".notification-li").length == 0
             $(".notification-dropdown").each () ->
               data.my_count = 1
               data.who = """<a href="#{data.author_url}" class="hover_user">#{data.author}</a>"""
               $(this).append(notificationTemplate(data))
+          else if $($(".notification-dropdown")[0]).find("""[data-notification-ref=\"#{data.ref}\"]""").length == 0
+            $(".notification-dropdown").each () ->
+              notification_lis = $(this).find(".notification-li")
+              first_notification_li  = false
+              if notification_lis.length > 0
+                first_notification_li = $(notification_lis[0])
+                
+              data.my_count = 1
+              data.who = """<a href="#{data.author_url}" class="hover_user">#{data.author}</a>"""
+              if first_notification_li
+                $(first_notification_li).before(notificationTemplate(data))
           else
             $(".notification-dropdown").each () ->
               notification_lis = $(this).find(".notification-li")
-              _found_it = false
+              first_notification_li = false
+              if notification_lis.length > 0
+                first_notification_li = $(notification_lis[0])
+                
               notification_lis.each () ->
                 _li = $(this)
                 _count = parseInt(_li.data("notification-count"))
@@ -198,6 +212,9 @@ $ ->
                     _who.append(""", and <span class="count">#{_count - 1}</span> more""")
                   if _count > 2
                     _who.find(".count").html(_count - 1)
+                    
+                  if first_notification_li
+                    _li.insertBefore(first_notification_li)
 
   $(".post-link").removeClass("disabled")
   $(".post-link").click (e) ->
