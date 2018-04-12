@@ -393,7 +393,7 @@ def new_post_in_topic(slug):
     broadcast(
         to=notify_users,
         category="topic",
-        url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
+        url="/t/%s/page/1/post/last_seen" % (str(topic.slug),),
         title="replied to %s" % (unicode(topic.title)),
         description=new_post.html,
         content=topic,
