@@ -46,7 +46,7 @@ $ ->
           return
 
         if window.woe_is_me in data.users
-          $(".nothing-new").remove()
+          $(".nothing-new").parent().remove()
           _panel.addToPanel(data, true)
           do _panel.setPanelDates
 
@@ -89,7 +89,7 @@ $ ->
         </ul>
         """
       else
-        $(".nothing-new").remove()
+        $(".nothing-new").parent().remove()
 
     setPanelDates: () ->
       $(".dashboard-panel").children(".panel").children("ul").each () ->

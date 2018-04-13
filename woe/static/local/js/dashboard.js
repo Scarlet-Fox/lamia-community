@@ -52,7 +52,7 @@
             return;
           }
           if (ref = window.woe_is_me, indexOf.call(data.users, ref) >= 0) {
-            $(".nothing-new").remove();
+            $(".nothing-new").parent().remove();
             _panel.addToPanel(data, true);
             return _panel.setPanelDates();
           }
@@ -114,7 +114,7 @@
         if ($(".dashboard-panel").length === 0) {
           return $("#dashboard-container").before("<ul class=\"list-group\">\n  <li class=\"list-group-item\">\n    <p class=\"nothing-new\">No new notifications, yet.</p>\n  </li>\n</ul>");
         } else {
-          return $(".nothing-new").remove();
+          return $(".nothing-new").parent().remove();
         }
       };
 
