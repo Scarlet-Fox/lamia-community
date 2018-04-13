@@ -117,8 +117,8 @@ $ ->
 
       notification._member_name = notification.member_pk
 
-      existing_notification = $(".ref-#{notification.reference}-#{notification.category}-#{notification._member_name}")
-      if existing_notification.length > 0 and notification.reference != ""
+      existing_notification = $(".ref-#{notification.ref}-#{notification.category}-#{notification._member_name}")
+      if existing_notification.length > 0 and notification.ref != ""
         count = parseInt(existing_notification.data("count"))
         count = count + 1
         if not existing_notification.children("media-left").is(":visible")
@@ -149,7 +149,7 @@ $ ->
 
     notificationHTML: () ->
       return """
-      <li class="list-group-item ref-{{reference}}-{{category}}-{{_member_name}}" id="{{id}}" data-stamp="{{stamp}}" data-count="1">
+      <li class="list-group-item ref-{{ref}}-{{category}}-{{_member_name}}" id="{{id}}" data-stamp="{{stamp}}" data-count="1">
         <div class="media-left" style="display: none;"><span class="badge"></span></div>
         <div class="media-body">
           <a href="{{url}}" data-notification="{{id}}" class="m-title ack_single_href">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>

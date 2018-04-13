@@ -228,7 +228,7 @@ def dashboard_notifications():
             parsed_["_id"] = notification.id
             parsed_["category"] = notification.category
             parsed_["url"] = notification.url
-            parsed_["reference"] = hashlib.md5(notification.url).hexdigest()
+            parsed_["ref"] = md5(notification.url+notification.message)
             parsed_notifications.append(parsed_)
         except AttributeError:
             pass

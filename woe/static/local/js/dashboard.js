@@ -154,8 +154,8 @@
           category_element = $("#notifs-" + notification.category);
         }
         notification._member_name = notification.member_pk;
-        existing_notification = $(".ref-" + notification.reference + "-" + notification.category + "-" + notification._member_name);
-        if (existing_notification.length > 0 && notification.reference !== "") {
+        existing_notification = $(".ref-" + notification.ref + "-" + notification.category + "-" + notification._member_name);
+        if (existing_notification.length > 0 && notification.ref !== "") {
           count = parseInt(existing_notification.data("count"));
           count = count + 1;
           if (!existing_notification.children("media-left").is(":visible")) {
@@ -199,7 +199,7 @@
       };
 
       Dashboard.prototype.notificationHTML = function() {
-        return "<li class=\"list-group-item ref-{{reference}}-{{category}}-{{_member_name}}\" id=\"{{id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <a href=\"{{url}}\" data-notification=\"{{id}}\" class=\"m-title ack_single_href\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <p class=\"text-muted\"> by <a href=\"/member/{{member_name}}\" class=\"m-name hover_user\">{{member_disp_name}}</a> - <span class=\"m-time\">{{time}}</span></p>\n  </div>\n</li>";
+        return "<li class=\"list-group-item ref-{{ref}}-{{category}}-{{_member_name}}\" id=\"{{id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <a href=\"{{url}}\" data-notification=\"{{id}}\" class=\"m-title ack_single_href\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <p class=\"text-muted\"> by <a href=\"/member/{{member_name}}\" class=\"m-name hover_user\">{{member_disp_name}}</a> - <span class=\"m-time\">{{time}}</span></p>\n  </div>\n</li>";
       };
 
       Dashboard.prototype.panelHTML = function() {
