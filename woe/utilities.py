@@ -478,15 +478,15 @@ def humanize(time, format_str="MMM D YYYY, hh:mm a"):
         if a > d:
             return a.to(timezone).humanize()
         elif a > c and now.day == a.day:
-            return "Today " + a.to(timezone).format("hh:mm a")
+            return "Today " + a.to(timezone).format("hh:mma")
         elif a > b and (now.day-1) == a.day:
-            return "Yesterday " + a.to(timezone).format("hh:mm a")
+            return "Yesterday " + a.to(timezone).format("hh:mma")
         else:
             return a.to(timezone).format(format_str)
     except:
         return ""
 
-def humanize_time(time, format_str="MMM D YYYY, hh:mm a"):
+def humanize_time(time, format_str="MMM D YYYY, hh:mma"):
     if time == None:
         return ""
 
@@ -504,9 +504,9 @@ def humanize_time(time, format_str="MMM D YYYY, hh:mm a"):
         if a > d:
             return a.humanize()
         elif a > c and now.day == a.day:
-            return "Today " + a.format("hh:mm a")
+            return "Today " + a.format("hh:mma")
         elif a > b and (now.day-1) == a.day:
-            return "Yesterday " + a.format("hh:mm a")
+            return "Yesterday " + a.format("hh:mma")
         else:
             return a.format(format_str)
     except:
