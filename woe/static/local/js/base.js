@@ -154,19 +154,14 @@
             } else {
               document.title = ("(" + data.count + ") - ") + document.title;
             }
-            if ($($(".notification-dropdown")[0]).find(".notification-li").length > 4) {
-              $(".notification-dropdown").each(function() {
-                return $(this).find(".notification-li")[$(this).find(".notification-li").length - 1].remove();
-              });
-            }
             if ($($(".notification-dropdown")[0]).find(".notification-li").length === 0) {
-              return $(".notification-dropdown").each(function() {
+              $(".notification-dropdown").each(function() {
                 data.my_count = 1;
                 data.who = "<a href=\"" + data.author_url + "\" class=\"hover_user\">" + data.author + "</a>";
                 return $(this).append(notificationTemplate(data));
               });
             } else if ($($(".notification-dropdown")[0]).find("[data-notification-ref=\"" + data.ref + "\"]").length === 0) {
-              return $(".notification-dropdown").each(function() {
+              $(".notification-dropdown").each(function() {
                 var first_notification_li, notification_lis;
                 notification_lis = $(this).find(".notification-li");
                 first_notification_li = false;
@@ -180,7 +175,7 @@
                 }
               });
             } else {
-              return $(".notification-dropdown").each(function() {
+              $(".notification-dropdown").each(function() {
                 var first_notification_li, notification_lis;
                 notification_lis = $(this).find(".notification-li");
                 first_notification_li = false;
@@ -211,6 +206,11 @@
                     }
                   }
                 });
+              });
+            }
+            if ($($(".notification-dropdown")[0]).find(".notification-li").length > 5) {
+              return $(".notification-dropdown").each(function() {
+                return $(this).find(".notification-li")[$(this).find(".notification-li").length - 1].remove();
               });
             }
           }

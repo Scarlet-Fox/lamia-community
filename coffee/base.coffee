@@ -169,10 +169,6 @@ $ ->
             document.title = document.title.replace(title_count[0], "(#{data.count})")
           else
             document.title = "(#{data.count}) - " + document.title
-
-          if $($(".notification-dropdown")[0]).find(".notification-li").length > 4
-            $(".notification-dropdown").each () ->
-              $(this).find(".notification-li")[$(this).find(".notification-li").length-1].remove()
           
           if $($(".notification-dropdown")[0]).find(".notification-li").length == 0
             $(".notification-dropdown").each () ->
@@ -216,6 +212,10 @@ $ ->
                   if first_notification_li
                     _li.insertBefore(first_notification_li)
 
+          if $($(".notification-dropdown")[0]).find(".notification-li").length > 5
+            $(".notification-dropdown").each () ->
+              $(this).find(".notification-li")[$(this).find(".notification-li").length-1].remove()
+              
   $(".post-link").removeClass("disabled")
   $(".post-link").click (e) ->
     e.preventDefault()
