@@ -9,6 +9,7 @@ from woe import sqla
 import woe.sqlmodels as sqlm
 import hashlib
 from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy.orm import joinedload
 import time
 
 def send_message(data):
@@ -212,7 +213,8 @@ def dashboard_notifications():
         .filter_by(
             user=current_user._get_current_object(),
             acknowledged=False) \
-        .order_by(sqla.desc(sqlm.Notification.created)).all()
+        .options(joinedload(sqlm.Notification.author))\
+        .order_by(sqlm.Notification.created).all()
     parsed_notifications = []
 
     for notification in notifications:
@@ -221,8 +223,9 @@ def dashboard_notifications():
             parsed_["time"] = humanize_time(notification.created)
             parsed_["stamp"] = arrow.get(notification.created).timestamp
             parsed_["member_disp_name"] = notification.author.display_name
-            parsed_["member_name"] = notification.author.my_url
+            parsed_["member_url"] = notification.author.my_url
             parsed_["member_pk"] = unicode(notification.author.id)
+            parsed_["member_avatar"] = notification.author.get_avatar_url("40")
             parsed_["text"] = notification.message
             parsed_["id"] = notification.id
             parsed_["_id"] = notification.id

@@ -117,7 +117,7 @@ $ ->
 
       notification._member_name = notification.member_pk
 
-      existing_notification = $(".ref-#{notification.ref}-#{notification.category}-#{notification._member_name}")
+      existing_notification = $(".ref-#{notification.ref}-#{notification.category}")
       if existing_notification.length > 0 and notification.ref != ""
         count = parseInt(existing_notification.data("count"))
         count = count + 1
@@ -126,8 +126,15 @@ $ ->
         existing_notification.data("count", count)
         existing_notification.data("stamp", notification.stamp)
         existing_notification.children(".media-left").children(".badge").text(count)
-        existing_notification.find(".m-name").attr("href", "/member/#{notification.member_name}")
-        existing_notification.find(".m-name").text(notification.member_disp_name)
+        mname = $(existing_notification.find(".m-name"))
+        if count == 2
+          mname.html(mname.html() + " and " + "<a href=\"/member/#{notification.member_url}\" class=\"hover_user\">#{notification.member_disp_name}</a>")
+        if count == 3
+          mname.html(mname.html().replace(" and ", ", "))
+          mname.append(""", and <span class="m-count">#{count - 2}</span> more""")
+        if count > 3
+          mname.find(".m-count").html(count - 2)
+          
         existing_notification.find(".m-time").text(notification.time)
         existing_notification.find(".m-title").text(notification.text)
         existing_notification.find(".m-title").attr("href", notification.url)
@@ -135,10 +142,7 @@ $ ->
           if existing_notification[0] != category_element.children().first()[0]
             category_element.prepend(existing_notification)
       else
-        if live
-          category_element.prepend(@notificationTemplate(notification))
-        else
-          category_element.append(@notificationTemplate(notification))
+        category_element.prepend(@notificationTemplate(notification))
 
     buildDashboard: () ->
       $.post "/dashboard/notifications", {}, (response) =>
@@ -149,11 +153,13 @@ $ ->
 
     notificationHTML: () ->
       return """
-      <li class="list-group-item ref-{{ref}}-{{category}}-{{_member_name}}" id="{{id}}" data-stamp="{{stamp}}" data-count="1">
+      <li class="list-group-item ref-{{ref}}-{{category}}" id="{{id}}" data-stamp="{{stamp}}" data-count="1">
         <div class="media-left" style="display: none;"><span class="badge"></span></div>
         <div class="media-body">
-          <a href="{{url}}" data-notification="{{id}}" class="m-title ack_single_href">{{text}}</a><button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
-          <p class="text-muted"> by <a href="/member/{{member_name}}" class="m-name hover_user">{{member_disp_name}}</a> - <span class="m-time">{{time}}</span></p>
+          <button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
+          <div class="text-muted"><span class="m-name"><a href="/member/{{member_name}}" class="hover_user">{{member_disp_name}}</a></span>
+          <a href="{{url}}" data-notification="{{id}}" class="m-title ack_single_href">{{text}}</a>
+          - <span class="m-time" style="white-space: nowrap;">{{time}}</span></div>
         </div>
       </li>
       """

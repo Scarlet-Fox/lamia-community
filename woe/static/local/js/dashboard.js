@@ -140,7 +140,7 @@
       };
 
       Dashboard.prototype.addToPanel = function(notification, live) {
-        var category_element, count, existing_notification, panel;
+        var category_element, count, existing_notification, mname, panel;
         if (live == null) {
           live = false;
         }
@@ -154,7 +154,7 @@
           category_element = $("#notifs-" + notification.category);
         }
         notification._member_name = notification.member_pk;
-        existing_notification = $(".ref-" + notification.ref + "-" + notification.category + "-" + notification._member_name);
+        existing_notification = $(".ref-" + notification.ref + "-" + notification.category);
         if (existing_notification.length > 0 && notification.ref !== "") {
           count = parseInt(existing_notification.data("count"));
           count = count + 1;
@@ -164,8 +164,17 @@
           existing_notification.data("count", count);
           existing_notification.data("stamp", notification.stamp);
           existing_notification.children(".media-left").children(".badge").text(count);
-          existing_notification.find(".m-name").attr("href", "/member/" + notification.member_name);
-          existing_notification.find(".m-name").text(notification.member_disp_name);
+          mname = $(existing_notification.find(".m-name"));
+          if (count === 2) {
+            mname.html(mname.html() + " and " + ("<a href=\"/member/" + notification.member_url + "\" class=\"hover_user\">" + notification.member_disp_name + "</a>"));
+          }
+          if (count === 3) {
+            mname.html(mname.html().replace(" and ", ", "));
+            mname.append(", and <span class=\"m-count\">" + (count - 2) + "</span> more");
+          }
+          if (count > 3) {
+            mname.find(".m-count").html(count - 2);
+          }
           existing_notification.find(".m-time").text(notification.time);
           existing_notification.find(".m-title").text(notification.text);
           existing_notification.find(".m-title").attr("href", notification.url);
@@ -175,11 +184,7 @@
             }
           }
         } else {
-          if (live) {
-            return category_element.prepend(this.notificationTemplate(notification));
-          } else {
-            return category_element.append(this.notificationTemplate(notification));
-          }
+          return category_element.prepend(this.notificationTemplate(notification));
         }
       };
 
@@ -199,7 +204,7 @@
       };
 
       Dashboard.prototype.notificationHTML = function() {
-        return "<li class=\"list-group-item ref-{{ref}}-{{category}}-{{_member_name}}\" id=\"{{id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <a href=\"{{url}}\" data-notification=\"{{id}}\" class=\"m-title ack_single_href\">{{text}}</a><button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <p class=\"text-muted\"> by <a href=\"/member/{{member_name}}\" class=\"m-name hover_user\">{{member_disp_name}}</a> - <span class=\"m-time\">{{time}}</span></p>\n  </div>\n</li>";
+        return "<li class=\"list-group-item ref-{{ref}}-{{category}}\" id=\"{{id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <div class=\"text-muted\"><span class=\"m-name\"><a href=\"/member/{{member_name}}\" class=\"hover_user\">{{member_disp_name}}</a></span>\n    <a href=\"{{url}}\" data-notification=\"{{id}}\" class=\"m-title ack_single_href\">{{text}}</a>\n    - <span class=\"m-time\" style=\"white-space: nowrap;\">{{time}}</span></div>\n  </div>\n</li>";
       };
 
       Dashboard.prototype.panelHTML = function() {
