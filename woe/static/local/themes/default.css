@@ -1199,7 +1199,7 @@ overflow:hidden;
 }
  
 a:hover, a:focus {
-    color: #ba88db !important;
+    color: #ba88db;
     text-decoration: none;
 }
  
