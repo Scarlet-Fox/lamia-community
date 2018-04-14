@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 ###############################################################################
 # Misc patching
 ###############################################################################
@@ -8,7 +10,6 @@ try:
 except ImportError:
     pass
 
-# -*- coding: utf-8 -*-
 from sqlalchemy.orm.util import identity_key
 from flask_admin.contrib.sqla.fields import text_type
 
@@ -20,7 +21,6 @@ def get_pk_from_identity(obj):
     res = identity_key(instance=obj)
     cls, key = res[0], res[1]
     return text_type(':'.join(text_type(x) for x in key))
-
 
 fields.get_pk_from_identity = get_pk_from_identity
 wtfs_fields.get_pk_from_identity = get_pk_from_identity
@@ -54,6 +54,7 @@ app.config["SECRET_KEY"] = settings_file["secret_key"]
 app.secret_key = settings_file["secret_key"]
 app.config["AVATAR_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'avatars')
 app.config["MAKO_EMAIL_TEMPLATE_DIR"] = path.join(app.root_path, 'templates', 'email')
+app.config["DEFAULT_TEMPLATE_DIR"] = path.join(app.root_path, 'templates')
 app.config["CUSTOMIZATIONS_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'customizations')
 app.config["SMILEY_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'smilies')
 app.config["ATTACHMENTS_UPLOAD_DIR"] = path.join(app.root_path, 'static', 'uploads')
@@ -128,6 +129,58 @@ import views.search
 import views.status_updates
 import utilities
 import email_utilities
+
+from jinja2 import FileSystemLoader
+from jinja2.loaders import split_template_path
+from flask.ext.login import current_user
+from jinja2.exceptions import TemplateNotFound
+from jinja2.utils import open_if_exists
+
+class LamiaThemeFileSystemLoader(FileSystemLoader):
+    def __init__(self, *args, **kwargs):
+        return super(LamiaThemeFileSystemLoader, self).__init__(*args, **kwargs)
+        
+    def get_source(self, environment, template):
+        searchpaths = self.searchpath[:]
+        check_theme_templates = False
+        if current_user.is_authenticated():
+            if current_user.theme and current_user.theme.directory_name:
+                theme_path = path.join(app.config["DEFAULT_TEMPLATE_DIR"], "themes", current_user.theme.directory_name)
+                if path.exists(theme_path):
+                    check_theme_templates = True
+                    searchpaths.insert(0, theme_path)
+            
+        pieces = split_template_path(template)
+        print searchpaths
+        for searchpath in searchpaths:
+            filename = path.join(searchpath, *pieces)
+            f = open_if_exists(filename)
+            if check_theme_templates:
+                theme_pieces = pieces[:]
+                theme_pieces[-1] = current_user.theme.directory_name+"-"+theme_pieces[-1]
+                theme_template_filename = path.join(searchpath, *theme_pieces)
+                if path.exists(theme_template_filename):
+                    filename = theme_template_filename
+                    f = open_if_exists(theme_template_filename)
+                
+            if f is None:
+                continue
+            try:
+                contents = f.read().decode(self.encoding)
+            finally:
+                f.close()
+
+            mtime = path.getmtime(filename)
+
+            def uptodate():
+                try:
+                    return path.getmtime(filename) == mtime
+                except OSError:
+                    return False
+            return contents, filename, uptodate
+        raise TemplateNotFound(template)
+
+app.jinja_loader = LamiaThemeFileSystemLoader(app.config["DEFAULT_TEMPLATE_DIR"])
 
 if __name__ == '__main__':
     app.run()

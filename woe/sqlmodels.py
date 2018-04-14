@@ -242,11 +242,14 @@ class SiteTheme(db.Model):
     default = db.Column(db.Boolean, default=False, index=True)
     
     theme_css = db.Column(db.String)
-    base_css = db.Column(db.String)
     directory_name = db.Column(db.String)
     
     weight = db.Column(db.Integer, default=10, index=True)
-    created = db.Column(db.DateTime, index=True)
+    description = db.Column(db.String)
+    
+    @property
+    def css(self):
+        return "local/themes/" + self.theme_css
 
     def __repr__(self):
         return "<SiteTheme: (name='%s')>" % (self.name,)
