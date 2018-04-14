@@ -130,39 +130,64 @@ import views.status_updates
 import utilities
 import email_utilities
 
+###############################################################################
+# Black magic for template overloading
+###############################################################################
+
 from jinja2 import FileSystemLoader
 from jinja2.loaders import split_template_path
 from flask.ext.login import current_user
 from jinja2.exceptions import TemplateNotFound
-from jinja2.utils import open_if_exists
+from jinja2.utils import open_if_exists, internalcode
+import time, weakref, types
+
+@internalcode
+def _lamia_load_template(self, name, globals):
+    if self.loader is None:
+        raise TypeError('no loader for this environment specified')
+    
+    theme_name = ""
+    if current_user.is_authenticated():
+        if current_user.theme:
+            if current_user.theme.directory_name:
+                theme_name = current_user.theme.directory_name
+        
+    cache_key = (weakref.ref(self.loader), name, theme_name)
+    if self.cache is not None:
+        template = self.cache.get(cache_key)
+        if template is not None and (not self.auto_reload or
+                                     template.is_up_to_date):
+            return template
+    template = self.loader.load(self, name, globals)
+    if self.cache is not None:
+        self.cache[cache_key] = template
+    return template
+
+app.jinja_env._load_template = types.MethodType(_lamia_load_template, app.jinja_env)
 
 class LamiaThemeFileSystemLoader(FileSystemLoader):
     def __init__(self, *args, **kwargs):
         return super(LamiaThemeFileSystemLoader, self).__init__(*args, **kwargs)
-        
+
     def get_source(self, environment, template):
         searchpaths = self.searchpath[:]
-        check_theme_templates = False
+        use_theme_template = False
+        pieces = split_template_path(template)
         if current_user.is_authenticated():
             if current_user.theme and current_user.theme.directory_name:
-                theme_path = path.join(app.config["DEFAULT_TEMPLATE_DIR"], "themes", current_user.theme.directory_name)
-                if path.exists(theme_path):
-                    check_theme_templates = True
-                    searchpaths.insert(0, theme_path)
-            
-        pieces = split_template_path(template)
-        print searchpaths
-        for searchpath in searchpaths:
-            filename = path.join(searchpath, *pieces)
-            f = open_if_exists(filename)
-            if check_theme_templates:
                 theme_pieces = pieces[:]
                 theme_pieces[-1] = current_user.theme.directory_name+"-"+theme_pieces[-1]
-                theme_template_filename = path.join(searchpath, *theme_pieces)
-                if path.exists(theme_template_filename):
-                    filename = theme_template_filename
-                    f = open_if_exists(theme_template_filename)
-                
+                theme_path = path.join(app.config["DEFAULT_TEMPLATE_DIR"], "themes", current_user.theme.directory_name, *theme_pieces)
+                if path.exists(theme_path):
+                    use_theme_template = True
+
+        for searchpath in searchpaths:
+            if use_theme_template:
+                filename = theme_path
+            else:
+                filename = path.join(searchpath, *pieces)
+            f = open_if_exists(filename)
+
             if f is None:
                 continue
             try:
@@ -171,7 +196,7 @@ class LamiaThemeFileSystemLoader(FileSystemLoader):
                 f.close()
 
             mtime = path.getmtime(filename)
-
+            
             def uptodate():
                 try:
                     return path.getmtime(filename) == mtime
@@ -181,6 +206,10 @@ class LamiaThemeFileSystemLoader(FileSystemLoader):
         raise TemplateNotFound(template)
 
 app.jinja_loader = LamiaThemeFileSystemLoader(app.config["DEFAULT_TEMPLATE_DIR"])
+
+###############################################################################
+# Something incredibly amazing, yet quite boring
+###############################################################################
 
 if __name__ == '__main__':
     app.run()

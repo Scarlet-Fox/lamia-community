@@ -530,6 +530,7 @@ class User(db.Model):
     banned = db.Column(db.Boolean, index=True, default=False)
     validated = db.Column(db.Boolean, default=False, index=True)
     over_thirteen = db.Column(db.Boolean, default=True)
+    theme_last_updated = db.Column(db.Float, default=0.00)
 
     emails_muted = db.Column(db.Boolean, default=False, index=True)
     last_sent_notification_email = db.Column(db.DateTime, nullable=True, index=True)

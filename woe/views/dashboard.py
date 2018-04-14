@@ -1,5 +1,5 @@
 from woe import login_manager, app
-from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
+from flask import abort, redirect, url_for, request, make_response, json, flash
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, CategoryPermissionCalculator, md5
 from flask.ext.login import login_required, current_user
 import arrow, urllib2
@@ -11,6 +11,7 @@ import hashlib
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm import joinedload
 import time
+from woe.utilities import render_lamia_template as render_template
 
 def send_message(data):
     req = urllib2.Request(app.settings_file["talker_path"]+"/notify")

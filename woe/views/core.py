@@ -21,7 +21,7 @@ from woe import sqla
 from flask.ext.login import AnonymousUserMixin
 import woe.sqlmodels as sqlm
 import pytz
-import math, random
+import math, random, time
 
 class Anonymouse(AnonymousUserMixin):
     login_name = None
@@ -285,6 +285,7 @@ def change_theme(id):
         return abort(404)
 
     user.theme = theme
+    user.theme_last_updated = time.time()
     return app.jsonify(url="/")
 
 @app.route('/make-report', methods=['POST'])

@@ -1,6 +1,6 @@
 from woe import app
 from woe.parsers import ForumPostParser
-from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
+from flask import abort, redirect, url_for, request, make_response, json, flash, session, send_from_directory
 from flask.ext.login import login_required, current_user
 from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview_for_email, get_preview
 from mongoengine.queryset import Q
@@ -8,6 +8,7 @@ import arrow, json
 from woe.views.dashboard import broadcast
 from woe import sqla
 import woe.sqlmodels as sqlm
+from woe.utilities import render_lamia_template as render_template
 
 @app.route('/status/<status>/replies', methods=['GET'])
 def status_update_replies(status):

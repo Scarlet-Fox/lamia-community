@@ -1,7 +1,7 @@
 from woe.parsers import ForumPostParser
 from woe.forms.roleplay import CharacterForm
 from woe import app
-from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
+from flask import abort, redirect, url_for, request, make_response, json, flash
 from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
 import os
@@ -11,6 +11,7 @@ from mongoengine.queryset import Q
 from wand.image import Image
 import woe.sqlmodels as sqlm
 from woe import sqla
+from woe.utilities import render_lamia_template as render_template
 
 @app.route('/characters')
 def character_database():

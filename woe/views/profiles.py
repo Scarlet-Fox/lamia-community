@@ -2,7 +2,7 @@ from woe.parsers import ForumPostParser, emoticon_codes
 from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm, SiteCustomizationForm
 from woe.forms.signatures import NewSignature
 from woe import app
-from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
+from flask import abort, redirect, url_for, request, make_response, json, flash, session
 from flask.ext.login import login_required, current_user
 from werkzeug import secure_filename
 import os
@@ -16,6 +16,7 @@ from threading import Thread
 from multiprocessing import Process, Queue
 from sqlalchemy.orm.attributes import flag_modified
 from woe.email_utilities import send_mail_w_template
+from woe.utilities import render_lamia_template as render_template
 
 try:
     import cPickle as pickle
@@ -1045,7 +1046,9 @@ def change_user_settings(login_name):
 
     if form.validate_on_submit():
         user.time_zone=form.time_zone.data
-        user.theme = form.theme_object
+        if user.theme.directory_name != form.theme_object.directory_name:
+            user.theme = form.theme_object
+            user.theme_last_updated = time.time()
         user.no_images = form.no_images.data
         user.emails_muted = form.no_emails.data
         user.birthday = form.birthday.data

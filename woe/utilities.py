@@ -511,3 +511,8 @@ def humanize_time(time, format_str="MMM D YYYY, hh:mma"):
             return a.format(format_str)
     except:
         return ""
+
+
+from flask import render_template
+def render_lamia_template(template_name_or_list, **context):    
+    return render_template(template_name_or_list, **context)

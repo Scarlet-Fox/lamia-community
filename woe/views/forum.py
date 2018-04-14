@@ -3,7 +3,7 @@ from woe import sqla
 from woe.parsers import ForumPostParser
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
-from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session
+from flask import abort, redirect, url_for, request, make_response, json, flash, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import arrow, time, math
 from threading import Thread
@@ -17,6 +17,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm import joinedload
 from BeautifulSoup import BeautifulSoup
 from sqlalchemy.sql import text
+from woe.utilities import render_lamia_template as render_template
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
