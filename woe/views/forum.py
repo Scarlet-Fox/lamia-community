@@ -1463,7 +1463,10 @@ LIMIT 20 OFFSET 0
         parsed_topic["closed"] = topic.locked
         parsed_topic["slug"] = topic.slug        
         first_post = topic.first_post
-        parsed_topic["preview"] = unicode(get_preview(first_post.html, 125))
+        if first_post != None:
+            parsed_topic["preview"] = unicode(get_preview(first_post.html, 125))
+        else:
+            parsed_topic["preview"] = ""
 
         parsed_topics.append(parsed_topic)
 
