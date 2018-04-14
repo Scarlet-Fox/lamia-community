@@ -239,9 +239,13 @@ class SiteConfiguration(db.Model):
 class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
+    default = db.Column(db.Boolean, default=False, index=True)
+    
     theme_css = db.Column(db.String)
     base_css = db.Column(db.String)
-    weight = db.Column(db.Integer, default=0, index=True)
+    directory_name = db.Column(db.String)
+    
+    weight = db.Column(db.Integer, default=10, index=True)
     created = db.Column(db.DateTime, index=True)
 
     def __repr__(self):
