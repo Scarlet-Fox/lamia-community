@@ -21,6 +21,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.sql import text
 from collections import OrderedDict
 from sqlalchemy.orm import joinedload
+from woe import app
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
 
@@ -251,7 +252,10 @@ class SiteTheme(db.Model):
     
     @property
     def css(self):
-        return "local/themes/" + self.theme_css
+        if os.path.exists(os.path.join(app.root_path, 'static', 'local', 'themes', self.theme_css)):
+            return "local/themes/" + self.theme_css
+        else:
+            return ""
 
     def __repr__(self):
         return "<SiteTheme: (name='%s')>" % (self.name,)
