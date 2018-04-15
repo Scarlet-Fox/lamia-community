@@ -1211,6 +1211,8 @@ topic_banned_table = db.Table('topic_banned_users', db.metadata,
 
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    legacy_id = db.Column(db.Integer, unique=True)
+    
     category_id = db.Column(db.Integer, db.ForeignKey('category.id',
         name="fk_topic_category", ondelete="CASCADE"), index=True)
     category = db.relationship("Category", foreign_keys="Topic.category_id")
@@ -1299,6 +1301,8 @@ class Post(db.Model):
     query_class = PostQuery
     
     id = db.Column(db.Integer, primary_key=True)
+    legacy_id = db.Column(db.Integer, unique=True)
+    
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
         name="fk_post_topic", ondelete="CASCADE"), index=True)
     topic = db.relationship("Topic", foreign_keys="Post.topic_id", cascade="delete")
