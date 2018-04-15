@@ -56,7 +56,7 @@ pg_client.query _get_guest_query, (err, res) =>
           if res.rows[0]?
             _topic_id = res.rows[0].id
           else
-            _topic_id = _guest_user_account_id
+            _topic_id = null
                   
           pg_client.query "SELECT id FROM public.user WHERE legacy_id=#{row.editorID}", (err, res) =>
             if res.rows[0]?
