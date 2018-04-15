@@ -416,7 +416,7 @@ def date_time_format(time, format_str="YYYY"):
         return ""
 
     try:
-        timezone = current_user._get_current_object().time_zone
+        timezone = current_user.time_zone
     except:
         timezone = "US/Pacific"
 

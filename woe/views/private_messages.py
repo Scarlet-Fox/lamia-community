@@ -33,7 +33,7 @@ def kick_from_pm_topic(pk, upk):
     except IndexError:
         return abort(404)
 
-    if not current_user._get_current_object() == topic.author:
+    if not current_user == topic.author:
         return abort(404)
 
     try:
@@ -64,7 +64,7 @@ def add_to_pm(pk):
     except IndexError:
         return abort(404)
 
-    if not current_user._get_current_object() == topic.author:
+    if not current_user == topic.author:
         return abort(404)
 
     request_json = request.get_json(force=True)
@@ -108,7 +108,7 @@ def leave_pm_topic(pk):
     try:
         pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
             pm = topic,
-            author = current_user._get_current_object()
+            author = current_user
         )[0]
     except IndexError:
         return abort(404)
@@ -130,7 +130,7 @@ def edit_post_in_pm_topic(pk):
     try:
         pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
             pm = topic,
-            author = current_user._get_current_object()
+            author = current_user
         )[0]
     except IndexError:
         return abort(404)
@@ -145,7 +145,7 @@ def edit_post_in_pm_topic(pk):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != message.author:
+    if current_user != message.author:
         return abort(404)
 
     if request_json.get("text", "").strip() == "":
@@ -177,13 +177,13 @@ def new_message_in_pm_topic(pk):
     try:
         pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
             pm = topic,
-            author = current_user._get_current_object()
+            author = current_user
         )[0]
     except IndexError:
         return abort(404)
 
     difference = (arrow.utcnow().datetime - arrow.get(topic.last_reply.created).datetime).seconds
-    if difference < 10 and topic.last_reply.author == current_user._get_current_object():
+    if difference < 10 and topic.last_reply.author == current_user:
         return app.jsonify(error="Please wait %s seconds before you can reply again." % (10 - difference))
 
     request_json = request.get_json(force=True)
@@ -208,7 +208,7 @@ def new_message_in_pm_topic(pk):
 
     message = sqlm.PrivateMessageReply()
     message.message = post_html
-    message.author = current_user._get_current_object()
+    message.author = current_user
     message.created = arrow.utcnow().datetime.replace(tzinfo=None)
     message.pm = topic
     message.pm_title = topic.title
@@ -267,7 +267,7 @@ def private_message_posts(pk):
     try:
         pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
             pm = topic,
-            author = current_user._get_current_object()
+            author = current_user
         )[0]
     except IndexError:
         if current_user.login_name in ["scarlet", "zoop"]:
@@ -310,7 +310,7 @@ def private_message_posts(pk):
         parsed_post["_id"] = post.id
 
         if current_user.is_authenticated():
-            if post.author.id == current_user._get_current_object().id:
+            if post.author.id == current_user.id:
                 parsed_post["is_author"] = True
             else:
                 parsed_post["is_author"] = False
@@ -341,7 +341,7 @@ def message_index(pk, page, post):
     try:
         pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
             pm = topic,
-            author = current_user._get_current_object()
+            author = current_user
         )[0]
         pm_user.last_viewed = arrow.utcnow().datetime.replace(tzinfo=None)
 
@@ -376,7 +376,7 @@ def message_index(pk, page, post):
             return abort(404)
     elif post == "last_seen":
         try:
-            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().id), arrow.utcnow().timestamp)).datetime
+            last_seen = arrow.get(topic.last_seen_by.get(str(current_user.id), arrow.utcnow().timestamp)).datetime
         except:
             last_seen = arrow.get(arrow.utcnow().timestamp).datetime
 
@@ -404,7 +404,7 @@ def message_index(pk, page, post):
 
     if post != "":
         try:
-            topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+            topic.last_seen_by[str(current_user.id)] = arrow.utcnow().timestamp
             sqla.session.add(topic)
             sqla.session.commit()
         except:
@@ -418,7 +418,7 @@ def message_index(pk, page, post):
         return render_template("core/messages_topic.jade", page_title="%s - %%GENERIC SITENAME%%" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.id))
 
     try:
-        topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+        topic.last_seen_by[str(current_user.id)] = arrow.utcnow().timestamp
         sqla.session.add(topic)
         sqla.session.commit()
     except:
@@ -443,7 +443,7 @@ def create_message():
     topic = sqlm.PrivateMessage()
     topic.title = request_json.get("title", "").strip()[:100]
     topic.count = 1
-    topic.author = current_user._get_current_object()
+    topic.author = current_user
     topic.created = arrow.utcnow().datetime.replace(tzinfo=None)
     topic.last_seen_by = {}
     sqla.session.add(topic)
@@ -451,7 +451,7 @@ def create_message():
 
     message = sqlm.PrivateMessageReply()
     message.message = request_json.get("html", "").strip()
-    message.author = current_user._get_current_object()
+    message.author = current_user
     message.created = arrow.utcnow().datetime.replace(tzinfo=None)
     message.pm = topic
     message.pm_title = topic.title
@@ -463,7 +463,7 @@ def create_message():
     sqla.session.commit()
 
     participant = sqlm.PrivateMessageUser(
-            author = current_user._get_current_object(),
+            author = current_user,
             pm = topic
         )
     sqla.session.add(participant)
@@ -472,7 +472,7 @@ def create_message():
     to_notify = []
 
     for user_pk in request_json.get("to"):
-        if user_pk == current_user._get_current_object().id:
+        if user_pk == current_user.id:
             continue
 
         try:
@@ -481,10 +481,10 @@ def create_message():
             try:
                 ignore_setting = sqla.session.query(sqlm.IgnoringUser).filter_by(
                         user = u,
-                        ignoring = current_user._get_current_object()
+                        ignoring = current_user
                     )[0]
 
-                if ignore_setting.block_pms and not current_user._get_current_object().is_admin:
+                if ignore_setting.block_pms and not current_user.is_admin:
                     return app.jsonify(error="You can not send a message to %s." % (u.display_name,))
             except IndexError:
                 pass
@@ -492,7 +492,7 @@ def create_message():
             if u.banned:
                 return app.jsonify(error="%s is banned, they will not receive your message." % (u.display_name,))
 
-            if current_user._get_current_object() == u:
+            if current_user == u:
                 return app.jsonify(error="Stop talking to yourself! (Remove yourself from the \"to\" list.)")
 
             new_participant = sqlm.PrivateMessageUser(
@@ -556,7 +556,7 @@ def messages_topics():
     messages_count = sqla.session.query(sqlm.PrivateMessage) \
         .join(sqlm.PrivateMessageUser.pm) \
         .filter(
-            sqlm.PrivateMessageUser.author == current_user._get_current_object(),
+            sqlm.PrivateMessageUser.author == current_user,
             sqlm.PrivateMessageUser.blocked == False,
             sqlm.PrivateMessageUser.exited == False
             ).count()
@@ -564,7 +564,7 @@ def messages_topics():
     messages = sqla.session.query(sqlm.PrivateMessage) \
         .join(sqlm.PrivateMessageUser.pm) \
         .filter(
-            sqlm.PrivateMessageUser.author == current_user._get_current_object(),
+            sqlm.PrivateMessageUser.author == current_user,
             sqlm.PrivateMessageUser.blocked == False,
             sqlm.PrivateMessageUser.exited == False
             ) \

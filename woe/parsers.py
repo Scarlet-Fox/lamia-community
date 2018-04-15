@@ -392,7 +392,7 @@ def render_reply_bbcode(tag_name, value, options, parent, context):
             _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=_content_id)[0]
             pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
                 pm = _replying_to.pm,
-                author = current_user._get_current_object()
+                author = current_user
             )[0]
         except:
             sqla.session.rollback()

@@ -26,7 +26,7 @@ except ImportError:
 # @app.route('/member/<login_name>/mod-panel')
 # @login_required
 # def user_moderation_panel(login_name):
-#     if current_user._get_current_object().is_admin != True:
+#     if current_user.is_admin != True:
 #         abort(404)
 #
 #     try:
@@ -213,7 +213,7 @@ def validate_user(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object().is_admin != True:
+    if current_user.is_admin != True:
         return abort(404)
 
     user.validated = True
@@ -440,7 +440,7 @@ def request_friendship(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() == user:
+    if current_user == user:
         return abort(404)
 
     if not current_user in user.rejected_friends():
@@ -473,7 +473,7 @@ def unfriend(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() == user:
+    if current_user == user:
         return abort(404)
 
     if current_user in user.pending_friends() or current_user in user.friends():
@@ -663,20 +663,20 @@ def toggle_ignore_user(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() == user:
+    if current_user == user:
         return abort(404)
 
     existed = False
     try:
         ignore_setting = sqla.session.query(sqlm.IgnoringUser) \
             .filter_by(
-                    user=current_user._get_current_object(),
+                    user=current_user,
                     ignoring=user
                 )[0]
         existed = True
     except IndexError:
         ignore_setting = sqlm.IgnoringUser(
-            user=current_user._get_current_object(),
+            user=current_user,
             ignoring=user,
             created=arrow.utcnow().datetime.replace(tzinfo=None)
         )
@@ -719,20 +719,20 @@ def toggle_follow_user(login_name):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() == user:
+    if current_user == user:
         return abort(404)
 
     try:
         follow_preference = sqla.session.query(sqlm.FollowingUser) \
             .filter_by(
-                    user=current_user._get_current_object(),
+                    user=current_user,
                     following=user
                 )[0]
         sqla.session.delete(follow_preference)
         sqla.session.commit()
     except IndexError:
         follow_preference = sqlm.FollowingUser(
-            user=current_user._get_current_object(),
+            user=current_user,
             following=user,
             created=arrow.utcnow().datetime.replace(tzinfo=None)
         )
@@ -758,7 +758,7 @@ def change_avatar_or_title(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+    if current_user != user and not current_user.is_admin:
         abort(404)
 
     form = AvatarTitleForm(csrf_enabled=False)
@@ -806,7 +806,7 @@ def toggle_notification_method(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+    if current_user != user and not current_user.is_admin:
         abort(404)
 
     request_json = request.get_json(force=True)
@@ -837,7 +837,7 @@ def add_custom_field(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+    if current_user != user and not current_user.is_admin:
         abort(404)
 
     request_json = request.get_json(force=True)
@@ -874,7 +874,7 @@ def remove_custom_field(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+    if current_user != user and not current_user.is_admin:
         abort(404)
 
     request_json = request.get_json(force=True)
@@ -910,7 +910,7 @@ def remove_customizations_from_profile(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+    if current_user != user and not current_user.is_admin:
         abort(404)
 
 
@@ -936,7 +936,7 @@ def customize_user_profile(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+    if current_user != user and not current_user.is_admin:
         abort(404)
 
     form = SiteCustomizationForm(csrf_enabled=False)
@@ -1024,7 +1024,7 @@ def change_user_settings(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+    if current_user != user and not current_user.is_admin:
         abort(404)
 
     available_fields = sqlm.User.AVAILABLE_PROFILE_FIELDS
@@ -1113,7 +1113,7 @@ def change_display_name_password(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+    if current_user != user and not current_user.is_admin:
         abort(404)
 
     form = DisplayNamePasswordForm(csrf_enabled=False)
@@ -1155,7 +1155,7 @@ def edit_profile(login_name):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+    if current_user != user and not current_user.is_admin:
         abort(404)
 
     if request.method == 'POST':
@@ -1178,7 +1178,7 @@ def remove_avatar(login_name):
         abort(404)
 
     if user.avatar_extension != None:
-        if current_user._get_current_object() != user and not current_user._get_current_object().is_admin:
+        if current_user != user and not current_user.is_admin:
             abort(404)
         try:
             os.remove(os.path.join(app.config["AVATAR_UPLOAD_DIR"],user.avatar_timestamp + str(user.id) + user.avatar_extension))

@@ -55,7 +55,7 @@ def search_lookup():
     session["content_type"] = content_type
 
     try:
-        timezone = pytz.timezone(current_user._get_current_object().time_zone)
+        timezone = pytz.timezone(current_user.time_zone)
     except:
         timezone = pytz.timezone("US/Pacific")
 
@@ -288,7 +288,7 @@ def search_lookup():
     elif content_type == "messages":
         query_ = query_.join(sqlm.PrivateMessageUser, sqlm.PrivateMessageUser.pm_id == sqlm.PrivateMessageReply.pm_id) \
             .filter(
-                sqlm.PrivateMessageUser.author == current_user._get_current_object(),
+                sqlm.PrivateMessageUser.author == current_user,
                 sqlm.PrivateMessageUser.blocked == False,
                 sqlm.PrivateMessageUser.exited == False
             ).order_by(sqlm.PrivateMessageReply.created.desc())

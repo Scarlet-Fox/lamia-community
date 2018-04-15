@@ -44,7 +44,7 @@ def manage_gallery(slug):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
+    if current_user != character.author and not current_user.is_admin:
         return abort(404)
 
     images = sqla.session.query(sqlm.Attachment).filter_by(
@@ -88,7 +88,7 @@ def create_character():
         character.created = arrow.utcnow().datetime.replace(tzinfo=None)
         character.post_count = 0
         character.slug = sqlm.get_character_slug(character.name)
-        character.author = current_user._get_current_object()
+        character.author = current_user
         sqla.session.add(character)
         sqla.session.commit()
         return redirect("/characters/"+unicode(character.slug))
@@ -105,7 +105,7 @@ def character_edit_profile(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
+    if current_user != character.author and not current_user.is_admin:
         return abort(404)
 
     form = CharacterForm(csrf_enabled=False)
@@ -129,7 +129,7 @@ def character_edit_profile(slug):
             return abort(500)
 
         c = {
-                "author": current_user._get_current_object().id,
+                "author": current_user.id,
                 "created": str(arrow.utcnow().datetime),
                 "data": {
                         "age": character.age+"",
@@ -229,7 +229,7 @@ def character_recent_activity(slug):
 @login_required
 def send_user_characters():
     characters = sqla.session.query(sqlm.Character).filter_by(
-            author = current_user._get_current_object(),
+            author = current_user,
             hidden = False
         ).order_by(sqlm.Character.name)
     character_data = []
@@ -373,7 +373,7 @@ def toggle_hide_character(slug):
     except IndexError:
         abort(404)
 
-    if current_user._get_current_object().is_admin != True:
+    if current_user.is_admin != True:
         return abort(404)
 
     if character.hidden == None:
@@ -418,7 +418,7 @@ def toggle_character_gallery_image_emote(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
+    if current_user != character.author and not current_user.is_admin:
         return abort(404)
 
     try:
@@ -449,7 +449,7 @@ def remove_image_from_character_gallery(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
+    if current_user != character.author and not current_user.is_admin:
         return abort(404)
 
     try:
@@ -486,7 +486,7 @@ def set_default_character_profile_image(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
+    if current_user != character.author and not current_user.is_admin:
         return abort(404)
 
     try:
@@ -515,7 +515,7 @@ def set_default_character_avatar(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
+    if current_user != character.author and not current_user.is_admin:
         return abort(404)
 
     try:
@@ -547,7 +547,7 @@ def edit_gallery_image(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
+    if current_user != character.author and not current_user.is_admin:
         return abort(404)
 
     try:
@@ -584,7 +584,7 @@ def create_attachment_for_character(slug):
         except IndexError:
             abort(404)
 
-        if current_user._get_current_object() != character.author and not current_user._get_current_object().is_admin:
+        if current_user != character.author and not current_user.is_admin:
             return abort(404)
 
         _time = time.time()
@@ -599,8 +599,8 @@ def create_attachment_for_character(slug):
         attach.y_size = image.height
         attach.mimetype = mimetypes.guess_type(filename)[0]
         attach.size_in_bytes = len(img_bin)
-        attach.owner_name = current_user._get_current_object().login_name
-        attach.owner = current_user._get_current_object()
+        attach.owner_name = current_user.login_name
+        attach.owner = current_user
         attach.alt = filename
         attach.used_in = 0
         attach.created_date = arrow.utcnow().datetime

@@ -68,7 +68,7 @@ def server_error(e):
 
     try:
         if current_user.is_authenticated():
-            l.user = current_user._get_current_object()
+            l.user = current_user
     except:
         pass
 
@@ -109,7 +109,7 @@ def unauthorized_access(e):
 
     try:
         if current_user.is_authenticated():
-            l.user = current_user._get_current_object()
+            l.user = current_user
     except:
         pass
 
@@ -150,7 +150,7 @@ def page_not_found(e):
 
     try:
         if current_user.is_authenticated():
-            l.user = current_user._get_current_object()
+            l.user = current_user
     except:
         pass
 
@@ -185,7 +185,7 @@ if app.settings_file.get("lockout_on", False):
     @app.before_request
     def lockdown_site():
         if not (request.path == "/under-construction" or request.path == "/sign-in" or "/static" in request.path):
-            if current_user.is_authenticated() and (current_user.is_admin or current_user._get_current_object().is_allowed_during_construction):
+            if current_user.is_authenticated() and (current_user.is_admin or current_user.is_allowed_during_construction):
                 pass
             else:
                 return redirect("/under-construction")
@@ -193,7 +193,7 @@ if app.settings_file.get("lockout_on", False):
 @app.before_request
 def intercept_banned():
     if current_user.is_authenticated():
-        if current_user._get_current_object().banned and not (request.path == "/banned" or request.path == "/sign-out" or "/static" in request.path):
+        if current_user.banned and not (request.path == "/banned" or request.path == "/sign-out" or "/static" in request.path):
             return redirect("/banned")
 
 @app.context_processor
@@ -236,7 +236,7 @@ def log_request():
 
         try:
             if current_user.is_authenticated():
-                l.user = current_user._get_current_object()
+                l.user = current_user
             sqla.session.add(l)
             sqla.session.commit()
         except:
@@ -293,7 +293,7 @@ def get_user_info_api():
 @app.route('/change-theme/<id>', methods=['POST'])
 @login_required
 def change_theme(id):
-    user = current_user._get_current_object()
+    user = current_user
 
     try:
         theme = sqlm.SiteTheme.query.filter_by(id=id)[0]
@@ -377,7 +377,7 @@ def make_report():
         report = sqla.session.query(sqlm.Report).filter_by(
             content_type=_type,
             content_id=content_id,
-            content_author=current_user._get_current_object()) \
+            content_author=current_user) \
             .filter_by(status="open")[0]
         return app.jsonify(status="reported")
     except:
@@ -391,7 +391,7 @@ def make_report():
         report_last_updated = arrow.utcnow().datetime.replace(tzinfo=None),
         content_id = content_id,
         content_author = content_author,
-        report_author = current_user._get_current_object(),
+        report_author = current_user,
         status = "open",
         reported_content_html = content_html,
         report_message = text,
@@ -409,7 +409,7 @@ def make_report():
         title="reported a %s" % (_type),
         description=text,
         content=report,
-        author=current_user._get_current_object()
+        author=current_user
         )
     return app.jsonify(status="reported")
 
@@ -423,7 +423,7 @@ def pm_topic_list_api():
     q_ = sqla.session.query(sqlm.PrivateMessage) \
         .join(sqlm.PrivateMessageUser) \
         .filter(
-            sqlm.PrivateMessageUser.author == current_user._get_current_object(),
+            sqlm.PrivateMessageUser.author == current_user,
             sqlm.PrivateMessageUser.blocked == False,
             sqlm.PrivateMessageUser.exited == False
             ) \
@@ -465,7 +465,7 @@ def clear_drafts():
     path = request_json["path"].split("/")
     path = "/".join(path[:3])
     
-    sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
+    sqla.session.query(sqlm.Draft).filter_by(author=current_user) \
         .filter_by(primary_editor = primary, path = path).delete()
             
     return app.jsonify(count=0)
@@ -484,7 +484,7 @@ def count_drafts():
     path = request_json["path"].split("/")
     path = "/".join(path[:3])
     
-    count = sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
+    count = sqla.session.query(sqlm.Draft).filter_by(author=current_user) \
         .filter_by(primary_editor = primary, path = path).count()
             
     return app.jsonify(count=count)
@@ -507,8 +507,8 @@ def save_draft():
     draft.path = path
     draft.primary_editor = primary
     draft.created = arrow.utcnow().datetime
-    draft.author = current_user._get_current_object()
-    draft.author_name = current_user._get_current_object().login_name
+    draft.author = current_user
+    draft.author_name = current_user.login_name
     draft.contents = request_json.get("contents")
     sqla.session.add(draft)
     sqla.session.commit()
@@ -532,7 +532,7 @@ def get_drafts():
     _id = request_json["id"]
 
     try:
-        draft = sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
+        draft = sqla.session.query(sqlm.Draft).filter_by(author=current_user) \
             .filter_by(primary_editor = primary, path = path, id = _id).order_by(sqla.desc(sqlm.Draft.created))[0]
     except IndexError:
         return abort(404)
@@ -553,7 +553,7 @@ def list_drafts():
     path = request_json["path"].split("/")
     path = "/".join(path[:3])
     
-    drafts = sqla.session.query(sqlm.Draft).filter_by(author=current_user._get_current_object()) \
+    drafts = sqla.session.query(sqlm.Draft).filter_by(author=current_user) \
         .filter_by(primary_editor = primary, path = path).order_by(sqla.desc(sqlm.Draft.created))[:10]
     parsed_drafts = []
     
@@ -606,7 +606,7 @@ def create_attachment():
         attach.y_size = image.height
         attach.mimetype = mimetypes.guess_type(filename)[0]
         attach.size_in_bytes = len(img_bin)
-        attach.owner = current_user._get_current_object()
+        attach.owner = current_user
         attach.alt = filename
         attach.created_date = arrow.utcnow().datetime
         attach.file_hash = "disabled"
@@ -1350,7 +1350,7 @@ def preview():
     request_json = request.get_json(force=True)
     clean_html_parser = ForumPostParser()
 
-    return app.jsonify(preview=clean_html_parser.parse(request_json.get("text", ""), _object=current_user._get_current_object()))
+    return app.jsonify(preview=clean_html_parser.parse(request_json.get("text", ""), _object=current_user))
 
 @app.route('/toggle-manual-validation', methods=["POST",])
 @login_required

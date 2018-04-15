@@ -21,7 +21,7 @@ reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
 def blogs_index(page):
     if current_user.is_authenticated():
         my_blogs = sqla.session.query(sqlm.Blog) \
-            .filter_by(author=current_user._get_current_object()) \
+            .filter_by(author=current_user) \
             .filter(sqlm.Blog.disabled.isnot(True)).all()
     else:
         my_blogs = []
@@ -157,7 +157,7 @@ def new_blog():
             return abort(500)
         b.privacy_setting = form.privacy_setting.data
         b.slug = sqlm.find_blog_slug(b.name)
-        b.author = current_user._get_current_object()
+        b.author = current_user
         sqla.session.add(b)
         sqla.session.commit()
         return redirect("/blog/"+unicode(b.slug))
@@ -173,8 +173,8 @@ def toggle_follow_blog(slug):
         sqla.session.rollback()
         return abort(404)
 
-    if not current_user._get_current_object() in blog.subscribers:
-        blog.subscribers.append(current_user._get_current_object())
+    if not current_user in blog.subscribers:
+        blog.subscribers.append(current_user)
         broadcast(
           to=[blog.author,],
           category="followed",
@@ -186,7 +186,7 @@ def toggle_follow_blog(slug):
           )
     else:
         try:
-            blog.subscribers.remove(current_user._get_current_object())
+            blog.subscribers.remove(current_user)
         except:
             pass
 
@@ -213,15 +213,15 @@ def toggle_follow_blog_entry(slug, entry_slug):
         sqla.session.rollback()
         return abort(404)
 
-    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+    if blog.privacy_setting == "you" and current_user != blog.author:
         return abort(404)
-    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
+    elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
     elif blog.privacy_setting == "members" and not current_user.is_authenticated():
         return abort(404)
 
-    if not current_user._get_current_object() in entry.subscribers:
-        entry.subscribers.append(current_user._get_current_object())
+    if not current_user in entry.subscribers:
+        entry.subscribers.append(current_user)
         broadcast(
           to=[entry.author,],
           category="followed",
@@ -233,7 +233,7 @@ def toggle_follow_blog_entry(slug, entry_slug):
           )
     else:
         try:
-            entry.subscribers.remove(current_user._get_current_object())
+            entry.subscribers.remove(current_user)
         except:
             pass
 
@@ -254,9 +254,9 @@ def edit_blog(slug):
         sqla.session.rollback()
         return abort(404)
 
-    if current_user._get_current_object() != blog.author:
-        if not current_user._get_current_object().is_admin and not current_user._get_current_object().is_mod:
-            if current_user._get_current_object() not in blog.editors:
+    if current_user != blog.author:
+        if not current_user.is_admin and not current_user.is_mod:
+            if current_user not in blog.editors:
                 return abort(404)
 
     form = BlogSettingsForm(csrf_enabled=False)
@@ -287,8 +287,8 @@ def new_blog_entry(slug):
         sqla.session.rollback()
         return abort(404)
 
-    if current_user._get_current_object() != blog.author:
-        if current_user._get_current_object() not in blog.editors:
+    if current_user != blog.author:
+        if current_user not in blog.editors:
             return abort(404)
 
     form = BlogEntryForm(csrf_enabled=False)
@@ -296,7 +296,7 @@ def new_blog_entry(slug):
         e = sqlm.BlogEntry()
         e.blog = blog
         e.title = form.title.data
-        e.author = current_user._get_current_object()
+        e.author = current_user
         e.slug = sqlm.find_blog_entry_slug(e.title, blog)
         e.draft = form.draft.data
         cleaner = ForumHTMLCleaner()
@@ -330,12 +330,12 @@ def new_blog_entry(slug):
                     title="posted %s on blog %s" % (unicode(entry.title), unicode(blog.name)),
                     description=entry.html,
                     content=entry,
-                    author=current_user._get_current_object()
+                    author=current_user
                     )
 
             _to_notify = []
             for u in blog.subscribers:
-                if u.id != current_user._get_current_object().id:
+                if u.id != current_user.id:
                     _to_notify.append(u)
                     
             mentions = mention_re.findall(e.html)
@@ -364,7 +364,7 @@ def new_blog_entry(slug):
                     title="posted %s on blog %s" % (unicode(entry.title), unicode(blog.name)),
                     description=entry.html,
                     content=entry,
-                    author=current_user._get_current_object()
+                    author=current_user
                     )
         return redirect("/blog/"+unicode(blog.slug))
 
@@ -379,8 +379,8 @@ def remove_blog_entry(slug, entry_slug):
         sqla.session.rollback()
         return abort(404)
 
-    if current_user._get_current_object() != blog.author:
-        if current_user._get_current_object() not in blog.editors:
+    if current_user != blog.author:
+        if current_user not in blog.editors:
             return abort(404)
 
     try:
@@ -403,8 +403,8 @@ def edit_blog_entry(slug, entry_slug):
         sqla.session.rollback()
         return abort(404)
 
-    if current_user._get_current_object() != blog.author:
-        if current_user._get_current_object() not in blog.editors:
+    if current_user != blog.author:
+        if current_user not in blog.editors:
             return abort(404)
 
     try:
@@ -418,8 +418,8 @@ def edit_blog_entry(slug, entry_slug):
     form = BlogEntryForm(csrf_enabled=False)
     if form.validate_on_submit():
         e.title = form.title.data
-        if current_user._get_current_object() != e.author:
-            e.editor = current_user._get_current_object()
+        if current_user != e.author:
+            e.editor = current_user
         e.draft = form.draft.data
         cleaner = ForumHTMLCleaner()
         try:
@@ -474,7 +474,7 @@ def edit_blog_comment(slug, entry_slug, comment_id):
         sqla.session.rollback()
         return abort(404)
 
-    if current_user._get_current_object() != comment.author:
+    if current_user != comment.author:
         return abort(404)
 
     form = BlogCommentForm(csrf_enabled=False)
@@ -508,14 +508,14 @@ def blog_index(slug, page):
             
     request.canonical = app.config['BASE'] + "/blog/%s/page/%s" % (slug,page,)
 
-    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+    if blog.privacy_setting == "you" and current_user != blog.author:
         return abort(404)
-    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
+    elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
     elif blog.privacy_setting == "members" and not current_user.is_authenticated():
         return abort(404)
 
-    if current_user._get_current_object() == blog.author or current_user.is_admin:
+    if current_user == blog.author or current_user.is_admin:
         entries = sqla.session.query(sqlm.BlogEntry) \
             .filter_by(hidden=False, blog=blog) \
             .order_by(sqla.desc(sqlm.BlogEntry.published))[(page-1)*10:page*10]
@@ -564,9 +564,9 @@ def boop_blog_entry(slug, entry_slug):
         sqla.session.rollback()
         return abort(404)
 
-    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+    if blog.privacy_setting == "you" and current_user != blog.author:
         return abort(404)
-    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
+    elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
     elif blog.privacy_setting == "members" and not current_user.is_authenticated():
         return abort(404)
@@ -577,10 +577,10 @@ def boop_blog_entry(slug, entry_slug):
         sqla.session.rollback()
         return abort(404)
 
-    if current_user._get_current_object() in entry.boops:
-        entry.boops.remove(current_user._get_current_object())
+    if current_user in entry.boops:
+        entry.boops.remove(current_user)
     else:
-        entry.boops.append(current_user._get_current_object())
+        entry.boops.append(current_user)
         broadcast(
             to=[entry.author,],
             category="boop",
@@ -588,7 +588,7 @@ def boop_blog_entry(slug, entry_slug):
             title="booped your blog entry %s" % (unicode(entry.title)),
             description=entry.html,
             content=entry,
-            author=current_user._get_current_object()
+            author=current_user
             )
 
     sqla.session.add(entry)
@@ -603,9 +603,9 @@ def boop_blog_entry_comment(slug, entry_slug, comment_id):
         sqla.session.rollback()
         return abort(404)
 
-    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+    if blog.privacy_setting == "you" and current_user != blog.author:
         return abort(404)
-    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
+    elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
     elif blog.privacy_setting == "members" and not current_user.is_authenticated():
         return abort(404)
@@ -622,10 +622,10 @@ def boop_blog_entry_comment(slug, entry_slug, comment_id):
         sqla.session.rollback()
         return abort(404)
 
-    if current_user._get_current_object() in comment.boops:
-        comment.boops.remove(current_user._get_current_object())
+    if current_user in comment.boops:
+        comment.boops.remove(current_user)
     else:
-        comment.boops.append(current_user._get_current_object())
+        comment.boops.append(current_user)
         broadcast(
             to=[comment.author,],
             category="boop",
@@ -633,7 +633,7 @@ def boop_blog_entry_comment(slug, entry_slug, comment_id):
             title="booped your blog comment on %s" % (unicode(entry.title)),
             description=comment.html,
             content=comment,
-            author=current_user._get_current_object()
+            author=current_user
             )
 
     sqla.session.add(comment)
@@ -658,9 +658,9 @@ def blog_entry_index(slug, entry_slug, page):
     request.canonical = app.config['BASE'] + "/blog/%s/e/%s/page/%s" % (slug, entry_slug, page)
 
     if not current_user.is_admin:
-        if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+        if blog.privacy_setting == "you" and current_user != blog.author:
             return abort(404)
-        elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
+        elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
             return abort(404)
         elif blog.privacy_setting == "members" and not current_user.is_authenticated():
             return abort(404)
@@ -671,7 +671,7 @@ def blog_entry_index(slug, entry_slug, page):
         sqla.session.rollback()
         return abort(404)
 
-    if entry.draft == True and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors and not current_user.is_admin):
+    if entry.draft == True and (current_user != blog.author and current_user not in blog.editors and not current_user.is_admin):
         return abort(404)
 
     clean_html_parser = ForumPostParser()
@@ -711,9 +711,9 @@ def create_blog_comment(slug, entry_slug, page):
     except:
         return abort(500)
 
-    if blog.privacy_setting == "you" and current_user._get_current_object() != blog.author:
+    if blog.privacy_setting == "you" and current_user != blog.author:
         return abort(404)
-    elif blog.privacy_setting == "editors" and (current_user._get_current_object() != blog.author and current_user._get_current_object() not in blog.editors):
+    elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
     elif blog.privacy_setting == "members" and not current_user.is_authenticated():
         return abort(404)
@@ -795,7 +795,7 @@ def create_blog_comment(slug, entry_slug, page):
         title="commented on your blog entry %s" % (unicode(entry.title)),
         description=new_blog_comment.html,
         content=new_blog_comment,
-        author=current_user._get_current_object()
+        author=current_user
         )
 
     if entry.author != blog.author:
@@ -806,12 +806,12 @@ def create_blog_comment(slug, entry_slug, page):
             title="commented on blog entry %s" % (unicode(entry.title)),
             description=new_blog_comment.html,
             content=new_blog_comment,
-            author=current_user._get_current_object()
+            author=current_user
             )
 
     _to_notify = []
     for u in entry.subscribers:
-        if u.id != current_user._get_current_object().id:
+        if u.id != current_user.id:
             _to_notify.append(u)
 
     if len(_to_notify) > 0:
@@ -822,7 +822,7 @@ def create_blog_comment(slug, entry_slug, page):
             title="commented on %s's blog entry %s" % (unicode(entry.author.display_name),unicode(entry.title)),
             description=new_blog_comment.html,
             content=new_blog_comment,
-            author=current_user._get_current_object()
+            author=current_user
             )
 
     return app.jsonify(success=True, url="""/blog/%s/e/%s/page/%s""" % (slug, entry_slug, max_pages))

@@ -31,7 +31,7 @@ def category_list_api():
         return app.jsonify(results=[])
     results = []
     
-    if current_user._get_current_object().is_admin:
+    if current_user.is_admin:
         q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
     else:
         q_ = parse_search_string(query, sqlm.Category, sqla.session.query(sqlm.Category), ["name",])
@@ -54,7 +54,7 @@ def topic_list_api():
         return app.jsonify(results=[])
     results = []
     
-    if current_user._get_current_object().is_admin:
+    if current_user.is_admin:
         q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic), ["title",])
     else:
         q_ = parse_search_string(query, sqlm.Topic, sqla.session.query(sqlm.Topic) , ["title",])
@@ -84,11 +84,11 @@ def toggle_follow_category(slug):
     if current_user in category.restricted_users:
         return abort(404)
 
-    if not current_user._get_current_object() in category.watchers:
-        category.watchers.append(current_user._get_current_object())
+    if not current_user in category.watchers:
+        category.watchers.append(current_user)
     else:
         try:
-            category.watchers.remove(current_user._get_current_object())
+            category.watchers.remove(current_user)
         except:
             pass
 
@@ -112,11 +112,11 @@ def toggle_follow_topic(slug):
     if not cat_perm_calculus.can_view_topics(topic.category.id, topic.category.can_view_topics):
         return abort(404)
 
-    if current_user._get_current_object() in topic.banned:
+    if current_user in topic.banned:
         return abort(403)
 
-    if not current_user._get_current_object() in topic.watchers:
-        topic.watchers.append(current_user._get_current_object())
+    if not current_user in topic.watchers:
+        topic.watchers.append(current_user)
         if topic.author in topic.watchers:
             broadcast(
               to=[topic.author,],
@@ -129,7 +129,7 @@ def toggle_follow_topic(slug):
               )
     else:
         try:
-            topic.watchers.remove(current_user._get_current_object())
+            topic.watchers.remove(current_user)
         except:
             pass
 
@@ -149,7 +149,7 @@ def new_post_in_topic(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() in topic.banned:
+    if current_user in topic.banned:
         return abort(403)
         
     cat_perm_calculus = CategoryPermissionCalculator(current_user)
@@ -171,17 +171,17 @@ def new_post_in_topic(slug):
         return abort(500)
 
     try:
-        users_last_post = sqla.session.query(sqlm.Post).filter_by(author=current_user._get_current_object()) \
+        users_last_post = sqla.session.query(sqlm.Post).filter_by(author=current_user) \
             .order_by(sqla.desc(sqlm.Post.created)).limit(1)[0]
         difference = (arrow.utcnow().datetime - arrow.get(users_last_post.created).datetime).seconds
-        if difference < 30 and not current_user._get_current_object().is_admin:
+        if difference < 30 and not current_user.is_admin:
             return app.jsonify(error="Please wait %s seconds before posting again." % (30 - difference))
     except:
         pass
 
     try:
         character = sqla.session.query(sqlm.Character).filter_by(slug=request_json.get("character"), \
-            author=current_user._get_current_object(), hidden=False)[0]
+            author=current_user, hidden=False)[0]
     except:
         character = False
 
@@ -199,7 +199,7 @@ def new_post_in_topic(slug):
 
     new_post = sqlm.Post()
     new_post.html = post_html
-    new_post.author = current_user._get_current_object()
+    new_post.author = current_user
     new_post.author_name = current_user.login_name
     new_post.topic = topic
     new_post.t_title = topic.title
@@ -413,17 +413,17 @@ def toggle_post_boop():
     except:
         return abort(404)
 
-    if current_user._get_current_object() == post.author:
+    if current_user == post.author:
         return abort(404)
         
     cat_perm_calculus = CategoryPermissionCalculator(current_user)
     if not cat_perm_calculus.can_view_topics(post.topic.category.id, post.topic.category.can_view_topics):
         return abort(404)
 
-    if current_user._get_current_object() in post.boops:
-        post.boops.remove(current_user._get_current_object())
+    if current_user in post.boops:
+        post.boops.remove(current_user)
     else:
-        post.boops.append(current_user._get_current_object())
+        post.boops.append(current_user)
         broadcast(
             to=[post.author,],
             category="boop",
@@ -431,7 +431,7 @@ def toggle_post_boop():
             title="booped your post in %s!" % (unicode(post.topic.title)),
             description="",
             content=post,
-            author=current_user._get_current_object()
+            author=current_user
             )
 
     sqla.session.add(post)
@@ -501,7 +501,7 @@ def topic_posts(slug):
     if current_user in topic.category.restricted_users:
         return abort(404)
         
-    if current_user._get_current_object() in topic.banned:
+    if current_user in topic.banned:
         return abort(403)
 
     if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
@@ -666,14 +666,14 @@ def topic_posts(slug):
         if post == first_post:
             parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"
         parsed_post["author_login_name"] = post.author.my_url
-        parsed_post["has_booped"] = current_user._get_current_object() in post.boops
+        parsed_post["has_booped"] = current_user in post.boops
         parsed_post["boop_count"] = len(post.boops)
         if parsed_post["boop_count"] == 1:
             parsed_post["one_boop"] = True
         else:
             parsed_post["one_boop"] = False
         if current_user.is_authenticated():
-            parsed_post["can_boop"] = current_user._get_current_object() != post.author
+            parsed_post["can_boop"] = current_user != post.author
         else:
             parsed_post["can_boop"] = False
 
@@ -754,7 +754,7 @@ def edit_topic_post_html(slug):
     except:
         return abort(404)
 
-    if current_user._get_current_object() != post.author and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
+    if current_user != post.author and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
         return abort(404)
 
     if request_json.get("text", "").strip() == "":
@@ -768,7 +768,7 @@ def edit_topic_post_html(slug):
 
     try:
         character = sqla.session.query(sqlm.Character).filter_by(slug=request_json.get("character"), \
-            author=current_user._get_current_object()).filter(sqla.or_(sqlm.Character.hidden == False, \
+            author=current_user).filter(sqla.or_(sqlm.Character.hidden == False, \
             sqlm.Character.hidden == None))[0]
     except:
         character = False
@@ -786,7 +786,7 @@ def edit_topic_post_html(slug):
         avatar = False
 
     history = {}
-    history["author"] = current_user._get_current_object().id
+    history["author"] = current_user.id
     history["created"] = str(arrow.utcnow().datetime)
     history["old_html"] = post.html+""
     history["new_html"] = post_html
@@ -799,14 +799,14 @@ def edit_topic_post_html(slug):
     post.post_history.append(history)
     flag_modified(post, "post_history")
 
-    if current_user._get_current_object() != post.author:
+    if current_user != post.author:
         if request_json.get("edit_reason", "").strip() == "":
             return app.jsonify(error="Please include an edit reason for editing someone else's post.")
 
     post.html = post_html
     post.modified = arrow.utcnow().datetime.replace(tzinfo=None)
 
-    if current_user._get_current_object() == post.author:
+    if current_user == post.author:
         if character:
             post.character = character
         else:
@@ -856,7 +856,7 @@ def topic_poll(slug):
     except IndexError:
         return abort(404)
 
-    if current_user._get_current_object() in topic.banned:
+    if current_user in topic.banned:
         return abort(403)
         
     if current_user in topic.category.restricted_users:
@@ -909,7 +909,7 @@ def topic_index(slug, page, post):
         return abort(404)
     pagination = 20
 
-    if current_user._get_current_object() in topic.banned:
+    if current_user in topic.banned:
         return abort(403)
 
     cat_perm_calculus = CategoryPermissionCalculator(current_user)
@@ -976,7 +976,7 @@ def topic_index(slug, page, post):
 
     elif post == "last_seen":
         try:
-            last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().id), arrow.utcnow().timestamp)).datetime.replace(tzinfo=None)
+            last_seen = arrow.get(topic.last_seen_by.get(str(current_user.id), arrow.utcnow().timestamp)).datetime.replace(tzinfo=None)
         except:
             last_seen = arrow.get(arrow.utcnow().timestamp).datetime.replace(tzinfo=None)
 
@@ -998,7 +998,7 @@ def topic_index(slug, page, post):
     else:
         if post != "":
             try:
-                last_seen = arrow.get(topic.last_seen_by.get(str(current_user._get_current_object().id), arrow.utcnow().timestamp)).datetime.replace(tzinfo=None)
+                last_seen = arrow.get(topic.last_seen_by.get(str(current_user.id), arrow.utcnow().timestamp)).datetime.replace(tzinfo=None)
             except:
                 last_seen = arrow.get(arrow.utcnow().timestamp).datetime.replace(tzinfo=None)
             try:
@@ -1019,7 +1019,7 @@ def topic_index(slug, page, post):
         try:
             if topic.last_seen_by == None:
                 topic.last_seen_by = {}
-            topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+            topic.last_seen_by[str(current_user.id)] = arrow.utcnow().timestamp
             flag_modified(topic, "last_seen_by")
             sqla.session.add(topic)
             sqla.session.commit()
@@ -1041,7 +1041,7 @@ def topic_index(slug, page, post):
 
     topic.view_count = topic.view_count + 1
     try:
-        topic.last_seen_by[str(current_user._get_current_object().id)] = arrow.utcnow().timestamp
+        topic.last_seen_by[str(current_user.id)] = arrow.utcnow().timestamp
         flag_modified(topic, "last_seen_by")
         sqla.session.add(topic)
         sqla.session.commit()
@@ -1113,9 +1113,9 @@ def edit_topic(slug):
         return abort(404)
 
     if request.method == 'POST':
-        if current_user._get_current_object() != topic.author:
-            if not current_user._get_current_object().is_admin and not current_user._get_current_object().is_mod:
-                if current_user._get_current_object() not in topic.topic_moderators:
+        if current_user != topic.author:
+            if not current_user.is_admin and not current_user.is_mod:
+                if current_user not in topic.topic_moderators:
                     return abort(404)
 
         request_json = request.get_json(force=True)
@@ -1146,7 +1146,7 @@ def edit_topic(slug):
         post = first_post
 
         history = {}
-        history["author"] = current_user._get_current_object().id
+        history["author"] = current_user.id
         history["created"] = str(arrow.utcnow().datetime)
         history["old_html"] = post.html+""
         history["new_html"] = post_html
@@ -1159,7 +1159,7 @@ def edit_topic(slug):
         post.post_history.append(history)
         flag_modified(post, "post_history")
 
-        if current_user._get_current_object() != topic.author:
+        if current_user != topic.author:
             if request_json.get("edit_reason", "").strip() == "":
                 return app.jsonify(error="Please include an edit reason for editing someone else's topic.")
 
@@ -1223,10 +1223,10 @@ def new_topic(slug):
 
         try:
             users_last_topic = sqla.session.query(sqlm.Topic) \
-                .filter_by(author=current_user._get_current_object()) \
+                .filter_by(author=current_user) \
                 .order_by(sqla.desc(sqlm.Topic.created))[0]
             difference = (arrow.utcnow().datetime - arrow.get(users_last_topic.created).datetime).seconds
-            if difference < 360 and not current_user._get_current_object().is_admin:
+            if difference < 360 and not current_user.is_admin:
                 return app.jsonify(error="Please wait %s seconds before you create another topic." % (360 - difference))
         except IndexError:
             pass
@@ -1235,7 +1235,7 @@ def new_topic(slug):
         new_topic.category = category
         new_topic.title = request_json.get("title")[:100]
         new_topic.slug = sqlm.find_topic_slug(new_topic.title)
-        new_topic.author = current_user._get_current_object()
+        new_topic.author = current_user
         new_topic.created = arrow.utcnow().datetime.replace(tzinfo=None)
         if request_json.get("prefix", "").strip() != "":
             new_topic.label = label
@@ -1245,7 +1245,7 @@ def new_topic(slug):
 
         new_post = sqlm.Post()
         new_post.html = post_html
-        new_post.author = current_user._get_current_object()
+        new_post.author = current_user
         new_post.topic = new_topic
         new_post.t_title = new_topic.title
         new_post.created = arrow.utcnow().datetime.replace(tzinfo=None)
@@ -1423,9 +1423,9 @@ LIMIT :pagination OFFSET :page
         parsed_topic["updated"] = False
         if current_user.is_authenticated():
             if topic["topic_last_seen_by"]:
-                if topic["topic_last_seen_by"].get(str(current_user._get_current_object().id), None) != None:
-                    if arrow.get(topic["topic_last_updated"]).timestamp > topic["topic_last_seen_by"].get(str(current_user._get_current_object().id)):
-                        if topic["last_post_author"] != current_user._get_current_object().display_name:
+                if topic["topic_last_seen_by"].get(str(current_user.id), None) != None:
+                    if arrow.get(topic["topic_last_updated"]).timestamp > topic["topic_last_seen_by"].get(str(current_user.id)):
+                        if topic["last_post_author"] != current_user.display_name:
                             parsed_topic["updated"] = True
         
         if topic["topic_l_prefix"] != None:
@@ -1560,7 +1560,7 @@ def index():
         new_member_intro_topic = None
 
     try:
-        timezone = current_user._get_current_object().time_zone
+        timezone = current_user.time_zone
     except:
         timezone = "US/Pacific"
     

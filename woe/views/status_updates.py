@@ -19,7 +19,7 @@ def status_update_replies(status):
         
     request.canonical = app.config['BASE'] + "/status/%s" % (status,)
 
-    if status.hidden == True and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
+    if status.hidden == True and (current_user.is_admin != True or current_user.is_mod != True):
         return abort(404)
 
     replies = []
@@ -45,10 +45,10 @@ def display_status_update(status):
     except:
         return abort(404)
 
-    if status.hidden == True and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
+    if status.hidden == True and (current_user.is_admin != True or current_user.is_mod != True):
         return abort(404)
 
-    if current_user._get_current_object().is_admin == True:
+    if current_user.is_admin == True:
         mod = True
     else:
         mod = False
@@ -56,7 +56,7 @@ def display_status_update(status):
     status.last_viewed=arrow.utcnow().datetime.replace(tzinfo=None)
     
     try:
-        status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status, author=current_user._get_current_object())[0]
+        status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status, author=current_user)[0]
     except:
         status_user = None
     
@@ -148,19 +148,19 @@ def make_status_update_reply(status):
     except:
         return abort(404)
 
-    if status.hidden == True and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
+    if status.hidden == True and (current_user.is_admin != True or current_user.is_mod != True):
         return abort(404)
 
-    if status.muted and current_user._get_current_object() != status.author:
+    if status.muted and current_user != status.author:
         return app.jsonify(error="This status update is silenced. Shhh!")
 
     if (current_user in [u.ignoring for u in status.author.ignored_users]) and not current_user.is_admin:
         return app.jsonify(error="User has blocked you.")
 
     try:
-        if not (current_user._get_current_object().is_admin or current_user._get_current_object().is_mod) and \
+        if not (current_user.is_admin or current_user.is_mod) and \
                 (sqla.session.query(sqlm.StatusUpdateUser). \
-                filter_by(status=status, author=current_user._get_current_object())[0].blocked):
+                filter_by(status=status, author=current_user)[0].blocked):
             return app.jsonify(error="You have been blocked from this status update.")
     except IndexError:
         pass
@@ -184,7 +184,7 @@ def make_status_update_reply(status):
 
     user_last_comment = False
     for comment in status.comments:
-        if comment.author == current_user._get_current_object():
+        if comment.author == current_user:
             user_last_comment = comment
     if user_last_comment:
         difference = (arrow.utcnow().datetime - arrow.get(user_last_comment.created).datetime).seconds
@@ -194,7 +194,7 @@ def make_status_update_reply(status):
     sc = sqlm.StatusComment()
     sc.created = arrow.utcnow().datetime.replace(tzinfo=None)
     sc.message = _html
-    sc.author = current_user._get_current_object()
+    sc.author = current_user
     sc.status = status
 
     sqla.session.add(sc)
@@ -206,8 +206,8 @@ def make_status_update_reply(status):
     sqla.session.add(status)
     sqla.session.commit()
 
-    if not current_user._get_current_object() in status.participants:
-        status.participants.append(current_user._get_current_object())
+    if not current_user in status.participants:
+        status.participants.append(current_user)
 
     clean_html_parser = ForumPostParser()
     parsed_reply = {}
@@ -221,7 +221,7 @@ def make_status_update_reply(status):
 
     send_notify_to_users = []
     for user in sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status).all():
-        if user.author == current_user._get_current_object():
+        if user.author == current_user:
             continue
 
         if user.ignoring:
@@ -241,7 +241,7 @@ def make_status_update_reply(status):
             ),
         description=status.message,
         content=status,
-        author=current_user._get_current_object()
+        author=current_user
         )
 
     try:
@@ -249,7 +249,7 @@ def make_status_update_reply(status):
     except IndexError:
         status_user = None
         
-    if current_user._get_current_object() != status.author:
+    if current_user != status.author:
         if status_user == None:
             broadcast(
                 to=[status.author],
@@ -258,7 +258,7 @@ def make_status_update_reply(status):
                 title="replied to your status update",
                 description=status.message,
                 content=status,
-                author=current_user._get_current_object()
+                author=current_user
                 )
         else:
             if not status_user.ignoring:
@@ -269,7 +269,7 @@ def make_status_update_reply(status):
                     title="replied to your status update",
                     description=status.message,
                     content=status,
-                    author=current_user._get_current_object()
+                    author=current_user
                     )            
 
     return app.jsonify(newest_reply=parsed_reply, count=status.get_comment_count(), success=True)
@@ -284,7 +284,7 @@ def create_new_status(target):
     if target:
         try:
             target_user = sqla.session.query(sqlm.User).filter_by(login_name=target)[0]
-            if target_user == current_user._get_current_object():
+            if target_user == current_user:
                 return app.jsonify(error="No talking to yourself.")
 
             if (current_user in [u.ignoring for u in target_user.ignored_users]) and not current_user.is_admin:
@@ -309,7 +309,7 @@ def create_new_status(target):
     if attached_to_user:
         status.attached_to_user = attached_to_user
         status.participants.append(attached_to_user)
-    status.author = current_user._get_current_object()
+    status.author = current_user
     status.message = _html
     status.participants.append(status.author)
     status.created = arrow.utcnow().datetime.replace(tzinfo=None)
@@ -355,7 +355,7 @@ def status_hide_reply(status, idx):
     except:
         return abort(404)
 
-    if (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
+    if (current_user.is_admin != True or current_user.is_mod != True):
         return abort(404)
 
     comment.hidden = True
@@ -373,10 +373,10 @@ def toggle_status_blocking(status, user):
     except:
         return abort(404)
 
-    if (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
+    if (current_user.is_admin != True or current_user.is_mod != True):
         return abort(404)
 
-    if user == current_user._get_current_object():
+    if user == current_user:
         return abort(404)
 
     status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(
@@ -398,13 +398,13 @@ def toggle_status_ignoring(status):
         return abort(404)
 
     try:
-        status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status, author=current_user._get_current_object())[0]
+        status_user = sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status, author=current_user)[0]
     except IndexError:
         status_user = None
         
     if not status_user:
         try:
-            status.participants.append(current_user._get_current_object())
+            status.participants.append(current_user)
             return app.jsonify(url="/status/"+str(status.id))
         except:
             return app.jsonify(url="/status/"+str(status.id))
@@ -424,11 +424,11 @@ def toggle_status_hide(status):
     except:
         return abort(404)
 
-    if current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True:
+    if current_user.is_admin != True or current_user.is_mod != True:
         return abort(404)
 
     if not status.hidden:
-        if current_user._get_current_object() != status.author:
+        if current_user != status.author:
             broadcast(
                 to=[status.author,],
                 category="status",
@@ -436,7 +436,7 @@ def toggle_status_hide(status):
                 title="Your status update was hidden",
                 description=status.message,
                 content=status,
-                author=current_user._get_current_object()
+                author=current_user
                 )
 
         broadcast(
@@ -446,7 +446,7 @@ def toggle_status_hide(status):
             title="status update hidden",
             description=status.message,
             content=status,
-            author=current_user._get_current_object()
+            author=current_user
             )
 
     status.hidden=not status.hidden
@@ -462,7 +462,7 @@ def toggle_status_mute(status):
     except:
         return abort(404)
 
-    if current_user._get_current_object() != status.author and (current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True):
+    if current_user != status.author and (current_user.is_admin != True or current_user.is_mod != True):
         return abort(404)
 
     status.muted=not status.muted
@@ -478,7 +478,7 @@ def toggle_status_lock(status):
     except:
         return abort(404)
 
-    if current_user._get_current_object().is_admin != True or current_user._get_current_object().is_mod != True:
+    if current_user.is_admin != True or current_user.is_mod != True:
         return abort(404)
 
     status.locked=not status.locked

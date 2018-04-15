@@ -50,7 +50,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
             else:
                 user = u
             try:
-                if current_user._get_current_object() == user:
+                if current_user == user:
                     continue
             except:
                 pass
@@ -130,17 +130,17 @@ def broadcast(to, category, url, title, description, content, author, priority=0
 @login_required
 def acknowledge_category():
     notifications = sqla.session.query(sqlm.Notification) \
-        .filter_by(seen=False, user=current_user._get_current_object()) \
+        .filter_by(seen=False, user=current_user) \
         .update({sqlm.Notification.seen: True})
 
     request_json = request.get_json(force=True)
 
     notifications = sqla.session.query(sqlm.Notification) \
-        .filter_by(acknowledged=False, user=current_user._get_current_object(), category=request_json.get("category","")) \
+        .filter_by(acknowledged=False, user=current_user, category=request_json.get("category","")) \
         .update({sqlm.Notification.acknowledged: True})
 
-    _count = current_user._get_current_object().get_notification_count()
-    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().listener_token, ], "count_update": _count}, ))
+    _count = current_user.get_notification_count()
+    thread = Thread(target=send_message, args=({"users": [current_user.listener_token, ], "count_update": _count}, ))
     thread.start()
     return app.jsonify(success=True, count=_count)
 
@@ -148,11 +148,11 @@ def acknowledge_category():
 @login_required
 def mark_all_notifications():
     notifications = sqla.session.query(sqlm.Notification) \
-        .filter_by(seen=False, user=current_user._get_current_object()) \
+        .filter_by(seen=False, user=current_user) \
         .update({sqlm.Notification.seen: True})
 
-    _count = current_user._get_current_object().get_notification_count()
-    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().listener_token, ], "count_update": _count}, ))
+    _count = current_user.get_notification_count()
+    thread = Thread(target=send_message, args=({"users": [current_user.listener_token, ], "count_update": _count}, ))
     thread.start()
 
     return app.jsonify(success=True)
@@ -161,7 +161,7 @@ def mark_all_notifications():
 @login_required
 def ack_all_notifications():
     notifications = sqla.session.query(sqlm.Notification) \
-        .filter_by(user=current_user._get_current_object()) \
+        .filter_by(user=current_user) \
         .update({
             sqlm.Notification.acknowledged: True,
             sqlm.Notification.seen: True,
@@ -169,7 +169,7 @@ def ack_all_notifications():
             })
 
     _count = 0
-    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().listener_token, ], "count_update": _count}, ))
+    thread = Thread(target=send_message, args=({"users": [current_user.listener_token, ], "count_update": _count}, ))
     thread.start()
 
     return app.jsonify(success=True, url="/dashboard")
@@ -178,7 +178,7 @@ def ack_all_notifications():
 @login_required
 def acknowledge_notification():
     notifications = sqla.session.query(sqlm.Notification) \
-        .filter_by(seen=False, user=current_user._get_current_object()) \
+        .filter_by(seen=False, user=current_user) \
         .update({sqlm.Notification.seen: True})
 
     request_json = request.get_json(force=True)
@@ -186,7 +186,7 @@ def acknowledge_notification():
         notification = sqla.session.query(sqlm.Notification) \
             .filter_by(id=request_json.get("notification",""))[0]
 
-        if notification.user != current_user._get_current_object():
+        if notification.user != current_user:
             return app.jsonify(success=False)
 
         sqla.session.query(sqlm.Notification) \
@@ -197,13 +197,13 @@ def acknowledge_notification():
 
     try:
         notifications = sqla.session.query(sqlm.Notification) \
-            .filter_by(acknowledged=False, user=current_user._get_current_object(), url=notification.url) \
+            .filter_by(acknowledged=False, user=current_user, url=notification.url) \
             .update({sqlm.Notification.acknowledged: True})
     except:
         return app.jsonify(success=False)
 
-    _count = current_user._get_current_object().get_notification_count()
-    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().listener_token, ], "count_update": _count}, ))
+    _count = current_user.get_notification_count()
+    thread = Thread(target=send_message, args=({"users": [current_user.listener_token, ], "count_update": _count}, ))
     thread.start()
     return app.jsonify(success=True, count=_count)
 
@@ -212,7 +212,7 @@ def acknowledge_notification():
 def dashboard_notifications():
     notifications = sqla.session.query(sqlm.Notification) \
         .filter_by(
-            user=current_user._get_current_object(),
+            user=current_user,
             acknowledged=False) \
         .options(joinedload(sqlm.Notification.author))\
         .order_by(sqlm.Notification.created).all()
