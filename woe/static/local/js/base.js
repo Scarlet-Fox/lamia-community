@@ -10,6 +10,14 @@
     if (window.my_tz == null) {
       window.my_tz = "US/Pacific";
     }
+    window.getClientThemeTemplate = function(tmpl) {
+      if (window.theme === void 0 || window.theme === "") {
+        return false;
+      }
+      if ($("script#" + tmpl).length !== 0) {
+        return $("script#" + tmpl).html();
+      }
+    };
     $(".href_span").click(function(e) {
       return window.location = $(this).attr("href");
     });

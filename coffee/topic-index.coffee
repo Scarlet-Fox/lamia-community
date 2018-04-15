@@ -479,200 +479,204 @@ $ ->
       """
 
     postHTMLTemplate: () ->
-      return """
-            <li class="list-group-item post-listing-info">
-              <div class="row">
-                <div class="col-xs-4 hidden-md hidden-lg">
-                  {{#unless character_avatar}}
-                    <a href="/member/{{author_login_name}}"><img src="{{user_avatar_60}}" width="{{user_avatar_x_60}}" height="{{user_avatar_y_60}}" class="avatar-mini"></a>
-                  {{else}}
-                    <a href={{#unless _show_character_badge}}"/characters/{{character_slug}}" target="_blank"{{else}}"/member/{{author_login_name}}"{{/unless}}><img src="{{character_avatar_small}}" style="max-width: 60px;" class="avatar-mini"></a>
-                  {{/unless}}
-                </div>
-                <div class="col-md-3 col-xs-8">
-                  {{#if author_online}}
-                  <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> <a class="hover_user" href="/member/{{author_login_name}}">{{#unless character_name}}{{author_name}}{{else}}{{character_name}}{{/unless}}</a></b>
-                  {{else}}
-                  <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <a class="hover_user" href="/member/{{author_login_name}}" class="inherit_colors">{{#unless character_name}}{{author_name}}{{else}}{{character_name}}{{/unless}}</a></b>
-                  {{/if}}
-                  <span class="hidden-md hidden-sm hidden-lg">
-                  {{#unless roles}}
-                  {{#unless character_name}}
-                    <span style="color:#F88379;"><strong>Members</strong></span><br>
-                  {{else}}
-                    <span style="color:#B00E0E;"><strong>Characters</strong></span><br>
-                  {{/unless}}
-                  {{else}}
-                  {{#if roles}}
-                  {{#each roles}}
-                  {{#if @first}}
-                  <strong>{{{this}}}</strong>
-                  {{/if}}
-                  {{/each}}
-                  {{/if}}
-                  {{/unless}}
-                  </span>
-                  {{#unless character_name}}
-                    <span style="color:#F88379;" class="hidden-xs"><strong>Members</strong></span><br>
-                  {{else}}
-                    <span style="color:#B00E0E;" class="hidden-xs"><strong>Characters</strong></span><br>
-                  {{/unless}}
-                  <span class="hidden-md hidden-lg"><span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-smallscreen-{{_id}}">\#{{_id}}</a></span>
-                  Posted {{created}}</span>
-                </div>
-                <div class="col-md-9 hidden-xs hidden-sm">
-                  <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-{{_id}}">\#{{_id}}</a></span>
-                  Posted {{created}}
-                </div>
-              </div>
-            </li>
-            <li class="list-group-item post-listing-post">
-              <div class="row">
-                <div class="col-md-3" style="text-align: center;">
-                  {{#unless character_avatar}}
-                    <a href="/member/{{author_login_name}}"><img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm"></a>
-                  {{else}}
-                    <a href={{#unless _show_character_badge}}"/characters/{{character_slug}}" target="_blank"{{else}}"/member/{{author_login_name}}"{{/unless}}><img src="{{character_avatar_large}}" style="max-width: 200px;" class="post-member-avatar hidden-xs hidden-sm"></a>
-                  {{/unless}}
-                  <span class="hidden-xs hidden-sm"><br><br>
-                    {{#if character_motto}}
-                    <div class="post-member-self-title">{{character_motto}}</div>
+      theme_tmpl = window.getClientThemeTemplate("topic-postHTMLTemplate")
+      if theme_tmpl
+        return theme_tmpl
+      else
+        return """
+              <li class="list-group-item post-listing-info">
+                <div class="row">
+                  <div class="col-xs-4 hidden-md hidden-lg">
+                    {{#unless character_avatar}}
+                      <a href="/member/{{author_login_name}}"><img src="{{user_avatar_60}}" width="{{user_avatar_x_60}}" height="{{user_avatar_y_60}}" class="avatar-mini"></a>
                     {{else}}
-                    <div class="post-member-self-title">{{user_title}}</div>
+                      <a href={{#unless _show_character_badge}}"/characters/{{character_slug}}" target="_blank"{{else}}"/member/{{author_login_name}}"{{/unless}}><img src="{{character_avatar_small}}" style="max-width: 60px;" class="avatar-mini"></a>
+                    {{/unless}}
+                  </div>
+                  <div class="col-md-3 col-xs-8">
+                    {{#if author_online}}
+                    <b><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> <a class="hover_user" href="/member/{{author_login_name}}">{{#unless character_name}}{{author_name}}{{else}}{{character_name}}{{/unless}}</a></b>
+                    {{else}}
+                    <b><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> <a class="hover_user" href="/member/{{author_login_name}}" class="inherit_colors">{{#unless character_name}}{{author_name}}{{else}}{{character_name}}{{/unless}}</a></b>
                     {{/if}}
-                    {{#if character_name}}
-                    <a href="/characters/{{character_slug}}" target="_blank"><img src="/static/emoticons/button_character_by_angelishi-d6wlo5k.gif"></a>
+                    <span class="hidden-md hidden-sm hidden-lg">
+                    {{#unless roles}}
+                    {{#unless character_name}}
+                      <span style="color:#F88379;"><strong>Members</strong></span><br>
+                    {{else}}
+                      <span style="color:#B00E0E;"><strong>Characters</strong></span><br>
+                    {{/unless}}
+                    {{else}}
                     {{#if roles}}
-                    <br>
-                    {{/if}}
-                    {{/if}}
-                    {{#if roles}}
-                    <center>
                     {{#each roles}}
-                    <span class="site-role">{{{this}}}</span><br>
-                    {{/each}}
-                    </center>
+                    {{#if @first}}
+                    <strong>{{{this}}}</strong>
                     {{/if}}
-                    <hr></span>
-                  <div class="post-meta">
+                    {{/each}}
+                    {{/if}}
+                    {{/unless}}
+                    </span>
+                    {{#unless character_name}}
+                      <span style="color:#F88379;" class="hidden-xs"><strong>Members</strong></span><br>
+                    {{else}}
+                      <span style="color:#B00E0E;" class="hidden-xs"><strong>Characters</strong></span><br>
+                    {{/unless}}
+                    <span class="hidden-md hidden-lg"><span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-smallscreen-{{_id}}">\#{{_id}}</a></span>
+                    Posted {{created}}</span>
+                  </div>
+                  <div class="col-md-9 hidden-xs hidden-sm">
+                    <span id="post-number-1" class="post-number" style="vertical-align: top;"><a href="{{direct_url}}" id="postlink-{{_id}}">\#{{_id}}</a></span>
+                    Posted {{created}}
                   </div>
                 </div>
-                <div class="col-md-9 post-right">
-                  <div class="post-content" id="post-{{_id}}">
-                    {{{html}}}
+              </li>
+              <li class="list-group-item post-listing-post">
+                <div class="row">
+                  <div class="col-md-3" style="text-align: center;">
+                    {{#unless character_avatar}}
+                      <a href="/member/{{author_login_name}}"><img src="{{user_avatar}}" width="{{user_avatar_x}}" height="{{user_avatar_y}}" class="post-member-avatar hidden-xs hidden-sm"></a>
+                    {{else}}
+                      <a href={{#unless _show_character_badge}}"/characters/{{character_slug}}" target="_blank"{{else}}"/member/{{author_login_name}}"{{/unless}}><img src="{{character_avatar_large}}" style="max-width: 200px;" class="post-member-avatar hidden-xs hidden-sm"></a>
+                    {{/unless}}
+                    <span class="hidden-xs hidden-sm"><br><br>
+                      {{#if character_motto}}
+                      <div class="post-member-self-title">{{character_motto}}</div>
+                      {{else}}
+                      <div class="post-member-self-title">{{user_title}}</div>
+                      {{/if}}
+                      {{#if character_name}}
+                      <a href="/characters/{{character_slug}}" target="_blank"><img src="/static/emoticons/button_character_by_angelishi-d6wlo5k.gif"></a>
+                      {{#if roles}}
+                      <br>
+                      {{/if}}
+                      {{/if}}
+                      {{#if roles}}
+                      <center>
+                      {{#each roles}}
+                      <span class="site-role">{{{this}}}</span><br>
+                      {{/each}}
+                      </center>
+                      {{/if}}
+                      <hr></span>
+                    <div class="post-meta">
+                    </div>
                   </div>
-                  <br>
-                  <div class="row post-edit-likes-info" id="post-buttons-{{_id}}">
-                      <div class="col-xs-8">
-                        {{#if _is_logged_in}}
-                        <div class="btn-group" role="group" aria-label="...">
-                          <div class="btn-group">
-                            <button type="button" class="btn btn-default mention-button" data-author="{{author_login_name}}">@</button>
-                            <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
-                            <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="post"><span class="glyphicon glyphicon-exclamation-sign"></span></button>
-                            {{#if is_admin}}<a href="/admin/post/edit/?id={{_id}}" target="_blank"><button type="button" class="btn btn-default" data-type="post"><span class="glyphicon glyphicon-cog"></span></button></a>{{/if}}
-                            <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                              <span class="caret"></span>
-                              <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                              <li><a href="">Quote</a></li>
-                              <li><a href="">Multiquote</a></li>
-                            </ul> -->
-                          </div>
-                        {{/if}}
+                  <div class="col-md-9 post-right">
+                    <div class="post-content" id="post-{{_id}}">
+                      {{{html}}}
+                    </div>
+                    <br>
+                    <div class="row post-edit-likes-info" id="post-buttons-{{_id}}">
+                        <div class="col-xs-8">
                           {{#if _is_logged_in}}
-                          <div class="btn-group" style="">
-                            {{#if _is_topic_mod}}
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                              <span class="caret"></span>
-                              <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                              <li><a href="" class="post-edit" data-pk="{{_id}}" {{#if character_name}}data-character="{{character_slug}}" data-author="{{author_login_name}}"{{/if}}>Edit Post</a></li>
-                              {{#if topic_leader}}
-                               <li><a href="{{topic_leader}}">Edit Topic</a></li>
-                               {{#if is_admin}}
-                                <li>
-                                  <a href="/admin/topic/edit/?id={{_tid}}" target="_blank">Topic Admin</a>
-                                </li>
-                              {{/if}}
-                              {{/if}}
-                              <li><a href="">Hide</a></li>
-                              <li class="divider hidden-md hidden-sm hidden-lg"></li>
-                              <li class="hidden-md hidden-sm hidden-lg"><a class="go-to-end-of-page" href="">Go to End</a></li>
-                            </ul>
-                            {{else}}
-                              {{#if is_author}}
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                  <span class="caret"></span>
-                                  <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                  <li><a href="" class="post-edit" data-pk="{{_id}}" {{#if character_name}}data-character="{{character_slug}}" data-author="{{author_login_name}}"{{/if}}>Edit Post</a></li>
-                                  {{#if topic_leader}}
-                                   <li><a href="{{topic_leader}}">Edit Topic</a></li>
-                                  {{/if}}
-                                  <li class="divider hidden-md hidden-sm hidden-lg"></li>
-                                  <li class="hidden-md hidden-sm hidden-lg"><a class="go-to-end-of-page" href="">Go to End</a></li>
-                                </ul>
+                          <div class="btn-group" role="group" aria-label="...">
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-default mention-button" data-author="{{author_login_name}}">@</button>
+                              <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
+                              <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="post"><span class="glyphicon glyphicon-exclamation-sign"></span></button>
+                              {{#if is_admin}}<a href="/admin/post/edit/?id={{_id}}" target="_blank"><button type="button" class="btn btn-default" data-type="post"><span class="glyphicon glyphicon-cog"></span></button></a>{{/if}}
+                              <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+                              <ul class="dropdown-menu" role="menu">
+                                <li><a href="">Quote</a></li>
+                                <li><a href="">Multiquote</a></li>
+                              </ul> -->
+                            </div>
+                          {{/if}}
+                            {{#if _is_logged_in}}
+                            <div class="btn-group" style="">
+                              {{#if _is_topic_mod}}
+                              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+                              <ul class="dropdown-menu" role="menu">
+                                <li><a href="" class="post-edit" data-pk="{{_id}}" {{#if character_name}}data-character="{{character_slug}}" data-author="{{author_login_name}}"{{/if}}>Edit Post</a></li>
+                                {{#if topic_leader}}
+                                 <li><a href="{{topic_leader}}">Edit Topic</a></li>
+                                 {{#if is_admin}}
+                                  <li>
+                                    <a href="/admin/topic/edit/?id={{_tid}}" target="_blank">Topic Admin</a>
+                                  </li>
+                                {{/if}}
+                                {{/if}}
+                                <li><a href="">Hide</a></li>
+                                <li class="divider hidden-md hidden-sm hidden-lg"></li>
+                                <li class="hidden-md hidden-sm hidden-lg"><a class="go-to-end-of-page" href="">Go to End</a></li>
+                              </ul>
+                              {{else}}
+                                {{#if is_author}}
+                                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                  </button>
+                                  <ul class="dropdown-menu" role="menu">
+                                    <li><a href="" class="post-edit" data-pk="{{_id}}" {{#if character_name}}data-character="{{character_slug}}" data-author="{{author_login_name}}"{{/if}}>Edit Post</a></li>
+                                    {{#if topic_leader}}
+                                     <li><a href="{{topic_leader}}">Edit Topic</a></li>
+                                    {{/if}}
+                                    <li class="divider hidden-md hidden-sm hidden-lg"></li>
+                                    <li class="hidden-md hidden-sm hidden-lg"><a class="go-to-end-of-page" href="">Go to End</a></li>
+                                  </ul>
+                                {{/if}}
                               {{/if}}
                             {{/if}}
-                          {{/if}}
+                            </div>
                           </div>
-                        </div>
+                      </div>
+                      <div class="col-xs-4 post-likes">
+                        {{#if show_boop}}
+                        {{#if can_boop}}
+                        {{#if has_booped}}
+                        <button type="button" class="btn btn-default boop-button" data-pk="{{_id}}" data-status="booped" data-count="{{boop_count}}"><span class="badge" style="background-color: green;">{{boop_count}}</span><span class="boop-text"> Unboop</span></button>
+                        {{else}}
+                        <button type="button" class="btn btn-default boop-button" data-pk="{{_id}}" data-status="notbooped" data-count="{{boop_count}}"><span class="badge" style="background-color: #555;">{{boop_count}}</span><span class="boop-text">  Boop</span></button>
+                        {{/if}}
+                        {{else}}
+                        {{#if one_boop}}
+                        <span><span class="badge">{{boop_count}}</span> boop</span>
+                        {{else}}
+                        <span><span class="badge">{{boop_count}}</span> boops</span>
+                        {{/if}}
+                        {{/if}}
+                        {{/if}}
+                      </div>
                     </div>
-                    <div class="col-xs-4 post-likes">
-                      {{#if show_boop}}
-                      {{#if can_boop}}
-                      {{#if has_booped}}
-                      <button type="button" class="btn btn-default boop-button" data-pk="{{_id}}" data-status="booped" data-count="{{boop_count}}"><span class="badge" style="background-color: green;">{{boop_count}}</span><span class="boop-text"> Unboop</span></button>
-                      {{else}}
-                      <button type="button" class="btn btn-default boop-button" data-pk="{{_id}}" data-status="notbooped" data-count="{{boop_count}}"><span class="badge" style="background-color: #555;">{{boop_count}}</span><span class="boop-text">  Boop</span></button>
+                    {{#if modified_by}}
+                    <br>
+                    <div class="text-muted"><i>edited by {{modified_by}}, {{modified}}</i></span>
+                    {{/if}}
+                    {{#if active_rolls}}
+                    <br>
+                    <span class="text-muted">Active Rolls: </span>
+                    <br>
+                    {{#each active_rolls}}
+                      <span class="badge dice-roll active-dice-roll">{{2}} {{1}}={{3}} </span>&nbsp;
+                    {{/each}}
+                    {{/if}}
+                    {{#if inactive_rolls}}
+                    <br>
+                    <span class="text-muted">Deleted/Edited Rolls: </span>
+                    <br>
+                    {{#each inactive_rolls}}
+                      <span class="badge dice-roll inactive-dice-roll">{{2}} {{1}}={{3}} </span>&nbsp;
+                    {{/each}}
+                    {{/if}}
+                    <hr>
+                    <div class="post-signature">
+                      {{#if signature}}
+                      {{#if is_admin}}
+                      <a href="/admin/signature/edit/?id={{signature_id}}" target="_blank" class="float-right"><span class="glyphicon glyphicon-cog"></span></a>
                       {{/if}}
-                      {{else}}
-                      {{#if one_boop}}
-                      <span><span class="badge">{{boop_count}}</span> boop</span>
-                      {{else}}
-                      <span><span class="badge">{{boop_count}}</span> boops</span>
                       {{/if}}
-                      {{/if}}
+                      {{#if signature}}
+                      {{{signature}}}
                       {{/if}}
                     </div>
                   </div>
-                  {{#if modified_by}}
-                  <br>
-                  <div class="text-muted"><i>edited by {{modified_by}}, {{modified}}</i></span>
-                  {{/if}}
-                  {{#if active_rolls}}
-                  <br>
-                  <span class="text-muted">Active Rolls: </span>
-                  <br>
-                  {{#each active_rolls}}
-                    <span class="badge dice-roll active-dice-roll">{{2}} {{1}}={{3}} </span>&nbsp;
-                  {{/each}}
-                  {{/if}}
-                  {{#if inactive_rolls}}
-                  <br>
-                  <span class="text-muted">Deleted/Edited Rolls: </span>
-                  <br>
-                  {{#each inactive_rolls}}
-                    <span class="badge dice-roll inactive-dice-roll">{{2}} {{1}}={{3}} </span>&nbsp;
-                  {{/each}}
-                  {{/if}}
-                  <hr>
-                  <div class="post-signature">
-                    {{#if signature}}
-                    {{#if is_admin}}
-                    <a href="/admin/signature/edit/?id={{signature_id}}" target="_blank" class="float-right"><span class="glyphicon glyphicon-cog"></span></a>
-                    {{/if}}
-                    {{/if}}
-                    {{#if signature}}
-                    {{{signature}}}
-                    {{/if}}
-                  </div>
-                </div>
-      """
+        """
 
     refreshPosts: () ->
       new_post_html = ""

@@ -4,6 +4,13 @@ $ ->
 
   if not window.my_tz?
     window.my_tz = "US/Pacific"
+    
+  window.getClientThemeTemplate = (tmpl) ->
+    if window.theme == undefined or window.theme == ""
+      return false
+    
+    if $("script##{tmpl}").length != 0
+      return $("script##{tmpl}").html()
 
   $(".href_span").click (e) ->
     window.location = $(this).attr("href")    

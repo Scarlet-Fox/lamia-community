@@ -22,6 +22,8 @@ from flask.ext.login import AnonymousUserMixin
 import woe.sqlmodels as sqlm
 import pytz
 import math, random, time
+from os import path
+import os
 
 class Anonymouse(AnonymousUserMixin):
     login_name = None
@@ -204,6 +206,20 @@ def inject_notification_count():
             return dict(notification_count=0)
     except:
         return dict(notification_count=0)
+
+_client_template_cache = {} # TODO : obviously this is not thread safe
+@app.context_processor
+def inject_theme_coffee_templates():
+    c = current_user
+    my_coffee_template_overrides={}
+    if c.is_authenticated():
+        if c.theme and c.theme.directory_name:
+            coffee_tmpl_override_path = path.join(app.config["DEFAULT_TEMPLATE_DIR"], "themes", current_user.theme.directory_name, "_coffee")
+            if path.exists(coffee_tmpl_override_path):
+                for tmpl in os.listdir(coffee_tmpl_override_path):
+                    my_coffee_template_overrides[tmpl.replace(".html", "")] = open(path.join(coffee_tmpl_override_path, tmpl)).read()
+    
+    return dict(theme_coffee_templates=my_coffee_template_overrides)
 
 @app.before_request
 def log_request():

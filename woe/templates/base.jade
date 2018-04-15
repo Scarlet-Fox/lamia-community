@@ -731,6 +731,10 @@ body(role='document')
             .col-sm-6
   #img-click-modal.modal.fade
   #report-click-modal.modal.fade
+  #coffee-overrides(style="display: none;")
+    for k, v in theme_coffee_templates.items()
+      script(style="display: none;", id=k,  type="text/plain")!= v
+    
   script(src="/static/assets/handlebars.min.js").
   
   script(type="text/javascript").
@@ -739,6 +743,7 @@ body(role='document')
       window.woe_is_me = "{{current_user.listener_token}}";
       window.my_url = "{{current_user.my_url}}";
       window.my_tz = "{{current_user.time_zone}}";
+      window.theme = "{{current_user.theme.directory_name}}";
       {% if current_user.is_authenticated() %}
       window.logged_in = true;
       {% else %}
