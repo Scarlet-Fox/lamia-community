@@ -110,9 +110,9 @@ bbcode_parser.add_formatter('code', render_code_bbcode, render_embedded=False, r
             
 def render_spoiler_bbcode(tag_name, value, options, parent, context):
     if options.get("spoiler", False):
-        return """<div class="content-spoiler" data-caption="%s"><div> <!-- spoiler div -->%s</div></div>""" % (options.get("spoiler"), value,)
+        return """<div class="content-spoiler" data-caption="%s"><div><div> <!-- spoiler div -->%s</div></div></div>""" % (options.get("spoiler"), value,)
     else:
-        return """<div class="content-spoiler"><div> <!-- spoiler div -->%s</div></div>""" % (value,)
+        return """<div class="content-spoiler"><div><div> <!-- spoiler div -->%s</div></div></div>""" % (value,)
 
 bbcode_parser.add_formatter("spoiler", render_spoiler_bbcode, escape_html=False)
 bbcode_parser.add_formatter("espoiler", render_spoiler_bbcode, escape_html=False)
