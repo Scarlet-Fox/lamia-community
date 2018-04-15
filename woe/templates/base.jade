@@ -30,7 +30,7 @@ head
     else
       title {{ page_title }}
     if current_user.is_authenticated() and current_user.theme
-      if current_user.theme.theme_css
+      if current_user.theme.css
         {% assets filters="cssmin", output="generated/"+current_user.get_text_id()+"woe-core.css",
         "assets/bootstrap.css", "assets/quill2/quill.snow.css", 
         "assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
