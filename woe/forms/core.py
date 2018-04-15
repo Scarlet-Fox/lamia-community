@@ -163,8 +163,9 @@ class DisplayNamePasswordForm(Form):
                 raise validators.ValidationError("Your email address is already in use by another account.")
 
     def validate_current_password(self, field):
-        if not self.user_object.check_password(field.data) and self.current_user.is_admin == False:
-            raise validators.ValidationError("Please enter your current password to change your account details.")
+        if not self.current_user.is_admin:
+            if not self.user_object.check_password(field.data):
+                raise validators.ValidationError("Please enter your current password to change your account details.")
 
     def validate_confirm_new_password(self, field):
         if field.data != self.new_password.data:
