@@ -1051,7 +1051,8 @@ def change_user_settings(login_name):
                 user.theme = form.theme_object
                 user.theme_last_updated = time.time()
         except:
-            pass
+            user.theme = form.theme_object
+            user.theme_last_updated = time.time()
         user.no_images = form.no_images.data
         user.emails_muted = form.no_emails.data
         user.birthday = form.birthday.data
