@@ -22,6 +22,7 @@ and this project (loosely) adheres to [Semantic Versioning](http://semver.org/sp
 - Visual improvements to search page
 - Subcategories on front page and improvements to category/subcategory hiding
 - Notification grouping now works across the site and is a bit more aggressive on the dashboard
+- Made themes configurable and template files overridable
 
 ### Deprecated
 - Using user urls instead of login names for addresses (login name is now pretty useless)
