@@ -1355,8 +1355,20 @@ def category_topics(slug):
         prefixes = preferences.keys()
     else:
         prefixes = []
-    
-    """
+        
+    request_json = request.get_json(force=True)
+    try:
+        page = request_json.get("page", 1)
+    except ValueError:
+        page = 1
+        
+    try:
+        pagination = request_json.get("pagination", 15)
+    except ValueError:
+        pagination = 15
+
+    _topics = sqla.engine.execute(
+            text("""
 SELECT t.id AS this_topic_id,
 t.title AS topic_title,
 t.slug AS topic_slug,
@@ -1377,7 +1389,7 @@ rpa.display_name AS last_post_author,
 rpa.my_url AS last_post_link,
 CASE
     WHEN rpa.avatar_extension != ''
-    THEN 'avatars/' || rpa.avatar_timestamp || rpa.id || '_40' || rpa.avatar_extension 
+    THEN 'avatars/' || rpa.avatar_timestamp || rpa.id || '_40' || rpa.avatar_extension
     ELSE 'no_profile_avatar_40.png'
 END AS last_post_avatar
 FROM "topic" t
@@ -1387,90 +1399,61 @@ JOIN "post" rp ON t.recent_post_id = rp.id
 JOIN "user" fpa ON fp.author_id = fpa.id
 JOIN "user" rpa ON rp.author_id = rpa.id
 WHERE t.hidden = False
-AND t.category_id = 36%s
+AND t.category_id = :cid
 ORDER BY t.sticky DESC,
 t.recent_post_time DESC
-LIMIT 20 OFFSET 0
-    """
+LIMIT :pagination OFFSET :page
+    """),
+    page=(page-1)*pagination,
+    pagination=pagination,
+    cid = category.id
+    )
     
-    request_json = request.get_json(force=True)
-    page = request_json.get("page", 1)
-    pagination = request_json.get("pagination", 15)
-
-    try:
-        minimum = (int(page)-1)*int(pagination)
-        maximum = int(page)*int(pagination)
-    except:
-        minimum = 0
-        maximum = 20
-
-    if len(prefixes) > 0:
-        topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
-            sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label).join(sqlm.Topic.recent_post) \
-        .order_by( \
-            sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created)).options(joinedload(sqlm.Topic.first_post)).paginate(page, pagination, False)
-        topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False, \
-            sqlm.Label.label.in_(prefixes)).join(sqlm.Topic.label) \
-        .count()
-    else:
-        topics = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False) \
-            .join(sqlm.Topic.recent_post) \
-        .order_by( \
-            sqla.desc(sqlm.Topic.sticky), sqla.desc(sqlm.Post.created)).options(joinedload(sqlm.Topic.first_post)).paginate(page, pagination, False)
-        topic_count = sqla.session.query(sqlm.Topic).filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False).count()
-
+    topic_count = sqla.session.query(sqla.func.count('*')).select_from(sqlm.Topic) \
+        .filter(sqlm.Topic.category==category, sqlm.Topic.hidden==False)[0][0]
     parsed_topics = []
-    for topic in topics.items:
-        if current_user._get_current_object() in topic.banned:
-            continue
+
+    for topic in _topics:
+        topic = dict(topic)
+        
         parsed_topic = {}
-        parsed_topic["creator"] = topic.author.display_name
-        parsed_topic["created"] = humanize_time(topic.created, "MMM D YYYY")
-
+        parsed_topic["creator"] = topic["first_post_author"]
+        parsed_topic["created"] = humanize_time(topic["first_post_created"], "MMM D YYYY")
+        
         parsed_topic["updated"] = False
-        if topic.last_seen_by is None:
-            topic.last_seen_by = {}
-
         if current_user.is_authenticated():
-            if topic.last_seen_by.get(str(current_user._get_current_object().id)) != None:
-                if arrow.get(topic.recent_post.created).timestamp > topic.last_seen_by.get(str(current_user._get_current_object().id)):
-                    if topic.recent_post.author != current_user._get_current_object():
+            if topic["topic_last_seen_by"].get(str(current_user._get_current_object().id), None) != None:
+                if arrow.get(topic["topic_last_updated"]).timestamp > topic["topic_last_seen_by"].get(str(current_user._get_current_object().id)):
+                    if topic["last_post_author"] != current_user._get_current_object().display_name:
                         parsed_topic["updated"] = True
-
-        if topic.label != None:
-            try:
-                parsed_topic["pre_html"] = topic.label.pre_html
-                parsed_topic["post_html"] = topic.label.post_html
-                parsed_topic["prefix"] = topic.label.label
-            except:
-                pass
-        if topic.recent_post:
-            parsed_topic["last_post_date"] = humanize_time(topic.recent_post.created)
-            parsed_topic["last_post_by"] = topic.recent_post.author.display_name
-            parsed_topic["last_post_x"] = topic.recent_post.author.avatar_40_x
-            parsed_topic["last_post_y"] = topic.recent_post.author.avatar_40_y
-            parsed_topic["last_post_by_login_name"] = topic.recent_post.author.my_url
-            parsed_topic["last_post_author_avatar"] = topic.recent_post.author.get_avatar_url("60")
-        parsed_topic["post_count"] = "{:,}".format(topic.post_count)
-        parsed_topic["view_count"] = "{:,}".format(topic.view_count)
+        
+        if topic["topic_l_prefix"] != None:
+            parsed_topic["pre_html"] = topic["topic_l_pre_html"]
+            parsed_topic["post_html"] = topic["topic_l_post_html"]
+            parsed_topic["prefix"] = topic["topic_l_prefix"]
+            
+        parsed_topic["last_post_date"] = humanize_time(topic["topic_last_updated"])
+        parsed_topic["last_post_by"] = topic["last_post_author"]
+        parsed_topic["last_post_by_login_name"] = topic["last_post_link"]
+        parsed_topic["last_post_author_avatar"] = "/static/"+topic["last_post_avatar"]
+        parsed_topic["post_count"] = "{:,}".format(topic["topic_post_count"])
+        parsed_topic["view_count"] = "{:,}".format(topic["topic_view_count"])
+        
         try:
-            parsed_topic["last_page"] = float(topic.post_count)/float(pagination)
+            parsed_topic["last_page"] = float(topic["post_count"])/float(pagination)
         except:
             parsed_topic["last_page"] = 1
+            
         parsed_topic["last_pages"] = parsed_topic["last_page"] > 1
-        parsed_topic["closed"] = topic.locked
-        parsed_topic["title"] = topic.title
-        parsed_topic["sticky"] = topic.sticky
-        parsed_topic["closed"] = topic.locked
-        parsed_topic["slug"] = topic.slug        
-        first_post = topic.first_post
-        if first_post != None:
-            parsed_topic["preview"] = unicode(get_preview(first_post.html, 125))
-        else:
-            parsed_topic["preview"] = ""
-
+        
+        parsed_topic["title"] = topic["topic_title"]
+        parsed_topic["sticky"] = topic["topic_sticky"]
+        parsed_topic["closed"] = topic["topic_closed"]
+        parsed_topic["slug"] = topic["topic_slug"]
+        
+        parsed_topic["preview"] = unicode(get_preview(topic["first_post_html"], 125))        
         parsed_topics.append(parsed_topic)
-
+            
     return app.jsonify(topics=parsed_topics, count=topic_count)
 
 @app.route('/category/<slug>', methods=['GET'])

@@ -133,7 +133,7 @@ $ ->
           </div>
           <div class="col-xs-6 col-sm-4 hidden-xs">
             <span class="topic-listing-recent-image subcategory-listing-recent-image">
-              <a href="/member/{{last_post_by_login_name}}"><img src="{{last_post_author_avatar}}" width="{{last_post_x}}px" height="{{last_post_y}}px" class="avatar-mini"></a>
+              <a href="/member/{{last_post_by_login_name}}"><img src="{{last_post_author_avatar}}" class="avatar-mini"></a>
             </span>
             <span class="topic-listing-recent">
               <a href="/member/{{last_post_by_login_name}}" class="topic-listing-username hover_user">{{last_post_by}}</a>
