@@ -39,7 +39,7 @@ def category_list_api():
         
         q_ = q_ \
             .join(_cat_perms, _cat_perms.c.category_id == sqlm.Category.id) \
-            .filter(_cat_perms.c.category_can_view_topics == True).all()
+            .filter(_cat_perms.c.category_can_view_topics == True).limit(50).all()
         
     for c in q_:
         results.append({"text": unicode(c.name), "id": str(c.id)})
@@ -62,7 +62,7 @@ def topic_list_api():
         
         q_ = q_ \
             .join(_cat_perms, _cat_perms.c.category_id == sqlm.Topic.category_id) \
-            .filter(_cat_perms.c.category_can_view_topics == True).all()
+            .filter(_cat_perms.c.category_can_view_topics == True).limit(50).all()
         
     for t in q_:
         results.append({"text": unicode(t.title), "id": str(t.id)})
