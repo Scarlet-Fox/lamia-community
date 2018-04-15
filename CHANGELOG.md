@@ -6,6 +6,25 @@ and this project (loosely) adheres to [Semantic Versioning](http://semver.org/sp
 
 ## [Unreleased]
 ### Added
+- Item
+
+### Changed
+- Item
+
+### Deprecated
+- Item
+
+### Removed
+- Item
+
+### Fixed
+- Item
+
+### Security
+- Item
+
+## [Prerelease 4] - 2018-04-15
+### Added
 - Full permissions system for categories
 - Standard administrator panel
 - Standard mod panel with reports
