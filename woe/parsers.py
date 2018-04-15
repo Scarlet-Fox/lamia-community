@@ -105,7 +105,6 @@ bbcode_parser.add_simple_formatter('quote', '<blockquote><div>%(value)s</div></b
             swallow_trailing_newline=True, escape_html=False)
 
 def render_code_bbcode(tag_name, value, options, parent, context):
-    print value
     return """<code> <!-- code div -->%s</code>""" % (value,)
 bbcode_parser.add_formatter('code', render_code_bbcode, render_embedded=False, replace_cosmetic=False, escape_html=False)    
             
