@@ -1046,9 +1046,12 @@ def change_user_settings(login_name):
 
     if form.validate_on_submit():
         user.time_zone=form.time_zone.data
-        if user.theme.directory_name != form.theme_object.directory_name:
-            user.theme = form.theme_object
-            user.theme_last_updated = time.time()
+        try:
+            if user.theme.directory_name != form.theme_object.directory_name:
+                user.theme = form.theme_object
+                user.theme_last_updated = time.time()
+        except:
+            pass
         user.no_images = form.no_images.data
         user.emails_muted = form.no_emails.data
         user.birthday = form.birthday.data
