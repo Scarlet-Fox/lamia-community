@@ -51,28 +51,35 @@ pg_client.query _get_guest_query, (err, res) =>
           _author_id = res.rows[0].id
         else
           _author_id = _guest_user_account_id
-                  
-        pg_client.query "SELECT id FROM public.user WHERE legacy_id=#{row.editorID}", (err, res) =>
+      
+        pg_client.query "SELECT id FROM public.topic WHERE legacy_id=#{row.threadID}", (err, res) =>
           if res.rows[0]?
-            _editor_id = res.rows[0].id
-            modified = moment.utc(row.lastEditTime).format()
+            _topic_id = res.rows[0].id
           else
-            _editor_id = null
-            modified = null
+            _topic_id = _guest_user_account_id
+                  
+          pg_client.query "SELECT id FROM public.user WHERE legacy_id=#{row.editorID}", (err, res) =>
+            if res.rows[0]?
+              _editor_id = res.rows[0].id
+              modified = moment.utc(row.lastEditTime).format()
+            else
+              _editor_id = null
+              modified = null
             
-          html = row.message
-          created = row.time
-          hidden = row.isDeleted or row.isDisabled or row.isClosed
-          topic = row.threadID
+            html = row.message
+            created = row.time
+            hidden = row.isDeleted or row.isDisabled or row.isClosed
+            topic = _topic_id
+            legacy_id = row.postID
           
-          _insert_into_db = 'INSERT INTO post(html, created, hidden, topic_id, author_id, editor_id, modified) VALUES($1, to_timestamp($2), $3, $4, $5, $6, $7) RETURNING *'
-          _values_into_db = [html, created, hidden, topic, _author_id, _editor_id, modified]
+            _insert_into_db = 'INSERT INTO post(html, created, hidden, topic_id, author_id, editor_id, modified, legacy_id) VALUES($1, to_timestamp($2), $3, $4, $5, $6, $7, $8) RETURNING *'
+            _values_into_db = [html, created, hidden, topic, _author_id, _editor_id, modified, legacy_id]
           
-          pg_client.query _insert_into_db, _values_into_db, (err, res) =>
-            if err
-              console.log err.stack
+            pg_client.query _insert_into_db, _values_into_db, (err, res) =>
+              if err
+                console.log err.stack
           
-            do mysql_connection.resume
+              do mysql_connection.resume
     .on 'end', () ->
       do mysql_connection.end
       do pg_client.end
