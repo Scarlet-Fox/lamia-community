@@ -140,7 +140,7 @@ def acknowledge_category():
         .update({sqlm.Notification.acknowledged: True})
 
     _count = current_user._get_current_object().get_notification_count()
-    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().login_name, ], "count_update": _count}, ))
+    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().listener_token, ], "count_update": _count}, ))
     thread.start()
     return app.jsonify(success=True, count=_count)
 
@@ -152,7 +152,7 @@ def mark_all_notifications():
         .update({sqlm.Notification.seen: True})
 
     _count = current_user._get_current_object().get_notification_count()
-    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().login_name, ], "count_update": _count}, ))
+    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().listener_token, ], "count_update": _count}, ))
     thread.start()
 
     return app.jsonify(success=True)
@@ -169,7 +169,7 @@ def ack_all_notifications():
             })
 
     _count = 0
-    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().login_name, ], "count_update": _count}, ))
+    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().listener_token, ], "count_update": _count}, ))
     thread.start()
 
     return app.jsonify(success=True, url="/dashboard")
@@ -203,7 +203,7 @@ def acknowledge_notification():
         return app.jsonify(success=False)
 
     _count = current_user._get_current_object().get_notification_count()
-    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().login_name, ], "count_update": _count}, ))
+    thread = Thread(target=send_message, args=({"users": [current_user._get_current_object().listener_token, ], "count_update": _count}, ))
     thread.start()
     return app.jsonify(success=True, count=_count)
 
