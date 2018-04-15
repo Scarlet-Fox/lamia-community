@@ -687,11 +687,6 @@ span.topic-listing-name span.prefix {
   margin-bottom: 40px;
 }
 
-.site-background {
-  height: 490px;
-  background: url("/static/local/themes/default/sally.png") no-repeat scroll top;
-}
-
 .search-box {
     resize: horizontal;
     width: 80% !important;
