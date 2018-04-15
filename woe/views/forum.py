@@ -1422,10 +1422,11 @@ LIMIT :pagination OFFSET :page
         
         parsed_topic["updated"] = False
         if current_user.is_authenticated():
-            if topic["topic_last_seen_by"].get(str(current_user._get_current_object().id), None) != None:
-                if arrow.get(topic["topic_last_updated"]).timestamp > topic["topic_last_seen_by"].get(str(current_user._get_current_object().id)):
-                    if topic["last_post_author"] != current_user._get_current_object().display_name:
-                        parsed_topic["updated"] = True
+            if topic["topic_last_seen_by"]:
+                if topic["topic_last_seen_by"].get(str(current_user._get_current_object().id), None) != None:
+                    if arrow.get(topic["topic_last_updated"]).timestamp > topic["topic_last_seen_by"].get(str(current_user._get_current_object().id)):
+                        if topic["last_post_author"] != current_user._get_current_object().display_name:
+                            parsed_topic["updated"] = True
         
         if topic["topic_l_prefix"] != None:
             parsed_topic["pre_html"] = topic["topic_l_pre_html"]
