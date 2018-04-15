@@ -136,7 +136,7 @@ import email_utilities
 
 from jinja2 import FileSystemLoader
 from jinja2.loaders import split_template_path
-from flask.ext.login import current_user
+from flask_login import current_user
 from jinja2.exceptions import TemplateNotFound
 from jinja2.utils import open_if_exists, internalcode
 import time, weakref, types

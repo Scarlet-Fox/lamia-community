@@ -2,7 +2,7 @@ from woe.parsers import ForumPostParser
 from woe.forms.roleplay import CharacterForm
 from woe import app
 from flask import abort, redirect, url_for, request, make_response, json, flash
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow, hashlib, mimetypes, time

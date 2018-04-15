@@ -4,7 +4,7 @@ from woe.parsers import ForumPostParser
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
 from flask import abort, redirect, url_for, request, make_response, json, flash, session
-from flask.ext.login import login_user, logout_user, current_user, login_required
+from flask_login import login_user, logout_user, current_user, login_required
 import arrow, time, math
 from threading import Thread
 import random

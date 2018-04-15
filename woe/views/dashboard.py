@@ -1,7 +1,7 @@
 from woe import login_manager, app
 from flask import abort, redirect, url_for, request, make_response, json, flash
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, CategoryPermissionCalculator, md5
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 import arrow, urllib2
 from threading import Thread
 import json as py_json

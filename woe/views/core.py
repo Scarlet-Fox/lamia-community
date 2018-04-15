@@ -4,7 +4,7 @@ from woe.parsers import ForumPostParser
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
-from flask.ext.login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, login_required, current_user
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
 from woe.email_utilities import send_mail_w_template
 from mongoengine.queryset import Q
@@ -18,7 +18,7 @@ import HTMLParser
 from werkzeug.exceptions import default_exceptions, HTTPException
 from  werkzeug.debug import get_current_traceback
 from woe import sqla
-from flask.ext.login import AnonymousUserMixin
+from flask_login import AnonymousUserMixin
 import woe.sqlmodels as sqlm
 import pytz
 import math, random, time

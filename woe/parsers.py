@@ -8,7 +8,7 @@ try:
     import regex as re
 except:
     import re
-from flask.ext.login import current_user
+from flask_login import current_user
 from threading import Thread
 from woe import sqla
 import woe.sqlmodels as sqlm

@@ -1,7 +1,7 @@
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField, IntegerField, DateField
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose, BaseView, form
 from flask_admin.contrib.sqla import ModelView

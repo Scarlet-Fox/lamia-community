@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from woe.utilities import ipb_password_check, md5
 from slugify import slugify
 from woe import bcrypt
-from flask.ext.login import current_user
+from flask_login import current_user
 from wand.image import Image
 from threading import Thread
 import arrow, re, os, math, random, os.path

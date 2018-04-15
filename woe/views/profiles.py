@@ -3,7 +3,7 @@ from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSetting
 from woe.forms.signatures import NewSignature
 from woe import app
 from flask import abort, redirect, url_for, request, make_response, json, flash, session
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow
