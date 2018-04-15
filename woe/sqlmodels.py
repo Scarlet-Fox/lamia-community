@@ -252,7 +252,7 @@ class SiteTheme(db.Model):
     
     @property
     def css(self):
-        if os.path.exists(os.path.join(app.root_path, 'static', 'local', 'themes', self.theme_css)):
+        if self.theme_css and os.path.exists(os.path.join(app.root_path, 'static', 'local', 'themes', self.theme_css)):
             return "local/themes/" + self.theme_css
         else:
             return ""
