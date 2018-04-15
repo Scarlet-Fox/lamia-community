@@ -1390,3 +1390,7 @@ body {
 .toggle-show-roles-button {
     background: #5452A2;
 }
+
+li#status.list-group-item.front-page-status {
+    padding-bottom: 15px;
+}
