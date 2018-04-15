@@ -14,7 +14,7 @@ from urllib import quote
 from BeautifulSoup import BeautifulSoup
 from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types import TSVectorType
-from flask.ext.sqlalchemy import BaseQuery
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Index
 from sqlalchemy_searchable import SearchQueryMixin
 from sqlalchemy.event import listens_for
@@ -246,6 +246,7 @@ class SiteTheme(db.Model):
     
     weight = db.Column(db.Integer, default=10, index=True)
     description = db.Column(db.String)
+    additional_css = db.Column(db.String)
     
     @property
     def css(self):

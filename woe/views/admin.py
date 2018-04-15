@@ -15,8 +15,8 @@ from woe.parsers import ForumPostParser
 from flask_admin.contrib.sqla.form import AdminModelConverter
 import os, os.path
 from sqlalchemy import or_
-from flask.ext.admin._compat import as_unicode, string_types
-from flask.ext.admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
+from flask_admin._compat import as_unicode, string_types
+from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
 _base_url = app.config['BASE']
 
 ###################################################################################################

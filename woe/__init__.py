@@ -32,14 +32,14 @@ wtfs_fields.get_pk_from_identity = get_pk_from_identity
 from werkzeug.contrib.fixers import ProxyFix
 from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
-from flask.ext.bcrypt import Bcrypt
-from flask.ext.login import LoginManager
-from flask.ext.admin import Admin
-from flask.ext.cache import Cache
-from flask.ext.assets import Environment, Bundle
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
+from flask_admin import Admin
+from flask_cache import Cache
+from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
 from flask import session
-from flask.ext.session import Session
+from flask_session import Session
 from bson.dbref import DBRef
 from os import path
 import json

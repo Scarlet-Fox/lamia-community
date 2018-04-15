@@ -8,7 +8,7 @@ try:
 except:
     import re
 from woe import sqla
-from flask.ext.login import current_user
+from flask_login import current_user
 from mongoengine.queryset import Q
 from BeautifulSoup import BeautifulSoup
 from sqlalchemy.sql import text
