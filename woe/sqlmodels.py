@@ -250,6 +250,9 @@ class SiteTheme(db.Model):
     additional_css = db.Column(db.String)
     profile_customization_css = db.Column(db.String)
     
+    def get_text_id(self):
+        return "%s" % (self.id, )
+            
     @property
     def css(self):
         if self.theme_css and os.path.exists(os.path.join(app.root_path, 'static', 'local', 'themes', self.theme_css)):
