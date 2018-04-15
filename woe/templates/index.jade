@@ -26,7 +26,7 @@ if not current_user.is_authenticated()
                 a(href="/category/{{category.category_slug}}", style="vertical-align: middle; padding-top: 15px; font-size: 18px;") {{category.category_name}}
                 if category.category_description
                   p(style="font-size: 12px;").hidden-xs
-                    a(href="/category/{{category.slug}}").text-muted= category.category_description
+                    a(href="/category/{{category.category_slug}}").text-muted= category.category_description
                 {% for child in children[category.category_name] %}
                 {% if loop.first %}
                 p.small
