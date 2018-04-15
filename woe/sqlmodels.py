@@ -247,6 +247,7 @@ class SiteTheme(db.Model):
     weight = db.Column(db.Integer, default=10, index=True)
     description = db.Column(db.String)
     additional_css = db.Column(db.String)
+    profile_customization_css = db.Column(db.String)
     
     @property
     def css(self):
@@ -649,8 +650,14 @@ class User(db.Model):
         return user_category_perms
         
     def get_custom_css(self):
-        if current_user.no_images:
-            return ""
+        theme_profile_css = ""
+        if current_user.is_authenticated():
+            if current_user.no_images:
+                return ""
+            
+            if current_user.theme:
+                if current_user.theme.profile_customization_css:
+                    theme_profile_css = current_user.theme.profile_customization_css
 
         _template = _mylookup.get_template("profile.css")
         _rendered = _template.render(
@@ -662,7 +669,8 @@ class User(db.Model):
                 _section_background_color=self.header_background_color,
                 _section_text_color=self.header_text_color,
                 _use_text_shadow=self.use_text_shadow,
-                _text_shadow_color=self.text_shadow_color
+                _text_shadow_color=self.text_shadow_color,
+                _theme_profile_css=theme_profile_css
             )
         return _rendered
 

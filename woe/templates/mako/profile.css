@@ -5,6 +5,7 @@
     .site-background {
         background: none;
     }
+    ${_theme_profile_css}
 % endif
 
 % if _site_background_color and not _banner_image and not _site_background_image:
@@ -16,7 +17,7 @@
 % if _banner_image:
     .site-background {
         background: ${"#"+_site_background_color if _site_background_color else ''} ${"url(\"/static/customizations/"+_banner_image+"\") no-repeat scroll top !important" if _banner_image else ''};
-        height: ${_header_height}px; 
+        height: ${_header_height}px !important; 
     }
     % if _site_background_color:
         body {

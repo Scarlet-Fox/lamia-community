@@ -1,6 +1,6 @@
 from woe import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
-from wtforms import BooleanField, StringField, PasswordField, validators, SelectField, HiddenField, IntegerField, DateField
+from wtforms import BooleanField, StringField, TextAreaField, PasswordField, validators, SelectField, HiddenField, IntegerField, DateField
 from flask_login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose, BaseView, form
@@ -702,7 +702,13 @@ class IPAddressView(ModelView):
         return current_user.is_admin
 
 class ThemeView(ModelView):
-    pass 
+    form_extra_fields = {
+            'additional_css': TextAreaField(),
+            'profile_customization_css': TextAreaField()
+        }
+        
+    def is_accessible(self):
+        return current_user.is_admin
 
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
