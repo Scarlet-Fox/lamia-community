@@ -151,6 +151,9 @@ def edit_post_in_pm_topic(pk):
     if request_json.get("text", "").strip() == "":
         return app.jsonify(error="Your post is empty.")
 
+    if len(request_json.get("text", "")) > 50000:
+        return app.jsonify(error="Your post is too large.")
+
     cleaner = ForumHTMLCleaner()
     try:
         post_html = cleaner.clean(request_json.get("post", ""))
@@ -187,6 +190,9 @@ def new_message_in_pm_topic(pk):
         return app.jsonify(error="Please wait %s seconds before you can reply again." % (10 - difference))
 
     request_json = request.get_json(force=True)
+
+    if len(request_json.get("text", "")) > 50000:
+        return app.jsonify(error="Your post is too large.")
 
     if request_json.get("text", "").strip() == "":
         return app.jsonify(error="Your post is empty.")
@@ -436,6 +442,9 @@ def create_message():
 
     if request_json.get("text", "").strip() == "":
         return app.jsonify(error="Please enter actual text for your message.")
+
+    if len(request_json.get("text", "")) > 50000:
+        return app.jsonify(error="Your post is too large.")
 
     if request_json.get("to") == None or not len(request_json.get("to", [""])) > 0:
         return app.jsonify(error="Choose who should receive your message.")
