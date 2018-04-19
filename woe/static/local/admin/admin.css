@@ -177,3 +177,9 @@ form.admin-form.form-horizontal > hr {
 .modal-header {
     background-color: #f5f8ff;
 }
+
+input[type=checkbox] {
+    height:15px;
+    margin-top:10px;
+    width:15px;
+}
