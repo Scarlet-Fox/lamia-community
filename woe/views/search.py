@@ -57,7 +57,11 @@ def search_lookup():
     
     if len(query) < 3:
         return app.jsonify(error="Please enter at least 3 characters to search.")
-        
+
+    difference = (arrow.utcnow().datetime - arrow.get(current_user.last_search_time).datetime).seconds
+    if difference < 120:
+        return app.jsonify(error="Please wait %s seconds before searching again." % (120 - difference))
+    
     try:
         session["query"] = query
     except:
@@ -309,5 +313,6 @@ def search_lookup():
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
-            
+        
+    current_user.last_search_time = arrow.utcnow().datetime.replace(tzinfo=None)
     return app.jsonify(results=parsed_results, count=count, pagination=pagination)

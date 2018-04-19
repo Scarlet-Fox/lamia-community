@@ -521,6 +521,7 @@ class User(db.Model):
     email_address = db.Column(db.String, unique=True)
     password_hash = db.Column(db.String, default="", index=True)
     joined = db.Column(db.DateTime, index=True)
+    last_search_time = db.Column(db.DateTime)
 
     phrase_last_updated = db.Column(db.DateTime, index=True)
     smileys_last_updated = db.Column(db.DateTime, index=True)
