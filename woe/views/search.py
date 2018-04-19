@@ -59,7 +59,7 @@ def search_lookup():
         return app.jsonify(error="Please enter at least 3 characters to search.")
 
     difference = (arrow.utcnow().datetime - arrow.get(current_user.last_search_time).datetime).seconds
-    if difference < 120:
+    if difference < 120 and not current_user.is_admin:
         return app.jsonify(error="Please wait %s seconds before searching again." % (120 - difference))
     
     try:
