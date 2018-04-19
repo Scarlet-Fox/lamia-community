@@ -274,8 +274,12 @@ script(type="text/javascript").
         });
         editor.onSave(function (html) {
           $.post("/member/{{profile.my_url}}/edit-profile", {"about_me": html},function(data) {
-            $("#user-profile-about-me").html(data.about_me);
-            editor.destroyEditor();
+            if (data.error != null) {
+              editor.flashError(data.error);
+            } else {
+              $("#user-profile-about-me").html(data.about_me);
+              editor.destroyEditor();
+            }
           });
         });
         editor.onCancel(function (html) {

@@ -176,6 +176,9 @@ def make_status_update_reply(status):
     if request_json.get("reply", "").strip() == "":
         return app.jsonify(error="Your status update is empty.")
 
+    if len(request_json.get("reply", "")) > 1000:
+        return app.jsonify(error="Your status update is too long.")
+
     cleaner = ForumHTMLCleaner()
     try:
         _html = cleaner.escape(request_json.get("reply", ""))
@@ -298,6 +301,9 @@ def create_new_status(target):
 
     if len(request_json.get("message", "").strip()) == 0:
         return app.jsonify(error="Your status update is empty.")
+
+    if len(request_json.get("message", "")) > 1000:
+        return app.jsonify(error="Your status update is too long.")
 
     cleaner = ForumHTMLCleaner()
     try:

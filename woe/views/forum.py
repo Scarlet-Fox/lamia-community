@@ -164,6 +164,9 @@ def new_post_in_topic(slug):
     if request_json.get("text", "").strip() == "":
         return app.jsonify(no_content=True)
 
+    if len(request_json.get("text", "")) > 50000:
+        return app.jsonify(error="Your post is too large.")
+
     cleaner = ForumHTMLCleaner()
     try:
         post_html = cleaner.clean(request_json.get("post", ""))
@@ -760,6 +763,9 @@ def edit_topic_post_html(slug):
     if request_json.get("text", "").strip() == "":
         return app.jsonify(error="Your post is empty.")
 
+    if len(request_json.get("text", "")) > 50000:
+        return app.jsonify(error="Your post is too large.")
+
     cleaner = ForumHTMLCleaner()
     try:
         post_html = cleaner.clean(request_json.get("post", ""))
@@ -1125,6 +1131,9 @@ def edit_topic(slug):
 
         if request_json.get("text", "").strip() == "":
             return app.jsonify(error="Please enter actual text for your topic.")
+            
+        if len(request_json.get("text", "")) > 50000:
+            return app.jsonify(error="Your post is too large.")
 
         if len(category.allowed_labels) > 0:
             if request_json.get("prefix", "").strip() == "":
@@ -1201,6 +1210,9 @@ def new_topic(slug):
 
         if request_json.get("text", "").strip() == "":
             return app.jsonify(error="Please enter actual text for your post.")
+
+        if len(request_json.get("text", "")) > 50000:
+            return app.jsonify(error="Your post is too large.")
 
         if len(category.allowed_labels) > 0:
             if request_json.get("prefix", "").strip() == "":

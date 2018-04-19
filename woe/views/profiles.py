@@ -1158,6 +1158,9 @@ def edit_profile(login_name):
     if current_user != user and not current_user.is_admin:
         abort(404)
 
+    if len(request.form.get("about_me")) > 50000:
+        return app.jsonify(error="Your profile text is too large.")
+
     if request.method == 'POST':
         cleaner = ForumHTMLCleaner()
         user.about_me = cleaner.clean(request.form.get("about_me"))

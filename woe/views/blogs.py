@@ -732,6 +732,9 @@ def create_blog_comment(slug, entry_slug, page):
     if request_json.get("text", "").strip() == "":
         return app.jsonify(no_content=True)
 
+    if len(request_json.get("text", "")) > 50000:
+        return app.jsonify(error="Your comment is too large.")
+
     cleaner = ForumHTMLCleaner()
     try:
         post_html = cleaner.clean(request_json.get("post", ""))
