@@ -53,6 +53,15 @@ def search_lookup():
     request_json = request.get_json(force=True)
     content_type = request_json.get("content_type", "posts")
     session["content_type"] = content_type
+    query = request_json.get("q", "")[0:300]
+    
+    if len(query) < 3:
+        return app.jsonify(error="Please enter at least 3 characters to search.")
+        
+    try:
+        session["query"] = query
+    except:
+        pass
 
     try:
         timezone = pytz.timezone(current_user.time_zone)
@@ -127,12 +136,6 @@ def search_lookup():
     except:
         authors = []
         session["search_authors"] = []
-
-    query = request_json.get("q", "")[0:300]
-    try:
-        session["query"] = query
-    except:
-        pass
 
     pagination = 20
     try:
@@ -306,5 +309,5 @@ def search_lookup():
             parsed_result["author_name"] = result.author.display_name
             parsed_result["readmore"] = True
             parsed_results.append(parsed_result)
-
+            
     return app.jsonify(results=parsed_results, count=count, pagination=pagination)

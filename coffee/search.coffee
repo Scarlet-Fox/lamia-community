@@ -250,7 +250,18 @@ $ ->
     $("#results-header").text("Searching...")
 
     $.post "/search", JSON.stringify(data), (data) ->
-      console.log data
+      if data.error?
+        $("#search-results-buffer").html("")
+        $("#search-results").html("""
+            <div class="alert alert-danger" role="alert">
+              <b>Error</b>
+              <br><br>
+              #{data.error}
+            </div>
+          """)
+        $("#search-spinner").hide()
+        $("#search-results").show()
+      
       if data.count == 0
         $("#search-results-buffer").html("")
         $("#search-results").html("""<h3>No results...</h3><br><br>""")

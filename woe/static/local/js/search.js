@@ -219,7 +219,12 @@
       $("#results-header").text("Searching...");
       return $.post("/search", JSON.stringify(data), function(data) {
         var _html, l, len3, m, n, o, p, pages, pagination_html, ref3, ref4, ref5, ref6, ref7, ref8, result, results, results1, results2, results3;
-        console.log(data);
+        if (data.error != null) {
+          $("#search-results-buffer").html("");
+          $("#search-results").html("<div class=\"alert alert-danger\" role=\"alert\">\n  <b>Error</b>\n  <br><br>\n  " + data.error + "\n</div>");
+          $("#search-spinner").hide();
+          $("#search-results").show();
+        }
         if (data.count === 0) {
           $("#search-results-buffer").html("");
           $("#search-results").html("<h3>No results...</h3><br><br>");
