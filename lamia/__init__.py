@@ -29,13 +29,15 @@ wtfs_fields.get_pk_from_identity = get_pk_from_identity
 # The actual app
 ###############################################################################
 
+
+
 from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.contrib.cache import FileSystemCache
 from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_admin import Admin
-from flask_cache import Cache
 from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
 from flask import session
@@ -45,7 +47,6 @@ from os import path
 import json
 
 settings_file = json.loads(open("config.json").read())
-
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 login_manager = LoginManager()
@@ -75,6 +76,8 @@ app.settings_file = settings_file
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.jinja_env.cache = {}
 
+cache = FileSystemCache(cache_dir=path.join(app.root_path, 'cache'))
+
 app.config['SESSION_TYPE'] = 'sqlalchemy'
 app.config['SESSION_SQLALCHEMY'] = sqla
 Session(app)
@@ -82,8 +85,6 @@ Session(app)
 assets = Environment(app)
 app.config['ASSETS_DEBUG'] = settings_file["asset_debug"]
 
-cache = Cache(config={'CACHE_TYPE': 'simple'})
-cache.init_app(app)
 bcrypt = Bcrypt(app)
 if settings_file.get("toolbar", False):
     toolbar = DebugToolbarExtension(app)
@@ -128,6 +129,7 @@ import views.private_messages
 import views.search
 import views.status_updates
 import utilities
+import config
 import email_utilities
 
 ###############################################################################

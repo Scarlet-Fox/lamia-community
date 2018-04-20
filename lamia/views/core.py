@@ -207,7 +207,6 @@ def inject_notification_count():
     except:
         return dict(notification_count=0)
 
-_client_template_cache = {} # TODO : obviously this is not thread safe
 @app.context_processor
 def inject_theme_coffee_templates():
     c = current_user
