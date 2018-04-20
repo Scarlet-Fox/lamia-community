@@ -5,8 +5,8 @@ celery = app.celery
 
 @celery.task()
 def verify_attachment(filepath, size):
-    filepath = os.path.join(os.getcwd(), "woe/static/uploads", filepath)
-    sizepath = os.path.join(os.getcwd(), "woe/static/uploads", 
+    filepath = os.path.join(os.getcwd(), "lamia/static/uploads", filepath)
+    sizepath = os.path.join(os.getcwd(), "lamia/static/uploads", 
         ".".join(filepath.split(".")[:-1])+".custom_size."+size+"."+filepath.split(".")[-1])
     
     if not os.path.exists(sizepath):

@@ -281,8 +281,8 @@ def render_attachment_bbcode(tag_name, value, options, parent, context):
             <img class="attachment-image%s" src="%s" width="%spx" data-show_box="%s" alt="%s" data-url="/static/uploads/%s" data-size="%s"/>
             """ % (image_formatting_class, quote(url.encode('utf-8')), _attachment_size, show_box, attachment.alt, quote(attachment.path.encode('utf-8')), int(float(attachment.size_in_bytes)/1024))
     else:
-        filepath = os.path.join(os.getcwd(), "woe/static/uploads", attachment.path)
-        sizepath = os.path.join(os.getcwd(), "woe/static/uploads",
+        filepath = os.path.join(os.getcwd(), "lamia/static/uploads", attachment.path)
+        sizepath = os.path.join(os.getcwd(), "lamia/static/uploads",
             ".".join(filepath.split(".")[:-1])+".custom_size."+_attachment_size+"."+filepath.split(".")[-1])
         
         show_box = "yes"

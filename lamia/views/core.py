@@ -611,7 +611,7 @@ def create_attachment():
         attach.created_date = arrow.utcnow().datetime
         attach.file_hash = "disabled"
         attach.linked = False
-        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(time_snapshot)+"_"+str(current_user.id)+filename)
+        upload_path = os.path.join(os.getcwd(), "lamia/static/uploads", str(time_snapshot)+"_"+str(current_user.id)+filename)
         attach.path = str(time_snapshot)+"_"+str(current_user.id)+filename
 
         sqla.session.add(attach)
@@ -1284,7 +1284,7 @@ def sign_in():
 
 @app.route('/banned')
 def banned_user():
-    image_dir = os.path.join(os.getcwd(),"woe/static/banned_images/")
+    image_dir = os.path.join(os.getcwd(),"lamia/static/banned_images/")
     images = ["/static/banned_images/"+unicode(i) for i in os.listdir(image_dir)]
     return render_template("banned.jade", page_title="You Are Banned.", images=images)
 

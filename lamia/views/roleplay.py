@@ -606,7 +606,7 @@ def create_attachment_for_character(slug):
         attach.created_date = arrow.utcnow().datetime
         attach.file_hash = img_hash
         attach.linked = False
-        upload_path = os.path.join(os.getcwd(), "woe/static/uploads", str(_time)+"_"+str(current_user.id)+filename)
+        upload_path = os.path.join(os.getcwd(), "lamia/static/uploads", str(_time)+"_"+str(current_user.id)+filename)
         attach.path = str(_time)+"_"+str(current_user.id)+filename
 
         sqla.session.add(attach)

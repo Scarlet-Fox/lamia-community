@@ -23,7 +23,7 @@ from collections import OrderedDict
 from sqlalchemy.orm import joinedload
 from lamia import app
 
-_mylookup = TemplateLookup(directories=['woe/templates/mako'])
+_mylookup = TemplateLookup(directories=['lamia/templates/mako'])
 
 ############################################################
 # Dice Roll Models
@@ -937,9 +937,9 @@ class Attachment(db.Model):
 
     def get_specific_size(self, width=200):
         network_path = os.path.join("/static/uploads", self.path)
-        file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path)
+        file_path = os.path.join(os.getcwd(), "lamia/static/uploads", self.path)
         size_network_path = os.path.join("/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
-        size_file_path = os.path.join(os.getcwd(), "woe/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
+        size_file_path = os.path.join(os.getcwd(), "lamia/static/uploads", self.path+".attachment_resized."+str(width)+"."+self.extension)
 
         if self.do_not_convert or width > self.x_size:
             return network_path
