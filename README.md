@@ -1,6 +1,6 @@
-#Lamia-Community
+# Lamia-Community
 
-*Latest News:* We are currently pushing for a 1.00 release in September 2018. This will be our first tagged release. Until that release, use at your own risk, this is a rapidly changing project.
+**Latest News:** We are currently pushing for a 1.00 release in September 2018. This will be our first tagged release. Until that release, use at your own risk, this is a rapidly changing project. We are calling this release 1.00 because Lamia has already been used to run live sites since 2015 and has never had significant reliability issues.
 
 Lamia Community is a platform, built using Flask.py, for those looking for an integrated forum, blog, and status update interface without all of the assumptions made by social network platforms.
 
@@ -14,6 +14,12 @@ Lamia is...
 * A flexible and customizable user profile system
 
 ... all tied together with some added seasoning.
+
+## Project History
+
+After repeated attempts, a group of hackers that had been targeting our forum finally took us offline. Our forum had been put together using a fairly vanilla copy of one of the more popular commercial forum packages. In the beginning, it had seemed like a safe bet. However, as our forum grew over time, we became intimately familiar with the frustratingly slow response times from support, an obtuse plug in interface, and expensive licensing fees.
+
+When we were hacked, that was the last straw. We built a forum package in Python and migrated all of our content over. Over time, our initial forum evolved around a core set of features, and at some point, we realized that it made sense to open source it. Thus, Lamia was born. And... Yes. It is a headache to transform hard-coded values into configurable options. I think that this process is a great example of "learning through pain".
 
 ## Project Goals
 
