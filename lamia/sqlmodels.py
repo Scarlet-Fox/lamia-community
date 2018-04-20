@@ -21,7 +21,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.sql import text
 from collections import OrderedDict
 from sqlalchemy.orm import joinedload
-from lamia import app
+from lamia import app, cache
 
 _mylookup = TemplateLookup(directories=['lamia/templates/mako'])
 
@@ -236,7 +236,19 @@ class SiteConfiguration(db.Model):
 
     def __repr__(self):
         return "<SiteConfiguration: (hierarchy='%s', key='%s', value='%s')>" % (self.hierarchy, self.key, self.value)
-    
+
+def get_site_config(option):
+    try:
+        cached = cache.get(option)
+        if cached != None:
+            return cached
+        else:
+            value = SiteConfiguration.query.filter_by(hierarchy=option)[0].value
+            cache.set(option, value)
+            return value
+    except IndexError:
+        return False
+
 class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
@@ -1779,3 +1791,7 @@ def del_attachment_image(mapper, connection, target):
                               form.thumbgen_filename(target.path)))
         except OSError:
             pass
+            
+@listens_for(SiteConfiguration, 'after_update')
+def clear_cache_for_site_configuration(mapper, connection, target):
+    cache.delete(target.hierarchy)
