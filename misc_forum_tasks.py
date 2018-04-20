@@ -1,8 +1,8 @@
 import arrow
-from woe import sqla
-import woe.sqlmodels as sqlm
-from woe import settings_file
-from woe.sqlmodels import *
+from lamia import sqla
+import lamia.sqlmodels as sqlm
+from lamia import settings_file
+from lamia.sqlmodels import *
 
 sqla.engine.execute(
     """UPDATE \"user\" SET lifetime_infraction_points=0"""

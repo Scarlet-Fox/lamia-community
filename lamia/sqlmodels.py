@@ -1,8 +1,8 @@
-from woe import sqla as db
+from lamia import sqla as db
 from sqlalchemy.dialects.postgresql import JSONB
 from woe.utilities import ipb_password_check, md5
 from slugify import slugify
-from woe import bcrypt
+from lamia import bcrypt
 from flask_login import current_user
 from wand.image import Image
 from threading import Thread
@@ -21,7 +21,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.sql import text
 from collections import OrderedDict
 from sqlalchemy.orm import joinedload
-from woe import app
+from lamia import app
 
 _mylookup = TemplateLookup(directories=['woe/templates/mako'])
 

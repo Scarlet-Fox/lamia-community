@@ -1,5 +1,5 @@
-from woe import app
-from woe import bcrypt
+from lamia import app
+from lamia import bcrypt
 from woe.utilities import ipb_password_check, ForumHTMLCleaner
 from wand.image import Image
 from urllib import quote
@@ -10,8 +10,8 @@ except:
     import re
 from flask_login import current_user
 from threading import Thread
-from woe import sqla
-import woe.sqlmodels as sqlm
+from lamia import sqla
+import lamia.sqlmodels as sqlm
 from urllib import urlencode
 import bbcode
 
@@ -184,8 +184,8 @@ def render_progressbar_bbcode(tag_name, value, options, parent, context):
 bbcode_parser.add_formatter("progressbar", render_progressbar_bbcode, standalone=True)
 
 def resize_image_save_custom(image_file_location, new_image_file, new_x_size, _id):
-    from woe import sqla
-    import woe.sqlmodels as sqlm
+    from lamia import sqla
+    import lamia.sqlmodels as sqlm
 
     attachment = sqla.session.query(sqlm.Attachment).filter_by(id=_id)[0]
 

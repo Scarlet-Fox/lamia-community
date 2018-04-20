@@ -3,7 +3,7 @@ import os, sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from flask_script import Manager, Server
 from flask_migrate import Migrate, MigrateCommand
-from woe import app
+from lamia import app
 
 migrate = Migrate(app, app.sqla)
 manager = Manager(app)

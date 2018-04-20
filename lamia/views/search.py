@@ -1,11 +1,11 @@
-from woe import app
+from lamia import app
 from flask import request, session, redirect
 from flask_login import current_user, login_required
 from woe.utilities import humanize_time, parse_search_string_return_q, parse_search_string
 from mongoengine.queryset import Q
 import arrow, json, pytz
-import woe.sqlmodels as sqlm
-from woe import sqla
+import lamia.sqlmodels as sqlm
+from lamia import sqla
 from sqlalchemy_searchable import search
 import HTMLParser
 from woe.utilities import render_lamia_template as render_template

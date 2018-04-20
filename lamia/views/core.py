@@ -1,5 +1,5 @@
-from woe import login_manager
-from woe import app, bcrypt
+from lamia import login_manager
+from lamia import app, bcrypt
 from woe.parsers import ForumPostParser
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
@@ -17,9 +17,9 @@ import urllib, urllib2
 import HTMLParser
 from werkzeug.exceptions import default_exceptions, HTTPException
 from  werkzeug.debug import get_current_traceback
-from woe import sqla
+from lamia import sqla
 from flask_login import AnonymousUserMixin
-import woe.sqlmodels as sqlm
+import lamia.sqlmodels as sqlm
 import pytz
 import math, random, time
 from os import path

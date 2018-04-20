@@ -1,5 +1,5 @@
-from woe import app
-from woe import sqla
+from lamia import app
+from lamia import sqla
 from woe.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, make_response, json, flash, session, send_from_directory
 from flask_login import login_required, current_user
@@ -8,7 +8,7 @@ from mongoengine.queryset import Q
 import arrow, json
 from woe.views.dashboard import broadcast
 from BeautifulSoup import BeautifulSoup
-import woe.sqlmodels as sqlm
+import lamia.sqlmodels as sqlm
 from woe.forms.blogs import BlogSettingsForm, BlogEntryForm, BlogCommentForm
 import math, re
 from woe.utilities import render_lamia_template as render_template

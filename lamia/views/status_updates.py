@@ -1,4 +1,4 @@
-from woe import app
+from lamia import app
 from woe.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, make_response, json, flash, session, send_from_directory
 from flask_login import login_required, current_user
@@ -6,8 +6,8 @@ from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_sea
 from mongoengine.queryset import Q
 import arrow, json
 from woe.views.dashboard import broadcast
-from woe import sqla
-import woe.sqlmodels as sqlm
+from lamia import sqla
+import lamia.sqlmodels as sqlm
 from woe.utilities import render_lamia_template as render_template
 
 @app.route('/status/<status>/replies', methods=['GET'])

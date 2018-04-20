@@ -1,5 +1,5 @@
-from woe import app
-from woe import sqla
+from lamia import app
+from lamia import sqla
 from woe.parsers import ForumPostParser
 from collections import OrderedDict
 from woe.forms.core import LoginForm, RegistrationForm
@@ -12,7 +12,7 @@ from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHT
 from woe.views.dashboard import broadcast
 import re, json
 from datetime import datetime
-import woe.sqlmodels as sqlm
+import lamia.sqlmodels as sqlm
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm import joinedload
 from BeautifulSoup import BeautifulSoup

@@ -1,9 +1,9 @@
 import twitter
 import arrow
-from woe import sqla
-import woe.sqlmodels as sqlm
-from woe import settings_file
-from woe.sqlmodels import *
+from lamia import sqla
+import lamia.sqlmodels as sqlm
+from lamia import settings_file
+from lamia.sqlmodels import *
 
 api = twitter.Api(consumer_key=settings_file["twitter_consumer_key"],
         consumer_secret=settings_file["twitter_consumer_secret"],

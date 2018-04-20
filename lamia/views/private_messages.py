@@ -1,12 +1,12 @@
-from woe import app
+from lamia import app
 from woe.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, make_response, json, flash, session
 from flask_login import login_user, logout_user, current_user, login_required
 import arrow, time, math
 from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner
 from woe.views.dashboard import broadcast
-import woe.sqlmodels as sqlm
-from woe import sqla
+import lamia.sqlmodels as sqlm
+from lamia import sqla
 from sqlalchemy.orm.attributes import flag_modified
 from woe.utilities import render_lamia_template as render_template
 

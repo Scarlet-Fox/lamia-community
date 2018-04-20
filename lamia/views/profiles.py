@@ -1,15 +1,15 @@
 from woe.parsers import ForumPostParser, emoticon_codes
 from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm, SiteCustomizationForm
 from woe.forms.signatures import NewSignature
-from woe import app
+from lamia import app
 from flask import abort, redirect, url_for, request, make_response, json, flash, session
 from flask_login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow
 from woe.utilities import ForumHTMLCleaner, strip_tags
-from woe import sqla
-import woe.sqlmodels as sqlm
+from lamia import sqla
+import lamia.sqlmodels as sqlm
 import time
 from woe.views.dashboard import broadcast
 from threading import Thread

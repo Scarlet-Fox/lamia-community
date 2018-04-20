@@ -3,8 +3,8 @@ from wtforms import BooleanField, StringField, PasswordField, validators, Select
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wand.image import Image, GRAVITY_TYPES
 import shutil, pytz, arrow
-from woe import sqla
-import woe.sqlmodels as sqlm
+from lamia import sqla
+import lamia.sqlmodels as sqlm
 
 class ResetPasswordForm(Form):
     password = PasswordField('Password', [validators.InputRequired()])

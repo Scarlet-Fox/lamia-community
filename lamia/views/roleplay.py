@@ -1,6 +1,6 @@
 from woe.parsers import ForumPostParser
 from woe.forms.roleplay import CharacterForm
-from woe import app
+from lamia import app
 from flask import abort, redirect, url_for, request, make_response, json, flash
 from flask_login import login_required, current_user
 from werkzeug import secure_filename
@@ -9,8 +9,8 @@ import arrow, hashlib, mimetypes, time
 from woe.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q, parse_search_string, get_preview
 from mongoengine.queryset import Q
 from wand.image import Image
-import woe.sqlmodels as sqlm
-from woe import sqla
+import lamia.sqlmodels as sqlm
+from lamia import sqla
 from woe.utilities import render_lamia_template as render_template
 
 @app.route('/characters')

@@ -1,4 +1,4 @@
-from woe import app
+from lamia import app
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash
 from wtforms import BooleanField, StringField, TextAreaField, PasswordField, validators, SelectField, HiddenField, IntegerField, DateField
 from flask_login import login_required, current_user
@@ -6,8 +6,8 @@ import flask_admin as admin
 from flask_admin import helpers, expose, BaseView, form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
-from woe import sqla
-import woe.sqlmodels as sqlm
+from lamia import sqla
+import lamia.sqlmodels as sqlm
 from jinja2 import Markup
 import arrow
 from woe.utilities import humanize_time, ForumHTMLCleaner

@@ -1,13 +1,13 @@
 from lxml.html.clean import Cleaner
 import hashlib
 import arrow
-from woe import app
+from lamia import app
 import cgi, pytz, os
 try:
     import regex as re
 except:
     import re
-from woe import sqla
+from lamia import sqla
 from flask_login import current_user
 from mongoengine.queryset import Q
 from BeautifulSoup import BeautifulSoup

@@ -1,5 +1,5 @@
-from woe import sqla
-from woe.sqlmodels import *
+from lamia import sqla
+from lamia.sqlmodels import *
 from datetime import datetime
 import random
 

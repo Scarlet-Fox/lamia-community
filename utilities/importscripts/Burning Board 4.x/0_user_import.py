@@ -2,8 +2,8 @@ import MySQLdb
 import MySQLdb.cursors
 import sys
 sys.path.append('.')
-from woe.sqlmodels import *
-from woe import sqla
+from lamia.sqlmodels import *
+from lamia import sqla
 from slugify import slugify
 import arrow, os, shutil	
 from wand.image import Image	

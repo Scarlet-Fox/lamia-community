@@ -1,5 +1,5 @@
-from woe import sqla
-import woe.sqlmodels as sqlm
+from lamia import sqla
+import lamia.sqlmodels as sqlm
 
 def create_setting(hierarchy, key, default_value, option_type, meta, default):
     try:

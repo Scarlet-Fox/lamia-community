@@ -1,5 +1,5 @@
-from woe.models.core import User
-from woe.views.dashboard import broadcast
+from lamia.models.core import User
+from lamia.views.dashboard import broadcast
 
 l = User.objects[0]
 z = User.objects[1]

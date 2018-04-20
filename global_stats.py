@@ -1,9 +1,9 @@
-from woe import sqla
-from woe.sqlmodels import *
-import woe.sqlmodels as sqlm
+from lamia import sqla
+from lamia.sqlmodels import *
+import lamia.sqlmodels as sqlm
 from sqlalchemy.orm.attributes import flag_modified
-from woe.parsers import emoticon_codes
-from woe.utilities import strip_tags
+from lamia.parsers import emoticon_codes
+from lamia.utilities import strip_tags
 
 sqla.session.query(sqlm.TopTen).delete()
 

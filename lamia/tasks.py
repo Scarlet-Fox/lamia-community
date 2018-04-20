@@ -1,5 +1,5 @@
 from wand.image import Image
-from woe import app
+from lamia import app
 import os
 celery = app.celery
 
