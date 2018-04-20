@@ -6,7 +6,7 @@ from lamia import sqla
 import lamia.sqlmodels as sqlm
 import requests, arrow
 from BeautifulSoup import BeautifulSoup
-from woe.utilities import get_preview_for_email
+from lamia.utilities import get_preview_for_email
 from sqlalchemy.orm.attributes import flag_modified
 
 _mylookup = TemplateLookup(directories=[app.config['MAKO_EMAIL_TEMPLATE_DIR']])

@@ -1,9 +1,9 @@
 from lamia import sqla
-from woe.sqlmodels import *
+from lamia.sqlmodels import *
 import lamia.sqlmodels as sqlm
 from sqlalchemy.orm.attributes import flag_modified
-from woe.parsers import emoticon_codes
-from woe.utilities import strip_tags
+from lamia.parsers import emoticon_codes
+from lamia.utilities import strip_tags
 
 for user in User.query.filter_by(banned=False, validated=True).all():
     def update_user_smileys(user):

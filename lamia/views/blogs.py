@@ -1,17 +1,17 @@
 from lamia import app
 from lamia import sqla
-from woe.parsers import ForumPostParser
+from lamia.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, make_response, json, flash, session, send_from_directory
 from flask_login import login_required, current_user
-from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview
+from lamia.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview
 from mongoengine.queryset import Q
 import arrow, json
-from woe.views.dashboard import broadcast
+from lamia.views.dashboard import broadcast
 from BeautifulSoup import BeautifulSoup
 import lamia.sqlmodels as sqlm
-from woe.forms.blogs import BlogSettingsForm, BlogEntryForm, BlogCommentForm
+from lamia.forms.blogs import BlogSettingsForm, BlogEntryForm, BlogCommentForm
 import math, re
-from woe.utilities import render_lamia_template as render_template
+from lamia.utilities import render_lamia_template as render_template
 
 mention_re = re.compile("\[@(.*?)\]")
 reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')

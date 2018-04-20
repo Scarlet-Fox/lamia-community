@@ -1,6 +1,6 @@
 from lamia import app
 from lamia import bcrypt
-from woe.utilities import ipb_password_check, ForumHTMLCleaner
+from lamia.utilities import ipb_password_check, ForumHTMLCleaner
 from wand.image import Image
 from urllib import quote
 import arrow, os, math

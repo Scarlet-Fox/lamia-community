@@ -1,17 +1,17 @@
 from lamia import login_manager
 from lamia import app, bcrypt
-from woe.parsers import ForumPostParser
+from lamia.parsers import ForumPostParser
 from collections import OrderedDict
-from woe.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
+from lamia.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
-from woe.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
-from woe.email_utilities import send_mail_w_template
+from lamia.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
+from lamia.email_utilities import send_mail_w_template
 from mongoengine.queryset import Q
 from wand.image import Image
 from werkzeug import secure_filename, urls
 import arrow, mimetypes, json, os, hashlib, time, StringIO
-from woe.views.dashboard import broadcast
+from lamia.views.dashboard import broadcast
 from ipwhois import IPWhois
 import urllib, urllib2
 import HTMLParser

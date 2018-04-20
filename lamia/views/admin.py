@@ -10,8 +10,8 @@ from lamia import sqla
 import lamia.sqlmodels as sqlm
 from jinja2 import Markup
 import arrow
-from woe.utilities import humanize_time, ForumHTMLCleaner
-from woe.parsers import ForumPostParser
+from lamia.utilities import humanize_time, ForumHTMLCleaner
+from lamia.parsers import ForumPostParser
 from flask_admin.contrib.sqla.form import AdminModelConverter
 import os, os.path
 from sqlalchemy import or_

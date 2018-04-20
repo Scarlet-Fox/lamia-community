@@ -1,14 +1,14 @@
 from lamia import app
-from woe.parsers import ForumPostParser
+from lamia.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, make_response, json, flash, session, send_from_directory
 from flask_login import login_required, current_user
-from woe.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview_for_email, get_preview
+from lamia.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview_for_email, get_preview
 from mongoengine.queryset import Q
 import arrow, json
-from woe.views.dashboard import broadcast
+from lamia.views.dashboard import broadcast
 from lamia import sqla
 import lamia.sqlmodels as sqlm
-from woe.utilities import render_lamia_template as render_template
+from lamia.utilities import render_lamia_template as render_template
 
 @app.route('/status/<status>/replies', methods=['GET'])
 def status_update_replies(status):

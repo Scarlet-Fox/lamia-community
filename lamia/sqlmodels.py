@@ -1,6 +1,6 @@
 from lamia import sqla as db
 from sqlalchemy.dialects.postgresql import JSONB
-from woe.utilities import ipb_password_check, md5
+from lamia.utilities import ipb_password_check, md5
 from slugify import slugify
 from lamia import bcrypt
 from flask_login import current_user

@@ -1,22 +1,22 @@
-from woe.parsers import ForumPostParser, emoticon_codes
-from woe.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm, SiteCustomizationForm
-from woe.forms.signatures import NewSignature
+from lamia.parsers import ForumPostParser, emoticon_codes
+from lamia.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm, SiteCustomizationForm
+from lamia.forms.signatures import NewSignature
 from lamia import app
 from flask import abort, redirect, url_for, request, make_response, json, flash, session
 from flask_login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow
-from woe.utilities import ForumHTMLCleaner, strip_tags
+from lamia.utilities import ForumHTMLCleaner, strip_tags
 from lamia import sqla
 import lamia.sqlmodels as sqlm
 import time
-from woe.views.dashboard import broadcast
+from lamia.views.dashboard import broadcast
 from threading import Thread
 from multiprocessing import Process, Queue
 from sqlalchemy.orm.attributes import flag_modified
-from woe.email_utilities import send_mail_w_template
-from woe.utilities import render_lamia_template as render_template
+from lamia.email_utilities import send_mail_w_template
+from lamia.utilities import render_lamia_template as render_template
 
 try:
     import cPickle as pickle
