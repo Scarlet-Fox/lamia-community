@@ -170,8 +170,6 @@ def send_notification_emails():
                 _notification_names = notification_full_names
                 )
 
-            # print _rendered
-
             u.last_sent_notification_email = arrow.utcnow().datetime.replace(tzinfo=None)
             sqla.session.add(u)
             sqla.session.commit()

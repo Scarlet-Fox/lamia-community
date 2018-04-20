@@ -316,37 +316,6 @@ class IPAddress(db.Model):
     def __repr__(self):
         return "<IPAddress: (ip_address='%s', user=)>" % (self.ip_address,)
 
-class Fingerprint(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    json = db.Column(JSONB)
-    factors = db.Column(db.Integer, default=0, index=True)
-    fingerprint_hash = db.Column(db.String, default="", index=True)
-    last_seen = db.Column(db.DateTime, index=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
-        name="fk_fingerprint_user", ondelete="CASCADE"), index=True)
-    user = db.relationship("User")
-    __table_args__ = (db.UniqueConstraint('user_id', 'fingerprint_hash', name='unique_user_hash'),)
-
-    def __repr__(self):
-        return "<Fingerprint: (factors='%s', user=)>" % (self.factors,)
-
-    def compute_similarity_score(self, stranger):
-        score = 0.0
-        attributes = {}
-
-        for key in self.json.keys():
-            attributes[key] = 1
-
-        for key in stranger.json.keys():
-            attributes[key] = 1
-
-        max_score = float(len(attributes.keys()))
-        for attribute in attributes.keys():
-            if self.json.get(attribute, None) == stranger.json.get(attribute, None):
-                score += 1
-
-        return score/max_score
-
 class SiteLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     method = db.Column(db.String, default="", index=True)

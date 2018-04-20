@@ -15,9 +15,6 @@ def pack_into_db(users, counts, name):
     
     sqla.session.add(topten)
     sqla.session.commit()
-    
-    print name + ": " + str(topten.counts)
-    print
 
 posts = list(sqla.session.query(sqlm.Post).filter(sqlm.Post.hidden==False).all())
 post_frequency = {}

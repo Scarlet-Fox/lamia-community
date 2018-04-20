@@ -801,7 +801,6 @@ class CategoryView(ModelView):
         except IndexError:
             sqla.session.rollback()
             return
-        print category
         
         category.weight = weight
         if section:
@@ -893,8 +892,6 @@ class CategoryView(ModelView):
             for _category in _section["children"]:
                 self.order_category(_category["id"], _category, section=section, weight=_category_weight)
                 _category_weight += 10
-                
-            print section
         
         return "ok."
 
