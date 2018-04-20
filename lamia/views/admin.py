@@ -518,10 +518,13 @@ class ConfigurationView(ModelView):
         ]
         
     def edit_form(self, obj=None):
+        print obj.option_type
         if obj.option_type == "toggle":
             self.form_choices = {
                     "value": [ ('yes', 'Yes'), ('no', 'No')]
                 }
+        else:
+            self.form_choices = None
         self._edit_form_class = self.get_edit_form()
         request._key = obj.key
         return super(ConfigurationView, self).edit_form(obj)
