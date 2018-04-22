@@ -59,7 +59,10 @@ $ ->
       do @refreshPosts
 
       if window._can_edit? and $("#new-post-box").length > 0
-        @inline_editor = new InlineEditor "#new-post-box", "", false
+        if not window.iframe
+          @inline_editor = new InlineEditor "#new-post-box", "", false
+        else
+          @inline_editor = new InlineEditor "#new-post-box", "", false, false, 100, false, true
 
         @inline_editor.onSave (html, text) ->
           topic.inline_editor.disableSaveButton()
@@ -480,6 +483,27 @@ $ ->
 
     postHTMLTemplate: () ->
       theme_tmpl = window.getClientThemeTemplate("topic-postHTMLTemplate")
+      if window.iframe
+        return """
+        <li class="list-group-item">
+          <div class="row">
+            <div class="media post">
+              <div class="media-left">
+                <a href="/member/{{author_login_name}}"><img src="{{user_avatar_60}}" width="{{user_avatar_x_60}}" height="{{user_avatar_y_60}}" class="avatar-mini"></a>
+              </div>
+              <div class="media-body">
+                <div class="media-heading">
+                <a class="hover_user" href="/member/{{author_login_name}}">{{#unless character_name}}{{author_name}}{{else}}{{character_name}}{{/unless}}</a>
+                -
+                {{created}}
+                <a href="{{direct_url}}" class="float-right" id="postlink-smallscreen-{{_id}}">\#{{_id}}</a>
+                </div>
+                {{{html}}}
+              </div>
+            </div>
+          </div>
+        </li>
+        """
       if theme_tmpl
         return theme_tmpl
       else
@@ -680,7 +704,10 @@ $ ->
 
     refreshPosts: () ->
       new_post_html = ""
-      $.post "/t/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination}), (data) =>
+      inline = window.iframe
+      if not inline?
+        inline = false
+      $.post "/t/#{@slug}/posts", JSON.stringify({page: @page, pagination: @pagination, inline: inline}), (data) =>
         if not @first_load
           history.pushState({id: "topic-page-#{@page}"}, '', "/t/#{@slug}/page/#{@page}")
         else
@@ -694,6 +721,8 @@ $ ->
           if @is_logged_in
             post.show_boop = true
           post.direct_url = "/t/#{@slug}/page/#{@page}/post/#{post._id}"
+          if window.iframe
+            post.signature = ""
           new_post_html = new_post_html + @postHTML post
 
         pages = []
@@ -707,7 +736,9 @@ $ ->
             pages = [1..@page+5]
         else
           pages = [1..Math.ceil data.count/@pagination]
-        pagination_html = @paginationHTML {pages: pages}
+        
+        if not window.iframe
+          pagination_html = @paginationHTML {pages: pages}
 
         $(".pagination-listing").html pagination_html
         $("#post-container").html new_post_html
@@ -720,9 +751,10 @@ $ ->
             window._initial_post = ""
           , 500
         else
-          setTimeout () ->
-            $("#topic-breadcrumb")[0].scrollIntoView()
-          , 500
+          if not window.iframe
+            setTimeout () ->
+              $("#topic-breadcrumb")[0].scrollIntoView()
+            , 500
         window.setupContent()
 
   window.topic = new Topic($("#post-container").data("slug"))

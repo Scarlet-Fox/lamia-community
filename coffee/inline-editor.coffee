@@ -1,6 +1,6 @@
 $ ->
   class InlineEditor
-    constructor: (element, url = "", cancel_button=false, edit_reason=false, height=300, no_image_link=false) ->
+    constructor: (element, url = "", cancel_button=false, edit_reason=false, height=300, no_image_link=false, inline_editor=false) ->
       Dropzone.autoDiscover = false
       @quillID = do @getQuillID
       @element = $(element)
@@ -11,10 +11,10 @@ $ ->
       if url != ""
         $.get url, (data) =>
           @element.data("editor_initial_html", data.content)
-          @setupEditor cancel_button
+          @setupEditor cancel_button, inline_editor
       else
         @element.data("editor_initial_html", @element.html())
-        @setupEditor cancel_button
+        @setupEditor cancel_button, inline_editor
     
     getQuillID: () ->
       return $(".ql-editor").length + 1
@@ -45,7 +45,7 @@ $ ->
       @element.data("editor").setText("")
       Dropzone.forElement("#dropzone-#{@quillID}").removeAllFiles()
         
-    setupEditor: (cancel_button) ->
+    setupEditor: (cancel_button, inline_editor) ->
       @lockSave = false
       if @edit_reason
         @element.before @editReasonHTML
@@ -64,16 +64,21 @@ $ ->
         if response.count > 0
           $("#draft-view-#{@quillID}").addClass("btn-success")
       
-      toolbarOptions = [
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'font': ["regular", "caption", "caviar", "comic", "monotype", "monterrey", "opensans", "zinniaseed"] }],
-        [{ 'color': [] },],
-        [{ 'align': [] }],
-        ['link'],
-        ['image'],
-      ]
+      if not inline_editor
+        toolbarOptions = [
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
+          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          [{ 'font': ["regular", "caption", "caviar", "comic", "monotype", "monterrey", "opensans", "zinniaseed"] }],
+          [{ 'color': [] },],
+          [{ 'align': [] }],
+          ['link'],
+          ['image'],
+        ]
+      else
+        toolbarOptions = [
+          ['bold', 'italic', 'underline', 'strike'],
+        ]
       
       Font = Quill.import('formats/font')
       Font.whitelist = ['regular', 'caption', 'caviar', 'comic', 'monotype', 'monterrey', 'opensans', 'zinniaseed']
@@ -134,8 +139,9 @@ $ ->
           $("#image-link-modal-#{_this.quillID}").modal("hide")
 
         $("#image-link-modal-#{_this.quillID}").modal("show")
-              
-      @element.children(".ql-toolbar").append @extraButtonsHTML
+      
+      if not inline_editor
+        @element.children(".ql-toolbar").append @extraButtonsHTML
     
       $("#add-mention-#{@quillID}").on 'click', (e) =>
         do @createAndShowMentionModal

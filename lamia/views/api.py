@@ -25,3 +25,20 @@ def api_version():
     # request.headers["Origin"]
     return app.jsonify(version="Prerelease 4")
     
+@app.route('/api/rss/comments', methods=['POST'])
+@crossdomain(origin="*")
+def rss_get_comments(key, entry):
+    request_json = request.get_json(force=True)
+    
+    try:
+        rss_feed = sqlm.RSSScraper.query.filter_by(rss_key=request_json.get(key, ""))[0]
+    except IndexError:
+        return app.jsonify(error="RSS Feed does not exist.")
+    
+    try:
+        rss_content = sqlm.RSSContent.query.filter_by(remote_id=request_json.get(entry, ""))[0]
+    except IndexError:
+        return app.jsonify(error="RSS Content does not exist.")
+        
+    return app.jsonify(version="Prerelease 4")
+    

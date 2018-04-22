@@ -73,7 +73,11 @@
         window.socket = socket;
         this.refreshPosts();
         if ((window._can_edit != null) && $("#new-post-box").length > 0) {
-          this.inline_editor = new InlineEditor("#new-post-box", "", false);
+          if (!window.iframe) {
+            this.inline_editor = new InlineEditor("#new-post-box", "", false);
+          } else {
+            this.inline_editor = new InlineEditor("#new-post-box", "", false, false, 100, false, true);
+          }
           this.inline_editor.onSave(function(html, text) {
             topic.inline_editor.disableSaveButton();
             return $.post("/t/" + topic.slug + "/new-post", JSON.stringify({
@@ -515,6 +519,9 @@
       Topic.prototype.postHTMLTemplate = function() {
         var theme_tmpl;
         theme_tmpl = window.getClientThemeTemplate("topic-postHTMLTemplate");
+        if (window.iframe) {
+          return "<li class=\"list-group-item\">\n  <div class=\"row\">\n    <div class=\"media post\">\n      <div class=\"media-left\">\n        <a href=\"/member/{{author_login_name}}\"><img src=\"{{user_avatar_60}}\" width=\"{{user_avatar_x_60}}\" height=\"{{user_avatar_y_60}}\" class=\"avatar-mini\"></a>\n      </div>\n      <div class=\"media-body\">\n        <div class=\"media-heading\">\n        <a class=\"hover_user\" href=\"/member/{{author_login_name}}\">{{#unless character_name}}{{author_name}}{{else}}{{character_name}}{{/unless}}</a>\n        -\n        {{created}}\n        <a href=\"{{direct_url}}\" class=\"float-right\" id=\"postlink-smallscreen-{{_id}}\">\#{{_id}}</a>\n        </div>\n        {{{html}}}\n      </div>\n    </div>\n  </div>\n</li>";
+        }
         if (theme_tmpl) {
           return theme_tmpl;
         } else {
@@ -523,11 +530,16 @@
       };
 
       Topic.prototype.refreshPosts = function() {
-        var new_post_html;
+        var inline, new_post_html;
         new_post_html = "";
+        inline = window.iframe;
+        if (inline == null) {
+          inline = false;
+        }
         return $.post("/t/" + this.slug + "/posts", JSON.stringify({
           page: this.page,
-          pagination: this.pagination
+          pagination: this.pagination,
+          inline: inline
         }), (function(_this) {
           return function(data) {
             var first_post, i, j, k, l, len, m, n, pages, pagination_html, post, ref, ref1, ref2, ref3, ref4, ref5, ref6, results, results1, results2, results3;
@@ -550,6 +562,9 @@
                 post.show_boop = true;
               }
               post.direct_url = "/t/" + _this.slug + "/page/" + _this.page + "/post/" + post._id;
+              if (window.iframe) {
+                post.signature = "";
+              }
               new_post_html = new_post_html + _this.postHTML(post);
             }
             pages = [];
@@ -581,9 +596,11 @@
                 return results3;
               }).apply(this);
             }
-            pagination_html = _this.paginationHTML({
-              pages: pages
-            });
+            if (!window.iframe) {
+              pagination_html = _this.paginationHTML({
+                pages: pages
+              });
+            }
             $(".pagination-listing").html(pagination_html);
             $("#post-container").html(new_post_html);
             $(".page-link-" + _this.page).parent().addClass("active");
@@ -594,9 +611,11 @@
                 return window._initial_post = "";
               }, 500);
             } else {
-              setTimeout(function() {
-                return $("#topic-breadcrumb")[0].scrollIntoView();
-              }, 500);
+              if (!window.iframe) {
+                setTimeout(function() {
+                  return $("#topic-breadcrumb")[0].scrollIntoView();
+                }, 500);
+              }
             }
             return window.setupContent();
           };

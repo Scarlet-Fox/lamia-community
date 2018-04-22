@@ -1,0 +1,97 @@
+{% extends "base.jade" %}
+
+{% block theme %}
+{% assets filters="cssmin", output="generated/woe-core.css",
+"assets/bootstrap.css", "assets/quill2/quill.snow.css",
+"assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
+"assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
+"assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
+"local/default.css" %}
+link(href='{{ASSET_URL}}', rel='stylesheet')
+{% endassets %}
+{% endblock %}
+
+{% block header %}
+style
+  | .site-background { display: none !important; }
+  | body { background: none; }
+  | .hide-inline { display: none; }
+  | .media.post { padding: 5px; }
+  
+{% endblock %}
+
+{% block content %}
+if current_user.is_authenticated() == False
+  p.text-muted Please login to make a reply to this topic.
+else
+  p
+    a.click-to-comment(href="#") Click here to make a comment
+//- else
+//-   center
+//-     .btn.btn-default Make a Comment
+//-     br
+//-     br
+      
+.row(style="padding: 10px;")
+  .col-md-12
+    ul.list-group.category
+      li.list-group-item.primary-editor(style="overflow: hidden; display: none;")
+        if current_user.is_authenticated() == False
+          p.text-muted Please login to make a reply to this topic.
+        elif topic.locked or topic.hidden
+          p.text-muted This topic is locked.
+        else
+          #new-post-box
+      #post-container(data-slug="{{topic.slug}}")
+nav.pagination-listing
+{% endblock %}
+
+{% block script %}
+
+{% assets filters="rjsmin", output="generated/editor.js",
+"assets/quill2/quill.js", "assets/dropzone/dropzone.js", 
+"assets/select2/select2.full.js", "local/js/inline-editor.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+
+script(type="text/javascript").
+  $(document).ready(function(){  
+  $(".click-to-comment").click(function(e) {
+    $(".primary-editor").show();
+    $(".click-to-comment").hide();
+    e.preventDefault();
+  });
+  
+  window.iframe = true;
+  {% if current_user.is_authenticated() == True %}
+  window._pagination=20;//{{current_user.post_pagination}};
+  window._is_topic_mod={{topic.is_topic_mod(current_user)}};
+  window._is_logged_in=true;
+  {% else %}
+  window._pagination=20;
+  window._is_topic_mod=false;
+  window._is_logged_in=false;
+  {% endif %}
+  
+  window._initial_page={{initial_page}};
+  window.roleplay_area={{rp_area}};
+  
+  {% if initial_post == "" %}
+  window._initial_post="";
+  {% else %}
+  window._initial_post="{{initial_post}}";
+  {% endif %}
+  
+  {% if current_user.is_authenticated() == True %}
+  window._can_edit = true;
+  window._current_user = "{{current_user.display_name}}";
+  {% endif %}
+  });
+{% assets filters="rjsmin", output="generated/topic-index.js",
+"local/js/topic-index.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

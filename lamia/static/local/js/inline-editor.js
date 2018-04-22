@@ -5,7 +5,7 @@
   $(function() {
     var InlineEditor;
     return InlineEditor = (function() {
-      function InlineEditor(element, url, cancel_button, edit_reason, height, no_image_link) {
+      function InlineEditor(element, url, cancel_button, edit_reason, height, no_image_link, inline_editor) {
         if (url == null) {
           url = "";
         }
@@ -20,6 +20,9 @@
         }
         if (no_image_link == null) {
           no_image_link = false;
+        }
+        if (inline_editor == null) {
+          inline_editor = false;
         }
         this.createAndShowMentionModal = bind(this.createAndShowMentionModal, this);
         this.createAndShowDraftModal = bind(this.createAndShowDraftModal, this);
@@ -43,12 +46,12 @@
           $.get(url, (function(_this) {
             return function(data) {
               _this.element.data("editor_initial_html", data.content);
-              return _this.setupEditor(cancel_button);
+              return _this.setupEditor(cancel_button, inline_editor);
             };
           })(this));
         } else {
           this.element.data("editor_initial_html", this.element.html());
-          this.setupEditor(cancel_button);
+          this.setupEditor(cancel_button, inline_editor);
         }
       }
 
@@ -86,7 +89,7 @@
         return Dropzone.forElement("#dropzone-" + this.quillID).removeAllFiles();
       };
 
-      InlineEditor.prototype.setupEditor = function(cancel_button) {
+      InlineEditor.prototype.setupEditor = function(cancel_button, inline_editor) {
         var Block, Font, Parchment, _this, quill, toolbar, toolbarOptions;
         this.lockSave = false;
         if (this.edit_reason) {
@@ -111,33 +114,37 @@
             }
           };
         })(this));
-        toolbarOptions = [
-          ['bold', 'italic', 'underline', 'strike'], [
-            {
-              'list': 'bullet'
-            }, {
-              'indent': '-1'
-            }, {
-              'indent': '+1'
-            }
-          ], [
-            {
-              'header': [1, 2, 3, 4, 5, 6, false]
-            }
-          ], [
-            {
-              'font': ["regular", "caption", "caviar", "comic", "monotype", "monterrey", "opensans", "zinniaseed"]
-            }
-          ], [
-            {
-              'color': []
-            }
-          ], [
-            {
-              'align': []
-            }
-          ], ['link'], ['image']
-        ];
+        if (!inline_editor) {
+          toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'], [
+              {
+                'list': 'bullet'
+              }, {
+                'indent': '-1'
+              }, {
+                'indent': '+1'
+              }
+            ], [
+              {
+                'header': [1, 2, 3, 4, 5, 6, false]
+              }
+            ], [
+              {
+                'font': ["regular", "caption", "caviar", "comic", "monotype", "monterrey", "opensans", "zinniaseed"]
+              }
+            ], [
+              {
+                'color': []
+              }
+            ], [
+              {
+                'align': []
+              }
+            ], ['link'], ['image']
+          ];
+        } else {
+          toolbarOptions = [['bold', 'italic', 'underline', 'strike']];
+        }
         Font = Quill["import"]('formats/font');
         Font.whitelist = ['regular', 'caption', 'caviar', 'comic', 'monotype', 'monterrey', 'opensans', 'zinniaseed'];
         Quill.register(Font, true);
@@ -184,7 +191,9 @@
           });
           return $("#image-link-modal-" + _this.quillID).modal("show");
         });
-        this.element.children(".ql-toolbar").append(this.extraButtonsHTML);
+        if (!inline_editor) {
+          this.element.children(".ql-toolbar").append(this.extraButtonsHTML);
+        }
         $("#add-mention-" + this.quillID).on('click', (function(_this) {
           return function(e) {
             return _this.createAndShowMentionModal();

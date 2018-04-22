@@ -29,6 +29,8 @@ head
       title ({{notification_count}}) - {{ page_title }}
     else
       title {{ page_title }}
+      
+    {% block theme %}
     if current_user.is_authenticated() and current_user.theme
       if current_user.theme.css
         {% assets filters="cssmin", output="generated/"+current_user.theme.get_text_id()+"woe-core.css",
@@ -57,6 +59,7 @@ head
       "local/default.css" %}
       link(href='{{ASSET_URL}}', rel='stylesheet')
       {% endassets %}
+    {% endblock %}
     
     {% block header %}
     {% endblock %}
@@ -83,12 +86,12 @@ body(role='document')
     
   .container#site-container
     .row
-    ul.list-group.category
+    ul.list-group.category.hide-inline
       center
-        li.list-group-item.section-header 
+        li.list-group-item.section-header
           a(href="/", style="color: inherit;") GENERIC SITENAME
     if current_user.navbar_top
-      nav.navbar.navbar-default.navbar-fixed-top(style="-ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)\"; filter: alpha(opacity=90); -moz-opacity: 0.9; -khtml-opacity: 0.9; opacity: 0.9;")
+      nav.navbar.navbar-default.navbar-fixed-top.hide-inline(style="-ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)\"; filter: alpha(opacity=90); -moz-opacity: 0.9; -khtml-opacity: 0.9; opacity: 0.9;")
         .container
           .navbar-header
             if current_user.is_authenticated()
@@ -358,7 +361,7 @@ body(role='document')
                             br
                             a.notification-link(href='{{notification["url"]}}', data-notification='{{notification["id"]}}')= notification["message"]
     else
-      nav.navbar.navbar-default
+      nav.navbar.navbar-default.hide-inline
         .container-fluid
           .navbar-header
             if current_user.is_authenticated()
@@ -631,6 +634,7 @@ body(role='document')
     #content-border
       {% block content %}
       {% endblock %}
+      {% block footer %}
       ul.list-group
         li.list-group-item.section-header.sidebar-section-header(style="margin-top: 10px;") Quick Links
         li.list-group-item(style="margin-bottom: 25px;")
@@ -721,6 +725,7 @@ body(role='document')
                     span.glyphicon.glyphicon-link
                     | &nbsp;&nbsp;&nbsp;&nbsp;Room for more...
             .col-sm-6
+      {% endblock %}
   #img-click-modal.modal.fade
   #report-click-modal.modal.fade
   #coffee-overrides(style="display: none;")

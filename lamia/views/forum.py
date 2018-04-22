@@ -544,8 +544,13 @@ def topic_posts(slug):
 
     author_signatures = {}
     author_signatures_id = {}
+    inline = request_json.get("inline", False)
     
     for post in posts.items:
+        if inline:
+            if post.id == first_post.id:
+                continue 
+            
         clean_html_parser = ForumPostParser()
 
         active_rolls = [] # (roll_id, spec, flavor, outcome)
@@ -905,18 +910,25 @@ def topic_poll(slug):
                     poll_dictionary["options"][option.option_name].append(voter.display_name)
             
 
-@app.route('/t/<slug>', methods=['GET'], defaults={'page': 1, 'post': ""})
-@app.route('/t/<slug>/page/<page>', methods=['GET'], defaults={'post': ""})
-@app.route('/t/<slug>/page/<page>/post/<post>', methods=['GET'])
-def topic_index(slug, page, post):
+@app.route('/t/<slug>/<method>', methods=['GET'], defaults={'page': 1, 'post': ""})
+@app.route('/t/<slug>', methods=['GET'], defaults={'page': 1, 'post': "", "method": "page"})
+@app.route('/t/<slug>/<method>/<page>', methods=['GET'], defaults={'post': ""})
+@app.route('/t/<slug>/<method>/<page>/post/<post>', methods=['GET'])
+def topic_index(slug, method, page, post):
+    print method
+    
     try:
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
         return abort(404)
+        
     pagination = 20
 
     if current_user in topic.banned:
         return abort(403)
+        
+    if method not in ["page", "inline"]:
+        return abort(404)
 
     cat_perm_calculus = CategoryPermissionCalculator(current_user)
     if not cat_perm_calculus.can_view_topics(topic.category.id, topic.category.can_view_topics):
@@ -1058,8 +1070,11 @@ def topic_index(slug, page, post):
     rp_topic = "false"
     if topic.category.slug in ["roleplays", "scenarios"]:
         rp_topic = "true"
-        
-    return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
+    
+    if method == "inline":
+        return render_template("forum/topic-iframe.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
+    else:
+        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
