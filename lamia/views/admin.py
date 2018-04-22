@@ -17,6 +17,7 @@ import os, os.path
 from sqlalchemy import or_
 from flask_admin._compat import as_unicode, string_types
 from flask_admin.model.ajax import AjaxModelLoader, DEFAULT_PAGE_SIZE
+import warnings
 _base_url = app.config['BASE']
 
 ###################################################################################################
@@ -60,6 +61,7 @@ class AuthAdminIndexView(admin.AdminIndexView):
                 active_bans=active_bans,
                 my_area_reports=my_area_reports
             )
+
 admin = admin.Admin(app, index_view=AuthAdminIndexView(), name="Staff CP")
 
 ###################################################################################################
@@ -358,11 +360,15 @@ class ReportActionView(BaseView):
         sqla.session.commit()
         
         return "ok"
-    
-admin.add_view(ReportActionView(endpoint='report', name="Report Utilities"))
-admin.add_view(MyReportView(sqlm.Report, sqla.session, name='Open in My Area', category="Reports", endpoint='my-reports'))
-admin.add_view(AllOpenReportsView(sqlm.Report, sqla.session, name='All Open Reports', category="Reports", endpoint='all-reports'))
-admin.add_view(ReportArchiveView(sqlm.Report, sqla.session, name='Archived Reports', category="Reports", endpoint='report-archive'))
+
+
+
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+    admin.add_view(ReportActionView(endpoint='report', name="Report Utilities"))
+    admin.add_view(MyReportView(sqlm.Report, sqla.session, name='Open in My Area', category="Reports", endpoint='my-reports'))
+    admin.add_view(AllOpenReportsView(sqlm.Report, sqla.session, name='All Open Reports', category="Reports", endpoint='all-reports'))
+    admin.add_view(ReportArchiveView(sqlm.Report, sqla.session, name='Archived Reports', category="Reports", endpoint='report-archive'))
 
 ###################################################################################################
 # Moderation views : infractions
@@ -457,10 +463,12 @@ class InfractionPresetView(ModelView):
         "/static/assets/datatables/dataTables.responsive.js"
         ]
 
-admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Infraction Log', category="Infractions", endpoint='infractions'))
-admin.add_view(CurrentInfractions(sqlm.User, sqla.session, name='Active Infractions', category="Infractions", endpoint='active-infractions'))
-admin.add_view(MostWanted(sqlm.User, sqla.session, name='Most Infracted', category="Infractions", endpoint='most-infractions'))
-admin.add_view(InfractionPresetView(sqlm.InfractionPreset, sqla.session, name='Infraction Presets', category="Infractions", endpoint='infraction-presets'))
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+    admin.add_view(InfractionView(sqlm.Infraction, sqla.session, name='Infraction Log', category="Infractions", endpoint='infractions'))
+    admin.add_view(CurrentInfractions(sqlm.User, sqla.session, name='Active Infractions', category="Infractions", endpoint='active-infractions'))
+    admin.add_view(MostWanted(sqlm.User, sqla.session, name='Most Infracted', category="Infractions", endpoint='most-infractions'))
+    admin.add_view(InfractionPresetView(sqlm.InfractionPreset, sqla.session, name='Infraction Presets', category="Infractions", endpoint='infraction-presets'))
 
 ###################################################################################################
 # Moderation views : bans
@@ -495,7 +503,9 @@ class BanView(ModelView):
             
         return current_user.is_admin or current_user.is_mod
 
-admin.add_view(BanView(sqlm.Ban, sqla.session, name='Ban Log', category="Bans", endpoint='recent-bans'))
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+    admin.add_view(BanView(sqlm.Ban, sqla.session, name='Ban Log', category="Bans", endpoint='recent-bans'))
 
 ###################################################################################################
 # Administrative views : site settings, options, and config
@@ -748,13 +758,15 @@ class RSSView(ModelView):
     def is_accessible(self):
         return current_user.is_admin
 
-admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
-admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
-admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachment List', category="Site", endpoint='attachments'))
-admin.add_view(SwearFilterView(sqlm.SwearFilter, sqla.session, name='Swear Filtering', category="Site", endpoint='swear-filter'))
-admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, name='IP Addresses', category="Site", endpoint='ip-addresses'))
-admin.add_view(ThemeView(sqlm.SiteTheme, sqla.session, name='Theme Manager', category="Site", endpoint='site-themes'))
-admin.add_view(RSSView(sqlm.RSSScraper, sqla.session, name='RSS Feed Reader', category="Site", endpoint='feed-reader'))
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+    admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
+    admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
+    admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachment List', category="Site", endpoint='attachments'))
+    admin.add_view(SwearFilterView(sqlm.SwearFilter, sqla.session, name='Swear Filtering', category="Site", endpoint='swear-filter'))
+    admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, name='IP Addresses', category="Site", endpoint='ip-addresses'))
+    admin.add_view(ThemeView(sqlm.SiteTheme, sqla.session, name='Theme Manager', category="Site", endpoint='site-themes'))
+    admin.add_view(RSSView(sqlm.RSSScraper, sqla.session, name='RSS Feed Reader', category="Site", endpoint='feed-reader'))
 
 ###################################################################################################
 # Administrative views : Forum-specific options, settings, and config
@@ -1024,13 +1036,15 @@ class StaffView(ModelView):
     
     def is_accessible(self):
         return current_user.is_admin
-
-admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum", endpoint='sections'))
-admin.add_view(CategoryView(sqlm.Category, sqla.session, name='Categories', category="Forum", endpoint='categories'))
-admin.add_view(CategoryPermissionOverrideView(sqlm.CategoryPermissionOverride, sqla.session, name='Permission Overrides', category="Forum", endpoint='perm-overrides'))
-admin.add_view(RoleEditorView(sqlm.Role, sqla.session, name='User Roles', category="Forum", endpoint='roles'))
-admin.add_view(UserAdministrationView(sqlm.User, sqla.session, name='Manage Users', category="Forum", endpoint='manage-users'))
-admin.add_view(StaffView(sqlm.User, sqla.session, name='Manage Staff', category="Forum", endpoint='manage-staff'))
+        
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+    admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum", endpoint='sections'))
+    admin.add_view(CategoryView(sqlm.Category, sqla.session, name='Categories', category="Forum", endpoint='categories'))
+    admin.add_view(CategoryPermissionOverrideView(sqlm.CategoryPermissionOverride, sqla.session, name='Permission Overrides', category="Forum", endpoint='perm-overrides'))
+    admin.add_view(RoleEditorView(sqlm.Role, sqla.session, name='User Roles', category="Forum", endpoint='roles'))
+    admin.add_view(UserAdministrationView(sqlm.User, sqla.session, name='Manage Users', category="Forum", endpoint='manage-users'))
+    admin.add_view(StaffView(sqlm.User, sqla.session, name='Manage Staff', category="Forum", endpoint='manage-staff'))
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction
