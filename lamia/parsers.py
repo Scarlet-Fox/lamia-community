@@ -50,9 +50,72 @@ emoticon_codes = {
 
 def lamia_linker(url):
     href = url
-    if '://' not in href:
-        href = 'http://' + href
-    return '<a href="%s">%s</a>' % (href, url)
+    
+    youtube_match = youtube_re.search(href)
+    dailymotion_match = dailymotion_re.search(href)
+    vimeo_match = vimeo_re.search(href)
+    soundcloud_match = soundcloud_re.search(href)
+    spotify_match = spotify_re.search(href)
+    vine_match = vine_re.search(href)
+    giphy_match = giphy_re.search(href)
+    
+    if youtube_match:
+        video = youtube_match.groups()[0]
+
+        if not current_user.no_images:
+            return """<iframe style="max-width: 100%%" width="560" height="315" src="https://www.youtube.com/embed/%s" frameborder="0" allowfullscreen></iframe>""" % (video, )
+        else:
+            return """<a href="https://www.youtube.com/watch?v=%s" target="_blank">Youtube Link (Embed)</a>""" % (video,)
+    elif dailymotion_match:
+        video = dailymotion_match.groups()[0]
+
+        if not current_user.no_images:
+            return """<iframe style="max-width: 100%%" frameborder="0" width="480" height="270" src="//www.dailymotion.com/embed/video/%s" allowfullscreen></iframe>""" % (video, )
+        else:
+            return """<a href="http://www.dailymotion.com/video/%s" target="_blank">Dailymotion Link (Embed)</a>""" % (video,)
+    elif vimeo_match:
+        video = vimeo_match.groups()[0]
+
+        if not current_user.no_images:
+            return """<iframe style="max-width: 100%%" src="https://player.vimeo.com/video/%s?color=ffffff&title=0&byline=0&portrait=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""" % (video, )
+        else:
+            return """<a href="https://vimeo.com/%s" target="_blank">Vimeo Link (Embed)</a>""" % (video,)
+    elif soundcloud_match:
+        sound_user = soundcloud_match.groups()[0]
+        sound_track = soundcloud_match.groups()[1]
+        options = urlencode({
+            "url": "https://soundcloud.com/"+sound_user+"/"+sound_track
+            })
+
+        if not current_user.no_images:
+            return """<iframe style="max-width: 100%%" width="100%%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?%s&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"></iframe>""" % (options,)
+        else:
+            return """<a href="https://soundcloud.com/%s/%s" target="_blank">Soundcloud Link (%s/%s)</a>""" % (sound_user,sound_track,sound_user,sound_track)
+    elif spotify_match:
+        uri = spotify_match.groups()[0]
+        track = spotify_match.groups()[1]
+        uri = "spotify:"+uri.replace("/", ":")+":"+track
+
+        if not current_user.no_images:
+            return """<iframe style="max-width: 100%%" src="https://embed.spotify.com/?uri=%s" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>""" % (uri,)
+    elif vine_match:
+        video = vine_match.groups()[0]
+
+        if not current_user.no_images:
+            return """<iframe style="max-width: 100%%" src="https://vine.co/v/%s/embed/simple?autoplay=0" width="400" height="400" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>""" % (video, )
+        else:
+            return """<a href="https://vine.co/v/%s" target="_blank">Vine Link (Embed)</a>""" % (video,)
+    elif giphy_match:
+        giph = giphy_match.groups()[0]
+
+        if not current_user.no_images:
+            return """<iframe src="//giphy.com/embed/%s" width="480" height="460" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="http://giphy.com/gifs/%s">via GIPHY</a></p>""" % (giph, giph)
+        else:
+            return """<a href="http://giphy.com/gifs/%s" target="_blank">Giphy Link (Embed)</a>""" % (giph,)
+    else:        
+        if '://' not in href:
+            href = 'http://' + href
+        return '<a href="%s">%s</a>' % (href, url)
 
 bbcode_parser = bbcode.Parser(install_defaults=False, escape_html=False, replace_links=True, linker=lamia_linker)
 bbcode_parser.add_simple_formatter('hr', '<hr />', standalone=True)
