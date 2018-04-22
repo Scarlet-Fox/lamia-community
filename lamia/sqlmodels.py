@@ -215,6 +215,10 @@ class RSSScraper(db.Model):
         name="fk_scraper_user", ondelete="CASCADE"), index=True)
     user_account_for_posting = db.relationship("User", foreign_keys="RSSScraper.user_account_for_posting_id")
     
+    category_for_topics_id = db.Column(db.Integer, db.ForeignKey('category.id',
+        name="fk_scraper_category", ondelete="CASCADE"), index=True)
+    category_for_topics = db.relationship("Category", foreign_keys="RSSScraper.category_for_topics_id")
+    
     last_pulled = db.Column(db.DateTime)
     
     def __repr__(self):
@@ -223,7 +227,7 @@ class RSSScraper(db.Model):
 class RSSContent(db.Model):
     __tablename__ = "rss_content"
     id = db.Column(db.Integer, primary_key=True)
-    remote_id = db.Column(db.Integer, primary_key=True)
+    remote_id = db.Column(db.Integer)
     remote_url = db.Column(db.String)
     last_modified = db.Column(db.DateTime)
 

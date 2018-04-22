@@ -182,9 +182,9 @@ bbcode_parser.add_formatter("espoiler", render_spoiler_bbcode, escape_html=False
 
 def render_button_bbcode(tag_name, value, options, parent, context):
     if options and options.get("button", False):
-        return """<a class="btn btn-default" href="%s" role="button">%s</a>""" % (value, options.get("button"))
+        return """<a class="btn btn-default" href="%s" target="_blank" role="button">%s</a>""" % (value, options.get("button"))
     else:
-        return """<a class="btn btn-default" href="%s" role="button">%s</a>""" % (value, value)
+        return """<a class="btn btn-default" href="%s" target="_blank" role="button">%s</a>""" % (value, value)
         
 bbcode_parser.add_formatter("button", render_button_bbcode, replace_links=False, replace_cosmetic=False)
 

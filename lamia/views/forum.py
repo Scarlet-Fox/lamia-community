@@ -1263,12 +1263,13 @@ def new_topic(slug):
         new_post.created = arrow.utcnow().datetime.replace(tzinfo=None)
         sqla.session.add(new_post)
         sqla.session.commit()
-
+        
         category.recent_topic = new_topic
         category.recent_post = new_post
         category.post_count = category.post_count + 1
         category.topic_count = category.topic_count + 1
         new_topic.recent_post = new_post
+        new_topic.first_post = new_post
         new_topic.watchers.append(new_topic.author)
 
         sqla.session.add(category)

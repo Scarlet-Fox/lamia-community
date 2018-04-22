@@ -719,7 +719,7 @@ class RSSView(ModelView):
         
     column_list = ["user_account_for_posting", "rss_feed_title", "feed_type", "last_pulled",]
     
-    form_create_rules = ["user_account_for_posting", "rss_feed_url", "feed_type"]
+    form_create_rules = ["user_account_for_posting", "category_for_topics", "rss_feed_url", "feed_type"]
     form_edit_rules = form_create_rules
     
     form_ajax_refs = {
