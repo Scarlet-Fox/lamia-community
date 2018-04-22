@@ -198,6 +198,38 @@ db.Index('_status_user_created', StatusUpdate.author_id, StatusUpdate.created)
 ############################################################
 # Core Site Models
 ############################################################
+    
+class RSSScraper(db.Model):
+    __tablename__ = "rss_scraper"
+    id = db.Column(db.Integer, primary_key=True)
+    rss_feed_url = db.Column(db.String)
+    
+    user_account_for_posting_id = db.Column(db.Integer, db.ForeignKey('user.id',
+        name="fk_scraper_user", ondelete="CASCADE"), index=True)
+    user_account_for_posting = db.relationship("User", foreign_keys="RSSScraper.user_account_for_posting_id")
+    
+    last_pulled = db.Column(db.DateTime)
+    
+    def __repr__(self):
+        return "<RSSScraper: (url='%s')>" % (self.rss_feed_url,)
+
+class RSSContent(db.Model):
+    __tablename__ = "rss_content"
+    id = db.Column(db.Integer, primary_key=True)
+    remote_id = db.Column(db.Integer, primary_key=True)
+    remote_url = db.Column(db.String)
+    last_modified = db.Column(db.DateTime)
+
+    topic_id = db.Column(db.Integer, db.ForeignKey('topic.id',
+        name="fk_scrapercontent_topic", ondelete="CASCADE"), index=True)
+    topic = db.relationship("Topic", foreign_keys="RSSContent.topic_id")
+
+    scraper_id = db.Column(db.Integer, db.ForeignKey('rss_scraper.id',
+        name="fk_scrapercontent_content", ondelete="CASCADE"), index=True)
+    scraper = db.relationship("RSSScraper", foreign_keys="RSSContent.scraper_id")
+
+    def __repr__(self):
+        return "<RSSContent: (title='%s')>" % (self.topic.title,)
 
 class Tweet(db.Model):
     id = db.Column(db.Text, primary_key=True)
