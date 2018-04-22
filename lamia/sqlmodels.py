@@ -8,6 +8,7 @@ from wand.image import Image
 from threading import Thread
 import arrow, re, os, math, random, os.path
 import bcrypt as _bcrypt
+import feedparser
 from mako.template import Template
 from mako.lookup import TemplateLookup
 from urllib import quote
@@ -203,6 +204,12 @@ class RSSScraper(db.Model):
     __tablename__ = "rss_scraper"
     id = db.Column(db.Integer, primary_key=True)
     rss_feed_url = db.Column(db.String)
+    rss_feed_title = db.Column(db.String)
+    
+    TYPE_CHOICES = (
+        "wordpress",
+    )
+    feed_type = db.Column(db.String)
     
     user_account_for_posting_id = db.Column(db.Integer, db.ForeignKey('user.id',
         name="fk_scraper_user", ondelete="CASCADE"), index=True)
@@ -1796,3 +1803,14 @@ def del_attachment_image(mapper, connection, target):
 @listens_for(SiteConfiguration, 'after_update')
 def clear_cache_for_site_configuration(mapper, connection, target):
     cache.delete(target.hierarchy)
+    
+@listens_for(RSSScraper, 'before_update')
+@listens_for(RSSScraper, 'before_insert')
+def test_rss_feed(mapper, connection, target):
+    feed = feedparser.parse(target.rss_feed_url)
+    
+    if feed.has_key("bozo_exception"):
+        target.rss_feed_title = "Invalid RSS Feed"
+    else:
+        target.rss_feed_title = feed["feed"].get("title","")
+        

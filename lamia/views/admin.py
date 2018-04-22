@@ -712,12 +712,49 @@ class ThemeView(ModelView):
     def is_accessible(self):
         return current_user.is_admin
 
+class RSSView(ModelView):        
+    form_choices = {
+            "feed_type": [ (x, x) for x in sqlm.RSSScraper.TYPE_CHOICES ]
+        }
+        
+    column_list = ["user_account_for_posting", "rss_feed_title", "feed_type", "last_pulled",]
+    
+    form_create_rules = ["user_account_for_posting", "rss_feed_url", "feed_type"]
+    form_edit_rules = form_create_rules
+    
+    form_ajax_refs = {
+        'user_account_for_posting': StartsWithQueryAjaxModelLoader(
+                'user_account_for_posting', 
+                sqla.session, 
+                sqlm.User, 
+                fields=['display_name',], 
+                page_size=10
+            ),
+        }
+        
+    column_formatters = {
+            'user_account_for_posting': _user_list_formatter,
+        }
+
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+        
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    def is_accessible(self):
+        return current_user.is_admin
+
 admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
 admin.add_view(SmileyConfigView(sqlm.Smiley, sqla.session, name='Smiley List', category="Site", endpoint='smiley-configuration'))
 admin.add_view(AttachmentView(sqlm.Attachment, sqla.session, name='Attachment List', category="Site", endpoint='attachments'))
 admin.add_view(SwearFilterView(sqlm.SwearFilter, sqla.session, name='Swear Filtering', category="Site", endpoint='swear-filter'))
 admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, name='IP Addresses', category="Site", endpoint='ip-addresses'))
 admin.add_view(ThemeView(sqlm.SiteTheme, sqla.session, name='Theme Manager', category="Site", endpoint='site-themes'))
+admin.add_view(RSSView(sqlm.RSSScraper, sqla.session, name='RSS Feed Reader', category="Site", endpoint='feed-reader'))
 
 ###################################################################################################
 # Administrative views : Forum-specific options, settings, and config
