@@ -745,7 +745,6 @@ def change_avatar_or_title(login_name):
 
             user.avatar_extension = extension
             user.avatar_timestamp = timestamp
-            user.old_mongo_hash = None
             user.avatar_full_x, user.avatar_full_y = form.avatar_image.size
             user.avatar_40_x, user.avatar_40_y = form.fourty_image.size
             user.avatar_60_x, user.avatar_60_y = form.sixty_image.size

@@ -126,6 +126,7 @@ import views.admin
 import views.private_messages
 import views.search
 import views.status_updates
+import views.api
 import utilities
 import config
 import email_utilities

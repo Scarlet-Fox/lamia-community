@@ -11,6 +11,10 @@ from lamia import sqla
 from flask_login import current_user
 from BeautifulSoup import BeautifulSoup
 from sqlalchemy.sql import text
+from datetime import timedelta
+from functools import update_wrapper
+from flask import request, make_response
+current_app = app
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 spec_characters = re.compile('&[a-z0-9]{2,5};')
@@ -515,7 +519,8 @@ def humanize_time(time, format_str="MMM D YYYY, hh:mma"):
 from flask import render_template
 def render_lamia_template(template_name_or_list, **context):    
     return render_template(template_name_or_list, **context)
-    
+
+# Code from https://stackoverflow.com/questions/22181384/javascript-no-access-control-allow-origin-header-is-present-on-the-requested?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
                 attach_to_all=True, automatic_options=True):
     """Decorator function that allows crossdomain requests.

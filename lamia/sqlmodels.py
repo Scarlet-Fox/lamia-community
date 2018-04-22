@@ -23,6 +23,7 @@ from sqlalchemy.sql import text
 from collections import OrderedDict
 from sqlalchemy.orm import joinedload
 from lamia import app, cache
+import hashlib
 
 _mylookup = TemplateLookup(directories=['lamia/templates/mako'])
 
@@ -108,7 +109,6 @@ class PrivateMessage(db.Model):
     participants = db.relationship("User", secondary="private_message_user", backref="private_messages")
 
     created = db.Column(db.DateTime, index=True)
-    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
     last_seen_by = db.Column(JSONB)
 
     def participant_objects(self):
@@ -125,7 +125,6 @@ class PrivateMessageReply(db.Model):
     pm = db.relationship("PrivateMessage", foreign_keys="PrivateMessageReply.pm_id")
 
     message = db.Column(db.Text)
-    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     created = db.Column(db.DateTime, index=True)
     modified = db.Column(db.DateTime, nullable=True, index=True)
@@ -184,8 +183,6 @@ class StatusUpdate(db.Model):
     muted = db.Column(db.Boolean, default=False, index=True)
     locked = db.Column(db.Boolean, default=False, index=True)
 
-    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
-
     def get_comment_count(self):
         count = db.session.query(StatusComment).filter(StatusComment.status_id==self.id).count()
         return count
@@ -203,6 +200,8 @@ db.Index('_status_user_created', StatusUpdate.author_id, StatusUpdate.created)
 class RSSScraper(db.Model):
     __tablename__ = "rss_scraper"
     id = db.Column(db.Integer, primary_key=True)
+    rss_key = db.Column(db.String)
+    
     rss_feed_url = db.Column(db.String)
     rss_feed_title = db.Column(db.String)
     
@@ -633,9 +632,6 @@ class User(db.Model):
 
     display_name_history = db.Column(JSONB)
     notification_preferences = db.Column(JSONB)
-
-    # Migration related
-    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
     
     @property
     def listener_token(self):
@@ -903,10 +899,7 @@ class User(db.Model):
         if not self.avatar_extension:
             return "/static/no_profile_avatar"+size+".png"
         else:
-            if self.old_mongo_hash is not None:
-                return "/static/avatars/"+str(self.avatar_timestamp)+str(self.old_mongo_hash)+size+self.avatar_extension
-            else:
-                return "/static/avatars/"+str(self.avatar_timestamp)+str(self.id)+size+self.avatar_extension
+            return "/static/avatars/"+str(self.avatar_timestamp)+str(self.id)+size+self.avatar_extension
 
 class Signature(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -933,8 +926,6 @@ class Attachment(db.Model):
     created_date = db.Column(db.DateTime, index=True)
     do_not_convert = db.Column(db.Boolean, default=False, index=True)
     alt = db.Column(db.String, default="", index=True)
-
-    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     x_size = db.Column(db.Integer, default=100)
     y_size = db.Column(db.Integer, default=100)
@@ -1024,7 +1015,6 @@ class Character(db.Model):
     hidden = db.Column(db.Boolean, default=False, index=True)
 
     character_history = db.Column(JSONB)
-    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
 
     default_avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
         name="fk_character_default_avatar", ondelete="SET NULL"), index=True)
@@ -1361,7 +1351,6 @@ class Post(db.Model):
     post_history = db.Column(JSONB)
     t_title = db.Column(db.String, default="")
 
-    old_mongo_hash = db.Column(db.String, nullable=True, index=True)
     data = db.Column(JSONB)
 
 blogcomment_boop_table = db.Table('blog_comment_boops', db.metadata,
@@ -1817,4 +1806,5 @@ def test_rss_feed(mapper, connection, target):
         target.rss_feed_title = "Invalid RSS Feed"
     else:
         target.rss_feed_title = feed["feed"].get("title","")
+        target.rss_key = hashlib.md5(target.rss_feed_url).hexdigest()
         
