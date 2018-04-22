@@ -180,6 +180,14 @@ def render_spoiler_bbcode(tag_name, value, options, parent, context):
 bbcode_parser.add_formatter("spoiler", render_spoiler_bbcode, escape_html=False)
 bbcode_parser.add_formatter("espoiler", render_spoiler_bbcode, escape_html=False)
 
+def render_button_bbcode(tag_name, value, options, parent, context):
+    if options and options.get("button", False):
+        return """<a class="btn btn-default" href="%s" role="button">%s</a>""" % (value, options.get("button"))
+    else:
+        return """<a class="btn btn-default" href="%s" role="button">%s</a>""" % (value, value)
+        
+bbcode_parser.add_formatter("button", render_button_bbcode, replace_links=False, replace_cosmetic=False)
+
 def render_image_bbcode(tag_name, value, options, parent, context):
     if context.get("strip_images", False):
         return ""
