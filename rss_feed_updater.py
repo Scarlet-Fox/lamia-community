@@ -21,7 +21,12 @@ for feed in rss_feeds:
             try:
                 entry_id = int(entry["post-id"])
                 entry_content = entry["content"][0]["value"]
+                entry_published = arrow.get(entry["published_parsed"])
             except:
+                continue
+                
+            existing_content_count = RSSContent.query.filter_by(remote_id=entry_id).count()
+            if existing_content_count > 0:
                 continue
             
             topic = Topic(
@@ -29,7 +34,7 @@ for feed in rss_feeds:
                     author=feed.user_account_for_posting,
                     slug=sqlm.find_topic_slug(entry["title"]),
                     title=entry["title"],
-                    created=arrow.utcnow().datetime.replace(tzinfo=None),
+                    created=entry_published.datetime.replace(tzinfo=None),
                     post_count=1
                 )
             sqla.session.add(topic)
@@ -42,13 +47,14 @@ for feed in rss_feeds:
                     html=entry["content"][0]["value"].replace("<p>", "<div>").replace("</p>", "</div>") + "\n\n" + more_link,
                     topic=topic,
                     t_title=topic.title,
-                    created=arrow.utcnow().datetime.replace(tzinfo=None)
+                    created=entry_published.datetime.replace(tzinfo=None)
                 )
             sqla.session.add(post)
             sqla.session.commit()
             
             topic.first_post = post
             topic.recent_post = post
+            topic.recent_post_time = post.created
             sqla.session.add(topic)
 
             rss_content = RSSContent(

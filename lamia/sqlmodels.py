@@ -227,7 +227,7 @@ class RSSScraper(db.Model):
 class RSSContent(db.Model):
     __tablename__ = "rss_content"
     id = db.Column(db.Integer, primary_key=True)
-    remote_id = db.Column(db.Integer)
+    remote_id = db.Column(db.Integer, index=True)
     remote_url = db.Column(db.String)
     last_modified = db.Column(db.DateTime)
 

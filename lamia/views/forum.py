@@ -1270,6 +1270,7 @@ def new_topic(slug):
         category.topic_count = category.topic_count + 1
         new_topic.recent_post = new_post
         new_topic.first_post = new_post
+        new_topic.recent_post_time = new_post.created
         new_topic.watchers.append(new_topic.author)
 
         sqla.session.add(category)
