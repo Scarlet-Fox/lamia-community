@@ -9,7 +9,6 @@ except:
     import re
 from lamia import sqla
 from flask_login import current_user
-from mongoengine.queryset import Q
 from BeautifulSoup import BeautifulSoup
 from sqlalchemy.sql import text
 

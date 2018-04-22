@@ -7,7 +7,6 @@ from werkzeug import secure_filename
 import os
 import arrow, hashlib, mimetypes, time
 from lamia.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q, parse_search_string, get_preview
-from mongoengine.queryset import Q
 from wand.image import Image
 import lamia.sqlmodels as sqlm
 from lamia import sqla

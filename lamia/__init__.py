@@ -42,7 +42,6 @@ from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
 from flask import session
 from flask_session import Session
-from bson.dbref import DBRef
 from os import path
 import json
 
@@ -98,7 +97,6 @@ except ImportError:
         raise ImportError
 
 import datetime
-from bson.objectid import ObjectId
 from werkzeug import Response
 
 class SallyJsonEncoder(json.JSONEncoder):

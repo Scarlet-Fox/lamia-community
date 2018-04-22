@@ -2,7 +2,6 @@ from lamia import app
 from flask import request, session, redirect
 from flask_login import current_user, login_required
 from lamia.utilities import humanize_time, parse_search_string_return_q, parse_search_string
-from mongoengine.queryset import Q
 import arrow, json, pytz
 import lamia.sqlmodels as sqlm
 from lamia import sqla
