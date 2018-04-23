@@ -756,5 +756,7 @@ $ ->
               $("#topic-breadcrumb")[0].scrollIntoView()
             , 500
         window.setupContent()
+        if window.iframe
+          window.updateHeight()
 
   window.topic = new Topic($("#post-container").data("slug"))

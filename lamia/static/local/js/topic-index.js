@@ -617,7 +617,10 @@
                 }, 500);
               }
             }
-            return window.setupContent();
+            window.setupContent();
+            if (window.iframe) {
+              return window.updateHeight();
+            }
           };
         })(this));
       };

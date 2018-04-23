@@ -43,6 +43,10 @@ nav.pagination-listing
 {% endblock %}
 
 {% block script %}
+{% assets filters="rjsmin", output="generated/iframe-events.js",
+"local/js/iframe-events.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
 
 {% assets filters="rjsmin", output="generated/editor.js",
 "assets/quill2/quill.js", "assets/dropzone/dropzone.js", 
@@ -52,10 +56,12 @@ script(type="text/javascript", src="{{ASSET_URL}}").
 
 script(type="text/javascript").
   $(document).ready(function(){  
-  $(".click-to-comment").click(function(e) {
+  $(".click-to-comment").click(function(e) { 
+    e.preventDefault();
+    
     $(".primary-editor").show();
     $(".click-to-comment").hide();
-    e.preventDefault();
+    window.updateHeight();
   });
   
   window.iframe = true;

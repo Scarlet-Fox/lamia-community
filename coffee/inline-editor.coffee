@@ -182,6 +182,8 @@ $ ->
         else
           $("#preview-box-#{@quillID}").parent().hide()
           $("#dropzone-#{@quillID}").show()
+        if window.updateHeight?
+          do window.updateHeight
           
       $("#draft-view-#{@quillID}").click (e) =>
         $.post "/drafts/list", JSON.stringify({quill_id: @quillID, path: window.location.pathname}), (response) =>
@@ -211,6 +213,8 @@ $ ->
         else
           $("#dropzone-#{@quillID}").hide()
           $("#preview-box-#{@quillID}").parent().show()
+        if window.updateHeight?
+          do window.updateHeight
 
         $.post "/preview", JSON.stringify({text: $("#post-editor-#{@quillID}").children(".ql-editor").html()}), (response) =>
           $("#preview-box-#{@quillID}").html response.preview

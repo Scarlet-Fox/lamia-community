@@ -246,10 +246,13 @@
           return function(e) {
             e.preventDefault();
             if ($("#dropzone-" + _this.quillID).is(":visible")) {
-              return $("#dropzone-" + _this.quillID).hide();
+              $("#dropzone-" + _this.quillID).hide();
             } else {
               $("#preview-box-" + _this.quillID).parent().hide();
-              return $("#dropzone-" + _this.quillID).show();
+              $("#dropzone-" + _this.quillID).show();
+            }
+            if (window.updateHeight != null) {
+              return window.updateHeight();
             }
           };
         })(this));
@@ -299,6 +302,9 @@
             } else {
               $("#dropzone-" + _this.quillID).hide();
               $("#preview-box-" + _this.quillID).parent().show();
+            }
+            if (window.updateHeight != null) {
+              window.updateHeight();
             }
             return $.post("/preview", JSON.stringify({
               text: $("#post-editor-" + _this.quillID).children(".ql-editor").html()
