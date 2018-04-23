@@ -1,4 +1,5 @@
 $ ->
+  # This code needs to be on the "other side" of the iframe
   # <script>
   #   (function() {
   #     window.addEventListener('message', function(event) {
