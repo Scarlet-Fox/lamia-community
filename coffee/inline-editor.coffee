@@ -180,6 +180,7 @@ $ ->
         if $("#dropzone-#{@quillID}").is(":visible")
           $("#dropzone-#{@quillID}").hide()
         else
+          $("#preview-box-#{@quillID}").parent().hide()
           $("#dropzone-#{@quillID}").show()
           
       $("#draft-view-#{@quillID}").click (e) =>
@@ -205,7 +206,11 @@ $ ->
 
       $("#preview-#{@quillID}").click (e) =>
         e.preventDefault()
-        $("#preview-box-#{@quillID}").parent().show()
+        if $("#preview-box-#{@quillID}").parent().is(":visible")
+          $("#preview-box-#{@quillID}").parent().hide()
+        else
+          $("#dropzone-#{@quillID}").hide()
+          $("#preview-box-#{@quillID}").parent().show()
 
         $.post "/preview", JSON.stringify({text: $("#post-editor-#{@quillID}").children(".ql-editor").html()}), (response) =>
           $("#preview-box-#{@quillID}").html response.preview

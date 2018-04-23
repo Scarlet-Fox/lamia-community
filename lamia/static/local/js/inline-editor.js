@@ -248,6 +248,7 @@
             if ($("#dropzone-" + _this.quillID).is(":visible")) {
               return $("#dropzone-" + _this.quillID).hide();
             } else {
+              $("#preview-box-" + _this.quillID).parent().hide();
               return $("#dropzone-" + _this.quillID).show();
             }
           };
@@ -293,7 +294,12 @@
         $("#preview-" + this.quillID).click((function(_this) {
           return function(e) {
             e.preventDefault();
-            $("#preview-box-" + _this.quillID).parent().show();
+            if ($("#preview-box-" + _this.quillID).parent().is(":visible")) {
+              $("#preview-box-" + _this.quillID).parent().hide();
+            } else {
+              $("#dropzone-" + _this.quillID).hide();
+              $("#preview-box-" + _this.quillID).parent().show();
+            }
             return $.post("/preview", JSON.stringify({
               text: $("#post-editor-" + _this.quillID).children(".ql-editor").html()
             }), function(response) {
