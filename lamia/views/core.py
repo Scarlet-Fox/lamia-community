@@ -942,8 +942,12 @@ def password_reset(token):
 
     return render_template("new_password.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", form=form, token=token)
 
-@app.route('/forgot-password', methods=['GET', 'POST'])
-def forgot_password():
+@app.route('/forgot-password', methods=['GET', 'POST'], defaults={"render": "page"})
+@app.route('/forgot-password/<render>', methods=['GET', 'POST'])
+def forgot_password(render):
+    if render not in ["page", "inline"]:
+        return abort(404)
+        
     if current_user.is_authenticated():
         return abort(404)
 
@@ -964,9 +968,17 @@ def forgot_password():
         )
         sqla.session.add(form.user)
         sqla.session.commit()
-        return render_template("forgot_password_confirm.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", profile=form.user)
+        if render == "inline":
+            return render_template("forgot_password_confirm-iframe.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", profile=form.user, next=form.redirect_to.data)
+        else:
+            return render_template("forgot_password_confirm.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", profile=form.user)
+    else:
+        form.redirect_to.data = request.args.get('next', "/")
 
-    return render_template("forgot_password.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", form=form)
+    if render == "inline":
+        return render_template("forgot_password-iframe.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", form=form)
+    else:
+        return render_template("forgot_password.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", form=form)
 
 @app.route('/hello/<pk>')
 def confirm_register(pk):
@@ -1203,8 +1215,6 @@ def sign_in(render):
     ]
     
     flavor_text = random.choice(flavor_text)
-    
-    print render
     
     if render == "inline":
         return render_template("sign_in-iframe.jade", page_title="Sign In - %%GENERIC SITENAME%%", form=form, flavor_text=flavor_text)
