@@ -1,0 +1,62 @@
+{% extends "base.jade" %}
+
+{% block theme %}
+{% assets filters="cssmin", output="generated/woe-core.css",
+"assets/bootstrap.css", "assets/quill2/quill.snow.css",
+"assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
+"assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
+"assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
+"local/default.css" %}
+link(href='{{ASSET_URL}}', rel='stylesheet')
+{% endassets %}
+{% endblock %}
+
+{% block header %}
+style
+  | .site-background { display: none !important; }
+  | body { background: none; }
+  | .hide-inline { display: none; }
+  | .media.post { padding: 5px; }
+  | .list-group-item { border: none !important; background: none !important; }
+{% endblock %}
+
+{% block content %}
+.row
+  .col-sm-12
+    ul.list-group.category
+      li.list-group-item
+        {% if form.redirect_to.data != "/" %}
+        p.text-warning Please sign in to comment.
+        {% endif %}
+        form(action="/sign-in/inline", method="post")
+          {{ form_errors(form) }}
+          .form-group
+            {{ form.username.label }}
+            {{ form.username(class="form-control") }}
+          .form-group
+            {{ form.password.label }}
+            {{ form.password(class="form-control") }}
+          .form-group
+            label
+              {{ form.anonymouse() }}&nbsp;&nbsp;Anonymous login?
+          {{ form.redirect_to(class="form-control") }}
+          button.btn.btn-default(type="submit") Submit
+          &nbsp;&nbsp;
+          a.btn.btn-default(href="/forgot-password/inline?{{form.redirect_to.data|next_url_arg}}") Forgot Your Password?
+          &nbsp;&nbsp;
+          a(href="/register/inline?{{form.redirect_to.data|next_url_arg}}") Not a member? Sign up here!
+          br
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/sign-in.js",
+"local/js/sign-in.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+script(type="text/javascript").
+  $(document).ready(function(){
+  });
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

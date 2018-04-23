@@ -70,6 +70,7 @@ class RegistrationForm(Form):
         ('darkestdungeon', 'an eldritch abomination')])
     over_thirteen = BooleanField('Are you at or above the age of 13?')
     how_did_you_find_us = StringField('How did you find us?', [validators.InputRequired(),])
+    redirect_to = HiddenField('Next')
 
     def validate_over_thirteen(self, field):
         if not field.data:

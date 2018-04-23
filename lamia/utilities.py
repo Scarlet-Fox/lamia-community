@@ -14,6 +14,7 @@ from sqlalchemy.sql import text
 from datetime import timedelta
 from functools import update_wrapper
 from flask import request, make_response
+from urllib import urlencode
 current_app = app
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
@@ -461,6 +462,10 @@ def number_format(value, tsep=',', dsep='.'):
 @app.context_processor
 def inject_debug():
     return dict(debug=app.debug)
+
+@app.template_filter('next_url_arg')
+def url_arg(url):
+    return urlencode({"next": url})
 
 @app.template_filter('humanize_time')
 def humanize(time, format_str="MMM D YYYY, hh:mm a"):

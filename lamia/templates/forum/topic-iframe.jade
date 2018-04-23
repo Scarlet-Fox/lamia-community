@@ -17,6 +17,7 @@ style
   | body { background: none; }
   | .hide-inline { display: none; }
   | .media.post { padding: 5px; }
+  | .list-group-item { border: none !important; background: none !important; }
   
 {% endblock %}
 
@@ -24,17 +25,9 @@ style
 .row(style="padding: 10px;")
   .col-md-12
     if current_user.is_authenticated() == False
-      p
-        .text-muted Please login to make a reply to this topic.
+      a(href="/sign-in/inline?{{request.path|next_url_arg}}") Please login to make a reply to this topic.
     else
-      p
-        a.click-to-comment(href="#") Click here to make a comment
-//- else
-//-   center
-//-     .btn.btn-default Make a Comment
-//-     br
-//-     br
-      
+      a.click-to-comment(href="#") Click here to make a comment    
 .row(style="padding: 10px;")
   .col-md-12
     ul.list-group.category

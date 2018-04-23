@@ -910,13 +910,11 @@ def topic_poll(slug):
                     poll_dictionary["options"][option.option_name].append(voter.display_name)
             
 
-@app.route('/t/<slug>/<method>', methods=['GET'], defaults={'page': 1, 'post': ""})
-@app.route('/t/<slug>', methods=['GET'], defaults={'page': 1, 'post': "", "method": "page"})
-@app.route('/t/<slug>/<method>/<page>', methods=['GET'], defaults={'post': ""})
-@app.route('/t/<slug>/<method>/<page>/post/<post>', methods=['GET'])
-def topic_index(slug, method, page, post):
-    print method
-    
+@app.route('/t/<slug>/<render>', methods=['GET'], defaults={'page': 1, 'post': ""})
+@app.route('/t/<slug>', methods=['GET'], defaults={'page': 1, 'post': "", "render": "page"})
+@app.route('/t/<slug>/<render>/<page>', methods=['GET'], defaults={'post': ""})
+@app.route('/t/<slug>/<render>/<page>/post/<post>', methods=['GET'])
+def topic_index(slug, render, page, post):
     try:
         topic = sqla.session.query(sqlm.Topic).filter_by(slug=slug)[0]
     except IndexError:
@@ -927,7 +925,7 @@ def topic_index(slug, method, page, post):
     if current_user in topic.banned:
         return abort(403)
         
-    if method not in ["page", "inline"]:
+    if render not in ["page", "inline"]:
         return abort(404)
 
     cat_perm_calculus = CategoryPermissionCalculator(current_user)
@@ -1071,7 +1069,7 @@ def topic_index(slug, method, page, post):
     if topic.category.slug in ["roleplays", "scenarios"]:
         rp_topic = "true"
     
-    if method == "inline":
+    if render == "inline":
         return render_template("forum/topic-iframe.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
     else:
         return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, rp_area=rp_topic)

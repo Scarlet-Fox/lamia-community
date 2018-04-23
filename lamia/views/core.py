@@ -1046,8 +1046,9 @@ def stats():
     
     return render_template("global_stats.jade", page_title="Stats - %%GENERIC SITENAME%%", all_stats=all_stats)
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+@app.route('/register', methods=['GET', 'POST'], defaults={"render": "page"})
+@app.route('/register/<render>', methods=['GET', 'POST'])
+def register(render):
     if current_user.is_authenticated():
         return abort(404)
 
@@ -1139,12 +1140,24 @@ def register():
                 author=new_user
                 )
 
-        return redirect('/hello/'+str(new_user.id))
+        try:
+            return redirect(form.redirect_to.data)
+        except:
+            return redirect("/")
+    else:
+        form.redirect_to.data = request.args.get('next', "/")
 
-    return render_template("register.jade", page_title="Become One of Us - %%GENERIC SITENAME%%", form=form)
+    if render == "inline":
+        return render_template("register-iframe.jade", page_title="Become One of Us - %%GENERIC SITENAME%%", form=form)
+    else:
+        return render_template("register.jade", page_title="Become One of Us - %%GENERIC SITENAME%%", form=form)
 
-@app.route('/sign-in', methods=['GET', 'POST'])
-def sign_in():
+@app.route('/sign-in', methods=['GET', 'POST'], defaults={"render": "page"})
+@app.route('/sign-in/<render>', methods=['GET', 'POST'])
+def sign_in(render):
+    if render not in ["page", "inline"]:
+        return abort(404)
+        
     if current_user.is_authenticated():
         return abort(404)
 
@@ -1190,8 +1203,13 @@ def sign_in():
     ]
     
     flavor_text = random.choice(flavor_text)
-
-    return render_template("sign_in.jade", page_title="Sign In - %%GENERIC SITENAME%%", form=form, flavor_text=flavor_text)
+    
+    print render
+    
+    if render == "inline":
+        return render_template("sign_in-iframe.jade", page_title="Sign In - %%GENERIC SITENAME%%", form=form, flavor_text=flavor_text)
+    else:
+        return render_template("sign_in.jade", page_title="Sign In - %%GENERIC SITENAME%%", form=form, flavor_text=flavor_text)
 
 @app.route('/banned')
 def banned_user():

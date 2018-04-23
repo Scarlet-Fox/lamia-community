@@ -1,0 +1,73 @@
+{% extends "base.jade" %}
+
+{% block theme %}
+{% assets filters="cssmin", output="generated/woe-core.css",
+"assets/bootstrap.css", "assets/quill2/quill.snow.css",
+"assets/dropzone/dropzone.css", "assets/bootstrap-datepicker/bootstrap-datepicker.css",
+"assets/select2/select2.css", "assets/select2/select2-bootstrap.css",
+"assets/datatables/dataTables.bootstrap.css", "assets/datatables/dataTables.responsive.css",
+"local/default.css" %}
+link(href='{{ASSET_URL}}', rel='stylesheet')
+{% endassets %}
+{% endblock %}
+
+{% block header %}
+style
+  | .site-background { display: none !important; }
+  | body { background: none; }
+  | .hide-inline { display: none; }
+  | .media.post { padding: 5px; }
+  | .list-group-item { border: none !important; background: none !important; }
+{% endblock %}
+
+{% block content %}
+.row
+  .col-sm-12
+    ul.list-group
+      li.list-group-item
+        center
+          h2 Join Us!
+          br
+        form(action="/register/inline", method="post", id="join-now")
+          {{ form_errors(form) }}
+          .form-group
+            {{ form.username.label }}
+            {{ form.username(class="form-control") }}
+          .form-group
+            {{ form.password.label }}
+            {{ form.password(class="form-control") }}
+          .form-group
+            {{ form.confirm_password.label }}
+            {{ form.confirm_password(class="form-control") }}
+          .form-group
+            {{ form.email.label }}
+            {{ form.email(class="form-control") }}
+          .form-group
+            {{ form.question.label }}
+            {{ form.question(class="form-control") }}
+          .form-group
+            label
+              {{ form.over_thirteen() }} Are you at or over the age of 13?
+          .form-group
+            p Joining this site means that you have read and agree with our <a href="/rules" target="_blank">rules and terms</a> and understand our <a href="/privacy" target="_blank">privacy policy</a>.
+          .form-group
+            {{ form.how_did_you_find_us.label }}
+            {{ form.how_did_you_find_us(class="form-control") }}
+          {{ form.redirect_to(class="form-control") }}
+          button(type="submit").btn.btn-default Submit
+          br
+{% endblock %}
+
+{% block script %}
+{% assets filters="rjsmin", output="generated/sign-in.js",
+"local/js/sign-in.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
+script(type="text/javascript").
+  $(document).ready(function(){
+    $("#register-li").addClass("active");
+  });
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
