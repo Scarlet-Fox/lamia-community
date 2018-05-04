@@ -1038,7 +1038,15 @@ def change_user_settings(login_name):
         form.minimum_time_between_emails.data = user.minimum_time_between_emails
 
         if user.theme == None:
-            form.theme.data = "1"
+            default_theme = sqla.session.query(sqlm.SiteTheme).filter_by(default=True).all()
+            if len(default_theme) > 0:
+                default_theme = default_theme[0]
+            else:
+                default_theme = sqla.session.query(sqlm.SiteTheme).order_by("weight").all()
+                if len(default_theme) > 0:
+                    default_theme = default_theme[0]
+                else:
+                    form.theme.data = None
         else:
             form.theme.data = str(user.theme.id)
 
