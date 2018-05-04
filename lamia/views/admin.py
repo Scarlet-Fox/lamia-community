@@ -193,7 +193,7 @@ class MyReportView(ModelView):
         "report_area", "created", "status", "report_author", "content_author",
         "report_message", "reported_content_html"
     ]
-    column_labels = dict(content_author="Defendent", report_author="Accuser", created="Report Age",
+    column_labels = dict(content_author="Reported User", report_author="Report Author", created="Report Age",
         report_comment_count="Comments", report_last_updated="Last Updated", reported_content_html="Reported Content")
     # TODO - unhardcode these urls
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
