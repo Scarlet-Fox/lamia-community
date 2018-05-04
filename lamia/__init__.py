@@ -128,7 +128,6 @@ import views.search
 import views.status_updates
 import views.api
 import utilities
-import config
 import email_utilities
 
 ###############################################################################
