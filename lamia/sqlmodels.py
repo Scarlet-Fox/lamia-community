@@ -11,6 +11,7 @@ import bcrypt as _bcrypt
 import feedparser
 from mako.template import Template
 from mako.lookup import TemplateLookup
+from threading import Thread
 from urllib import quote
 from BeautifulSoup import BeautifulSoup
 from sqlalchemy_searchable import make_searchable
@@ -1792,7 +1793,71 @@ def del_attachment_image(mapper, connection, target):
                               form.thumbgen_filename(target.path)))
         except OSError:
             pass
-            
+
+def threaded_topic_post_count(id):
+    from lamia import sqla
+    
+    topic = sqla.session.query(Topic).filter_by(id=id)[0]
+    
+    topic.post_count = sqla.session.query(sqla.func.count('*')).select_from(Post) \
+        .filter(
+            sqla.or_(Post.hidden == False, Post.hidden == None),
+        ).filter_by(topic=topic)[0][0]
+        
+    sqla.session.add(topic)
+    sqla.session.commit()
+
+def threaded_category_post_count(id):
+    from lamia import sqla
+    
+    category = sqla.session.query(Category).filter_by(id=id)[0]
+    
+    category.post_count = sqla.session.query(sqla.func.count('*')).select_from(Post) \
+        .join(Post.topic) \
+        .join(Topic.category) \
+        .filter(
+            sqla.or_(Post.hidden == False, Post.hidden == None),
+            Topic.category == category
+        )[0][0]
+        
+    sqla.session.add(category)
+    sqla.session.commit()
+
+def threaded_category_topic_count(id):
+    from lamia import sqla
+    
+    category = sqla.session.query(Category).filter_by(id=id)[0]
+    
+    category.topic_count = sqla.session.query(sqla.func.count('*')).select_from(Topic) \
+        .filter(
+            sqla.or_(Topic.hidden == False, Topic.hidden == None),
+        ).filter_by(category=category)[0][0]
+        
+    sqla.session.add(category)
+    sqla.session.commit()
+
+@listens_for(Post, 'before_update')
+def set_post_modified_time(mapper, connection, target):
+    target.modified = arrow.utcnow().datetime.replace(tzinfo=None)
+
+@listens_for(Post, 'after_update')
+def recount_after_post_update(mapper, connection, target):
+    topic = target.topic.id
+    category = target.topic.category.id
+    
+    topic_thread = Thread(target=threaded_topic_post_count, args=(topic, ))
+    topic_thread.start()
+    
+    topic_thread = Thread(target=threaded_category_post_count, args=(category, ))
+    topic_thread.start()
+    
+@listens_for(Topic, 'after_update')
+def recount_after_topic_update(mapper, connection, target):
+    category = target.category.id
+    
+    topic_thread = Thread(target=threaded_category_topic_count, args=(category, ))
+    topic_thread.start()
+    
 @listens_for(SiteConfiguration, 'after_update')
 def clear_cache_for_site_configuration(mapper, connection, target):
     cache.delete(target.hierarchy)

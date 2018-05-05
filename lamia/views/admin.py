@@ -1037,6 +1037,62 @@ class StaffView(ModelView):
     
     def is_accessible(self):
         return current_user.is_admin
+
+class RecentHiddenPostView(ModelView):
+    can_create = False
+    can_delete = False
+    
+    column_default_sort = ('created', True)
+    
+    column_list = ["topic.title", "author", "hidden", "created"]
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    form_ajax_refs = {
+        'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+
+    form_edit_rules = ("author", "html", "hidden")
+        
+    def is_accessible(self):
+        return current_user.is_admin or current_user.is_mod
+    
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
+        id = get_mdict_item_or_list(request.args, 'id')
+        if id is None:
+            return abort(404)
+        
+        model = self.get_one(id)
+        if model is None:
+            return abort(404)
+
+        if not current_user.is_admin and not model.topic.category.slug in current_user.get_modded_areas:
+            return abort(404)
+
+        return super(RecentHiddenPostView, self).edit_view()
+    
+    def get_query(self):
+        if current_user.is_admin:
+            return self.session.query(self.model) \
+                .filter(self.model.hidden == True)
+        else:
+            return self.session.query(self.model).filter(
+                    sqlm.Topic.category.has(sqla.or_(
+                        sqlm.Category.can_view_topics == True,
+                        sqlm.Category.can_view_topics == None
+                    ))
+                )\
+                .filter(self.model.hidden == True)
+    
+    def get_count_query(self):
+        return None
         
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
@@ -1046,6 +1102,7 @@ with warnings.catch_warnings():
     admin.add_view(RoleEditorView(sqlm.Role, sqla.session, name='User Roles', category="Forum", endpoint='roles'))
     admin.add_view(UserAdministrationView(sqlm.User, sqla.session, name='Manage Users', category="Forum", endpoint='manage-users'))
     admin.add_view(StaffView(sqlm.User, sqla.session, name='Manage Staff', category="Forum", endpoint='manage-staff'))
+    admin.add_view(RecentHiddenPostView(sqlm.Post, sqla.session, name='Recently Hidden Posts', category="Forum", endpoint='hidden-posts'))
 
 class PostView(ModelView):
     can_create = False
@@ -1129,7 +1186,7 @@ class TopicView(ModelView):
         'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
     }
 
-    form_edit_rules = ("author", "title", "sticky", "locked", "hidden")
+    form_edit_rules = ("author", "title", "sticky", "locked", "hidden", "post_count")
         
     def is_accessible(self):
         return current_user.is_admin or current_user.is_mod
@@ -1343,14 +1400,12 @@ with warnings.catch_warnings():
     admin.add_view(StatusUpdateView(sqlm.StatusUpdate, sqla.session, name='Status Updates', category="Content", endpoint='statusupdate'))
     admin.add_view(StatusCommentView(sqlm.StatusComment, sqla.session, name='Status Comments', category="Content", endpoint='statuscomment'))
 
-# TODO Moderation
 # TODO Add ajax view for creating infraction
 # TODO Add ajax view for modifying a ban
 # TODO Add chart to the front showing reports vs infractions
 # TODO Show recent moderation alerts
 # TODO Log all moderation actions
 # TODO Verify that all front end moderation actions are working
-# TODO Add mod actions that are missing
 # TODO Add status reply mod actions
 # TODO Add code for jump to status reply
 # TODO Write burning board status import script

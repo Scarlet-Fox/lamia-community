@@ -94,6 +94,14 @@ $ ->
         e.preventDefault()
         $("#new-post-box")[0].scrollIntoView()
 
+      $("#post-container").delegate ".hide-post", "click", (e) ->
+        e.preventDefault()
+        element = $(this)
+        pk = element.data("pk")
+
+        $.post "/hide-post", JSON.stringify({pk: pk}), (data) ->
+          
+          
       $("#post-container").delegate ".boop-button", "click", (e) ->
         e.preventDefault()
         element = $(this)
@@ -621,7 +629,7 @@ $ ->
                                   </li>
                                 {{/if}}
                                 {{/if}}
-                                <li><a href="">Hide</a></li>
+                                <li><a href="/hide-post" data-pk="{{_id}}" class="hide-post">Hide</a></li>
                                 <li class="divider hidden-md hidden-sm hidden-lg"></li>
                                 <li class="hidden-md hidden-sm hidden-lg"><a class="go-to-end-of-page" href="">Go to End</a></li>
                               </ul>

@@ -441,6 +441,43 @@ def toggle_post_boop():
     sqla.session.commit()
     return app.jsonify(success=True)
 
+@app.route('/hide-post', methods=['POST'])
+@login_required
+def toggle_post_hide():
+    request_json = request.get_json(force=True)
+
+    try:
+        post = sqla.session.query(sqlm.Post).filter_by(id=request_json.get("pk"))[0]
+    except:
+        return abort(404)
+
+    if current_user == post.author:
+        return abort(404)
+        
+    cat_perm_calculus = CategoryPermissionCalculator(current_user)
+    if not cat_perm_calculus.can_view_topics(post.topic.category.id, post.topic.category.can_view_topics):
+        return abort(404)
+        
+    topic = post.topic
+    category = post.topic.category
+    
+    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas):
+        return abort(404)
+        
+    if post.hidden == None:
+        post.hidden = True
+    else:
+        post.hidden = not post.hidden
+    
+    topic.post_count = topic.post_count - 1
+    category.post_count = category.post_count - 1
+    
+    sqla.session.add(topic)
+    sqla.session.add(category)
+    sqla.session.add(post)
+    sqla.session.commit()
+    return app.jsonify(success=True)
+
 @app.route('/recent', methods=['GET'], defaults={'page': 1})
 @app.route('/recent/page/<page>', methods=['GET'])
 def recent_posts(page):
@@ -632,10 +669,7 @@ def topic_posts(slug):
                 sqla.session.rollback()
                 pass
         
-        if post.hidden:
-            parsed_post["html"] = ""
-        else:
-            parsed_post["html"] = clean_html_parser.parse(post.html, _object=post)
+        parsed_post["html"] = clean_html_parser.parse(post.html, _object=post)
             
         parsed_post["roles"] = post.author.get_roles()
         parsed_post["user_avatar"] = post.author.get_avatar_url()
