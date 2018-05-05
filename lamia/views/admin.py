@@ -1046,6 +1046,52 @@ with warnings.catch_warnings():
     admin.add_view(UserAdministrationView(sqlm.User, sqla.session, name='Manage Users', category="Forum", endpoint='manage-users'))
     admin.add_view(StaffView(sqlm.User, sqla.session, name='Manage Staff', category="Forum", endpoint='manage-staff'))
 
+class PostView(ModelView):
+    can_create = False
+    
+    column_default_sort = ('created', True)
+    
+    column_formatters = {
+        'created': _age_from_time_formatter,
+    }
+    
+    column_list = ["topic.title", "author", "created"]
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    form_ajax_refs = {
+        'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+
+    form_edit_rules = ("author", "html")
+        
+    def is_accessible(self):
+        return current_user.is_admin or current_user.is_mod
+    
+    def get_query(self):
+        if current_user.is_admin:
+            return self.session.query(self.model)
+        else:
+            return self.session.query(self.model).filter(
+                    sqlm.Topic.category.has(sqla.or_(
+                        sqlm.Category.can_view_topics == True,
+                        sqlm.Category.can_view_topics == None
+                    ))
+                )
+    
+    def get_count_query(self):
+        return None
+            
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+    admin.add_view(PostView(sqlm.Post, sqla.session, name='Posts', category="Content", endpoint='post'))
+
 # TODO Moderation
 # TODO Add ajax view for creating infraction
 # TODO Add ajax view for modifying a ban

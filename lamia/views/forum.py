@@ -654,7 +654,7 @@ def topic_posts(slug):
             parsed_post["is_topic_mod"] = True
         else:
             parsed_post["is_topic_mod"] = False
-            
+        
         if current_user.is_admin:
             parsed_post["is_sig_mod"] = True
         else:
