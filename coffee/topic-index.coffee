@@ -570,7 +570,7 @@ $ ->
                       <div class="post-member-self-title">{{user_title}}</div>
                       {{/if}}
                       {{#if character_name}}
-                      <a href="/characters/{{character_slug}}" target="_blank"><img src="/static/emoticons/button_character_by_angelishi-d6wlo5k.gif"></a>
+                      <a href="/characters/{{character_slug}}" target="_blank"><img src="/static/assets/button_character_by_angelishi-d6wlo5k.gif"></a>
                       {{#if roles}}
                       <br>
                       {{/if}}
