@@ -30,6 +30,7 @@ class Anonymouse(AnonymousUserMixin):
     no_images = False
     id = None
     is_mod = False
+    get_modded_areas = []
 
 login_manager.login_view = "sign_in"
 login_manager.anonymous_user = Anonymouse
