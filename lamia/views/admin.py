@@ -1198,6 +1198,8 @@ class BlogEntryView(ModelView):
     
     column_list = ["author", "title", "b_title", "hidden", "published"]
     
+    column_default_sort = ('created', True)
+    
     column_formatters = {
         'published': _age_from_time_formatter,
     }
@@ -1231,6 +1233,8 @@ class BlogCommentView(ModelView):
     
     column_list = ["author", "b_title", "b_e_title", "hidden", "created"]
     
+    column_default_sort = ('created', True)
+    
     column_formatters = {
         'created': _age_from_time_formatter,
     }
@@ -1258,6 +1262,77 @@ class BlogCommentView(ModelView):
     def get_count_query(self):
         return None
 
+class StatusUpdateView(ModelView):
+    can_create = False
+    can_delete = False
+    
+    column_list = ["author", "attached_to_user", "hidden", "created"]
+    
+    column_default_sort = ('created', True)
+    
+    column_formatters = {
+        'created': _age_from_time_formatter,
+    }
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    form_ajax_refs = {
+        'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+        'attached_to_user': StartsWithQueryAjaxModelLoader('attached_to_user', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+
+    form_edit_rules = ("author", "message", "created", "hidden", "muted", "locked")
+        
+    def is_accessible(self):
+        return current_user.is_admin or current_user.can_mod_status_updates
+    
+    def get_query(self):
+        return self.session.query(self.model)
+    
+    def get_count_query(self):
+        return None
+
+class StatusCommentView(ModelView):
+    can_create = False
+    can_delete = False
+    
+    column_list = ["author", "hidden", "created"]
+    
+    column_default_sort = ('created', True)
+    
+    column_formatters = {
+        'created': _age_from_time_formatter,
+    }
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    form_ajax_refs = {
+        'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+
+    form_edit_rules = ("author", "message", "created", "hidden",)
+        
+    def is_accessible(self):
+        return current_user.is_admin or current_user.can_mod_status_updates
+    
+    def get_query(self):
+        return self.session.query(self.model)
+    
+    def get_count_query(self):
+        return None
+
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
     admin.add_view(PostView(sqlm.Post, sqla.session, name='Posts', category="Content", endpoint='post'))
@@ -1265,6 +1340,8 @@ with warnings.catch_warnings():
     admin.add_view(BlogView(sqlm.Blog, sqla.session, name='Blogs', category="Content", endpoint='blog'))
     admin.add_view(BlogEntryView(sqlm.BlogEntry, sqla.session, name='Blog Entries', category="Content", endpoint='blogentry'))
     admin.add_view(BlogCommentView(sqlm.BlogComment, sqla.session, name='Blog Comments', category="Content", endpoint='blogcomment'))
+    admin.add_view(StatusUpdateView(sqlm.StatusUpdate, sqla.session, name='Status Updates', category="Content", endpoint='statusupdate'))
+    admin.add_view(StatusCommentView(sqlm.StatusComment, sqla.session, name='Status Comments', category="Content", endpoint='statuscomment'))
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction
