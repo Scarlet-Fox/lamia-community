@@ -570,7 +570,9 @@ $ ->
                       {{#if roles}}
                       <center>
                       {{#each roles}}
-                      <span class="site-role">{{{this}}}</span><br>
+						  {{#if this}}
+	                      <span class="site-role">{{{this}}}</span>
+                      	  {{/if}}
                       {{/each}}
                       </center>
                       {{/if}}
