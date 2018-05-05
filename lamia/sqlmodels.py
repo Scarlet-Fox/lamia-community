@@ -1019,12 +1019,12 @@ class Character(db.Model):
 
     default_avatar_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
         name="fk_character_default_avatar", ondelete="SET NULL"), index=True)
-    default_avatar = db.relationship("Attachment", foreign_keys="Character.default_avatar_id")
+    default_avatar = db.relationship("Attachment", foreign_keys="Character.default_avatar_id", post_update=True)
     legacy_avatar_field = db.Column(db.String, index=True)
 
     default_gallery_image_id = db.Column(db.Integer, db.ForeignKey('attachment.id',
         name="fk_character_default_gallery", ondelete="SET NULL"), index=True)
-    default_gallery_image = db.relationship("Attachment", foreign_keys="Character.default_gallery_image_id")
+    default_gallery_image = db.relationship("Attachment", foreign_keys="Character.default_gallery_image_id", post_update=True)
     legacy_gallery_field = db.Column(db.String, index=True)
 
     def get_avatar(self, size=200):

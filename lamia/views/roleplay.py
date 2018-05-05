@@ -470,6 +470,7 @@ def remove_image_from_character_gallery(slug):
     attachment.hidden = True
 
     sqla.session.add(character)
+    sqla.session.commit()
     sqla.session.add(attachment)
     sqla.session.commit()
 
