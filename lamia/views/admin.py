@@ -1042,9 +1042,9 @@ class RecentHiddenPostView(ModelView):
     can_create = False
     can_delete = False
     
-    column_default_sort = ('created', True)
+    column_default_sort = ('modified', True)
     
-    column_list = ["topic.title", "author", "hidden", "created"]
+    column_list = ["topic.title", "author", "hidden", "modified"]
     
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css"
@@ -1081,7 +1081,7 @@ class RecentHiddenPostView(ModelView):
     def get_query(self):
         if current_user.is_admin:
             return self.session.query(self.model) \
-                .filter(self.model.hidden == True)
+                .filter(self.model.hidden == True, self.model.modified != None )
         else:
             return self.session.query(self.model).filter(
                     sqlm.Topic.category.has(sqla.or_(
@@ -1089,7 +1089,7 @@ class RecentHiddenPostView(ModelView):
                         sqlm.Category.can_view_topics == None
                     ))
                 )\
-                .filter(self.model.hidden == True)
+                .filter(self.model.hidden == True, self.model.modified != None )
     
     def get_count_query(self):
         return None
