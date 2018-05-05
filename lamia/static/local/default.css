@@ -1394,3 +1394,15 @@ body {
 li#status.list-group-item.front-page-status {
     padding-bottom: 15px;
 }
+
+li.list-group-item.subcategory.category-subcategories > div > div.row {
+   display:flex; 
+}
+
+li.list-group-item.subcategory.category-subcategories > div > div.row > div.col-sm-6.col-xs-8 {
+   align-self: center;
+}
+
+li.list-group-item.subcategory.category-subcategories > div > div.row > .col-xs-4.col-sm-6 {
+   align-self: center;
+}
