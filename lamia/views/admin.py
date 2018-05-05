@@ -4,6 +4,7 @@ from wtforms import BooleanField, StringField, TextAreaField, PasswordField, val
 from flask_login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose, BaseView, form
+from flask.ext.admin.model.helpers import get_mdict_item_or_list
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from lamia import sqla
@@ -1048,6 +1049,7 @@ with warnings.catch_warnings():
 
 class PostView(ModelView):
     can_create = False
+    can_delete = False
     
     column_default_sort = ('created', True)
     
@@ -1055,7 +1057,7 @@ class PostView(ModelView):
         'created': _age_from_time_formatter,
     }
     
-    column_list = ["topic.title", "author", "created"]
+    column_list = ["topic.title", "author", "hidden", "created"]
     
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css"
@@ -1069,10 +1071,25 @@ class PostView(ModelView):
         'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
     }
 
-    form_edit_rules = ("author", "html")
+    form_edit_rules = ("author", "html", "hidden")
         
     def is_accessible(self):
         return current_user.is_admin or current_user.is_mod
+    
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
+        id = get_mdict_item_or_list(request.args, 'id')
+        if id is None:
+            return abort(404)
+        
+        model = self.get_one(id)
+        if model is None:
+            return abort(404)
+
+        if not current_user.is_admin and not model.topic.category.slug in current_user.get_modded_areas:
+            return abort(404)
+
+        return super(PostView, self).edit_view()
     
     def get_query(self):
         if current_user.is_admin:
@@ -1087,10 +1104,167 @@ class PostView(ModelView):
     
     def get_count_query(self):
         return None
-            
+
+class TopicView(ModelView):
+    can_create = False
+    can_delete = False
+    
+    column_default_sort = ('created', True)
+    
+    column_formatters = {
+        'created': _age_from_time_formatter,
+    }
+    
+    column_list = ["title", "author", "hidden", "created"]
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    form_ajax_refs = {
+        'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+
+    form_edit_rules = ("author", "title", "sticky", "locked", "hidden")
+        
+    def is_accessible(self):
+        return current_user.is_admin or current_user.is_mod
+    
+    @expose('/edit/', methods=('GET', 'POST'))
+    def edit_view(self):
+        id = get_mdict_item_or_list(request.args, 'id')
+        if id is None:
+            return abort(404)
+        
+        model = self.get_one(id)
+        if model is None:
+            return abort(404)
+
+        if not current_user.is_admin and not model.category.slug in current_user.get_modded_areas:
+            return abort(404)
+
+        return super(TopicView, self).edit_view()
+    
+    def get_query(self):
+        if current_user.is_admin:
+            return self.session.query(self.model)
+        else:
+            return self.session.query(self.model).filter(
+                    sqla.or_(
+                        can_view_topics == True,
+                        can_view_topics == None
+                    )
+                )
+    
+    def get_count_query(self):
+        return None
+
+class BlogView(ModelView):
+    can_create = False
+    can_delete = False
+    
+    column_list = ["name", "author", "recent_entry.created"]
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    form_ajax_refs = {
+        'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+
+    form_edit_rules = ("author", "name", "description")
+        
+    def is_accessible(self):
+        return current_user.is_admin or current_user.can_mod_blogs
+    
+    def get_query(self):
+        return self.session.query(self.model)
+    
+    def get_count_query(self):
+        return None
+
+class BlogEntryView(ModelView):
+    can_create = False
+    can_delete = False
+    
+    column_list = ["author", "title", "b_title", "hidden", "published"]
+    
+    column_formatters = {
+        'published': _age_from_time_formatter,
+    }
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    form_ajax_refs = {
+        'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+
+    form_edit_rules = ("author", "title", "html", "created", "published", "hidden")
+        
+    def is_accessible(self):
+        return current_user.is_admin or current_user.can_mod_blogs
+    
+    def get_query(self):
+        return self.session.query(self.model)
+    
+    def get_count_query(self):
+        return None
+
+class BlogCommentView(ModelView):
+    can_create = False
+    can_delete = False
+    
+    column_list = ["author", "b_title", "b_e_title", "hidden", "created"]
+    
+    column_formatters = {
+        'created': _age_from_time_formatter,
+    }
+    
+    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
+        "/static/assets/datatables/dataTables.responsive.css"
+        ]
+    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
+        "/static/assets/datatables/dataTables.bootstrap.js",
+        "/static/assets/datatables/dataTables.responsive.js"
+        ]
+        
+    form_ajax_refs = {
+        'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
+    }
+
+    form_edit_rules = ("author", "html", "created", "hidden")
+        
+    def is_accessible(self):
+        return current_user.is_admin or current_user.can_mod_blogs
+    
+    def get_query(self):
+        return self.session.query(self.model)
+    
+    def get_count_query(self):
+        return None
+
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
     admin.add_view(PostView(sqlm.Post, sqla.session, name='Posts', category="Content", endpoint='post'))
+    admin.add_view(TopicView(sqlm.Topic, sqla.session, name='Topics', category="Content", endpoint='topic'))
+    admin.add_view(BlogView(sqlm.Blog, sqla.session, name='Blogs', category="Content", endpoint='blog'))
+    admin.add_view(BlogEntryView(sqlm.BlogEntry, sqla.session, name='Blog Entries', category="Content", endpoint='blogentry'))
+    admin.add_view(BlogCommentView(sqlm.BlogComment, sqla.session, name='Blog Comments', category="Content", endpoint='blogcomment'))
 
 # TODO Moderation
 # TODO Add ajax view for creating infraction

@@ -425,7 +425,7 @@ def edit_blog_entry(slug, entry_slug):
             e.html = cleaner.clean(form.entry.data)
         except:
             return abort(500)
-        e.created = arrow.utcnow().datetime.replace(tzinfo=None)
+        
         if e.draft == False and already_published == False:
             e.published = arrow.utcnow().datetime.replace(tzinfo=None)
             recent_entry = True
