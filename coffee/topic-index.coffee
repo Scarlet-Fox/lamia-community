@@ -9,11 +9,6 @@ $ ->
       @pagination = window._pagination
       @postHTML = Handlebars.compile(@postHTMLTemplate())
       @paginationHTML = Handlebars.compile(@paginationHTMLTemplate())
-      @is_mod = window._is_topic_mod
-      if @is_mod == 0
-        @is_mod = false
-      else
-        @is_mod = true
       @is_logged_in = window._is_logged_in
       @selected_character = ""
       @selected_avatar = ""
@@ -36,7 +31,6 @@ $ ->
       socket.on "event", (data) ->
         if data.post?
           if topic.page == topic.max_pages
-            data.post._is_topic_mod = topic.is_mod
             data.post._is_logged_in = topic.is_logged_in
             data.post.show_boop = true
             if data.post.author_login_name == window.woe_is_me
@@ -88,7 +82,6 @@ $ ->
                 data.newest_post.author_online = true
                 data.newest_post.show_boop = true
                 data.newest_post.can_boop = false
-                data.newest_post._is_topic_mod = topic.is_mod
                 data.newest_post._is_logged_in = topic.is_logged_in
                 data.newest_post.author_login_name = window.woe_is_me
                 data.newest_post._show_character_badge = not window.roleplay_area
@@ -598,7 +591,7 @@ $ ->
                               <button type="button" class="btn btn-default mention-button" data-author="{{author_login_name}}">@</button>
                               <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
                               <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="post"><span class="glyphicon glyphicon-exclamation-sign"></span></button>
-                              {{#if is_admin}}<a href="/admin/post/edit/?id={{_id}}" target="_blank"><button type="button" class="btn btn-default" data-type="post"><span class="glyphicon glyphicon-cog"></span></button></a>{{/if}}
+                              {{#if is_topic_mod}}<a href="/admin/post/edit/?id={{_id}}" target="_blank"><button type="button" class="btn btn-default" data-type="post"><span class="glyphicon glyphicon-cog"></span></button></a>{{/if}}
                               <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 <span class="caret"></span>
                                 <span class="sr-only">Toggle Dropdown</span>
@@ -611,7 +604,7 @@ $ ->
                           {{/if}}
                             {{#if _is_logged_in}}
                             <div class="btn-group" style="">
-                              {{#if _is_topic_mod}}
+                              {{#if is_topic_mod}}
                               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 <span class="caret"></span>
                                 <span class="sr-only">Toggle Dropdown</span>
@@ -620,7 +613,7 @@ $ ->
                                 <li><a href="" class="post-edit" data-pk="{{_id}}" {{#if character_name}}data-character="{{character_slug}}" data-author="{{author_login_name}}"{{/if}}>Edit Post</a></li>
                                 {{#if topic_leader}}
                                  <li><a href="{{topic_leader}}">Edit Topic</a></li>
-                                 {{#if is_admin}}
+                                 {{#if is_topic_mod}}
                                   <li>
                                     <a href="/admin/topic/edit/?id={{_tid}}" target="_blank">Topic Admin</a>
                                   </li>
@@ -691,7 +684,7 @@ $ ->
                     <hr>
                     <div class="post-signature">
                       {{#if signature}}
-                      {{#if is_admin}}
+                      {{#if is_sig_mod}}
                       <a href="/admin/signature/edit/?id={{signature_id}}" target="_blank" class="float-right"><span class="glyphicon glyphicon-cog"></span></a>
                       {{/if}}
                       {{/if}}
@@ -715,7 +708,6 @@ $ ->
         first_post = ((@page-1)*@pagination)+1
         for post, i in data.posts
           post.count = first_post+i
-          post._is_topic_mod = @is_mod
           post._is_logged_in = @is_logged_in
           post._show_character_badge = not window.roleplay_area
           if @is_logged_in

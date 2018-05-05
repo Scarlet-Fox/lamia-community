@@ -507,7 +507,7 @@ def topic_posts(slug):
     if current_user in topic.banned:
         return abort(403)
 
-    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
+    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas):
         return abort(404)
 
     request_json = request.get_json(force=True)
@@ -631,7 +631,12 @@ def topic_posts(slug):
             except:
                 sqla.session.rollback()
                 pass
-        parsed_post["html"] = clean_html_parser.parse(post.html, _object=post)
+        
+        if post.hidden:
+            parsed_post["html"] = ""
+        else:
+            parsed_post["html"] = clean_html_parser.parse(post.html, _object=post)
+            
         parsed_post["roles"] = post.author.get_roles()
         parsed_post["user_avatar"] = post.author.get_avatar_url()
         parsed_post["user_avatar_x"] = post.author.avatar_full_x
@@ -641,13 +646,19 @@ def topic_posts(slug):
         parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
+        parsed_post["is_hidden"] = post.hidden
         parsed_post["active_rolls"] = active_rolls
         parsed_post["inactive_rolls"] = inactive_rolls
 
-        if current_user.is_admin == True:
-            parsed_post["is_admin"] = True
+        if current_user.is_admin or topic.category.slug in current_user.get_modded_areas:
+            parsed_post["is_topic_mod"] = True
         else:
-            parsed_post["is_admin"] = False
+            parsed_post["is_topic_mod"] = False
+            
+        if current_user.is_admin:
+            parsed_post["is_sig_mod"] = True
+        else:
+            parsed_post["is_sig_mod"] = False            
 
         if current_user.is_authenticated():
             if author_signatures.has_key(post.author.login_name):
@@ -751,7 +762,7 @@ def edit_topic_post_html(slug):
     if not cat_perm_calculus.can_post_in_topics(topic.category.id, topic.category.can_post_in_topics):
         return app.jsonify(error="You do not have permission to do this action.")
         
-    if topic.locked and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
+    if topic.locked and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas):
         return app.jsonify(error="This topic is locked.")
 
     request_json = request.get_json(force=True)
@@ -762,7 +773,7 @@ def edit_topic_post_html(slug):
     except:
         return abort(404)
 
-    if current_user != post.author and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
+    if current_user != post.author and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas):
         return abort(404)
 
     if request_json.get("text", "").strip() == "":
@@ -873,7 +884,7 @@ def topic_poll(slug):
     if current_user in topic.category.restricted_users:
         return abort(404)
 
-    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
+    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas):
         return abort(404)
     
     polls = sqla.session.query(sqlm.Poll).filter_by(topic=topic)
@@ -935,7 +946,7 @@ def topic_index(slug, render, page, post):
     if current_user in topic.category.restricted_users:
         return abort(403)
 
-    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas()):
+    if topic.hidden and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas):
         return abort(404)
 
     try:
