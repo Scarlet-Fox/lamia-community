@@ -430,7 +430,7 @@ def render_reply_bbcode(tag_name, value, options, parent, context):
             arrow.get(_replying_to.created).timestamp,
             "/t/%s/page/1/post/%s" % (_replying_to.topic.slug, _replying_to.id),
             _display_name,
-            "/member/%s" % _replying_to.author.login_name,
+            "/member/%s" % _replying_to.author.my_url,
             re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
         )
         
@@ -455,7 +455,7 @@ def render_reply_bbcode(tag_name, value, options, parent, context):
             arrow.get(_replying_to.created).timestamp,
             "/blog/test/e/%s/page/1" % (_replying_to.blog_entry.slug),
             _display_name,
-            "/member/%s" % _replying_to.author.login_name,
+            "/member/%s" % _replying_to.author.my_url,
             re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
         )
         
@@ -481,7 +481,7 @@ def render_reply_bbcode(tag_name, value, options, parent, context):
             arrow.get(_replying_to.created).timestamp,
             "/messages/%s/page/1/post/%s" % (_replying_to.pm.id, _replying_to.id),
             _replying_to.author.display_name,
-            "/member/%s" % _replying_to.author.login_name,
+            "/member/%s" % _replying_to.author.my_url,
             re.sub(reply_re, "", inner_html)
         )
 bbcode_parser.add_formatter("reply", render_reply_bbcode, escape_html=False)
@@ -513,7 +513,7 @@ class ForumPostParser(object):
         mentions = mention_re.findall(html)
         for mention in mentions:
             try:
-                user = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
+                user = sqla.session.query(sqlm.User).filter_by(my_url=mention)[0]
                 html = html.replace("[@%s]" % unicode(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.my_url, user.display_name), 1)
             except:
                 sqla.session.rollback()
