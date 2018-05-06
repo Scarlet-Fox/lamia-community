@@ -4,7 +4,7 @@ from wtforms import BooleanField, StringField, TextAreaField, PasswordField, val
 from flask_login import login_required, current_user
 import flask_admin as admin
 from flask_admin import helpers, expose, BaseView, form
-from flask.ext.admin.model.helpers import get_mdict_item_or_list
+from flask_admin.model.helpers import get_mdict_item_or_list
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from lamia import sqla
