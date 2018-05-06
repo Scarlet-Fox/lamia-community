@@ -8,7 +8,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 import arrow, time, math
 from threading import Thread
 import random
-from lamia.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview, CategoryPermissionCalculator, crossdomain
+from lamia.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string, get_preview, CategoryPermissionCalculator, crossdomain
 from lamia.views.dashboard import broadcast
 import re, json
 from datetime import datetime

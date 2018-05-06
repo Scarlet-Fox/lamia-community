@@ -3,7 +3,7 @@ from lamia import sqla
 from lamia.parsers import ForumPostParser
 from flask import abort, redirect, url_for, request, make_response, json, flash, session, send_from_directory
 from flask_login import login_required, current_user
-from lamia.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string, get_preview
+from lamia.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string, get_preview
 import arrow, json
 from lamia.views.dashboard import broadcast
 from BeautifulSoup import BeautifulSoup

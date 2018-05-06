@@ -5,7 +5,7 @@ from collections import OrderedDict
 from lamia.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
 from flask import abort, redirect, url_for, request, render_template, make_response, json, flash, session, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
-from lamia.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string_return_q, parse_search_string
+from lamia.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string
 from lamia.email_utilities import send_mail_w_template
 from wand.image import Image
 from werkzeug import secure_filename, urls

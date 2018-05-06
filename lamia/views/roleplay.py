@@ -6,7 +6,7 @@ from flask_login import login_required, current_user
 from werkzeug import secure_filename
 import os
 import arrow, hashlib, mimetypes, time
-from lamia.utilities import ForumHTMLCleaner, humanize_time, parse_search_string_return_q, parse_search_string, get_preview
+from lamia.utilities import ForumHTMLCleaner, humanize_time, parse_search_string, get_preview
 from wand.image import Image
 import lamia.sqlmodels as sqlm
 from lamia import sqla
