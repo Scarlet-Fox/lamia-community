@@ -23,7 +23,6 @@ class ForgotPasswordForm(Form):
     redirect_to = HiddenField('Next')
 
     def validate_email_address(self, field):
-        print field.data
         try:
             self.user = sqla.session.query(sqlm.User).filter_by(email_address=field.data)[0]
         except:
