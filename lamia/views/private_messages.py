@@ -369,10 +369,14 @@ def message_index(pk, page, post):
         page = int(page)
     except:
         page = 1
-
-    flag_modified(topic, "last_seen_by")
+    
     if topic.last_seen_by is None:
         topic.last_seen_by = {}
+        
+    try:
+        flag_modified(topic, "last_seen_by")
+    except:
+        pass
 
     if post == "latest_post":
         try:
