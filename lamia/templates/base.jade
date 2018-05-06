@@ -144,42 +144,43 @@ body(role='document')
                             |more
                         br
                         a.notification-link(href='{{notification["url"]}}', data-notification='{{notification["id"]}}')= notification["message"]
-            span      
-              a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")                
-              ul.dropdown-menu(role='menu')
-                li
-                  if current_user.navbar_top
-                    a.toggle-navbar(href='') 
-                      span.glyphicon.glyphicon-check
-                      span &nbsp;&nbsp;&nbsp;Sticky Navbar
-                  else
-                    a.toggle-navbar(href='') 
-                      span.glyphicon.glyphicon-unchecked
-                      span &nbsp;&nbsp;&nbsp;Sticky Navbar
-                  if current_user.notification_sound
-                    a.toggle-sounds(href='') 
-                      span.glyphicon.glyphicon-volume-up
-                      span &nbsp;&nbsp;&nbsp;Audio Alerts
-                  else
-                    a.toggle-sounds(href='') 
-                      span.glyphicon.glyphicon-volume-off
-                      span &nbsp;&nbsp;&nbsp;Audio Alerts
-                  if current_user.no_images
-                    a.toggle-images(href='') 
-                      span.glyphicon.glyphicon-check
-                      span &nbsp;&nbsp;&nbsp;Hide Images
-                  else
-                    a.toggle-images(href='') 
-                      span.glyphicon.glyphicon-unchecked
-                      span &nbsp;&nbsp;&nbsp;Hide Images
-                li.divider
-                li
-                  a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
-                li
-                  a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
-                li.divider
-                li
-                  a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
+            if current_user.is_authenticated()
+              span      
+                a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")                
+                ul.dropdown-menu(role='menu')
+                  li
+                    if current_user.navbar_top
+                      a.toggle-navbar(href='') 
+                        span.glyphicon.glyphicon-check
+                        span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                    else
+                      a.toggle-navbar(href='') 
+                        span.glyphicon.glyphicon-unchecked
+                        span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                    if current_user.notification_sound
+                      a.toggle-sounds(href='') 
+                        span.glyphicon.glyphicon-volume-up
+                        span &nbsp;&nbsp;&nbsp;Audio Alerts
+                    else
+                      a.toggle-sounds(href='') 
+                        span.glyphicon.glyphicon-volume-off
+                        span &nbsp;&nbsp;&nbsp;Audio Alerts
+                    if current_user.no_images
+                      a.toggle-images(href='') 
+                        span.glyphicon.glyphicon-check
+                        span &nbsp;&nbsp;&nbsp;Hide Images
+                    else
+                      a.toggle-images(href='') 
+                        span.glyphicon.glyphicon-unchecked
+                        span &nbsp;&nbsp;&nbsp;Hide Images
+                  li.divider
+                  li
+                    a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
+                  li
+                    a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
+                  li.divider
+                  li
+                    a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
             span      
                 a.to-bottom.glyphicon.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', role='button', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
 
@@ -269,44 +270,45 @@ body(role='document')
                       li.divider
                       li
                         a.sign-out(href='#') Sign Out
-                li.dropdown
-                  a.dropdown-toggle.glyphicon.glyphicon-cog(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-                    span.caret
-                  ul.dropdown-menu(role='menu')
-                      li
-                      li
-                        if current_user.navbar_top
-                          a.toggle-navbar(href='') 
-                            span.glyphicon.glyphicon-check
-                            span &nbsp;&nbsp;&nbsp;Sticky Navbar
-                        else
-                          a.toggle-navbar(href='') 
-                            span.glyphicon.glyphicon-unchecked
-                            span &nbsp;&nbsp;&nbsp;Sticky Navbar
-                        if current_user.notification_sound
-                          a.toggle-sounds(href='') 
-                            span.glyphicon.glyphicon-volume-up
-                            span &nbsp;&nbsp;&nbsp;Audio Alerts
-                        else
-                          a.toggle-sounds(href='') 
-                            span.glyphicon.glyphicon-volume-off
-                            span &nbsp;&nbsp;&nbsp;Audio Alerts
-                        if current_user.no_images
-                          a.toggle-images(href='') 
-                            span.glyphicon.glyphicon-check
-                            span &nbsp;&nbsp;&nbsp;Hide Images
-                        else
-                          a.toggle-images(href='') 
-                            span.glyphicon.glyphicon-unchecked
-                            span &nbsp;&nbsp;&nbsp;Hide Images
-                      li.divider
-                      li
-                        a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
-                      li
-                        a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
-                      li.divider
-                      li
-                        a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
+                if current_user.is_authenticated()
+                  li.dropdown
+                    a.dropdown-toggle.glyphicon.glyphicon-cog(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                      span.caret
+                    ul.dropdown-menu(role='menu')
+                        li
+                        li
+                          if current_user.navbar_top
+                            a.toggle-navbar(href='') 
+                              span.glyphicon.glyphicon-check
+                              span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                          else
+                            a.toggle-navbar(href='') 
+                              span.glyphicon.glyphicon-unchecked
+                              span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                          if current_user.notification_sound
+                            a.toggle-sounds(href='') 
+                              span.glyphicon.glyphicon-volume-up
+                              span &nbsp;&nbsp;&nbsp;Audio Alerts
+                          else
+                            a.toggle-sounds(href='') 
+                              span.glyphicon.glyphicon-volume-off
+                              span &nbsp;&nbsp;&nbsp;Audio Alerts
+                          if current_user.no_images
+                            a.toggle-images(href='') 
+                              span.glyphicon.glyphicon-check
+                              span &nbsp;&nbsp;&nbsp;Hide Images
+                          else
+                            a.toggle-images(href='') 
+                              span.glyphicon.glyphicon-unchecked
+                              span &nbsp;&nbsp;&nbsp;Hide Images
+                        li.divider
+                        li
+                          a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
+                        li
+                          a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
+                        li.divider
+                        li
+                          a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
               else
                 li#sign-in-li.hidden-xs
                   a(href='/sign-in')
@@ -414,42 +416,43 @@ body(role='document')
                             |more
                         br
                         a.notification-link(href='{{notification["url"]}}', data-notification='{{notification["id"]}}')= notification["message"]
-            span      
-              a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
-              ul.dropdown-menu(role='menu')
-                li
-                  if current_user.navbar_top
-                    a.toggle-navbar(href='') 
-                      span.glyphicon.glyphicon-check
-                      span &nbsp;&nbsp;&nbsp;Sticky Navbar
-                  else
-                    a.toggle-navbar(href='') 
-                      span.glyphicon.glyphicon-unchecked
-                      span &nbsp;&nbsp;&nbsp;Sticky Navbar
-                  if current_user.notification_sound
-                    a.toggle-sounds(href='') 
-                      span.glyphicon.glyphicon-volume-up
-                      span &nbsp;&nbsp;&nbsp;Audio Alerts
-                  else
-                    a.toggle-sounds(href='') 
-                      span.glyphicon.glyphicon-volume-off
-                      span &nbsp;&nbsp;&nbsp;Audio Alerts
-                  if current_user.no_images
-                    a.toggle-images(href='') 
-                      span.glyphicon.glyphicon-check
-                      span &nbsp;&nbsp;&nbsp;Hide Images
-                  else
-                    a.toggle-images(href='') 
-                      span.glyphicon.glyphicon-unchecked
-                      span &nbsp;&nbsp;&nbsp;Hide Images
-                li.divider
-                li
-                  a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
-                li
-                  a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
-                li.divider
-                li
-                  a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
+            if current_user.is_authenticated()
+              span      
+                a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
+                ul.dropdown-menu(role='menu')
+                  li
+                    if current_user.navbar_top
+                      a.toggle-navbar(href='') 
+                        span.glyphicon.glyphicon-check
+                        span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                    else
+                      a.toggle-navbar(href='') 
+                        span.glyphicon.glyphicon-unchecked
+                        span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                    if current_user.notification_sound
+                      a.toggle-sounds(href='') 
+                        span.glyphicon.glyphicon-volume-up
+                        span &nbsp;&nbsp;&nbsp;Audio Alerts
+                    else
+                      a.toggle-sounds(href='') 
+                        span.glyphicon.glyphicon-volume-off
+                        span &nbsp;&nbsp;&nbsp;Audio Alerts
+                    if current_user.no_images
+                      a.toggle-images(href='') 
+                        span.glyphicon.glyphicon-check
+                        span &nbsp;&nbsp;&nbsp;Hide Images
+                    else
+                      a.toggle-images(href='') 
+                        span.glyphicon.glyphicon-unchecked
+                        span &nbsp;&nbsp;&nbsp;Hide Images
+                  li.divider
+                  li
+                    a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
+                  li
+                    a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
+                  li.divider
+                  li
+                    a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
             span      
                 a.to-bottom.glyphicon.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', role='button', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
             button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
@@ -540,44 +543,45 @@ body(role='document')
                       li.divider
                       li
                         a.sign-out(href='#') Sign Out
-                li.dropdown
-                  a.dropdown-toggle.glyphicon.glyphicon-cog(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
-                    span.caret
-                  ul.dropdown-menu(role='menu')
-                      li
-                      li
-                        if current_user.navbar_top
-                          a.toggle-navbar(href='') 
-                            span.glyphicon.glyphicon-check
-                            span &nbsp;&nbsp;&nbsp;Sticky Navbar
-                        else
-                          a.toggle-navbar(href='') 
-                            span.glyphicon.glyphicon-unchecked
-                            span &nbsp;&nbsp;&nbsp;Sticky Navbar
-                        if current_user.notification_sound
-                          a.toggle-sounds(href='') 
-                            span.glyphicon.glyphicon-volume-up
-                            span &nbsp;&nbsp;&nbsp;Audio Alerts
-                        else
-                          a.toggle-sounds(href='') 
-                            span.glyphicon.glyphicon-volume-off
-                            span &nbsp;&nbsp;&nbsp;Audio Alerts
-                        if current_user.no_images
-                          a.toggle-images(href='') 
-                            span.glyphicon.glyphicon-check
-                            span &nbsp;&nbsp;&nbsp;Hide Images
-                        else
-                          a.toggle-images(href='') 
-                            span.glyphicon.glyphicon-unchecked
-                            span &nbsp;&nbsp;&nbsp;Hide Images
-                      li.divider
-                      li
-                        a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
-                      li
-                        a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
-                      li.divider
-                      li
-                        a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
+                if current_user.is_authenticated()
+                  li.dropdown
+                    a.dropdown-toggle.glyphicon.glyphicon-cog(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
+                      span.caret
+                    ul.dropdown-menu(role='menu')
+                        li
+                        li
+                          if current_user.navbar_top
+                            a.toggle-navbar(href='') 
+                              span.glyphicon.glyphicon-check
+                              span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                          else
+                            a.toggle-navbar(href='') 
+                              span.glyphicon.glyphicon-unchecked
+                              span &nbsp;&nbsp;&nbsp;Sticky Navbar
+                          if current_user.notification_sound
+                            a.toggle-sounds(href='') 
+                              span.glyphicon.glyphicon-volume-up
+                              span &nbsp;&nbsp;&nbsp;Audio Alerts
+                          else
+                            a.toggle-sounds(href='') 
+                              span.glyphicon.glyphicon-volume-off
+                              span &nbsp;&nbsp;&nbsp;Audio Alerts
+                          if current_user.no_images
+                            a.toggle-images(href='') 
+                              span.glyphicon.glyphicon-check
+                              span &nbsp;&nbsp;&nbsp;Hide Images
+                          else
+                            a.toggle-images(href='') 
+                              span.glyphicon.glyphicon-unchecked
+                              span &nbsp;&nbsp;&nbsp;Hide Images
+                        li.divider
+                        li
+                          a(href='/member/{{current_user.my_url}}/change-account') Name &amp; Password
+                        li
+                          a(href='/member/{{current_user.my_url}}/change-avatar-title') Avatar &amp; Title
+                        li.divider
+                        li
+                          a(href='/member/{{current_user.my_url}}/change-settings') Other Settings
               else
                 li#sign-in-li.hidden-xs
                   a(href='/sign-in')
