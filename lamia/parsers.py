@@ -27,6 +27,7 @@ vine_re = re.compile("(?:vine\.co/v/|www\.vine\.co/v/)(.*)", re.IGNORECASE)
 giphy_re = re.compile("(?:giphy\.com/gifs/|gph\.is/)(?:.*)-(.*)", re.IGNORECASE)
 _domain_re = re.compile(r'(?im)(?:www\d{0,3}[.]|[a-z0-9.\-]+[.](?:com|net|org|edu|biz|gov|mil|info|io|name|me|tv|us|uk|mobi))')
 
+raw_image_re = re.compile("(<img src=\"(.*?)\"(?:.*)>)")
 html_img_re = re.compile(r'<img src=\"(.*?)\">', re.IGNORECASE)
 href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
 
