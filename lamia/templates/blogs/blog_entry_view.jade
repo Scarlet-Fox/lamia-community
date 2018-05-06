@@ -99,7 +99,7 @@
             .row.blog-comment
               .col-sm-2.hidden-xs.hidden-sm
                 a(href="{{url_for('view_profile', login_name=comment.author.my_url)}}")
-                  img.media-object.avatar-mini(src="{{ comment.author.get_avatar_url() }}", width=comment.author.avatar_full_x*0.70, height=comment.author.avatar_full_y*0.70, class="avatar-mini")
+                  img.media-object.avatar-mini(src="{{ comment.author.get_avatar_url() }}", class="avatar-mini", style="max-width: 140px;")
               .col-sm-10.col-xs-12!= comment.parsed
             .blog-options
               br
