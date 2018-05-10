@@ -6,22 +6,22 @@ and this project (loosely) adheres to [Semantic Versioning](http://semver.org/sp
 
 ## [Unreleased]
 ### Added
-- Item
+- 
 
 ### Changed
-- Item
+- 
 
 ### Deprecated
-- Item
+- 
 
 ### Removed
-- Item
+- 
 
 ### Fixed
-- Item
+- 
 
 ### Security
-- Item
+- 
 
 ## [Prerelease 5] - 2018-05-09
 ### Added
