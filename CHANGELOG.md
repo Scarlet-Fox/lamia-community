@@ -23,6 +23,22 @@ and this project (loosely) adheres to [Semantic Versioning](http://semver.org/sp
 ### Security
 - Item
 
+## [Prerelease 5] - 2018-05-09
+### Added
+- Topic creation via RSS feed reader
+- Embeddable iframe view for RSS comments
+
+### Changed
+- Renamed woe module to lamia, finally
+
+### Fixed
+- Relinked moderation features to the frontend
+
+### Security
+- Minimum character limit added for searches
+- Search frequency is now limited to 1 search per X minutes
+- Hardcoded limit of 50K characters established for posts, etc
+
 ## [Prerelease 4] - 2018-04-15
 ### Added
 - Full permissions system for categories
