@@ -6,8 +6,9 @@
     ul.list-group
       li.list-group-item.section-header We're Sorry, We're So Sorry.
       li.list-group-item
-        center
-          img(src="{{images|random}}", alt="Ban page image.")
+        if images
+          center
+            img(src="{{images|random}}", alt="Ban page image.")
         p
           br
           br
