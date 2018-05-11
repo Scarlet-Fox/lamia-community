@@ -976,7 +976,7 @@ class UserAdministrationView(ModelView):
     column_filters = ["display_name","is_mod", "is_admin"]
     
     form_edit_rules = ("display_name", "login_name","email_address", "is_admin", "is_mod", "can_mod_forum", 
-        "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates")
+        "can_mod_blogs", "can_mod_user_profiles", "can_mod_status_updates", "validated")
     
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css"
