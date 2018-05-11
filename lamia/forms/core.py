@@ -33,6 +33,7 @@ class UserSettingsForm(Form):
     time_zone = SelectField('Time zone', choices=TIMEZONE_CHOICES)
     no_images = BooleanField("Hide all images (super at-work mode)")
     navbar_top = BooleanField("Use sticky navbar")
+    swear_filter = BooleanField("Use swear filter (if available)")
     no_emails = BooleanField("Mute all emails (no email notifications)")
     notification_sound = BooleanField("Play sound for new notifications")
     all_notification_sounds = BooleanField("Play sound for all notifications (instead of just the first one)")
@@ -44,7 +45,10 @@ class UserSettingsForm(Form):
         THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]
     except:
         THEME_CHOICES = []
-    theme = SelectField('Theme', choices=THEME_CHOICES)
+        
+    if len(THEME_CHOICES) > 0:
+        theme = SelectField('Theme', choices=THEME_CHOICES)
+        
     birthday = DateField('Birthday', format='%m/%d/%Y', validators=(validators.Optional(),))
 
     def validate_time_zone(self, field):

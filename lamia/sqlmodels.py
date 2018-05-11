@@ -630,7 +630,7 @@ class User(db.Model):
     can_mod_status_updates = db.Column(db.Boolean, default=False, index=True)
     
     navbar_top = db.Column(db.Boolean, default=False, index=True)
-
+    swear_filter = db.Column(db.Boolean, default=False)
     display_name_history = db.Column(JSONB)
     notification_preferences = db.Column(JSONB)
     

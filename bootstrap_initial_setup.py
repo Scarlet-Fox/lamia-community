@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     create_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {}, "no")
     create_setting("core.lock-site", "Lock Site? (Under construction page.)", "no", "toggle", {}, "no")
-    create_setting("core.swear-filter-default", "Swear filter on by default?", "yes", "toggle", {}, "yes")
+    create_setting("core.swear-filter-default", "Swear filter on by default?", "no", "toggle", {}, "no")
     create_setting("core.site-name", "What's the name of this site?", "Your Site Name Here", "text", {}, "Your Site Name Here")
     create_setting("twitter.twitter-consumer-key", "Twitter Consumer Key", "", "text", {}, "")
     create_setting("twitter.twitter-consumer-secret", "Twitter Consumer Secret", "", "text", {}, "")

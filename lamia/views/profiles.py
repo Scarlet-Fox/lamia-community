@@ -1011,11 +1011,16 @@ def change_user_settings(login_name):
                 user.theme = form.theme_object
                 user.theme_last_updated = time.time()
         except:
-            user.theme = form.theme_object
-            user.theme_last_updated = time.time()
+            try:
+                user.theme = form.theme_object
+                user.theme_last_updated = time.time()
+            except AttributeError:
+                pass
+                
         user.no_images = form.no_images.data
         user.emails_muted = form.no_emails.data
         user.birthday = form.birthday.data
+        user.swear_filter = form.swear_filter.data
         user.notification_sound = form.notification_sound.data
         user.all_notification_sounds = form.all_notification_sounds.data
         user.navbar_top = form.navbar_top.data
@@ -1046,7 +1051,10 @@ def change_user_settings(login_name):
                 if len(default_theme) > 0:
                     default_theme = default_theme[0]
                 else:
-                    form.theme.data = None
+                    try:
+                        form.theme.data = None
+                    except AttributeError:
+                        pass
         else:
             form.theme.data = str(user.theme.id)
 
