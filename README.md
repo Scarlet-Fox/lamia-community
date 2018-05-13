@@ -4,6 +4,12 @@
 
 Lamia Community is a platform, built using Flask.py, for those looking for an integrated forum, blog, and status update interface without all of the assumptions made by social network platforms.
 
+## What do I need in order to run Lamia Community?
+
+* PostgreSQL
+* Python 3.x
+* Nginx (optional, but strongly recommended)
+
 ## What is Lamia Community?
 
 Lamia is...
