@@ -2,7 +2,7 @@ from lamia import login_manager, app
 from flask import abort, redirect, url_for, request, make_response, json, flash
 from lamia.utilities import get_top_frequences, scrub_json, humanize_time, ForumHTMLCleaner, CategoryPermissionCalculator, md5
 from flask_login import login_required, current_user
-import arrow, urllib2
+import arrow, urllib.request, urllib.error, urllib.parse
 from threading import Thread
 import json as py_json
 from lamia import sqla
@@ -14,9 +14,9 @@ import time
 from lamia.utilities import render_lamia_template as render_template
 
 def send_message(data):
-    req = urllib2.Request(app.settings_file["talker_path"]+"/notify")
+    req = urllib.request.Request(app.settings_file["talker_path"]+"/notify")
     req.add_header('Content-Type', 'application/json')
-    response = urllib2.urlopen(req, py_json.dumps(data))
+    response = urllib.request.urlopen(req, py_json.dumps(data))
 
 def broadcast(to, category, url, title, description, content, author, priority=0):
     
@@ -109,7 +109,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         "category": category,
         "author": author.display_name,
         "member_name": author.login_name,
-        "member_pk": unicode(author.id),
+        "member_pk": str(author.id),
         "member_disp_name": author.display_name,
         "author_url": "/member/"+author.my_url,
         "author_avatar": author.get_avatar_url("40"),
@@ -225,7 +225,7 @@ def dashboard_notifications():
             parsed_["stamp"] = arrow.get(notification.created).timestamp
             parsed_["member_disp_name"] = notification.author.display_name
             parsed_["member_url"] = notification.author.my_url
-            parsed_["member_pk"] = unicode(notification.author.id)
+            parsed_["member_pk"] = str(notification.author.id)
             parsed_["member_avatar"] = notification.author.get_avatar_url("40")
             parsed_["text"] = notification.message
             parsed_["id"] = notification.id

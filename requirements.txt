@@ -3,7 +3,7 @@ arrow==0.12.1
 backports.functools-lru-cache==1.5
 bbcode==1.0.31
 bcrypt==3.1.4
-BeautifulSoup==3.2.1
+beautifulsoup4==4.6.0
 blinker==1.4
 certifi==2018.4.16
 cffi==1.11.5
@@ -36,7 +36,6 @@ Pillow==5.1.0
 psycopg2-binary==2.7.4
 pycparser==2.18
 pyjade==4.0.0
-python-bcrypt==0.3.2
 python-dateutil==2.7.3
 python-editor==1.0.3
 python-slugify==1.2.5

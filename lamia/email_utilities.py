@@ -1,11 +1,11 @@
 from lamia import app
 from mako.template import Template
 from mako.lookup import TemplateLookup
-from urllib import quote
+from urllib.parse import quote
 from lamia import sqla
 import lamia.sqlmodels as sqlm
 import requests, arrow
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from lamia.utilities import get_preview_for_email
 from sqlalchemy.orm.attributes import flag_modified
 
@@ -91,26 +91,26 @@ def send_notification_emails():
                 _total += 1
 
             if notification_formats[n.category] == "summarized":
-                if not _summaries_k.has_key(n.category):
+                if n.category not in _summaries_k:
                     _summaries_k[n.category] = 1
                     _summaries.append(n.category)
                 else:
                     _summaries_k[n.category] += 1
 
             if notification_formats[n.category] == "listed":
-                if not _summaries_k.has_key(n.category):
+                if n.category not in _summaries_k:
                     _summaries_k[n.category] = 1
                     _summaries.append(n.category)
                 else:
                     _summaries_k[n.category] += 1
 
-                if _list_url.has_key(_base_url+n.url):
+                if _base_url+n.url in _list_url:
                     _list_url[_base_url+n.url] += 1
                     continue
                 else:
                     _list_url[_base_url+n.url] = 1
 
-                if not _list_k.has_key(n.category):
+                if n.category not in _list_k:
                     _list_k[n.category] = [{
                         "message": n.message,
                         "url": _base_url+n.url
@@ -123,13 +123,13 @@ def send_notification_emails():
                     })
 
             if notification_formats[n.category] == "detailed":
-                if not _summaries_k.has_key(n.category):
+                if n.category not in _summaries_k:
                     _summaries_k[n.category] = 1
                     _summaries.append(n.category)
                 else:
                     _summaries_k[n.category] += 1
 
-                if not _details_k.has_key(n.category):
+                if n.category not in _details_k:
                     _details_k[n.category] = [{
                         "url": _base_url+n.url,
                         "message": n.message,

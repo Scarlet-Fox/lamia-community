@@ -112,20 +112,20 @@ def jsonify(*args, **kwargs):
 app.jsonify = jsonify
 
 # import tasks
-import sqlmodels
-import views.core
-import views.blogs
-import views.roleplay
-import views.forum
-import views.dashboard
-import views.profiles
-import views.admin
-import views.private_messages
-import views.search
-import views.status_updates
-import views.api
-import utilities
-import email_utilities
+from . import sqlmodels
+from .views import core
+from .views import blogs
+from .views import roleplay
+from .views import forum
+from .views import dashboard
+from .views import profiles
+from .views import admin
+from .views import private_messages
+from .views import search
+from .views import status_updates
+from .views import api
+from . import utilities
+from . import email_utilities
 
 ###############################################################################
 # Black magic for template overloading

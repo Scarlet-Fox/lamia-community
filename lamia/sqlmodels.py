@@ -12,8 +12,8 @@ import feedparser
 from mako.template import Template
 from mako.lookup import TemplateLookup
 from threading import Thread
-from urllib import quote
-from BeautifulSoup import BeautifulSoup
+from urllib.parse import quote
+from bs4  import BeautifulSoup
 from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types import TSVectorType
 from flask_sqlalchemy import BaseQuery
@@ -643,12 +643,12 @@ class User(db.Model):
 
     def __repr__(self):
         try:
-            return unicode(self.display_name)
+            return str(self.display_name)
         except:
             try:
-                return unicode(self.login_name)
+                return str(self.login_name)
             except:
-                return unicode(self.id)
+                return str(self.id)
     
     def get_category_permission_subquery(self):
         _category_general_perms = db.session.query(
@@ -815,7 +815,7 @@ class User(db.Model):
 
         for n in _notifications:
             _key = md5(n.url+n.message)
-            if not notification_dict.has_key(_key):
+            if _key not in notification_dict:
                 if len(notification_dict) < 5:
                     _n = {
                         "actors": [(n.author.display_name, n.author.my_url),],
@@ -879,7 +879,7 @@ class User(db.Model):
         for s in forum_categories:
             my_areas[s[0]] = 1
             
-        my_areas = my_areas.keys()
+        my_areas = list(my_areas.keys())
         
         if self.can_mod_blogs:
             my_areas.append("blogentry")
@@ -1870,7 +1870,7 @@ def clear_cache_for_site_configuration(mapper, connection, target):
 def test_rss_feed(mapper, connection, target):
     feed = feedparser.parse(target.rss_feed_url)
     
-    if feed.has_key("bozo_exception"):
+    if "bozo_exception" in feed:
         target.rss_feed_title = "Invalid RSS Feed"
     else:
         target.rss_feed_title = feed["feed"].get("title","")

@@ -9,10 +9,10 @@ from lamia.utilities import get_top_frequences, scrub_json, humanize_time, Forum
 from lamia.email_utilities import send_mail_w_template
 from wand.image import Image
 from werkzeug import secure_filename, urls
-import arrow, mimetypes, json, os, hashlib, time, StringIO
+import arrow, mimetypes, json, os, hashlib, time, io
 from lamia.views.dashboard import broadcast
-import urllib, urllib2
-import HTMLParser
+import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse
+import html.parser
 from werkzeug.exceptions import default_exceptions, HTTPException
 from  werkzeug.debug import get_current_traceback
 from lamia import sqla
@@ -72,12 +72,12 @@ def server_error(e):
         pass
 
     if isinstance(e, HTTPException):
-        description = unicode(e.get_description(request.environ))
-        code = unicode(e.code)
-        name = unicode(e.name)
+        description = str(e.get_description(request.environ))
+        code = str(e.code)
+        name = str(e.name)
     else:
         description = "Shit... Something's broken!"
-        code = unicode(500)
+        code = str(500)
         name = "Server Error."
 
     l.error = True
@@ -113,12 +113,12 @@ def unauthorized_access(e):
         pass
 
     if isinstance(e, HTTPException):
-        description = unicode(e.get_description(request.environ))
-        code = unicode(e.code)
-        name = unicode(e.name)
+        description = str(e.get_description(request.environ))
+        code = str(e.code)
+        name = str(e.name)
     else:
         description = "Page not found."
-        code = unicode(403)
+        code = str(403)
         name = "Page Not Found."
 
     l.error = True
@@ -154,12 +154,12 @@ def page_not_found(e):
         pass
 
     if isinstance(e, HTTPException):
-        description = unicode(e.get_description(request.environ))
-        code = unicode(e.code)
-        name = unicode(e.name)
+        description = str(e.get_description(request.environ))
+        code = str(e.code)
+        name = str(e.name)
     else:
         description = "Page not found."
-        code = unicode(404)
+        code = str(404)
         name = "Page Not Found."
 
     l.error = True
@@ -244,8 +244,8 @@ def log_request():
 def get_user_info_api():
     request_json = request.get_json(force=True)
     user_name = urls.url_decode(request_json.get("user"))
-    user_name = user_name.keys()[0]
-    user_name = urllib2.unquote(user_name)
+    user_name = list(user_name.keys())[0]
+    user_name = urllib.parse.unquote(user_name)
 
     try:
         user = sqla.session.query(sqlm.User).filter_by(my_url=user_name)[0]
@@ -435,7 +435,7 @@ def pm_topic_list_api():
 
     topics = q_.all()
 
-    results = [{"text": unicode(t.title), "id": str(t.id)} for t in topics]
+    results = [{"text": str(t.title), "id": str(t.id)} for t in topics]
     return app.jsonify(results=results)
 
 # class Draft(db.Model):
@@ -573,7 +573,7 @@ def create_attachment():
         image = Image(file=file)
         
         exif = {}
-        exif.update((k[5:], v) for k, v in image.metadata.items()
+        exif.update((k[5:], v) for k, v in list(image.metadata.items())
                                    if k.startswith('exif:'))
                                    
         orientation = exif.get("Orientation", '1')
@@ -728,7 +728,7 @@ def topic_sitemap_generate():
         else:
             topic_pages = int(math.ceil(float(topic.post_count)/20.0))
 
-            for topic_page in xrange(1,topic_pages+1):
+            for topic_page in range(1,topic_pages+1):
                 url = "%s/t/%s/page/%s" % (app.config['BASE'], topic.slug, topic_page)
                 modified = topic.recent_post.created
                 pages.append([url, modified])
@@ -809,8 +809,8 @@ def load_user(login_name):
                 .filter_by(hidden=False) \
                 .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
                 .filter_by(slug=request.path.split("/")[2])[0]
-            user.last_seen_at = unicode(topic.title)
-            user.last_at_url = "/t/"+unicode(topic.slug)
+            user.last_seen_at = str(topic.title)
+            user.last_at_url = "/t/"+str(topic.slug)
         except IndexError:
             pass
     elif request.path.startswith("/status-updates"):
@@ -819,15 +819,15 @@ def load_user(login_name):
     elif request.path.startswith("/status/"):
         try:
             status = sqla.session.query(sqlm.StatusUpdate).filter_by(hidden=False).filter_by(id=request.path.split("/")[2])[0]
-            user.last_seen_at = unicode(status.author.display_name)+"\'s status update"
-            user.last_at_url = "/status/"+unicode(status.id)
+            user.last_seen_at = str(status.author.display_name)+"\'s status update"
+            user.last_at_url = "/status/"+str(status.id)
         except IndexError:
             pass
     elif request.path.startswith("/category/"):
         try:
             category = sqla.session.query(sqlm.Category).filter_by(restricted=False).filter_by(slug=request.path.split("/")[2])[0]
             user.last_seen_at = category.name
-            user.last_at_url = "/category/"+unicode(category.slug)
+            user.last_at_url = "/category/"+str(category.slug)
         except IndexError:
             pass
     elif request.path.startswith("/search"):
@@ -836,15 +836,15 @@ def load_user(login_name):
     elif request.path.startswith("/characters/"):
         try:
             character = sqla.session.query(sqlm.Character).filter_by(slug=request.path.split("/")[2])[0]
-            user.last_seen_at = "Viewing character %s" % unicode(character.name)
-            user.last_at_url = "/characters/"+unicode(character.slug)
+            user.last_seen_at = "Viewing character %s" % str(character.name)
+            user.last_at_url = "/characters/"+str(character.slug)
         except:
             pass
     elif request.path.startswith("/member/"):
         try:
             profile = sqla.session.query(sqlm.User).filter_by(login_name=request.path.split("/")[2])[0]
-            user.last_seen_at = "Viewing user %s" % unicode(profile.display_name)
-            user.last_at_url = "/member/"+unicode(profile.my_url)
+            user.last_seen_at = "Viewing user %s" % str(profile.display_name)
+            user.last_at_url = "/member/"+str(profile.my_url)
         except:
             pass
     elif request.path == ("/characters"):
@@ -962,7 +962,7 @@ def forgot_password(render):
             template="password_reset.txt",
             subject="Password Reset Email - %%GENERIC SITENAME%%",
             variables={
-                "display_name": unicode(form.user.display_name),
+                "display_name": str(form.user.display_name),
                 "address": app.config['BASE'] + "/password-reset/" + str(token)
             }
         )
@@ -1013,7 +1013,7 @@ def real_confirm_register(token):
             .filter(sqlm.User.hidden_last_seen > arrow.utcnow().replace(hours=-24).datetime.replace(tzinfo=None)) \
             .all(),
         category="new_member",
-        url="/member/"+unicode(user.my_url),
+        url="/member/"+str(user.my_url),
         title="has joined the forum! Greet them!",
         description="",
         content=user,
@@ -1137,7 +1137,7 @@ def register(render):
             broadcast(
                 to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
                 category="mod",
-                url="/member/"+unicode(new_user.my_url),
+                url="/member/"+str(new_user.my_url),
                 title="has joined the forum. Please review!",
                 description="",
                 content=new_user,
@@ -1147,7 +1147,7 @@ def register(render):
             broadcast(
                 to=sqla.session.query(sqlm.User).filter_by(is_admin=True).all(),
                 category="mod",
-                url="/member/"+unicode(new_user.my_url),
+                url="/member/"+str(new_user.my_url),
                 title="has joined the forum. MANUAL VALIDATION IS ON! So, review and validate.",
                 description="",
                 content=new_user,
@@ -1226,7 +1226,7 @@ def sign_in(render):
 @app.route('/banned')
 def banned_user():
     image_dir = os.path.join(os.getcwd(),"lamia/static/banned_images/")
-    images = ["/static/banned_images/"+unicode(i) for i in os.listdir(image_dir)]
+    images = ["/static/banned_images/"+str(i) for i in os.listdir(image_dir)]
     return render_template("banned.jade", page_title="You Are Banned.", images=images)
 
 @app.route('/sign-out', methods=['POST'])
@@ -1244,7 +1244,7 @@ def user_list_api():
 
     users = parse_search_string(query, sqlm.User, sqla.session.query(sqlm.User), ["display_name", "login_name"]) \
         .filter(sqlm.User.banned.isnot(True)).filter(sqlm.User.validated.isnot(False)).all()
-    results = [{"text": unicode(u.display_name), "id": unicode(u.id)} for u in users]
+    results = [{"text": str(u.display_name), "id": str(u.id)} for u in users]
 
     results_starting_ = []
     results_other_ = []
@@ -1266,7 +1266,7 @@ def user_list_api_variant():
         return app.jsonify(results=[])
 
     users = parse_search_string(query, sqlm.User, sqla.session.query(sqlm.User), ["display_name", "login_name"]).filter_by(banned=False, validated=True).all()
-    results = [{"text": unicode(u.display_name), "id": unicode(u.login_name)} for u in users]
+    results = [{"text": str(u.display_name), "id": str(u.login_name)} for u in users]
 
     results_starting_ = []
     results_other_ = []
@@ -1403,13 +1403,13 @@ def member_list_api():
         table_data.append(
             [
                 """<a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a>
-                <a class="hover_user" %s href="/member/%s">%s</a>""" % (unicode(user.my_url),
+                <a class="hover_user" %s href="/member/%s">%s</a>""" % (str(user.my_url),
                                                                         user.get_avatar_url("60"),
                                                                         user.avatar_60_x,
                                                                         user.avatar_60_y,
                                                                         extra,
-                                                                        unicode(user.my_url),
-                                                                        unicode(user.display_name)),
+                                                                        str(user.my_url),
+                                                                        str(user.display_name)),
                 humanize_time(user.joined),
                 human_last_seen,
                 roles_template,

@@ -33,7 +33,7 @@ def character_gallery(slug):
         character_avatar = True
         ).order_by("Attachment.character_gallery_weight").all()
 
-    return render_template("roleplay/character_gallery.jade", character=character, images=images, emotes=emotes, page_title="%s's Gallery - Character Database - %%GENERIC SITENAME%%" % unicode(character.name))
+    return render_template("roleplay/character_gallery.jade", character=character, images=images, emotes=emotes, page_title="%s's Gallery - Character Database - %%GENERIC SITENAME%%" % str(character.name))
 
 @app.route('/characters/<slug>/manage-gallery', methods=["GET",])
 @login_required
@@ -50,7 +50,7 @@ def manage_gallery(slug):
         character = character
         ).order_by("Attachment.character_gallery_weight").all()
 
-    return render_template("roleplay/manage_gallery.jade", character=character, images=images, page_title="Edit %s's Gallery - Character Database - %%GENERIC SITENAME%%" % unicode(character.name))
+    return render_template("roleplay/manage_gallery.jade", character=character, images=images, page_title="Edit %s's Gallery - Character Database - %%GENERIC SITENAME%%" % str(character.name))
 
 @app.route('/characters/new-character', methods=["GET","POST"])
 @login_required
@@ -90,7 +90,7 @@ def create_character():
         character.author = current_user
         sqla.session.add(character)
         sqla.session.commit()
-        return redirect("/characters/"+unicode(character.slug))
+        return redirect("/characters/"+str(character.slug))
     else:
         pass
 
@@ -158,7 +158,7 @@ def character_edit_profile(slug):
         sqla.session.add(character)
         sqla.session.commit()
 
-        return redirect("/characters/"+unicode(character.slug))
+        return redirect("/characters/"+str(character.slug))
     else:
         form.name.data = character.name
         if character.age != None:
@@ -176,7 +176,7 @@ def character_edit_profile(slug):
         if character.other != None:
             form.other.data = character.other
 
-    return render_template("roleplay/edit_character_profile.jade", character=character, form=form, page_title="Editing %s - Character Database - %%GENERIC SITENAME%%" % (unicode(character.name),))
+    return render_template("roleplay/edit_character_profile.jade", character=character, form=form, page_title="Editing %s - Character Database - %%GENERIC SITENAME%%" % (str(character.name),))
 
 @app.route('/characters/<slug>/view-posts/character-post-list-api', methods=["GET",])
 def character_recent_activity_api(slug):
@@ -222,7 +222,7 @@ def character_recent_activity(slug):
     except IndexError:
         abort(404)
 
-    return render_template("roleplay/character_posts.jade", character=character, page_title="%s - Character Database - %%GENERIC SITENAME%%" % (unicode(character.name),))
+    return render_template("roleplay/character_posts.jade", character=character, page_title="%s - Character Database - %%GENERIC SITENAME%%" % (str(character.name),))
 
 @app.route('/user-characters-api', methods=["POST",])
 @login_required
@@ -383,7 +383,7 @@ def toggle_hide_character(slug):
     sqla.session.add(character)
     sqla.session.commit()
 
-    return app.jsonify(url="/characters/"+unicode(character.slug))
+    return app.jsonify(url="/characters/"+str(character.slug))
 
 @app.route('/characters/<slug>', methods=["GET",])
 def character_basic_profile(slug):
@@ -405,7 +405,7 @@ def character_basic_profile(slug):
     if character.other:
         character.parsed_other = parser.parse(character.other, _object=character)
 
-    return render_template("roleplay/character_profile.jade", character=character, page_title="%s - Character Database - %%GENERIC SITENAME%%" % (unicode(character.name),))
+    return render_template("roleplay/character_profile.jade", character=character, page_title="%s - Character Database - %%GENERIC SITENAME%%" % (str(character.name),))
 
 @app.route('/characters/<slug>/manage-gallery/toggle-emote', methods=["POST",])
 @login_required

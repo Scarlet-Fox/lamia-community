@@ -6,7 +6,7 @@ from flask_login import login_required, current_user
 from lamia.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string, get_preview
 import arrow, json
 from lamia.views.dashboard import broadcast
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import lamia.sqlmodels as sqlm
 from lamia.forms.blogs import BlogSettingsForm, BlogEntryForm, BlogCommentForm
 import math, re
@@ -129,7 +129,7 @@ def blogs_index(page):
     clean_html_parser = ForumPostParser()
 
     for entry in entries:
-        entry.preview = unicode(BeautifulSoup(clean_html_parser.parse(entry.html, _object=entry)[:500]))+"..."
+        entry.preview = str(BeautifulSoup(clean_html_parser.parse(entry.html, _object=entry)[:500], "lxml"))+"..."
 
     return render_template("blogs/list_of_blogs.jade",
         page_title="Blogs - %%GENERIC SITENAME%%",
@@ -159,7 +159,7 @@ def new_blog():
         b.author = current_user
         sqla.session.add(b)
         sqla.session.commit()
-        return redirect("/blog/"+unicode(b.slug))
+        return redirect("/blog/"+str(b.slug))
 
     return render_template("blogs/create_new_blog.jade", form=form, page_title="New Blog - %%GENERIC SITENAME%%")
 
@@ -178,7 +178,7 @@ def toggle_follow_blog(slug):
           to=[blog.author,],
           category="followed",
           url="/blog/%s" % (str(blog.slug),),
-          title="followed blog %s" % (unicode(blog.name)),
+          title="followed blog %s" % (str(blog.name)),
           description="",
           content=blog,
           author=current_user
@@ -225,7 +225,7 @@ def toggle_follow_blog_entry(slug, entry_slug):
           to=[entry.author,],
           category="followed",
           url="/blog/%s/e/%s" % (str(blog.slug),str(entry.slug)),
-          title="followed blog entry %s" % (unicode(entry.title)),
+          title="followed blog entry %s" % (str(entry.title)),
           description="",
           content=entry,
           author=current_user
@@ -269,7 +269,7 @@ def edit_blog(slug):
         blog.privacy_setting = form.privacy_setting.data
         sqla.session.add(blog)
         sqla.session.commit()
-        return redirect("/blog/"+unicode(blog.slug))
+        return redirect("/blog/"+str(blog.slug))
     else:
         form.description.data = blog.description
         form.privacy_setting.data = blog.privacy_setting
@@ -326,7 +326,7 @@ def new_blog_entry(slug):
                     to=[blog.author,],
                     category="blog",
                     url="""/blog/%s/e/%s""" % (slug, entry.slug),
-                    title="posted %s on blog %s" % (unicode(entry.title), unicode(blog.name)),
+                    title="posted %s on blog %s" % (str(entry.title), str(blog.name)),
                     description=entry.html,
                     content=entry,
                     author=current_user
@@ -346,10 +346,10 @@ def new_blog_entry(slug):
                     continue
 
             broadcast(
-              to=to_notify_m.values(),
+              to=list(to_notify_m.values()),
               category="mention",
               url="""/blog/%s/e/%s""" % (slug, entry.slug),
-              title="mentioned you in blog %s" % (unicode(entry.title)),
+              title="mentioned you in blog %s" % (str(entry.title)),
               description=e.html,
               content=e,
               author=e.author
@@ -360,12 +360,12 @@ def new_blog_entry(slug):
                     to=_to_notify,
                     category="blog",
                     url="""/blog/%s/e/%s""" % (slug, entry.slug),
-                    title="posted %s on blog %s" % (unicode(entry.title), unicode(blog.name)),
+                    title="posted %s on blog %s" % (str(entry.title), str(blog.name)),
                     description=entry.html,
                     content=entry,
                     author=current_user
                     )
-        return redirect("/blog/"+unicode(blog.slug))
+        return redirect("/blog/"+str(blog.slug))
 
     return render_template("blogs/new_blog_entry.jade", form=form, blog=blog, page_title="New Blog Entry - %%GENERIC SITENAME%%")
 
@@ -391,7 +391,7 @@ def remove_blog_entry(slug, entry_slug):
     e.hidden = True
     sqla.session.add(e)
     sqla.session.commit()
-    return app.jsonify(success=True, url="/blog/"+unicode(blog.slug))
+    return app.jsonify(success=True, url="/blog/"+str(blog.slug))
 
 @app.route('/blog/<slug>/e/<entry_slug>/edit-entry', methods=['GET', 'POST'])
 @login_required
@@ -444,7 +444,7 @@ def edit_blog_entry(slug, entry_slug):
             blog.recent_entry = e
             sqla.session.add(blog)
             sqla.session.commit()
-        return redirect("/blog/"+unicode(blog.slug))
+        return redirect("/blog/"+str(blog.slug))
     else:
         form.draft.data = e.draft
         form.title.data = e.title
@@ -485,7 +485,7 @@ def edit_blog_comment(slug, entry_slug, comment_id):
             return abort(500)
         sqla.session.add(comment)
         sqla.session.commit()
-        return redirect("/blog/"+unicode(blog.slug)+"/e/"+unicode(entry_slug))
+        return redirect("/blog/"+str(blog.slug)+"/e/"+str(entry_slug))
     else:
         form.comment.data = comment.html
 
@@ -539,7 +539,7 @@ def blog_index(slug, page):
 
     for entry in entries:
         entry.parsed = clean_html_parser.parse(entry.html, _object=entry)
-        entry.parsed_truncated = unicode(BeautifulSoup(entry.parsed[:1000]))+"..."
+        entry.parsed_truncated = str(BeautifulSoup(entry.parsed[:1000], "lxml"))+"..."
 
     description = clean_html_parser.parse(blog.description, _object=blog)
 
@@ -584,7 +584,7 @@ def boop_blog_entry(slug, entry_slug):
             to=[entry.author,],
             category="boop",
             url="/blog/%s/e/%s" % (str(blog.slug), str(entry.slug)),
-            title="booped your blog entry %s" % (unicode(entry.title)),
+            title="booped your blog entry %s" % (str(entry.title)),
             description=entry.html,
             content=entry,
             author=current_user
@@ -629,7 +629,7 @@ def boop_blog_entry_comment(slug, entry_slug, comment_id):
             to=[comment.author,],
             category="boop",
             url="/blog/%s/e/%s" % (str(blog.slug), str(entry.slug)),
-            title="booped your blog comment on %s" % (unicode(entry.title)),
+            title="booped your blog comment on %s" % (str(entry.title)),
             description=comment.html,
             content=comment,
             author=current_user
@@ -763,10 +763,10 @@ def create_blog_comment(slug, entry_slug, page):
             continue
 
     broadcast(
-      to=to_notify.values(),
+      to=list(to_notify.values()),
       category="topic_reply",
       url="""/blog/%s/e/%s""" % (slug, entry.slug),
-      title="replied to you in %s" % (unicode(entry.title)),
+      title="replied to you in %s" % (str(entry.title)),
       description=new_blog_comment.html,
       content=new_blog_comment,
       author=new_blog_comment.author
@@ -781,10 +781,10 @@ def create_blog_comment(slug, entry_slug, page):
             continue
 
     broadcast(
-      to=to_notify_m.values(),
+      to=list(to_notify_m.values()),
       category="mention",
       url="""/blog/%s/e/%s""" % (slug, entry.slug),
-      title="mentioned you in a comment on %s" % (unicode(entry.title)),
+      title="mentioned you in a comment on %s" % (str(entry.title)),
       description=new_blog_comment.html,
       content=new_blog_comment,
       author=new_blog_comment.author
@@ -794,7 +794,7 @@ def create_blog_comment(slug, entry_slug, page):
         to=[entry.author,],
         category="blogcomments",
         url="""/blog/%s/e/%s/page/%s#comments""" % (slug, entry_slug, max_pages),
-        title="commented on your blog entry %s" % (unicode(entry.title)),
+        title="commented on your blog entry %s" % (str(entry.title)),
         description=new_blog_comment.html,
         content=new_blog_comment,
         author=current_user
@@ -805,7 +805,7 @@ def create_blog_comment(slug, entry_slug, page):
             to=[blog.author,],
             category="blogcomments",
             url="""/blog/%s/e/%s/page/%s#comments""" % (slug, entry_slug, max_pages),
-            title="commented on blog entry %s" % (unicode(entry.title)),
+            title="commented on blog entry %s" % (str(entry.title)),
             description=new_blog_comment.html,
             content=new_blog_comment,
             author=current_user
@@ -821,7 +821,7 @@ def create_blog_comment(slug, entry_slug, page):
             to=_to_notify,
             category="blogcomments",
             url="""/blog/%s/e/%s/page/%s#comments""" % (slug, entry_slug, max_pages),
-            title="commented on %s's blog entry %s" % (unicode(entry.author.display_name),unicode(entry.title)),
+            title="commented on %s's blog entry %s" % (str(entry.author.display_name),str(entry.title)),
             description=new_blog_comment.html,
             content=new_blog_comment,
             author=current_user
@@ -838,5 +838,5 @@ def blog_list_api():
 
     q_ = parse_search_string(query, sqlm.Blog, sqla.session.query(sqlm.Blog), ["name",])
     blogs = q_.all()
-    results = [{"text": unicode(b.name), "id": str(b.id)} for b in blogs]
+    results = [{"text": str(b.name), "id": str(b.id)} for b in blogs]
     return app.jsonify(results=results)

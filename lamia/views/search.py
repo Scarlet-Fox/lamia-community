@@ -6,7 +6,7 @@ import arrow, json, pytz
 import lamia.sqlmodels as sqlm
 from lamia import sqla
 from sqlalchemy_searchable import search
-import HTMLParser
+import html.parser
 from lamia.utilities import render_lamia_template as render_template
 
 @app.route('/search', methods=['GET',])
@@ -14,10 +14,10 @@ from lamia.utilities import render_lamia_template as render_template
 def search_display():
     start_date = session.get("start_date","")
     end_date = session.get("end_date", "")
-    categories = [{"id": unicode(c["id"]), "text": c["name"]} for c in session.get("categories", [])]
-    topics = [{"id": unicode(t["id"]), "text": t["title"]} for t in session.get("topics", [])]
+    categories = [{"id": str(c["id"]), "text": c["name"]} for c in session.get("categories", [])]
+    topics = [{"id": str(t["id"]), "text": t["title"]} for t in session.get("topics", [])]
     if session.get("search_authors"):
-        authors = [{"id": unicode(a["id"]), "text": a["display_name"]} for a in session.get("search_authors", [])]
+        authors = [{"id": str(a["id"]), "text": a["display_name"]} for a in session.get("search_authors", [])]
     else:
         authors = []
     query = session.get("query","")
@@ -266,7 +266,7 @@ def search_lookup():
             parsed_result = {}
             parsed_result["time"] = humanize_time(result.created)
             parsed_result["title"] = result.title
-            parsed_result["url"] = "/blog/"+unicode(result.blog.slug)+"/e/"+unicode(result.slug)
+            parsed_result["url"] = "/blog/"+str(result.blog.slug)+"/e/"+str(result.slug)
             parsed_result["description"] = result.html
             parsed_result["author_profile_link"] = result.author.my_url
             parsed_result["author_name"] = result.author.display_name

@@ -15,7 +15,7 @@ from datetime import datetime
 import lamia.sqlmodels as sqlm
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm import joinedload
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from sqlalchemy.sql import text
 from lamia.utilities import render_lamia_template as render_template
 

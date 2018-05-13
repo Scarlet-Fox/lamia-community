@@ -29,7 +29,7 @@ class StartsWithQueryAjaxModelLoader(QueryAjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.session.query(self.model)
 
-        filters = (field.startswith(u'%s' % term) for field in self._cached_fields)
+        filters = (field.startswith('%s' % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
 
         return query.offset(offset).limit(limit).all()
@@ -75,13 +75,13 @@ def _user_list_formatter(view, context, model, name):
         return ""
         
     prettified_user = \
-    u"""<div><a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a><a class="hover_user" href="/member/%s">%s</a></div>""" \
-        % (unicode(user.my_url),
+    """<div><a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a><a class="hover_user" href="/member/%s">%s</a></div>""" \
+        % (str(user.my_url),
         user.get_avatar_url("40"),
         user.avatar_40_x,
         user.avatar_40_y,
-        unicode(user.my_url),
-        unicode(user.display_name))
+        str(user.my_url),
+        str(user.display_name))
         
     return Markup(prettified_user)
 
@@ -91,13 +91,13 @@ def _user_formatter(view, context, model, name):
         return ""
         
     prettified_user = \
-    u"""<div><a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a><a class="hover_user" href="/member/%s">%s</a></div>""" \
-        % (unicode(user.my_url),
+    """<div><a href="/member/%s"><img src="%s" width="%spx" height="%spx" class="avatar-mini" style="margin-right: 15px;"/></a><a class="hover_user" href="/member/%s">%s</a></div>""" \
+        % (str(user.my_url),
         user.get_avatar_url("40"),
         user.avatar_40_x,
         user.avatar_40_y,
-        unicode(user.my_url),
-        unicode(user.display_name))
+        str(user.my_url),
+        str(user.display_name))
         
     return Markup(prettified_user)
 
@@ -861,7 +861,7 @@ class CategoryView(ModelView):
             category.parent = parent
             category.section = None
             
-        if raw_json.has_key("children"):
+        if "children" in raw_json:
             _child_weight = 0
             for _child in raw_json["children"]:
                 self.order_category(_child["id"], _child, section=None, parent=category , weight=_child_weight)

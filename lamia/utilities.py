@@ -9,22 +9,22 @@ except:
     import re
 from lamia import sqla
 from flask_login import current_user
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from sqlalchemy.sql import text
 from datetime import timedelta
 from functools import update_wrapper
 from flask import request, make_response
-from urllib import urlencode
+from urllib.parse import urlencode
 current_app = app
 
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 spec_characters = re.compile('&[a-z0-9]{2,5};')
 twitter_hashtag_re = re.compile(r'(?<=^|(?<=[^a-zA-Z0-9-\.]))#([A-Za-z]+[A-Za-z0-9-]+)')
 twitter_user_re = re.compile(r'(?<=^|(?<=[^a-zA-Z0-9-\.]))@([A-Za-z]+[A-Za-z0-9-]+)')
-link_re = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
+link_re = re.compile(r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 bbcode_re = re.compile("(\[(attachment|custompostcaracter|postcharacter|spoiler|center|img|quote|font|color|size|url|b|i|s|prefix|@|reply|character|postcharacter|list).*?\])")
 
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 class CategoryPermissionCalculator(object):
     def __init__(self, user):
@@ -58,7 +58,7 @@ class CategoryPermissionCalculator(object):
         if self.user_is_admin:
             return True
         
-        if not self.user_role_permissions.has_key(category_id):
+        if category_id not in self.user_role_permissions:
             if category_can_view_topics != None:
                 return category_can_view_topics
             else:
@@ -70,7 +70,7 @@ class CategoryPermissionCalculator(object):
         if self.user_is_admin:
             return True
         
-        if not self.user_role_permissions.has_key(category_id):
+        if category_id not in self.user_role_permissions:
             if category_can_post_in_topics != None:
                 return category_can_post_in_topics
             else:
@@ -82,7 +82,7 @@ class CategoryPermissionCalculator(object):
         if self.user_is_admin:
             return True
         
-        if not self.user_role_permissions.has_key(category_id):
+        if category_id not in self.user_role_permissions:
             if category_can_create_topics != None:
                 return category_can_create_topics
             else:
@@ -111,7 +111,7 @@ def strip_tags(html):
     bbcode = bbcode_re.findall(html)
     for code in bbcode:
         html = html.replace(code[0], "")
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, "lxml")
     text = soup.getText()
     words = words_re.findall(text)
     return words
@@ -126,7 +126,7 @@ def get_preview_for_email(html):
     bbcode = bbcode_re.findall(html)
     for code in bbcode:
         html = html.replace(code[0], "")
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, "lxml")
     text = soup.getText()
     if len(text) > 100:
         text = text[:100] + "..."
@@ -142,7 +142,7 @@ def get_preview(html, characters):
     bbcode = bbcode_re.findall(html)
     for code in bbcode:
         html = html.replace(code[0], "")
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, "lxml")
     text = soup.getText()
     if len(text) > characters:
         text = text[:characters] + "..."
@@ -233,11 +233,11 @@ def scrub_json(list_of_json, fields_to_scrub=[]):
 def get_top_frequences(frequencies, trim, floor=1):
     inside_out = {}
 
-    for key, value in frequencies.items():
+    for key, value in list(frequencies.items()):
         if value > floor:
             inside_out[value] = key
 
-    values = inside_out.keys()
+    values = list(inside_out.keys())
     values.sort()
     values.reverse()
     keys = [inside_out[v] for v in values]
@@ -245,7 +245,7 @@ def get_top_frequences(frequencies, trim, floor=1):
     return ([keys[:trim], values[:trim]])
 
 def md5(txt):
-    return unicode(txt) #hashlib.md5(txt).hexdigest()
+    return str(txt) #hashlib.md5(txt).hexdigest()
 
 def ipb_password_check(salt, old_hash, password):
     password = password.replace("&", "&amp;") \
@@ -297,15 +297,15 @@ class ForumHTMLCleaner(object):
 
         urls = url_rgx.findall(text)
         for url in urls:
-            text = text.replace(url, """<a href="%s" target="_blank">%s</a>""" % (unicode(url), unicode(url),), 1)
+            text = text.replace(url, """<a href="%s" target="_blank">%s</a>""" % (str(url), str(url),), 1)
 
         hashtags = twitter_hashtag_re.findall(text)
         for hashtag in hashtags:
-            text = text.replace("#"+hashtag, """<a href="%s" target="_blank">%s</a>""" % (unicode("https://twitter.com/hashtag/")+unicode(hashtag), unicode("#")+unicode(hashtag),), 1)
+            text = text.replace("#"+hashtag, """<a href="%s" target="_blank">%s</a>""" % (str("https://twitter.com/hashtag/")+str(hashtag), str("#")+str(hashtag),), 1)
 
         users = twitter_user_re.findall(text)
         for user in users:
-            text = text.replace("@"+user, """<a href="%s" target="_blank">%s</a>""" % (unicode("https://twitter.com/")+unicode(user), unicode("@")+unicode(user),), 1)
+            text = text.replace("@"+user, """<a href="%s" target="_blank">%s</a>""" % (str("https://twitter.com/")+str(user), str("@")+str(user),), 1)
 
         return text
 
@@ -314,9 +314,9 @@ class ForumHTMLCleaner(object):
 
         urls = url_rgx.findall(text)
         for url in urls:
-            text = text.replace(url, """<a href="%s" target="_blank">%s</a>""" % (unicode(url), unicode(url),), 1)
+            text = text.replace(url, """<a href="%s" target="_blank">%s</a>""" % (str(url), str(url),), 1)
 
-        for smiley in emoticon_codes.keys():
+        for smiley in list(emoticon_codes.keys()):
             img_html = """<img src="%s" />""" % (os.path.join("/static/emotes",emoticon_codes[smiley]),)
             text = text.replace(smiley, img_html)
 
@@ -364,7 +364,7 @@ def date_time_format(time, format_str="YYYY"):
         
 @app.template_filter()
 def number_format(value, tsep=',', dsep='.'):
-    s = unicode(value)
+    s = str(value)
     cnt = 0
     numchars = dsep + '0123456789'
     ls = len(s)
@@ -467,7 +467,7 @@ def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
         methods = ', '.join(sorted(x.upper() for x in methods))
     if headers is not None and not isinstance(headers, list):
         headers = ', '.join(x.upper() for x in headers)
-    if not isinstance(origin, basestring):
+    if not isinstance(origin, str):
         origin = ', '.join(origin)
     if isinstance(max_age, timedelta):
         max_age = max_age.total_seconds()

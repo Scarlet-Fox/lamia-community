@@ -19,7 +19,7 @@ from lamia.email_utilities import send_mail_w_template
 from lamia.utilities import render_lamia_template as render_template
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle
 
@@ -62,7 +62,7 @@ def view_profile(login_name):
     
     recent_visitor_logs = sqla.session.query(sqlm.SiteLog.user_id, sqla.func.max(sqlm.SiteLog.time).label("time")) \
         .filter(sqlm.SiteLog.user_id.isnot(None)) \
-        .filter(sqlm.SiteLog.path.like("/member/"+unicode(user.my_url))) \
+        .filter(sqlm.SiteLog.path.like("/member/"+str(user.my_url))) \
         .group_by(sqlm.SiteLog.user_id).order_by(sqla.desc(sqla.func.max(sqlm.SiteLog.time))).limit(5).subquery()
     
     recent_visitors = sqla.session.query(sqlm.User, recent_visitor_logs.c.time) \
@@ -133,7 +133,7 @@ def view_profile(login_name):
             .order_by(sqla.desc(sqlm.BlogEntry.published))[0:5]
 
     if user.data != None:
-        if user.data.has_key("my_fields"):
+        if "my_fields" in user.data:
             custom_fields = user.data["my_fields"]
         else:
             custom_fields = []
@@ -145,7 +145,7 @@ def view_profile(login_name):
     return render_template(
         "profile.jade",
         profile=user,
-        page_title="%s - %%GENERIC SITENAME%%" % (unicode(user.display_name),),
+        page_title="%s - %%GENERIC SITENAME%%" % (str(user.display_name),),
         post_count=post_count,
         custom_fields=custom_fields,
         available_fields=available_fields,
@@ -188,7 +188,7 @@ def validate_user(login_name):
             .filter(sqlm.User.hidden_last_seen > arrow.utcnow().replace(hours=-24).datetime.replace(tzinfo=None)) \
             .all(),
         category="new_member",
-        url="/member/"+unicode(user.my_url),
+        url="/member/"+str(user.my_url),
         title="joined the forum! Greet them!",
         description="",
         content=user,
@@ -218,7 +218,7 @@ def validate_user(login_name):
         }
     )
 
-    return app.jsonify(url="/member/"+unicode(user.my_url))
+    return app.jsonify(url="/member/"+str(user.my_url))
 
 @app.route('/member/<login_name>/signatures', methods=['GET'])
 @login_required
@@ -238,7 +238,7 @@ def show_signatures(login_name):
         except:
             s.parsed = ""
 
-    return render_template("profile/view_signatures.jade", signatures=signatures, profile=user, page_title="%s's Signatures - %%GENERIC SITENAME%%" % (unicode(user.display_name),))
+    return render_template("profile/view_signatures.jade", signatures=signatures, profile=user, page_title="%s's Signatures - %%GENERIC SITENAME%%" % (str(user.display_name),))
 
 @app.route('/member/<login_name>/delete-signature/<id>', methods=['POST'])
 @login_required
@@ -258,7 +258,7 @@ def delete_signature(login_name, id):
 
     sqla.session.query(sqlm.Signature).filter_by(id=id).delete()
 
-    return app.jsonify(url="/member/"+unicode(user.my_url)+"/signatures")
+    return app.jsonify(url="/member/"+str(user.my_url)+"/signatures")
 
 @app.route('/member/<login_name>/toggle-active-signature/<id>', methods=['POST'])
 @login_required
@@ -280,7 +280,7 @@ def toggle_active_signature(login_name, id):
     sqla.session.add(signature)
     sqla.session.commit()
 
-    return app.jsonify(url="/member/"+unicode(user.my_url)+"/signatures")
+    return app.jsonify(url="/member/"+str(user.my_url)+"/signatures")
 
 @app.route('/member/<login_name>/edit-signature/<id>', methods=['GET', 'POST'])
 @login_required
@@ -306,7 +306,7 @@ def edit_signature(login_name, id):
         signature.active = form.active.data
         sqla.session.add(signature)
         sqla.session.commit()
-        return redirect("/member/"+unicode(user.my_url)+"/signatures")
+        return redirect("/member/"+str(user.my_url)+"/signatures")
     else:
         form.active.data = signature.active
         form.signature.data = signature.html
@@ -337,7 +337,7 @@ def new_signature(login_name):
         signature.created = arrow.utcnow().datetime.replace(tzinfo=None)
         sqla.session.add(signature)
         sqla.session.commit()
-        return redirect("/member/"+unicode(user.my_url)+"/signatures")
+        return redirect("/member/"+str(user.my_url)+"/signatures")
 
     return render_template("profile/new_signature.jade", form=form, profile=user, page_title="New Signature - %%GENERIC SITENAME%%")
 
@@ -390,7 +390,7 @@ def show_friends(login_name):
             incoming_friend_requests=incoming_friend_requests,
             friend_status_updates=friend_status_updates,
             friend_blog_entries=friend_blog_entries,
-            page_title="%s's Friends - %%GENERIC SITENAME%%" % (unicode(user.display_name),),
+            page_title="%s's Friends - %%GENERIC SITENAME%%" % (str(user.display_name),),
         )
 
 @app.route('/member/<login_name>/request-friend', methods=['POST'])
@@ -424,7 +424,7 @@ def request_friendship(login_name):
               author=current_user
               )
 
-    return app.jsonify(url="/member/"+unicode(user.my_url))
+    return app.jsonify(url="/member/"+str(user.my_url))
 
 @app.route('/member/<login_name>/un-friend', methods=['POST'])
 @login_required
@@ -443,7 +443,7 @@ def unfriend(login_name):
             .filter(sqla.or_(sqlm.Friendship.user == user, sqlm.Friendship.friend == user)) \
             .delete()
 
-    return app.jsonify(url="/member/"+unicode(user.my_url))
+    return app.jsonify(url="/member/"+str(user.my_url))
 
 @app.route('/member/<user>/friends/<friend>/deny', methods=['POST'])
 @login_required
@@ -467,7 +467,7 @@ def deny_friend(user, friend):
     except IndexError:
         abort(404)
 
-    return app.jsonify(url="/member/"+unicode(friend.my_url)+"/friends")
+    return app.jsonify(url="/member/"+str(friend.my_url)+"/friends")
 
 @app.route('/member/<user>/friends/<friend>/cancel', methods=['POST'])
 @login_required
@@ -491,7 +491,7 @@ def cancel_friend(user, friend):
     except IndexError:
         abort(404)
 
-    return app.jsonify(url="/member/"+unicode(user.my_url)+"/friends")
+    return app.jsonify(url="/member/"+str(user.my_url)+"/friends")
 
 @app.route('/member/<user>/friends/<friend>/approve', methods=['POST'])
 @login_required
@@ -560,7 +560,7 @@ def approve_friend(user, friend):
     sqla.session.add(friendship)
     sqla.session.commit()
 
-    return app.jsonify(url="/member/"+unicode(friend.my_url)+"/friends")
+    return app.jsonify(url="/member/"+str(friend.my_url)+"/friends")
 
 @app.route('/member/<login_name>/unignore-user/<target_name>', methods=['POST'])
 @login_required
@@ -580,7 +580,7 @@ def unignore_user(login_name, target_name):
     except:
         abort(404)
 
-    return app.jsonify(url="/member/"+unicode(user.my_url)+"/change-settings")
+    return app.jsonify(url="/member/"+str(user.my_url)+"/change-settings")
 
 @app.route('/member/<login_name>/ignore-users', methods=['POST'])
 @login_required
@@ -614,7 +614,7 @@ def ignore_users(login_name):
         sqla.session.add(new_ignore)
         sqla.session.commit()
 
-    return app.jsonify(url="/member/"+unicode(user.my_url)+"/change-settings")
+    return app.jsonify(url="/member/"+str(user.my_url)+"/change-settings")
 
 @app.route('/member/<login_name>/toggle-ignore', methods=['POST'])
 @login_required
@@ -649,7 +649,7 @@ def toggle_ignore_user(login_name):
         sqla.session.add(ignore_setting)
         sqla.session.commit()
 
-    return app.jsonify(url="/member/"+unicode(user.my_url))
+    return app.jsonify(url="/member/"+str(user.my_url))
 
 @app.route('/member/toggle-sounds', methods=['POST'])
 @login_required
@@ -709,7 +709,7 @@ def toggle_follow_user(login_name):
           author=current_user
           )
 
-    return app.jsonify(url="/member/"+unicode(user.my_url))
+    return app.jsonify(url="/member/"+str(user.my_url))
 
 @app.route('/member/<login_name>/change-avatar-title', methods=['GET', 'POST'])
 @login_required
@@ -813,7 +813,7 @@ def add_custom_field(login_name):
 
     tmp_data = user.data.copy()
 
-    if tmp_data.has_key("my_fields"):
+    if "my_fields" in tmp_data:
         tmp_data["my_fields"].append([request_json.get("field", ""), request_json.get("value", "")[:40].strip()])
     else:
         tmp_data["my_fields"] = [[request_json.get("field", ""), request_json.get("value", "")[:40].strip()],]
@@ -847,7 +847,7 @@ def remove_custom_field(login_name):
 
     tmp_data = user.data.copy()
 
-    if not tmp_data.has_key("my_fields"):
+    if "my_fields" not in tmp_data:
         abort (404)
 
     for i, f in enumerate(tmp_data["my_fields"]):
@@ -997,7 +997,7 @@ def change_user_settings(login_name):
     else:
         tmp_data = user.data
 
-    if tmp_data.has_key("my_fields"):
+    if "my_fields" in tmp_data:
         current_fields = tmp_data["my_fields"]
     else:
         current_fields = []

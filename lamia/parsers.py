@@ -2,7 +2,7 @@ from lamia import app
 from lamia import bcrypt
 from lamia.utilities import ipb_password_check, ForumHTMLCleaner
 from wand.image import Image
-from urllib import quote
+from urllib.parse import quote
 import arrow, os, math
 try:
     import regex as re
@@ -12,7 +12,7 @@ from flask_login import current_user
 from threading import Thread
 from lamia import sqla
 import lamia.sqlmodels as sqlm
-from urllib import urlencode
+from urllib.parse import urlencode
 import bbcode
 
 #quote_re = re.compile(r'\[quote=?(.*?)\](.*)\[\/quote\]', re.DOTALL|re.IGNORECASE)
@@ -514,14 +514,14 @@ class ForumPostParser(object):
         for mention in mentions:
             try:
                 user = sqla.session.query(sqlm.User).filter_by(my_url=mention)[0]
-                html = html.replace("[@%s]" % unicode(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.my_url, user.display_name), 1)
+                html = html.replace("[@%s]" % str(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.my_url, user.display_name), 1)
             except:
                 sqla.session.rollback()
-                html = html.replace("[@%s]" % unicode(mention), "", 1)
+                html = html.replace("[@%s]" % str(mention), "", 1)
 
         # parse smileys
         if not current_user.no_images:
-            for smiley in emoticon_codes.keys():
+            for smiley in list(emoticon_codes.keys()):
                 img_html = """<img src="%s" />""" % (os.path.join("/static/emotes",emoticon_codes[smiley]),)
                 html = html.replace(smiley, img_html)
                 

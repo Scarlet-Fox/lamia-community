@@ -15,7 +15,7 @@ from datetime import datetime
 import lamia.sqlmodels as sqlm
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm import joinedload
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from sqlalchemy.sql import text
 from lamia.utilities import render_lamia_template as render_template
 
@@ -42,7 +42,7 @@ def category_list_api():
             .filter(_cat_perms.c.category_can_view_topics == True).limit(50).all()
         
     for c in q_:
-        results.append({"text": unicode(c.name), "id": str(c.id)})
+        results.append({"text": str(c.name), "id": str(c.id)})
         
     return app.jsonify(results=results)
 
@@ -65,7 +65,7 @@ def topic_list_api():
             .filter(_cat_perms.c.category_can_view_topics == True).limit(50).all()
         
     for t in q_:
-        results.append({"text": unicode(t.title), "id": str(t.id)})
+        results.append({"text": str(t.title), "id": str(t.id)})
         
     return app.jsonify(results=results)
 
@@ -98,7 +98,7 @@ def toggle_follow_category(slug):
     except:
         sqla.session.rollback()
 
-    return app.jsonify(url="/category/"+unicode(category.slug)+"")
+    return app.jsonify(url="/category/"+str(category.slug)+"")
 
 @app.route('/t/<slug>/toggle-follow', methods=['POST'])
 @login_required
@@ -122,7 +122,7 @@ def toggle_follow_topic(slug):
               to=[topic.author,],
               category="followed",
               url="/t/%s" % (str(topic.slug),),
-              title="followed topic %s" % (unicode(topic.title)),
+              title="followed topic %s" % (str(topic.title)),
               description="",
               content=topic,
               author=current_user
@@ -139,7 +139,7 @@ def toggle_follow_topic(slug):
     except:
         sqla.session.rollback()
 
-    return app.jsonify(url="/t/"+unicode(topic.slug)+"")
+    return app.jsonify(url="/t/"+str(topic.slug)+"")
 
 @app.route('/t/<slug>/new-post', methods=['POST'])
 @login_required
@@ -346,10 +346,10 @@ def new_post_in_topic(slug):
             continue
 
     broadcast(
-      to=to_notify_m.values(),
+      to=list(to_notify_m.values()),
       category="mention",
       url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
-      title="mentioned you in %s" % (unicode(topic.title)),
+      title="mentioned you in %s" % (str(topic.title)),
       description=new_post.html,
       content=new_post,
       author=new_post.author
@@ -364,10 +364,10 @@ def new_post_in_topic(slug):
             continue
 
     broadcast(
-      to=to_notify.values(),
+      to=list(to_notify.values()),
       category="topic_reply",
       url="/t/%s/page/1/post/%s" % (str(topic.slug), str(new_post.id)),
-      title="replied to you in %s" % (unicode(topic.title)),
+      title="replied to you in %s" % (str(topic.title)),
       description=new_post.html,
       content=new_post,
       author=new_post.author
@@ -379,12 +379,12 @@ def new_post_in_topic(slug):
             continue
 
         skip_user = False
-        for _u in to_notify.values():
+        for _u in list(to_notify.values()):
             if _u.id == u.id:
                 skip_user = True
                 break
 
-        for _u in to_notify_m.values():
+        for _u in list(to_notify_m.values()):
             if _u.id == u.id:
                 skip_user = True
                 break
@@ -398,7 +398,7 @@ def new_post_in_topic(slug):
         to=notify_users,
         category="topic",
         url="/t/%s/page/1/post/last_seen" % (str(topic.slug),),
-        title="replied to %s" % (unicode(topic.title)),
+        title="replied to %s" % (str(topic.title)),
         description=new_post.html,
         content=topic,
         author=new_post.author
@@ -431,7 +431,7 @@ def toggle_post_boop():
             to=[post.author,],
             category="boop",
             url="/t/%s/page/1/post/%s" % (str(post.topic.slug), str(post.id)),
-            title="booped your post in %s!" % (unicode(post.topic.title)),
+            title="booped your post in %s!" % (str(post.topic.title)),
             description="",
             content=post,
             author=current_user
@@ -519,7 +519,7 @@ def recent_posts(page):
     
     clean_html_parser = ForumPostParser()    
     for post in recent_posts:
-        post.preview = unicode(BeautifulSoup(clean_html_parser.parse(post.html, _object=post)[:900]))+"..."
+        post.preview = str(BeautifulSoup(clean_html_parser.parse(post.html, _object=post)[:900], "lxml"))+"..."
     
     return render_template("forum/recent_posts.jade",
         page_title="Recent Posts - %%GENERIC SITENAME%%",
@@ -695,7 +695,7 @@ def topic_posts(slug):
             parsed_post["is_sig_mod"] = False            
 
         if current_user.is_authenticated:
-            if author_signatures.has_key(post.author.login_name):
+            if post.author.login_name in author_signatures:
                 parsed_post["signature"] = author_signatures[post.author.login_name]
                 parsed_post["signature_id"] = author_signatures_id[post.author.login_name]
             else:
@@ -1033,7 +1033,7 @@ def topic_index(slug, render, page, post):
             .order_by(sqla.desc(sqlm.Post.created))[0]
         except:
             sqla.session.rollback()
-            return redirect("/t/"+unicode(topic.slug))
+            return redirect("/t/"+str(topic.slug))
 
     elif post == "last_seen":
         try:
@@ -1055,7 +1055,7 @@ def topic_index(slug, render, page, post):
                     .order_by(sqlm.Post.created.desc())[0]
             except:
                 sqla.session.rollback()
-                return redirect("/t/"+unicode(topic.slug))
+                return redirect("/t/"+str(topic.slug))
     else:
         if post != "":
             try:
@@ -1068,7 +1068,7 @@ def topic_index(slug, render, page, post):
                     .filter_by(id=post)[0]
             except:
                 sqla.session.rollback()
-                return redirect("/t/"+unicode(topic.slug))
+                return redirect("/t/"+str(topic.slug))
         else:
             post = ""
 
@@ -1098,7 +1098,7 @@ def topic_index(slug, render, page, post):
         rp_topic = "false"
         if topic.category.slug in ["roleplays"]:
             rp_topic = "true"
-        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
+        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, page_title="%s - %%GENERIC SITENAME%%" % str(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
 
     topic.view_count = topic.view_count + 1
     try:
@@ -1115,9 +1115,9 @@ def topic_index(slug, render, page, post):
         rp_topic = "true"
     
     if render == "inline":
-        return render_template("forum/topic-iframe.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
+        return render_template("forum/topic-iframe.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % str(topic.title), initial_page=page, rp_area=rp_topic)
     else:
-        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % unicode(topic.title), initial_page=page, rp_area=rp_topic)
+        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % str(topic.title), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
@@ -1342,8 +1342,8 @@ def new_topic(slug):
         broadcast(
           to=send_notify_to_users,
           category="user_activity",
-          url="/t/"+unicode(new_topic.slug),
-          title="created a new topic %s" % (unicode(new_topic.title)),
+          url="/t/"+str(new_topic.slug),
+          title="created a new topic %s" % (str(new_topic.title)),
           description=new_post.html,
           content=new_topic,
           author=new_post.author
@@ -1358,10 +1358,10 @@ def new_topic(slug):
                 continue
 
         broadcast(
-          to=to_notify.values(),
+          to=list(to_notify.values()),
           category="mention",
-          url="/t/"+unicode(new_topic.slug),
-          title="mentioned you in new topic %s" % (unicode(new_topic.title)),
+          url="/t/"+str(new_topic.slug),
+          title="mentioned you in new topic %s" % (str(new_topic.title)),
           description=new_post.html,
           content=new_topic,
           author=new_post.author
@@ -1373,7 +1373,7 @@ def new_topic(slug):
               continue
 
           skip_user = False
-          for _u in to_notify.values():
+          for _u in list(to_notify.values()):
               if _u.id == u.id:
                   skip_user = True
                   break
@@ -1392,7 +1392,7 @@ def new_topic(slug):
           to=notify_users,
           category="topic",
           url="/t/%s" % (str(new_topic.slug),),
-          title="posted a topic in %s : %s" % (unicode(category.name), unicode(new_topic.title)),
+          title="posted a topic in %s : %s" % (str(category.name), str(new_topic.title)),
           description=new_post.html,
           content=new_topic,
           author=new_post.author
@@ -1424,7 +1424,7 @@ def category_topics(slug):
 
     if current_user.is_authenticated:
         preferences = current_user.data.get("category_filter_preference_"+str(category.id), {})
-        prefixes = preferences.keys()
+        prefixes = list(preferences.keys())
     else:
         prefixes = []
         
@@ -1524,7 +1524,7 @@ LIMIT :pagination OFFSET :page
         parsed_topic["closed"] = topic["topic_closed"]
         parsed_topic["slug"] = topic["topic_slug"]
         
-        parsed_topic["preview"] = unicode(get_preview(topic["first_post_html"], 125))        
+        parsed_topic["preview"] = str(get_preview(topic["first_post_html"], 125))        
         parsed_topics.append(parsed_topic)
             
     return app.jsonify(topics=parsed_topics, count=topic_count)
@@ -1550,7 +1550,7 @@ def category_index(slug):
         .join(sqlm.Topic.label).group_by(sqlm.Label.label) \
         .order_by(sqla.desc(sqla.func.count(sqlm.Topic.id))).all()
 
-    return render_template("forum/category.jade", page_title="%s - %%GENERIC SITENAME%%" % unicode(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
+    return render_template("forum/category.jade", page_title="%s - %%GENERIC SITENAME%%" % str(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
 
 @app.route('/')
 def index():
@@ -1594,12 +1594,12 @@ def index():
             continue
         
         if category_dict["parent_name"] is None:
-            if not hierarchy.has_key(category_dict["section_name"]):
+            if category_dict["section_name"] not in hierarchy:
                 hierarchy[category_dict["section_name"]] = []
         
             hierarchy[category_dict["section_name"]].append(_category)
         else:
-            if not children.has_key(category_dict["parent_name"]):
+            if category_dict["parent_name"] not in children:
                 children[category_dict["parent_name"]] = []
         
             children[category_dict["parent_name"]].append(_category)

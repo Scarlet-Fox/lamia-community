@@ -255,7 +255,7 @@ def new_message_in_pm_topic(pk):
         to=notify_users,
         category="pm",
         url="/messages/%s/page/1/post/%s" % (str(topic.id), str(message.id)),
-        title="replied to %s" % (unicode(topic.title)),
+        title="replied to %s" % (str(topic.title)),
         description=message.message,
         content=topic,
         author=message.author
@@ -425,7 +425,7 @@ def message_index(pk, page, post):
             .count()
 
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
-        return render_template("core/messages_topic.jade", page_title="%s - %%GENERIC SITENAME%%" % (unicode(topic.title),), topic=topic, initial_page=page, initial_post=str(post.id))
+        return render_template("core/messages_topic.jade", page_title="%s - %%GENERIC SITENAME%%" % (str(topic.title),), topic=topic, initial_page=page, initial_post=str(post.id))
 
     try:
         topic.last_seen_by[str(current_user.id)] = arrow.utcnow().timestamp
@@ -434,7 +434,7 @@ def message_index(pk, page, post):
     except:
         pass
 
-    return render_template("core/messages_topic.jade", page_title="%s - %%GENERIC SITENAME%%" % (unicode(topic.title),), topic=topic, initial_page=page,)
+    return render_template("core/messages_topic.jade", page_title="%s - %%GENERIC SITENAME%%" % (str(topic.title),), topic=topic, initial_page=page,)
 
 @app.route('/new-message', methods=['POST'])
 @login_required
@@ -524,7 +524,7 @@ def create_message():
         to=to_notify,
         category="pm",
         url="/messages/"+str(topic.id),
-        title="sent you a message: "+unicode(topic.title),
+        title="sent you a message: "+str(topic.title),
         description=message.message,
         content=topic,
         author=message.author

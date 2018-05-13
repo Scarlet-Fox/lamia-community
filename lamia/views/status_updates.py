@@ -66,7 +66,7 @@ def display_status_update(status):
         "status_update.jade",
         page_title="%s - %s's Status Update - %%GENERIC SITENAME%%" % (
             get_preview(status.message, 50),
-            unicode(status.author.display_name)
+            str(status.author.display_name)
             ),
             meta_description=get_preview(status.message, 140),
             status=status,
@@ -239,7 +239,7 @@ def make_status_update_reply(status):
         category="status",
         url="/status/"+str(status.id),
         title="replied to %s's status update" % (
-            unicode(status.author.display_name),
+            str(status.author.display_name),
             ),
         description=status.message,
         content=status,
@@ -326,7 +326,7 @@ def create_new_status(target):
         broadcast(
           to=[target_user,],
           category="profile_comment",
-          url="/status/"+unicode(status.id),
+          url="/status/"+str(status.id),
           title="commented on your profile",
           description=status.message,
           content=status,
@@ -343,14 +343,14 @@ def create_new_status(target):
         broadcast(
           to=send_notify_to_users,
           category="user_activity",
-          url="/status/"+unicode(status.id),
+          url="/status/"+str(status.id),
           title="created a status update",
           description=status.message,
           content=status,
           author=status.author
           )
 
-    return app.jsonify(url="/status/"+unicode(status.id))
+    return app.jsonify(url="/status/"+str(status.id))
 
 @app.route('/status/<status>/hide-reply/<idx>', methods=['POST'])
 @login_required
@@ -392,7 +392,7 @@ def toggle_status_blocking(status, user):
     sqla.session.add(status_user)
     sqla.session.commit()
 
-    return app.jsonify(url="/status/"+unicode(status.id))
+    return app.jsonify(url="/status/"+str(status.id))
 
 @app.route('/status/<status>/toggle-ignore', methods=['POST'])
 @login_required
@@ -419,7 +419,7 @@ def toggle_status_ignoring(status):
     sqla.session.add(status_user)
     sqla.session.commit()
 
-    return app.jsonify(url="/status/"+unicode(status.id))
+    return app.jsonify(url="/status/"+str(status.id))
 
 @app.route('/status/<status>/toggle-hidden', methods=['POST'])
 @login_required
@@ -457,7 +457,7 @@ def toggle_status_hide(status):
     status.hidden=not status.hidden
     sqla.session.add(status)
     sqla.session.commit()
-    return app.jsonify(url="/status/"+unicode(status.id))
+    return app.jsonify(url="/status/"+str(status.id))
 
 @app.route('/status/<status>/toggle-mute', methods=['POST'])
 @login_required
@@ -473,7 +473,7 @@ def toggle_status_mute(status):
     status.muted=not status.muted
     sqla.session.add(status)
     sqla.session.commit()
-    return app.jsonify(url="/status/"+unicode(status.id))
+    return app.jsonify(url="/status/"+str(status.id))
 
 @app.route('/status/<status>/toggle-lock', methods=['POST'])
 @login_required
@@ -489,4 +489,4 @@ def toggle_status_lock(status):
     status.locked=not status.locked
     sqla.session.add(status)
     sqla.session.commit()
-    return app.jsonify(url="/status/"+unicode(status.id))
+    return app.jsonify(url="/status/"+str(status.id))
