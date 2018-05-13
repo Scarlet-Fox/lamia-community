@@ -35,17 +35,6 @@ def view_profile(login_name):
         user.parsed_about_me = parser.parse(user.about_me, _object=user)
     except:
         user.parsed_about_me = ""
-    # TODO STATS
-
-    post_count = 0 # sqlm.Post.query.filter_by(hidden=False, author=user).count()
-    topic_count = 0 # sqlm.Topic.query.filter_by(hidden=False, author=user).count()
-    status_update_created = 0 # sqlm.StatusUpdate.query.filter_by(hidden=False, author=user).count()
-    status_update_comments_created = 0 # sqlm.StatusComment.query.filter_by(hidden=False, author=user).count()
-    boops_given = sqla.session.query(sqlm.post_boop_table).filter(sqlm.post_boop_table.c.user_id == user.id).count()
-    boops_received = sqla.session.query(sqlm.post_boop_table) \
-        .join(sqlm.Post) \
-        .filter(sqlm.Post.author == user) \
-        .count()
     
     age = False
     if user.birthday:
@@ -146,22 +135,22 @@ def view_profile(login_name):
         "profile.jade",
         profile=user,
         page_title="%s - %%GENERIC SITENAME%%" % (str(user.display_name),),
-        post_count=post_count,
+        post_count=user.post_count,
         custom_fields=custom_fields,
         available_fields=available_fields,
-        topic_count=topic_count,
-        status_update_count=status_update_created,
+        topic_count=user.topic_count,
+        status_update_count=user.status_update_created,
         favorite_phrase=favorite_phrase,
         common_emotes=favorite_emotes,
-        boops_given=boops_given,
-        boops_received=boops_received,
+        boops_given=user.boops_given,
+        boops_received=user.boops_received,
         recent_posts=recent_posts,
         recent_topics=recent_topics,
         recent_visitors=recent_visitors,
         recent_blog_entries=recent_blog_entries,
         recent_status_updates=recent_status_updates,
         recent_status_updates_to_user=recent_status_updates_to_user,
-        status_update_comments_count=status_update_comments_created,
+        status_update_comments_count=user.status_update_comments_created,
         ask_me=ask_me,
         age=age
         )

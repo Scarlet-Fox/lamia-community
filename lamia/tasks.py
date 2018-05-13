@@ -19,7 +19,7 @@ celery = app.celery
 ###############################################################################
 
 def log_task(name=False, recurring=False, meta=False):
-    sqla = SQLAlchemy(app) # Thread local sqla session (I think...)
+    sqla = SQLAlchemy(app)
     
     task = sqlm.TaskLog(
         name=name,
@@ -37,7 +37,7 @@ def log_task(name=False, recurring=False, meta=False):
 
 @celery.task
 def rss_feed_updater():
-    sqla = SQLAlchemy(app) # Thread local sqla session (I think...)
+    sqla = SQLAlchemy(app)
     
     print("rss_feed_updater running")
     rss_feeds = RSSScraper.query.all()
@@ -111,7 +111,7 @@ def rss_feed_updater():
 
 @celery.task
 def infraction_point_calculator():
-    sqla = SQLAlchemy(app) # Thread local sqla session (I think...)
+    sqla = SQLAlchemy(app)
     print("infraction_point_calculator running")
     
     sqla.engine.execute(
@@ -133,7 +133,34 @@ def infraction_point_calculator():
         sqla.session.commit()
         
     log_task(name="infraction_point_calculator", recurring=True, meta="")
+
+###############################################################################
+# Basic user stats calculator
+###############################################################################
+
+@celery.task
+def basic_user_stats_calculator():
+    sqla = SQLAlchemy(app)
+    print("basic_user_stats_calculator running")
+    
+    for user in sqlm.User.query.filter_by(banned=False):  
+        user = sqla.session.merge(user)
         
+        user.post_count = sqlm.Post.query.filter_by(hidden=False, author=user).count()
+        user.topic_count = sqlm.Topic.query.filter_by(hidden=False, author=user).count()
+        user.status_update_created = sqlm.StatusUpdate.query.filter_by(hidden=False, author=user).count()
+        user.status_update_comments_created = sqlm.StatusComment.query.filter_by(hidden=False, author=user).count()
+        user.boops_given = sqla.session.query(sqlm.post_boop_table).filter(sqlm.post_boop_table.c.user_id == user.id).count()
+        user.boops_received = sqla.session.query(sqlm.post_boop_table) \
+            .join(sqlm.Post) \
+            .filter(sqlm.Post.author == user) \
+            .count()
+        
+        sqla.session.add(user)
+        sqla.session.commit()
+        
+    log_task(name="basic_user_stats_calculator", recurring=True, meta="")
+
 ###############################################################################
 # Other misc. tasks
 ###############################################################################
@@ -158,4 +185,5 @@ def verify_attachment(filepath, size):
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(settings_file["rss_feed_update_delay"], rss_feed_updater.s(), name='rss_feed_updater')
     sender.add_periodic_task(settings_file["infraction_point_calculator_delay"], infraction_point_calculator.s(), name='infraction_point_calculator')
+    sender.add_periodic_task(settings_file["basic_user_stats_calculator_delay"], basic_user_stats_calculator.s(), name='basic_user_stats_calculator')
     
