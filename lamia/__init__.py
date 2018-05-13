@@ -32,7 +32,7 @@ wtfs_fields.get_pk_from_identity = get_pk_from_identity
 
 
 from werkzeug.contrib.fixers import ProxyFix
-from werkzeug.contrib.cache import FileSystemCache
+from werkzeug.contrib.cache import RedisCache
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -74,7 +74,8 @@ app.settings_file = settings_file
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.jinja_env.cache = {}
 
-cache = FileSystemCache(cache_dir=path.join(app.root_path, 'cache'))
+#cache = FileSystemCache(cache_dir=path.join(app.root_path, 'cache'))
+cache = RedisCache()
 
 app.config['SESSION_TYPE'] = 'sqlalchemy'
 app.config['SESSION_SQLALCHEMY'] = sqla
@@ -111,7 +112,7 @@ def jsonify(*args, **kwargs):
 
 app.jsonify = jsonify
 
-# import tasks
+# imports
 from . import sqlmodels
 from .views import core
 from .views import blogs
@@ -126,6 +127,37 @@ from .views import status_updates
 from .views import api
 from . import utilities
 from . import email_utilities
+
+###############################################################################
+# Task management with Celery
+###############################################################################
+
+from celery import Celery
+
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        backend=app.config['CELERY_RESULT_BACKEND'],
+        broker=app.config['CELERY_BROKER_URL']
+    )
+    celery.conf.update(app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+app.config.update(
+    CELERY_BROKER_URL=settings_file["celery_broker_url"],
+    CELERY_RESULT_BACKEND=settings_file["celery_result_backend"]
+)
+
+celery = make_celery(app)
+app.celery = celery
+from . import tasks
 
 ###############################################################################
 # Black magic for template overloading
