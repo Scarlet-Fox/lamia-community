@@ -34,7 +34,6 @@ wtfs_fields.get_pk_from_identity = get_pk_from_identity
 from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.contrib.cache import FileSystemCache
 from flask import Flask
-from flask_debugtoolbar import DebugToolbarExtension
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_admin import Admin
@@ -85,8 +84,6 @@ assets = Environment(app)
 app.config['ASSETS_DEBUG'] = settings_file["asset_debug"]
 
 bcrypt = Bcrypt(app)
-if settings_file.get("toolbar", False):
-    toolbar = DebugToolbarExtension(app)
 
 try:
     import simplejson as json
