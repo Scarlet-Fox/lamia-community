@@ -11,7 +11,10 @@
 	"twitter_consumer_key": "",
 	"twitter_consumer_secret": "",
 	"twitter_access_token_key": "",
-	"twitter_access_token_secret": ""
+	"twitter_access_token_secret": "",
+  "celery_result_backend": "redis://localhost:6379",
+  "celery_broker_url": "redis://localhost:6379",
+  "rss_feed_update_delay": 10
 }
 
-DELETE THIS LINE - also, substitute localhost for your actual db name
+DELETE THIS LINE - also, substitute with real values as needed
