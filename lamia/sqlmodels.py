@@ -1765,6 +1765,25 @@ class SwearFilter(db.Model):
     def __repr__(self):
         return "<SwearFilter: (word='%s', replace_with='%s')>" % (self.word, self.replace_with)
 
+############################################################
+# System/Other Models
+############################################################
+
+class TaskLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    name = db.Column(db.String, index=True)
+    recurring = db.Column(db.Boolean, default=True, index=True)
+    created = db.Column(db.DateTime, index=True)
+    meta = db.Column(db.Text)
+    
+    def __repr__(self):
+        return "<CeleryLog: (name='%s', created='%s')>" % (self.name, self.created)
+
+############################################################
+# SQLAlchemy Listeners
+############################################################
+
 @listens_for(Smiley, 'after_delete')
 def del_smiley_image(mapper, connection, target):
     if target.filename:
@@ -1876,3 +1895,4 @@ def test_rss_feed(mapper, connection, target):
         target.rss_feed_title = feed["feed"].get("title","")
         target.rss_key = hashlib.md5(target.rss_feed_url).hexdigest()
         
+    

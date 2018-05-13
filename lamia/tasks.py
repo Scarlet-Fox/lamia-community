@@ -15,6 +15,19 @@ import os
 celery = app.celery
 
 ###############################################################################
+# Logging function
+###############################################################################
+
+def log_task(name=False, recurring=False, meta=False):
+    task = sqlm.TaskLog(
+        name=name,
+        recurring=recurring,
+        meta=meta,
+        created=arrow.utcnow().datetime.replace(tzinfo=None)
+    )
+    
+
+###############################################################################
 # RSS Feed updater
 ###############################################################################
 
