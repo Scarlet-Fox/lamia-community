@@ -1,0 +1,1 @@
+The import scripts in this directory are not maintained, so don't just blindly run them. However, they are here as examples of how to approach importing from another forum into Lamia, and if you ask nicely, then we may happily make import scripts for your own forum/community.
