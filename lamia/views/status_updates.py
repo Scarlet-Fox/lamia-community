@@ -332,23 +332,23 @@ def create_new_status(target):
           content=status,
           author=status.author
           )
+    else:
+        send_notify_to_users = []
+        for user in status.author.followed_by():
+            if target_user:
+                if user == target_user:
+                    continue
+            send_notify_to_users.append(user)
 
-    send_notify_to_users = []
-    for user in status.author.followed_by():
-        if target_user:
-            if user == target_user:
-                continue
-        send_notify_to_users.append(user)
-
-    broadcast(
-      to=send_notify_to_users,
-      category="user_activity",
-      url="/status/"+unicode(status.id),
-      title="created a status update",
-      description=status.message,
-      content=status,
-      author=status.author
-      )
+        broadcast(
+          to=send_notify_to_users,
+          category="user_activity",
+          url="/status/"+unicode(status.id),
+          title="created a status update",
+          description=status.message,
+          content=status,
+          author=status.author
+          )
 
     return app.jsonify(url="/status/"+unicode(status.id))
 
