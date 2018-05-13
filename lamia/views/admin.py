@@ -63,7 +63,7 @@ class AuthAdminIndexView(admin.AdminIndexView):
                 my_area_reports=my_area_reports
             )
 
-admin = admin.Admin(app, index_view=AuthAdminIndexView(), name="Staff CP")
+admin = admin.Admin(app, index_view=AuthAdminIndexView(), name="Staff", url='/staff')
 
 ###################################################################################################
 # Column formatters

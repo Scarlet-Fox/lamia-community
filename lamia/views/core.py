@@ -221,7 +221,7 @@ def inject_theme_coffee_templates():
 
 @app.before_request
 def log_request():
-    if not request.path.startswith("/admin/") and not request.path.startswith("/static/"):
+    if not request.path.startswith("staff/") and not request.path.startswith("/static/"):
         l = sqlm.SiteLog()
         l.method = request.method
         l.path = request.path
@@ -800,7 +800,7 @@ def load_user(login_name):
     elif request.path == "/":
         user.last_seen_at = "Forum index"
         user.last_at_url = "/"
-    elif request.path.startswith("/admin"):
+    elif request.path.startswith("/staff"):
         user.last_seen_at = "Forum index"
         user.last_at_url = "/"
     elif request.path.startswith("/t/"):
