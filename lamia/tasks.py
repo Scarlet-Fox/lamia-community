@@ -106,6 +106,35 @@ def rss_feed_updater():
     log_task(name="rss_feed_updater", recurring=True, meta="")
 
 ###############################################################################
+# Infraction pts calculator
+###############################################################################
+
+@celery.task
+def infraction_point_calculator():
+    sqla = SQLAlchemy(app) # Thread local sqla session (I think...)
+    print("infraction_point_calculator running")
+    
+    sqla.engine.execute(
+        """UPDATE \"user\" SET lifetime_infraction_points=0"""
+    )
+    sqla.engine.execute(
+        """UPDATE \"user\" SET active_infraction_points=0"""
+    )
+
+    for infraction in sqlm.Infraction.query.all():
+        user = infraction.recipient
+
+        user.lifetime_infraction_points += infraction.points
+    
+        if arrow.now() < arrow.get(infraction.expires) and infraction.forever == False:
+            user.active_infraction_points += infraction.points
+        
+        sqla.session.add(user)
+        sqla.session.commit()
+        
+    log_task(name="infraction_point_calculator", recurring=True, meta="")
+        
+###############################################################################
 # Other misc. tasks
 ###############################################################################
 
@@ -127,6 +156,6 @@ def verify_attachment(filepath, size):
 
 @celery.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    # Run RSS feed update every X seconds - use "rss_feed_update_delay" in config.json to set an integer value
     sender.add_periodic_task(settings_file["rss_feed_update_delay"], rss_feed_updater.s(), name='rss_feed_updater')
+    sender.add_periodic_task(settings_file["infraction_point_calculator_delay"], infraction_point_calculator.s(), name='infraction_point_calculator')
     
