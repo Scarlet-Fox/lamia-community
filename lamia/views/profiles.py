@@ -130,7 +130,15 @@ def view_profile(login_name):
     else:
         custom_fields = []
         available_fields = []
-
+        
+    if current_user != user:
+        if user.profile_visits is None:
+            user.profile_visits = 0
+            
+        user.profile_visits += 1
+        sqla.session.add(user)
+        sqla.session.commit()
+        
     return render_template(
         "profile.jade",
         profile=user,
@@ -147,6 +155,7 @@ def view_profile(login_name):
         recent_posts=recent_posts,
         recent_topics=recent_topics,
         recent_visitors=recent_visitors,
+        profile_visits=user.profile_visits,
         recent_blog_entries=recent_blog_entries,
         recent_status_updates=recent_status_updates,
         recent_status_updates_to_user=recent_status_updates_to_user,

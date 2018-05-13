@@ -112,6 +112,10 @@ style!= profile.get_custom_css()
             li {{status_update_comments_count}} <strong>status comment</strong>
           else
             li {{status_update_comments_count}} <strong>status comments</strong>
+          if profile_visits == 1
+            li {{profile_visits}} <strong>profile views</strong>
+          else
+            li {{profile_visits}} <strong>profile views</strong>
           if favorite_phrase
             li <strong>Favorite Phrase</strong>
             span "...{{favorite_phrase}}..." 
