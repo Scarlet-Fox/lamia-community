@@ -16,7 +16,7 @@
             a#entry-url(href="/blog/{{blog.slug}}/e/{{entry.slug}}")
               h1.breadcrumb-h1= entry.title
         {% if current_user != blog.author and current_user != entry.author %}
-        {% if current_user.is_authenticated() %}
+        {% if current_user.is_authenticated %}
         {% if current_user in entry.subscribers %}
         a.btn.btn-xs.btn-default.post-link.float-right(href="/blog/{{blog.slug}}/e/{{entry.slug}}/toggle-follow", style="color: #333;") Unsubscribe
         {% else %}
@@ -53,12 +53,12 @@
           br
           .row
             .col-xs-6
-              if current_user.is_authenticated()
+              if current_user.is_authenticated
                 a.btn.btn-default.report-button(data-pk=entry.id, data-type="blogentry") Report
               if entry.author == current_user or current_user in blog.editors
                 a.btn.btn-default(href="/blog/{{blog.slug}}/e/{{entry.slug}}/edit-entry") Edit Entry
             .col-xs-6.post-likes
-              if entry.author == current_user or not current_user.is_authenticated()
+              if entry.author == current_user or not current_user.is_authenticated
                 span
                   if entry.boops|length == 1:
                     span.badge {{entry.boops|length}}
@@ -80,7 +80,7 @@
                     | &nbsp;
                     span.boop-text Unboop
           br
-      if current_user.is_authenticated()
+      if current_user.is_authenticated
         li.list-group-item.section-header#comments(style="margin-top: 10px;") Comments
         .list-group-item
           #new-post-box    
@@ -108,15 +108,15 @@
                 .col-sm-10.col-xs-12
                   .row
                     .col-xs-6
-                      if current_user.is_authenticated()
+                      if current_user.is_authenticated
                         a.btn.btn-default.reply-button(data-pk=comment.id, data-author=comment.author.display_name, data-type="blogcomment") Reply
-                      if current_user.is_authenticated()
+                      if current_user.is_authenticated
                         a.btn.btn-default.report-button(data-pk=comment.id, data-type="blogcomment") Report
                       if comment.author == current_user
                         a.btn.btn-default(href="/blog/{{blog.slug}}/e/{{entry.slug}}/c/{{comment.id}}/edit-comment") Edit Comment
                     .col-xs-6
                       .post-likes
-                        if comment.author == current_user or not current_user.is_authenticated()
+                        if comment.author == current_user or not current_user.is_authenticated
                           span
                             if comment.boops|length == 1:
                               span.badge {{comment.boops|length}}

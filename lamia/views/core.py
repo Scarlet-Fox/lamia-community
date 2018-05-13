@@ -66,7 +66,7 @@ def server_error(e):
     l.time = arrow.utcnow().datetime
 
     try:
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             l.user = current_user
     except:
         pass
@@ -107,7 +107,7 @@ def unauthorized_access(e):
     l.time = arrow.utcnow().datetime
 
     try:
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             l.user = current_user
     except:
         pass
@@ -148,7 +148,7 @@ def page_not_found(e):
     l.time = arrow.utcnow().datetime
 
     try:
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             l.user = current_user
     except:
         pass
@@ -184,14 +184,14 @@ if app.settings_file.get("lockout_on", False):
     @app.before_request
     def lockdown_site():
         if not (request.path == "/under-construction" or request.path == "/sign-in" or "/static" in request.path):
-            if current_user.is_authenticated() and (current_user.is_admin or current_user.is_allowed_during_construction):
+            if current_user.is_authenticated and (current_user.is_admin or current_user.is_allowed_during_construction):
                 pass
             else:
                 return redirect("/under-construction")
 
 @app.before_request
 def intercept_banned():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         if current_user.banned and not (request.path == "/banned" or request.path == "/sign-out" or "/static" in request.path):
             return redirect("/banned")
 
@@ -199,7 +199,7 @@ def intercept_banned():
 def inject_notification_count():
     c = current_user
     try:
-        if c.is_authenticated():
+        if c.is_authenticated:
             return dict(notification_count=c._get_current_object().get_notification_count())
         else:
             return dict(notification_count=0)
@@ -210,7 +210,7 @@ def inject_notification_count():
 def inject_theme_coffee_templates():
     c = current_user
     my_coffee_template_overrides={}
-    if c.is_authenticated():
+    if c.is_authenticated:
         if c.theme and c.theme.directory_name:
             coffee_tmpl_override_path = path.join(app.config["DEFAULT_TEMPLATE_DIR"], "themes", current_user.theme.directory_name, "_coffee")
             if path.exists(coffee_tmpl_override_path):
@@ -233,7 +233,7 @@ def log_request():
         l.time = arrow.utcnow().datetime.replace(tzinfo=None)
 
         try:
-            if current_user.is_authenticated():
+            if current_user.is_authenticated:
                 l.user = current_user
             sqla.session.add(l)
             sqla.session.commit()
@@ -921,7 +921,7 @@ def load_user(login_name):
 
 @app.route('/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return abort(404)
 
     try:
@@ -948,7 +948,7 @@ def forgot_password(render):
     if render not in ["page", "inline"]:
         return abort(404)
         
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return abort(404)
 
     form = ForgotPasswordForm(csrf_enabled=False)
@@ -1061,7 +1061,7 @@ def stats():
 @app.route('/register', methods=['GET', 'POST'], defaults={"render": "page"})
 @app.route('/register/<render>', methods=['GET', 'POST'])
 def register(render):
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return abort(404)
 
     form = RegistrationForm(csrf_enabled=False)
@@ -1172,7 +1172,7 @@ def sign_in(render):
     if render not in ["page", "inline"]:
         return abort(404)
         
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return abort(404)
 
     form = LoginForm(csrf_enabled=False)
@@ -1199,7 +1199,7 @@ def sign_in(render):
         except:
             return redirect("/")
     else:
-        form.redirect_to.data = request.args.get('next', "/")
+        form.redirect_to.data = request.args.get('next', "/") # TODO: this should be verified for safety
         
     flavor_text = [
         [
@@ -1296,7 +1296,7 @@ def preview():
 @app.route('/toggle-manual-validation', methods=["POST",])
 @login_required
 def toggle_manual_validation():
-    if not current_user.is_authenticated():
+    if not current_user.is_authenticated:
         if not current_user.is_admin:
             return abort(404)
     

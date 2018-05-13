@@ -17,7 +17,7 @@
           li.active.hidden-sm.hidden-xs
             a(href="{{url_for('topic_index', slug=topic.slug)}}")
               h1.breadcrumb-h1= topic.title
-        {% if current_user.is_authenticated() %}
+        {% if current_user.is_authenticated %}
         {% if current_user in topic.watchers %}
         a.btn.btn-xs.btn-default.post-link.float-right(href="/t/{{topic.slug}}/toggle-follow", style="color: #333;") Unfollow
         {% else %}
@@ -36,7 +36,7 @@
     ul.list-group.category
       #post-container(data-slug="{{topic.slug}}")
       li.list-group-item(style="overflow: hidden;")
-        if current_user.is_authenticated() == False:
+        if current_user.is_authenticated == False:
           p.text-muted Please login to make a reply to this topic.
         elif topic.locked or topic.hidden:
           p.text-muted This topic is locked.
@@ -93,7 +93,7 @@ script(type="text/javascript", src="{{ASSET_URL}}").
 
 script(type="text/javascript").
   $(document).ready(function(){  
-  {% if current_user.is_authenticated() == True %}
+  {% if current_user.is_authenticated == True %}
   window._pagination=20;//{{current_user.post_pagination}};
   window._is_topic_mod={{topic.is_topic_mod(current_user)}};
   window._is_logged_in=true;
@@ -112,7 +112,7 @@ script(type="text/javascript").
   window._initial_post="{{initial_post}}";
   {% endif %}
   
-  {% if current_user.is_authenticated() == True %}
+  {% if current_user.is_authenticated == True %}
   window._can_edit = true;
   window._current_user = "{{current_user.display_name}}";
   {% endif %}

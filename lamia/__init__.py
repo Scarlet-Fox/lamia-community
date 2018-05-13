@@ -144,7 +144,7 @@ def _lamia_load_template(self, name, globals):
         raise TypeError('no loader for this environment specified')
     
     theme_name = ""
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         if current_user.theme:
             if current_user.theme.directory_name:
                 theme_name = current_user.theme.directory_name
@@ -170,7 +170,7 @@ class LamiaThemeFileSystemLoader(FileSystemLoader):
         searchpaths = self.searchpath[:]
         use_theme_template = False
         pieces = split_template_path(template)
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             if current_user.theme and current_user.theme.directory_name:
                 theme_pieces = pieces[:]
                 theme_pieces[-1] = current_user.theme.directory_name+"-"+theme_pieces[-1]

@@ -315,7 +315,7 @@ def private_message_posts(pk):
         parsed_post["author_login_name"] = post.author.my_url
         parsed_post["_id"] = post.id
 
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             if post.author.id == current_user.id:
                 parsed_post["is_author"] = True
             else:

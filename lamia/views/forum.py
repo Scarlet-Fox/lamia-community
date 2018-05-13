@@ -496,7 +496,7 @@ def recent_posts(page):
         .order_by(sqla.desc(sqlm.Post.created))
         
     if not current_user.is_admin:
-        if not current_user.is_authenticated():
+        if not current_user.is_authenticated:
             recent_posts = recent_posts.filter(sqlm.Topic.category.has(sqla.or_(
                     sqlm.Category.can_view_topics==True,
                     sqlm.Category.can_view_topics==None
@@ -694,7 +694,7 @@ def topic_posts(slug):
         else:
             parsed_post["is_sig_mod"] = False            
 
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             if author_signatures.has_key(post.author.login_name):
                 parsed_post["signature"] = author_signatures[post.author.login_name]
                 parsed_post["signature_id"] = author_signatures_id[post.author.login_name]
@@ -725,12 +725,12 @@ def topic_posts(slug):
             parsed_post["one_boop"] = True
         else:
             parsed_post["one_boop"] = False
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             parsed_post["can_boop"] = current_user != post.author
         else:
             parsed_post["can_boop"] = False
 
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             if post.author.id == current_user.id:
                 parsed_post["is_author"] = True
             else:
@@ -990,7 +990,7 @@ def topic_index(slug, render, page, post):
     
     more_topics = [] # TODO : Make this actually useful
     
-    # if current_user.is_authenticated():
+    # if current_user.is_authenticated:
     #     more_topics = sqla.session.query(sqlm.Topic) \
     #         .filter(sqlm.Topic.id != topic.id) \
     #         .filter(sqlm.Topic.hidden == False) \
@@ -1126,7 +1126,7 @@ def category_filter_preferences(slug):
     except IndexError:
         sqla.session.rollback()
         return abort(404)
-    if not current_user.is_authenticated():
+    if not current_user.is_authenticated:
         return app.jsonify(preferences={})
 
     cat_perm_calculus = CategoryPermissionCalculator(current_user)
@@ -1422,7 +1422,7 @@ def category_topics(slug):
     if not cat_perm_calculus.can_view_topics(category.id, category.can_view_topics):
         return abort(404)
 
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         preferences = current_user.data.get("category_filter_preference_"+str(category.id), {})
         prefixes = preferences.keys()
     else:
@@ -1493,7 +1493,7 @@ LIMIT :pagination OFFSET :page
         parsed_topic["created"] = humanize_time(topic["first_post_created"], "MMM D YYYY")
         
         parsed_topic["updated"] = False
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             if topic["topic_last_seen_by"]:
                 if topic["topic_last_seen_by"].get(str(current_user.id), None) != None:
                     if arrow.get(topic["topic_last_updated"]).timestamp > topic["topic_last_seen_by"].get(str(current_user.id)):
@@ -1680,7 +1680,7 @@ def index():
         # )))
 
     if not current_user.is_admin:
-        if not current_user.is_authenticated():
+        if not current_user.is_authenticated:
             announcements = announcements.filter(sqlm.Topic.category.has(sqla.or_(
                     sqlm.Category.can_view_topics==True,
                     sqlm.Category.can_view_topics==None
@@ -1693,7 +1693,7 @@ def index():
         
     announcements = announcements.order_by(sqlm.Topic.created.desc()).paginate(1, 5, False).items
 
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         blogs = sqla.session.query(sqlm.Blog) \
             .join(sqlm.Blog.recent_entry) \
             .filter(sqlm.Blog.disabled.isnot(True)) \

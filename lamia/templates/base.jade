@@ -12,7 +12,7 @@ doctype html(lang="en-us")
 {% endif %}
 {% endmacro %}
 head
-    if current_user.is_authenticated()
+    if current_user.is_authenticated
       meta(name='hue', content='Hello {{current_user.display_name}}. Stare too long at this code, and you will succumb to eldritch influences. You have been warned.')
     link(rel="icon", href="/static/favicon.png", type="image/png", sizes="any")
     link(rel="canonical", href=request.canonical)
@@ -31,7 +31,7 @@ head
       title {{ page_title }}
       
     {% block theme %}
-    if current_user.is_authenticated() and current_user.theme
+    if current_user.is_authenticated and current_user.theme
       if current_user.theme.css
         {% assets filters="cssmin", output="generated/"+current_user.theme.get_text_id()+"woe-core.css",
         "assets/bootstrap.css", "assets/quill2/quill.snow.css", 
@@ -71,7 +71,7 @@ head
         | .site-background { background: none !important; height: 100px !important; }
         | body { background: none !important; }
 body(role='document')
-  if current_user.is_authenticated()
+  if current_user.is_authenticated
     if current_user.notification_sound
       if current_user.all_notification_sounds
         audio#notification-sound(style="display: none;",data-frequency="yes" ,preload, src="/static/notify.wav")
@@ -94,12 +94,12 @@ body(role='document')
       nav.navbar.navbar-default.navbar-fixed-top.hide-inline(style="-ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)\"; filter: alpha(opacity=90); -moz-opacity: 0.9; -khtml-opacity: 0.9; opacity: 0.9;")
         .container
           .navbar-header
-            if current_user.is_authenticated()
+            if current_user.is_authenticated
               a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.my_url}}')
                 img(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 7px; margin-left: 0px;', class="avatar-mini")
             a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/')
               span.glyphicon.glyphicon-home()
-            if current_user.is_authenticated()
+            if current_user.is_authenticated
               if current_user.unread_private_messages() > 0
                 a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px; color: #B22222;", href='/messages')
                   span.glyphicon.glyphicon-envelope
@@ -144,7 +144,7 @@ body(role='document')
                             |more
                         br
                         a.notification-link(href='{{notification["url"]}}', data-notification='{{notification["id"]}}')= notification["message"]
-            if current_user.is_authenticated()
+            if current_user.is_authenticated
               span      
                 a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")                
                 ul.dropdown-menu(role='menu')
@@ -192,7 +192,7 @@ body(role='document')
             a.navbar-brand(href='#')
           #navbar.navbar-collapse.collapse
             ul.nav.navbar-nav
-              if not current_user.is_authenticated()
+              if not current_user.is_authenticated
                 li#sign-in-li.hidden-sm.hidden-md.hidden-lg
                   a(href='/sign-in')
                     | <strong>Sign In</strong>
@@ -238,7 +238,7 @@ body(role='document')
               li
                 a(href='/search')
                   | Search
-              if current_user.is_authenticated()
+              if current_user.is_authenticated
                 li.divider.hidden-sm.hidden-md.hidden-lg
                   hr
                 li.hidden-sm.hidden-md.hidden-lg
@@ -252,7 +252,7 @@ body(role='document')
                 li.hidden-sm.hidden-md.hidden-lg
                   a.sign-out(href='#') Sign Out
             ul.nav.navbar-nav.navbar-right.hidden-xs
-              if current_user.is_authenticated()
+              if current_user.is_authenticated
                 li
                   img.go-to-profile(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 4px; margin-left: 15px;', class="avatar-mini")
                 li.dropdown
@@ -270,7 +270,7 @@ body(role='document')
                       li.divider
                       li
                         a.sign-out(href='#') Sign Out
-                if current_user.is_authenticated()
+                if current_user.is_authenticated
                   li.dropdown
                     a.dropdown-toggle.glyphicon.glyphicon-cog(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                       span.caret
@@ -316,7 +316,7 @@ body(role='document')
                 li#register-li.hidden-xs
                   a.join-us-link(href='/register')
                     | <strong>Join Us!</strong>
-              if current_user.is_authenticated()
+              if current_user.is_authenticated
                 if current_user.unread_private_messages() > 0
                   a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; color: #B22222; border: none;", href='/messages')
                     span.glyphicon.glyphicon-envelope
@@ -366,12 +366,12 @@ body(role='document')
       nav.navbar.navbar-default.hide-inline
         .container-fluid
           .navbar-header
-            if current_user.is_authenticated()
+            if current_user.is_authenticated
               a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/member/{{current_user.my_url}}')
                 img(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 7px; margin-left: 0px;', class="avatar-mini")
             a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px;", href='/')
               span.glyphicon.glyphicon-home()
-            if current_user.is_authenticated()
+            if current_user.is_authenticated
               if current_user.unread_private_messages() > 0
                 a.button.mini-notification-button.collapsed.hidden-sm.hidden-md.hidden-lg(style="margin-left: 5px; color: #B22222;", href='/messages')
                   span.glyphicon.glyphicon-envelope
@@ -416,7 +416,7 @@ body(role='document')
                             |more
                         br
                         a.notification-link(href='{{notification["url"]}}', data-notification='{{notification["id"]}}')= notification["message"]
-            if current_user.is_authenticated()
+            if current_user.is_authenticated
               span      
                 a.dropdown-toggle.glyphicon.glyphicon-cog.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button(href='#', data-toggle='dropdown', role='button', aria-expanded='false', style="margin-left: 5px; padding-top: 12px; padding-bottom: 12px;")
                 ul.dropdown-menu(role='menu')
@@ -463,7 +463,7 @@ body(role='document')
             a.navbar-brand(href='#')
           #navbar.navbar-collapse.collapse
             ul.nav.navbar-nav
-              if not current_user.is_authenticated()
+              if not current_user.is_authenticated
                 li#sign-in-li.hidden-sm.hidden-md.hidden-lg
                   a(href='/sign-in')
                     | <strong>Sign In</strong>
@@ -509,7 +509,7 @@ body(role='document')
               li
                 a(href='/search')
                   | Search
-              if current_user.is_authenticated()
+              if current_user.is_authenticated
                 li.divider.hidden-sm.hidden-md.hidden-lg
                   hr
                 li.hidden-sm.hidden-md.hidden-lg
@@ -523,7 +523,7 @@ body(role='document')
                 li.hidden-sm.hidden-md.hidden-lg
                   a.sign-out(href='#') Sign Out
             ul.nav.navbar-nav.navbar-right.hidden-xs
-              if current_user.is_authenticated()
+              if current_user.is_authenticated
                 li
                   img.go-to-profile(src='{{current_user.get_avatar_url("40")}}', width='{{current_user.avatar_40_x}}', height='{{current_user.avatar_40_y}}', style='margin-top: 5px; margin-left: 15px;', class="avatar-mini")
                 li.dropdown
@@ -543,7 +543,7 @@ body(role='document')
                       li.divider
                       li
                         a.sign-out(href='#') Sign Out
-                if current_user.is_authenticated()
+                if current_user.is_authenticated
                   li.dropdown
                     a.dropdown-toggle.glyphicon.glyphicon-cog(href='#', data-toggle='dropdown', role='button', aria-expanded='false')
                       span.caret
@@ -589,7 +589,7 @@ body(role='document')
                 li#register-li.hidden-xs
                   a.join-us-link(href='/register')
                     | <strong>Join Us!</strong>
-              if current_user.is_authenticated()
+              if current_user.is_authenticated
                 if current_user.unread_private_messages() > 0
                   a.button.mini-notification-button.collapsed.hidden-xs(style="margin-left: 5px; color: #B22222; border: none;", href='/messages')
                     span.glyphicon.glyphicon-envelope
@@ -643,7 +643,7 @@ body(role='document')
         li.list-group-item.section-header.sidebar-section-header(style="margin-top: 10px;") Quick Links
         li.list-group-item(style="margin-bottom: 25px;")
           .row
-            if not current_user.is_authenticated()
+            if not current_user.is_authenticated
               .col-sm-3
                 strong.text-muted Hello there!
                 br
@@ -663,12 +663,12 @@ body(role='document')
                   a.text-muted.text-hide-overflow.to-top(href="#") 
                     span.glyphicon.glyphicon-arrow-up
                     | &nbsp;&nbsp;&nbsp;&nbsp;Go to Top
-                if not current_user.is_authenticated()
+                if not current_user.is_authenticated
                   li(role="presentation")
                     a.text-muted.text-hide-overflow(href="/blogs") 
                       span.glyphicon.glyphicon-pencil
                       | &nbsp;&nbsp;&nbsp;&nbsp;Blogs
-                if current_user.is_authenticated()
+                if current_user.is_authenticated
                   li(role="presentation")
                     a.text-muted.text-hide-overflow(href="/dashboard") 
                       span.glyphicon.glyphicon-alert
@@ -697,7 +697,7 @@ body(role='document')
                   a.text-muted.text-hide-overflow(href="/acknowledgement") 
                     span.glyphicon.glyphicon-star
                     | &nbsp;&nbsp;&nbsp;&nbsp;Acknowledgements
-            if current_user.is_authenticated()
+            if current_user.is_authenticated
               .col-sm-3
                 strong.text-muted Settings
                 br
@@ -739,13 +739,13 @@ body(role='document')
   script(src="/static/assets/handlebars.min.js").
   
   script(type="text/javascript").
-  if current_user.is_authenticated()
+  if current_user.is_authenticated
     script(type="text/javascript").
       window.woe_is_me = "{{current_user.listener_token}}";
       window.my_url = "{{current_user.my_url}}";
       window.my_tz = "{{current_user.time_zone}}";
       window.theme = "{{current_user.theme.directory_name}}";
-      {% if current_user.is_authenticated() %}
+      {% if current_user.is_authenticated %}
       window.logged_in = true;
       {% else %}
       window.logged_in = false;

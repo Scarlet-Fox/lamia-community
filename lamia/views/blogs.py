@@ -18,7 +18,7 @@ reply_re = re.compile(r'\[reply=(.+?):(post)(:.+?)?\]')
 @app.route('/blogs', methods=['GET'], defaults={'page': 1})
 @app.route('/blogs/page/<page>', methods=['GET'])
 def blogs_index(page):
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         my_blogs = sqla.session.query(sqlm.Blog) \
             .filter_by(author=current_user) \
             .filter(sqlm.Blog.disabled.isnot(True)).all()
@@ -31,7 +31,7 @@ def blogs_index(page):
             
     request.canonical = app.config['BASE'] + "/blogs/page/%s" % (page,)
 
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         comments = sqla.session.query(sqlm.BlogComment) \
             .join(sqlm.BlogComment.blog) \
             .filter(sqlm.Blog.disabled.isnot(True)) \
@@ -216,7 +216,7 @@ def toggle_follow_blog_entry(slug, entry_slug):
         return abort(404)
     elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
-    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated:
         return abort(404)
 
     if not current_user in entry.subscribers:
@@ -511,7 +511,7 @@ def blog_index(slug, page):
         return abort(404)
     elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
-    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated:
         return abort(404)
 
     if current_user == blog.author or current_user.is_admin:
@@ -567,7 +567,7 @@ def boop_blog_entry(slug, entry_slug):
         return abort(404)
     elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
-    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated:
         return abort(404)
 
     try:
@@ -606,7 +606,7 @@ def boop_blog_entry_comment(slug, entry_slug, comment_id):
         return abort(404)
     elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
-    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated:
         return abort(404)
 
     try:
@@ -661,7 +661,7 @@ def blog_entry_index(slug, entry_slug, page):
             return abort(404)
         elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
             return abort(404)
-        elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+        elif blog.privacy_setting == "members" and not current_user.is_authenticated:
             return abort(404)
 
     try:
@@ -714,7 +714,7 @@ def create_blog_comment(slug, entry_slug, page):
         return abort(404)
     elif blog.privacy_setting == "editors" and (current_user != blog.author and current_user not in blog.editors):
         return abort(404)
-    elif blog.privacy_setting == "members" and not current_user.is_authenticated():
+    elif blog.privacy_setting == "members" and not current_user.is_authenticated:
         return abort(404)
 
     try:

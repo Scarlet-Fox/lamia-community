@@ -9,7 +9,7 @@
       li.list-group-item.section-header.sidebar-status-section(style="font-size: 14px;")
         span#status-status
         .btn-group(style="float: right;")
-          if current_user.is_authenticated()
+          if current_user.is_authenticated
             a.btn.btn-xs.btn-default.report-button(data-pk=status.id, data-type="status")
               span.glyphicon.glyphicon-exclamation-sign
           {% if mod == True %}
@@ -33,7 +33,7 @@
           a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-mute") Mute
           {% endif %}
           {% endif %}
-          if current_user.is_authenticated()
+          if current_user.is_authenticated
             {% if status_user.ignoring or not current_user in status.participants %}
             a.btn.btn-xs.btn-default.post-link(href="/status/{{status.id}}/toggle-ignore") Follow
             {% else %}
@@ -74,7 +74,7 @@
                 span.glyphicon.glyphicon-cog
             p {{status.message}}
       li.list-group-item.status-replies#status-replies
-      if current_user.is_authenticated()
+      if current_user.is_authenticated
         li.list-group-item.status-reply-form
           form.form-inline
             .form-group.status-reply-box
@@ -116,7 +116,7 @@
                 else
                   br
                   a.inherit_colors.post-link(href="/status/{{status.id}}/toggle-silence/{{participant.id}}") (Permit)
-    if current_user.is_authenticated()
+    if current_user.is_authenticated
       ul.list-group.category
         li.list-group-item.section-header(style="font-size: 14px;") New Status Update
         li.list-group-item

@@ -13,7 +13,7 @@
         center
           span.text-muted(style="max-width: 200px;")= character.motto
         {% endif %}
-        if current_user.is_authenticated() and current_user.is_admin
+        if current_user.is_authenticated and current_user.is_admin
           center
             br
             if character.hidden

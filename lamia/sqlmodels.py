@@ -680,7 +680,7 @@ class User(db.Model):
         
     def get_custom_css(self):
         theme_profile_css = ""
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             if current_user.no_images:
                 return ""
             
@@ -714,7 +714,8 @@ class User(db.Model):
 
     def get_url_safe_login_name(self):
         return quote(self.login_name.encode('utf-8'))
-
+    
+    @property
     def is_authenticated(self):
         return True # Will only ever return True.
 
@@ -779,9 +780,11 @@ class User(db.Model):
         #         return False
         # else:
 
+    @property
     def is_anonymous(self):
         return False # Will only ever return False. Anonymous = guest user. We don't support those.
-
+    
+    @property
     def is_active(self):
         if self.banned:
             return False

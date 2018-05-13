@@ -1,7 +1,7 @@
 {% extends "base.jade" %}
 
 {% block content %}
-if not current_user.is_authenticated()
+if not current_user.is_authenticated
   //- .row
   //-   .col-md-12
   //-     ul.list-group
@@ -157,7 +157,7 @@ if not current_user.is_authenticated()
             span.status-reply-time 
               a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
         {% endfor %}
-        if current_user.is_authenticated()
+        if current_user.is_authenticated
           li.list-group-item
             center
               p
