@@ -1216,6 +1216,7 @@ class Category(db.Model):
 
     weight = db.Column(db.Integer, default=0, index=True)
     restricted = db.Column(db.Boolean, default=False, index=True)
+    auto_follow_for_new_members = db.Column(db.Boolean, default=False, index=True)
 
     topic_count = db.Column(db.Integer, default=0)
     post_count = db.Column(db.Integer, default=0)

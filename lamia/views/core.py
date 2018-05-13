@@ -1083,22 +1083,22 @@ def register(render):
         sqla.session.add(new_user)
         sqla.session.commit()
         
-        # TODO: Umm, this should be configurable.
-        # try:
-        #     category = sqla.session.query(sqlm.Category).filter_by(slug="news")[0]
-        #
-        #     if not new_user in category.watchers:
-        #         category.watchers.append(new_user)
-        #
-        #     try:
-        #         sqla.session.add(category)
-        #         sqla.session.commit()
-        #     except:
-        #         sqla.session.rollback()
-        #
-        # except IndexError:
-        #     sqla.session.rollback()
-        #     return abort(404)
+        try:
+            categories = sqla.session.query(sqlm.Category).filter_by(auto_follow_for_new_members=True)
+            
+            for category in categories:
+                if not new_user in category.watchers:
+                    category.watchers.append(new_user)
+
+                try:
+                    sqla.session.add(category)
+                    sqla.session.commit()
+                except:
+                    sqla.session.rollback()
+
+        except IndexError:
+            sqla.session.rollback()
+            return abort(404)
         
         # TODO: Set this up again
         # send_mail_w_template(
