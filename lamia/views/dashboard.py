@@ -27,6 +27,12 @@ def broadcast(to, category, url, title, description, content, author, priority=0
     except:
         pass
         
+    try:
+        if content.topic.hidden == True:
+            return
+    except:
+        pass
+        
     if category not in [x[0] for x in sqlm.Notification.NOTIFICATION_CATEGORIES]:
         raise TypeError("Category is not defined in NOTIFICATION_CATEGORIES.")
 
