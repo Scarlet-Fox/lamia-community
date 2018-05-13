@@ -12,7 +12,6 @@ colorama==0.3.9
 cssmin==0.2.0
 cssselect==1.0.1
 decorator==4.2.1
-dnspython==1.15.0
 feedparser==5.2.1
 Flask==0.12.2
 Flask-Admin==1.5.0
@@ -26,12 +25,8 @@ Flask-Session==0.2.3
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
 future==0.16.0
-gevent==1.2.2
-greenlet==0.4.12
 gunicorn==19.7.1
 idna==2.5
-ipaddr==2.1.11
-ipwhois==0.15.1
 itsdangerous==0.24
 Jinja2==2.10
 lxml==3.8.0
@@ -48,7 +43,6 @@ pyjade==4.0.0
 python-bcrypt==0.3.2
 python-dateutil==2.6.1
 python-editor==1.0.3
-python-engineio==1.7.0
 python-slugify==1.2.4
 python-termstyle==0.1.10
 python-twitter==3.3
@@ -66,7 +60,6 @@ termstyle==0.1.11
 Unidecode==0.4.21
 urllib3==1.21.1
 validators==0.12.1
-virtualenv==15.1.0
 Wand==0.4.4
 webassets==0.12.1
 Werkzeug==0.14.1

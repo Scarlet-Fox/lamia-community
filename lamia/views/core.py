@@ -11,7 +11,6 @@ from wand.image import Image
 from werkzeug import secure_filename, urls
 import arrow, mimetypes, json, os, hashlib, time, StringIO
 from lamia.views.dashboard import broadcast
-from ipwhois import IPWhois
 import urllib, urllib2
 import HTMLParser
 from werkzeug.exceptions import default_exceptions, HTTPException
