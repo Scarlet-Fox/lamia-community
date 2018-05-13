@@ -1,5 +1,4 @@
 from lamia import app
-from lamia import sqla
 import lamia.sqlmodels as sqlm
 from lamia import settings_file
 from lamia.sqlmodels import *
@@ -12,6 +11,7 @@ import arrow
 import feedparser
 import os
 
+from flask_sqlalchemy import SQLAlchemy
 celery = app.celery
 
 ###############################################################################
@@ -19,13 +19,17 @@ celery = app.celery
 ###############################################################################
 
 def log_task(name=False, recurring=False, meta=False):
+    sqla = SQLAlchemy(app) # Thread local sqla session (I think...)
+    
     task = sqlm.TaskLog(
         name=name,
         recurring=recurring,
-        meta=meta,
+        local_meta=meta,
         created=arrow.utcnow().datetime.replace(tzinfo=None)
     )
     
+    sqla.session.add(task)
+    sqla.session.commit()
 
 ###############################################################################
 # RSS Feed updater
@@ -33,8 +37,9 @@ def log_task(name=False, recurring=False, meta=False):
 
 @celery.task
 def rss_feed_updater():
-    print("rss_feed_updater running.")
-
+    sqla = SQLAlchemy(app) # Thread local sqla session (I think...)
+    
+    print("rss_feed_updater running")
     rss_feeds = RSSScraper.query.all()
 
     for feed in rss_feeds:
@@ -97,6 +102,8 @@ def rss_feed_updater():
 
                 sqla.session.add(rss_content)
                 sqla.session.commit()
+                
+    log_task(name="rss_feed_updater", recurring=True, meta="")
 
 ###############################################################################
 # Other misc. tasks

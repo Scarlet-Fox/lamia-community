@@ -758,6 +758,20 @@ class RSSView(ModelView):
         
     def is_accessible(self):
         return current_user.is_admin
+        
+class TaskLogView(ModelView):
+    column_default_sort = ('created', True)
+    can_delete = False
+    can_create = False
+    can_edit = False
+    can_view_details = True
+    
+    column_formatters = {
+        'created': _fancy_time_formatter,
+    }
+    
+    def is_accessible(self):
+        return current_user.is_admin
 
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
@@ -768,6 +782,7 @@ with warnings.catch_warnings():
     admin.add_view(IPAddressView(sqlm.IPAddress, sqla.session, name='IP Addresses', category="Site", endpoint='ip-addresses'))
     admin.add_view(ThemeView(sqlm.SiteTheme, sqla.session, name='Theme Manager', category="Site", endpoint='site-themes'))
     admin.add_view(RSSView(sqlm.RSSScraper, sqla.session, name='RSS Feed Reader', category="Site", endpoint='feed-reader'))
+    admin.add_view(TaskLogView(sqlm.TaskLog, sqla.session, name='Task Log', category="Site", endpoint='task-log'))
 
 ###################################################################################################
 # Administrative views : Forum-specific options, settings, and config

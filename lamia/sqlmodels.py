@@ -266,7 +266,7 @@ class SiteConfiguration(db.Model):
     hierarchy = db.Column(db.String, unique=True)
     key = db.Column(db.String, unique=True)
     value = db.Column(db.String)
-    meta = db.Column(JSONB)
+    local_meta = db.Column(JSONB)
     default = db.Column(db.String)
     
     TYPE_CHOICES = (
@@ -1775,7 +1775,7 @@ class TaskLog(db.Model):
     name = db.Column(db.String, index=True)
     recurring = db.Column(db.Boolean, default=True, index=True)
     created = db.Column(db.DateTime, index=True)
-    meta = db.Column(db.Text)
+    local_meta = db.Column(db.Text)
     
     def __repr__(self):
         return "<CeleryLog: (name='%s', created='%s')>" % (self.name, self.created)
