@@ -407,6 +407,8 @@ class Role(db.Model):
     pre_html = db.Column(db.String, default="")
     role = db.Column(db.String, default="")
     post_html = db.Column(db.String, default="")
+    
+    weight = db.Column(db.Integer, default=10, index=True)
 
     def __repr__(self):
         return "%s" % (self.name,)
@@ -800,12 +802,23 @@ class User(db.Model):
         return True
 
     def get_roles(self):
+        db_roles = db.session.query(
+                Role.pre_html,
+                Role.role,
+                Role.post_html,
+                Role.weight
+            ) \
+            .filter(
+                user_role_table.c.user_id == self.id
+            ).distinct().order_by("weight")
         my_roles = []
-        for role in self.roles:
+        
+        for role in db_roles:
             _pre_html = role.pre_html if role.pre_html else ""
             _role = role.role if role.role else ""
             _post_html = role.post_html if role.post_html else ""
             my_roles.append(_pre_html+_role+_post_html)
+            
         return my_roles
 
     def get_notification_count(self):

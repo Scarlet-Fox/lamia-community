@@ -965,7 +965,8 @@ class CategoryPermissionOverrideView(ModelView):
         return current_user.is_admin
 
 class RoleEditorView(ModelView):
-    column_list = ["name", "role",]
+    column_list = ["name", "role", "weight"]
+    column_default_sort = ('weight', False)
     
     column_formatters = {
         'role': _role_formatter,
