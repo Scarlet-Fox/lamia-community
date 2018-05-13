@@ -170,11 +170,11 @@ def basic_site_stats_calculator():
     sqla = SQLAlchemy(app)
     print("basic_site_stats_calculator running")
     
-    cache.set("post_count", sqla.session.query(sqlm.Post).count())
-    cache.set("topic_count", sqla.session.query(sqlm.Topic).count())
-    cache.set("blog_entry_count", sqla.session.query(sqlm.BlogEntry).count())
-    cache.set("status_update_count", sqla.session.query(sqlm.StatusUpdate).count())
-    cache.set("status_comments_count", sqla.session.query(sqlm.StatusComment).count())
+    cache.set("post_count", sqla.session.query(sqlm.Post).count(), timeout=0)
+    cache.set("topic_count", sqla.session.query(sqlm.Topic).count(), timeout=0)
+    cache.set("blog_entry_count", sqla.session.query(sqlm.BlogEntry).count(), timeout=0)
+    cache.set("status_update_count", sqla.session.query(sqlm.StatusUpdate).count(), timeout=0)
+    cache.set("status_comments_count", sqla.session.query(sqlm.StatusComment).count(), timeout=0)
     
     log_task(name="basic_site_stats_calculator", recurring=True, meta="")
     
