@@ -75,7 +75,15 @@ app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 app.jinja_env.cache = {}
 
 #cache = FileSystemCache(cache_dir=path.join(app.root_path, 'cache'))
-cache = RedisCache()
+class LamiaRedisCache(RedisCache):
+    def get_w_default(self, key, default):
+        value = self.get(key)
+        if value is not None:
+            return value
+        else:
+            return default
+
+cache = LamiaRedisCache()
 
 app.config['SESSION_TYPE'] = 'sqlalchemy'
 app.config['SESSION_SQLALCHEMY'] = sqla

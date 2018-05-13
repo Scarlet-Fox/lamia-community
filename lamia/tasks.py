@@ -162,6 +162,24 @@ def basic_user_stats_calculator():
     log_task(name="basic_user_stats_calculator", recurring=True, meta="")
 
 ###############################################################################
+# Global stats calculator
+###############################################################################
+
+@celery.task
+def basic_site_stats_calculator():
+    sqla = SQLAlchemy(app)
+    print("basic_site_stats_calculator running")
+    
+    cache.set("post_count", sqla.session.query(sqlm.Post).count())
+    cache.set("topic_count", sqla.session.query(sqlm.Topic).count())
+    cache.set("blog_entry_count", sqla.session.query(sqlm.BlogEntry).count())
+    cache.set("status_update_count", sqla.session.query(sqlm.StatusUpdate).count())
+    cache.set("status_comments_count", sqla.session.query(sqlm.StatusComment).count())
+    
+    log_task(name="basic_site_stats_calculator", recurring=True, meta="")
+    
+
+###############################################################################
 # Other misc. tasks
 ###############################################################################
 
@@ -186,4 +204,5 @@ def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(settings_file["rss_feed_update_delay"], rss_feed_updater.s(), name='rss_feed_updater')
     sender.add_periodic_task(settings_file["infraction_point_calculator_delay"], infraction_point_calculator.s(), name='infraction_point_calculator')
     sender.add_periodic_task(settings_file["basic_user_stats_calculator_delay"], basic_user_stats_calculator.s(), name='basic_user_stats_calculator')
+    sender.add_periodic_task(settings_file["basic_site_stats_calculator_delay"], basic_site_stats_calculator.s(), name='basic_site_stats_calculator_delay')
     

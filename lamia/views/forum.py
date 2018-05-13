@@ -1,4 +1,5 @@
 from lamia import app
+from lamia import cache
 from lamia import sqla
 from lamia.parsers import ForumPostParser
 from collections import OrderedDict
@@ -1717,11 +1718,11 @@ def index():
     
     tweets = sqla.session.query(sqlm.Tweet).order_by(sqla.desc(sqlm.Tweet.time))[:3]
     
-    post_count = 0 #sqla.session.query(sqlm.Post).count()
-    topic_count = 0 #sqla.session.query(sqlm.Topic).count()
-    blog_entry_count = sqla.session.query(sqlm.BlogEntry).count()
-    status_update_count = sqla.session.query(sqlm.StatusUpdate).count()
-    status_comments_count = sqla.session.query(sqlm.StatusComment).count()
+    post_count = cache.get_w_default("post_count", 0) #sqla.session.query(sqlm.Post).count()
+    topic_count = cache.get_w_default("topic_count", 0) #sqla.session.query(sqlm.Topic).count()
+    blog_entry_count = cache.get_w_default("blog_entry_count", 0) #sqla.session.query(sqlm.BlogEntry).count()
+    status_update_count = cache.get_w_default("status_update_count", 0) #sqla.session.query(sqlm.StatusUpdate).count()
+    status_comments_count = cache.get_w_default("status_comments_count", 0) #sqla.session.query(sqlm.StatusComment).count()
         
     render = render_template("index.jade", page_title="%%GENERIC SITENAME%%", meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
         hierarchy=hierarchy,children=children,announcements=announcements,
