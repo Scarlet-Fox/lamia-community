@@ -1138,7 +1138,7 @@ class Section(db.Model):
                     secondary=section_mods_table)
                     
     def __repr__(self):
-        return "<Section: (name='%s', weight='%s')>" % (self.name, self.weight)
+        return self.name
 
 restricted_user_table = db.Table('category_restricted_users', db.metadata,
     db.Column('category_id', db.Integer, db.ForeignKey('category.id',

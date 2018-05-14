@@ -1580,9 +1580,9 @@ def index():
         FROM category c
         LEFT JOIN "section" s ON c.section_id = s.id
         LEFT JOIN "category" parent ON c.parent_id = parent.id
-        JOIN "topic" t ON c.recent_topic_id = t.id
-        JOIN "post" p ON c.recent_post_id = p.id
-        JOIN "user" u ON p.author_id = u.id
+        LEFT JOIN "topic" t ON c.recent_topic_id = t.id
+        LEFT JOIN "post" p ON c.recent_post_id = p.id
+        LEFT JOIN "user" u ON p.author_id = u.id
         ORDER BY s.weight, c.weight ASC
         """
     )

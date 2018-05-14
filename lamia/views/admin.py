@@ -842,7 +842,7 @@ class CategoryView(ModelView):
         'restricted_users': StartsWithQueryAjaxModelLoader('restricted_users', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
     }
     
-    form_excluded_columns = ["recent_post", "recent_topic", "section", "parent", "watchers", "topic_count", "post_count", "view_count", "children"]
+    form_excluded_columns = ["recent_post", "recent_topic", "parent", "watchers", "topic_count", "post_count", "view_count", "children"]
     
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
         "/static/assets/datatables/dataTables.responsive.css",
