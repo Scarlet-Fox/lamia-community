@@ -425,7 +425,7 @@ def message_index(pk, page, post):
             .count()
 
         page = int(math.floor(float(posts_before_target)/float(pagination)))+1
-        return render_template("core/messages_topic.jade", page_title="%s - %%GENERIC SITENAME%%" % (str(topic.title),), topic=topic, initial_page=page, initial_post=str(post.id))
+        return render_template("core/messages_topic.jade", page_title="%s - %s" % (str(topic.title), app.get_site_config("core.site-name")), topic=topic, initial_page=page, initial_post=str(post.id))
 
     try:
         topic.last_seen_by[str(current_user.id)] = arrow.utcnow().timestamp
@@ -434,7 +434,7 @@ def message_index(pk, page, post):
     except:
         pass
 
-    return render_template("core/messages_topic.jade", page_title="%s - %%GENERIC SITENAME%%" % (str(topic.title),), topic=topic, initial_page=page,)
+    return render_template("core/messages_topic.jade", page_title="%s - %s" % (str(topic.title), app.get_site_config("core.site-name")), topic=topic, initial_page=page,)
 
 @app.route('/new-message', methods=['POST'])
 @login_required

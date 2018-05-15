@@ -142,7 +142,7 @@ def view_profile(login_name):
     return render_template(
         "profile.jade",
         profile=user,
-        page_title="%s - %%GENERIC SITENAME%%" % (str(user.display_name),),
+        page_title="%s - %s" % (str(user.display_name), app.get_site_config("core.site-name")),
         post_count=user.post_count,
         custom_fields=custom_fields,
         available_fields=available_fields,

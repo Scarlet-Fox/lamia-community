@@ -14,7 +14,7 @@ from lamia.utilities import render_lamia_template as render_template
 
 @app.route('/characters')
 def character_database():
-    return render_template("roleplay/characters.jade", page_title="Characters - %%GENERIC SITENAME%%")
+    return render_template("roleplay/characters.jade", page_title="Characters - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/characters/<slug>/gallery', methods=["GET",])
 def character_gallery(slug):
@@ -94,7 +94,7 @@ def create_character():
     else:
         pass
 
-    return render_template("roleplay/new_character.jade", form=form, page_title="Create a Character - %%GENERIC SITENAME%%")
+    return render_template("roleplay/new_character.jade", form=form, page_title="Create a Character - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/characters/<slug>/edit-profile', methods=["GET","POST"])
 @login_required

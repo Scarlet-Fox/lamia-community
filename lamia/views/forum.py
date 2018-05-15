@@ -1099,7 +1099,7 @@ def topic_index(slug, render, page, post):
         rp_topic = "false"
         if topic.category.slug in ["roleplays"]:
             rp_topic = "true"
-        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, page_title="%s - %%GENERIC SITENAME%%" % str(topic.title), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
+        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, page_title="%s - %s" % (str(topic.title), app.get_site_config("core.site-name")), initial_page=page, initial_post=str(post.id), rp_area=rp_topic)
 
     topic.view_count = topic.view_count + 1
     try:
@@ -1116,9 +1116,9 @@ def topic_index(slug, render, page, post):
         rp_topic = "true"
     
     if render == "inline":
-        return render_template("forum/topic-iframe.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % str(topic.title), initial_page=page, rp_area=rp_topic)
+        return render_template("forum/topic-iframe.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %s" % (str(topic.title), app.get_site_config("core.site-name")), initial_page=page, rp_area=rp_topic)
     else:
-        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %%GENERIC SITENAME%%" % str(topic.title), initial_page=page, rp_area=rp_topic)
+        return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %s" % (str(topic.title), app.get_site_config("core.site-name")), initial_page=page, rp_area=rp_topic)
 
 @app.route('/category/<slug>/filter-preferences', methods=['GET', 'POST'])
 def category_filter_preferences(slug):
@@ -1551,7 +1551,7 @@ def category_index(slug):
         .join(sqlm.Topic.label).group_by(sqlm.Label.label) \
         .order_by(sqla.desc(sqla.func.count(sqlm.Topic.id))).all()
 
-    return render_template("forum/category.jade", page_title="%s - %%GENERIC SITENAME%%" % str(category.name), category=category, subcategories=subcategories, prefixes=prefixes)
+    return render_template("forum/category.jade", page_title="%s - %s" % (str(category.name), app.get_site_config("core.site-name")), category=category, subcategories=subcategories, prefixes=prefixes)
 
 @app.route('/')
 def index():
