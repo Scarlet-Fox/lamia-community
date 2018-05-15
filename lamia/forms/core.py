@@ -112,7 +112,7 @@ class RegistrationForm(Form):
             raise validators.ValidationError("Password and confirmation must match.")
 
 class LoginForm(Form):
-    username = StringField('Username', [validators.InputRequired()])
+    username = StringField('Username or Email Address', [validators.InputRequired()])
     password = PasswordField('Password', [validators.InputRequired()])
     anonymouse = BooleanField('Anonymous login?')
     redirect_to = HiddenField('Next')
@@ -123,15 +123,25 @@ class LoginForm(Form):
         except IndexError:
             return None
 
+    def __get_user_by_email__(self, email_address):
+        try:
+            return sqla.session.query(sqlm.User).filter_by(email_address=email_address)[0]
+        except IndexError:
+            return None
+
     def validate_username(self, field):
         if not self.__get_user__(field.data.lower().strip()):
-            raise validators.ValidationError("Invalid username or password.")
+            if not self.__get_user_by_email__(field.data.lower().strip()):
+                raise validators.ValidationError("Invalid username or password.")
 
     def validate_password(self, field):
         user = self.__get_user__(self.username.data.lower().strip())
 
         if not user:
-            raise validators.ValidationError("Invalid username or password.")
+            user = self.__get_user_by_email__(self.username.data.lower().strip())
+            
+            if not user:
+                raise validators.ValidationError("Invalid username or password.")
 
         if not user.check_password(field.data.strip()):
             raise validators.ValidationError("Invalid username or password.")
