@@ -196,6 +196,10 @@ def intercept_banned():
             return redirect("/banned")
 
 @app.context_processor
+def inject_site_config():
+    return dict(get_site_config=app.get_site_config)
+    
+@app.context_processor
 def inject_notification_count():
     c = current_user
     try:

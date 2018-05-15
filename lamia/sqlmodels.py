@@ -292,6 +292,8 @@ def get_site_config(option):
     except IndexError:
         return False
 
+app.get_site_config = get_site_config
+
 class SiteTheme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
