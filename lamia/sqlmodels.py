@@ -410,6 +410,9 @@ class Role(db.Model):
     role = db.Column(db.String, default="")
     post_html = db.Column(db.String, default="")
     
+    inline_pre_html = db.Column(db.String, default="")
+    inline_post_html = db.Column(db.String, default="")
+    
     weight = db.Column(db.Integer, default=10, index=True)
 
     def __repr__(self):
@@ -803,6 +806,31 @@ class User(db.Model):
         if not self.validated:
             return False
         return True
+        
+    @property
+    def primary_role_inline(self):
+        try:
+            cached_role = cache.get(self.login_name+"_primary_role_inline")
+            
+            if cached_role is not None:
+                return cached_role
+                
+            db_role = db.session.query(
+                    Role.inline_pre_html,
+                    Role.role,
+                    Role.inline_post_html,
+                    Role.weight
+                ) \
+                .filter(
+                    user_role_table.c.user_id == self.id
+                ).distinct().order_by("weight")[0]
+            _pre_html = db_role.inline_pre_html if db_role.inline_pre_html else ""
+            _post_html = db_role.inline_post_html if db_role.inline_post_html else ""
+            
+            cache.set(self.login_name+"_primary_role_inline", _pre_html+self.display_name+_post_html)
+            return _pre_html+self.display_name+_post_html
+        except IndexError:
+            return self.display_name
 
     def get_roles(self):
         db_roles = db.session.query(

@@ -210,19 +210,27 @@ if not current_user.is_authenticated
   .col-md-12
     li.list-group-item.section-header.sidebar-section-header {{online_user_count}} Users Online
     li.list-group-item
-        {% for u in online_users %}
-        {% if u.anonymous_login == False %}
-        a.hover_user(data-hplacement="top", href="{{url_for('view_profile', login_name=u.my_url)}}") {{u.display_name}}
-        span {% if not loop.last %},{% endif %} 
-        {% else %}
-        {% if current_user.is_admin %}
-        i
-          a.hover_user(data-hplacement="top", href="{{url_for('view_profile', login_name=u.my_url)}}") {{u.display_name}}
-        span {% if not loop.last %},{% endif %} 
-        {% endif %}
-        {% endif %} 
-        {% endfor %}
-          
+      {% for u in online_users %}
+      {% if u.anonymous_login == False %}
+      a.hover_user(data-hplacement="top", href="{{url_for('view_profile', login_name=u.my_url)}}") {{u.primary_role_inline}}
+      span {% if not loop.last %},{% endif %} 
+      {% else %}
+      {% if current_user.is_admin %}
+      i
+        a.hover_user(data-hplacement="top", href="{{url_for('view_profile', login_name=u.my_url)}}") {{u.primary_role_inline}}
+      span {% if not loop.last %},{% endif %} 
+      {% endif %}
+      {% endif %} 
+      {% endfor %}
+      if roles_for_legend
+        .role-legend
+          hr(style="margin-top: 5px; margin-bottom: 5px;")
+          span.text-muted <b>Site Roles: </b>
+          {% for r in roles_for_legend %}
+          {{r}}
+          span {% if not loop.last %},{% endif %} 
+          {% endfor %}
+        
           
 {% endblock %}
 

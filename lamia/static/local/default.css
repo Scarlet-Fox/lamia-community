@@ -1406,3 +1406,7 @@ li.list-group-item.subcategory.category-subcategories > div > div.row > div.col-
 li.list-group-item.subcategory.category-subcategories > div > div.row > .col-xs-4.col-sm-6 {
    align-self: center;
 }
+
+.role-legend {
+  font-size: 85%;
+}

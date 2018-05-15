@@ -341,7 +341,7 @@ $ ->
           <div class="row">
             <div class="col-xs-5"><b>Group</b>
             </div>
-            <div class="col-xs-7"><span style="color:#F88379;"><strong>Members<br></strong></span>
+            <div class="col-xs-7">{{{role}}}
             </div>
           </div>
           <div class="row">

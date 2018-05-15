@@ -1723,12 +1723,30 @@ def index():
     blog_entry_count = cache.get_w_default("blog_entry_count", 0) #sqla.session.query(sqlm.BlogEntry).count()
     status_update_count = cache.get_w_default("status_update_count", 0) #sqla.session.query(sqlm.StatusUpdate).count()
     status_comments_count = cache.get_w_default("status_comments_count", 0) #sqla.session.query(sqlm.StatusComment).count()
+    
+    roles_for_legend = cache.get("site_roles_for_legend")
+    
+    if roles_for_legend is None:
+        roles_for_legend = sqla.session.query(sqlm.Role) \
+            .filter(sqla.or_(
+                sqlm.Role.inline_pre_html != None,
+                sqlm.Role.inline_pre_html != ""
+            )) \
+            .filter(sqla.or_(
+                sqlm.Role.inline_post_html != None,
+                sqlm.Role.inline_post_html != ""
+            )).order_by("weight").all()
+        
+        roles_for_legend = [r.inline_pre_html+r.role+r.inline_post_html for r in roles_for_legend]
+        
+        cache.set("site_roles_for_legend", roles_for_legend)
         
     render = render_template("index.jade", page_title=app.get_site_config("core.site-name"), meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
         hierarchy=hierarchy,children=children,announcements=announcements,
         status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets, birthday_list=birthday_list,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics,
-        post_count=post_count, topic_count=topic_count, blog_entry_count=blog_entry_count, status_update_count=status_update_count, status_comments_count=status_comments_count)
+        post_count=post_count, topic_count=topic_count, blog_entry_count=blog_entry_count, status_update_count=status_update_count, status_comments_count=status_comments_count,
+        roles_for_legend=roles_for_legend)
 
     return render

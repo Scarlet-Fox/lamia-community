@@ -276,7 +276,12 @@ def get_user_info_api():
     except IndexError:
         recent_status_update = False
         recent_status_update_id = False
-
+    
+    try:
+        role = user.get_roles()[0]
+    except IndexError:
+        role = """<span style="color:#F88379;"><strong>Members</strong></span>"""
+        
     return app.jsonify(
         avatar_image=user.get_avatar_url("60"),
         avatar_x=user.avatar_60_x,
@@ -289,7 +294,7 @@ def get_user_info_api():
         recent_status_message_id=recent_status_update_id,
         recent_status_message=recent_status_update,
         joined=humanize_time(user.joined, "MMM D YYYY"),
-        roles=user.get_roles()
+        role=role
     )
 
 @app.route('/change-theme/<id>', methods=['POST'])
