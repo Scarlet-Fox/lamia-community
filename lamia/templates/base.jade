@@ -89,7 +89,7 @@ body(role='document')
     ul.list-group.category.hide-inline
       center
         li.list-group-item.section-header
-          a(href="/", style="color: inherit;") GENERIC SITENAME
+          a(href="/", style="color: inherit;")= get_site_config("core.site-name")
     if current_user.navbar_top
       nav.navbar.navbar-default.navbar-fixed-top.hide-inline(style="-ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)\"; filter: alpha(opacity=90); -moz-opacity: 0.9; -khtml-opacity: 0.9; opacity: 0.9;")
         .container

@@ -30,7 +30,7 @@ def search_display():
         categories=json.dumps(categories),
         topics=json.dumps(topics),
         authors=json.dumps(authors),
-        page_title="Search - %%GENERIC SITENAME%%"
+        page_title="Search - %s" % (app.get_site_config("core.site-name"),)
         )
 
 @app.route('/clear-search', methods=['POST',])

@@ -91,7 +91,7 @@ def server_error(e):
     except:
         sqla.session.rollback()
 
-    return render_template('500.jade', page_title="SERVER ERROR! - %%GENERIC SITENAME%%"), 500
+    return render_template('500.jade', page_title="SERVER ERROR! - %s" % (app.get_site_config("core.site-name"),)), 500
 
 @app.errorhandler(403)
 def unauthorized_access(e):
@@ -132,7 +132,7 @@ def unauthorized_access(e):
     except:
         sqla.session.rollback()
 
-    return render_template('403.jade', page_title="Page Not Found - %%GENERIC SITENAME%%"), 403
+    return render_template('403.jade', page_title="Page Not Found - %s" % (app.get_site_config("core.site-name"),)), 403
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -173,7 +173,7 @@ def page_not_found(e):
     except:
         sqla.session.rollback()
 
-    return render_template('404.jade', page_title="Page Not Found - %%GENERIC SITENAME%%"), 404
+    return render_template('404.jade', page_title="Page Not Found - %s" % (app.get_site_config("core.site-name"),)), 404
 
 @app.route('/under-construction')
 def under_construction():
@@ -944,7 +944,7 @@ def password_reset(token):
         login_user(user)
         return redirect("/")
 
-    return render_template("new_password.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", form=form, token=token)
+    return render_template("new_password.jade", page_title="Forgot Password - %s" % (app.get_site_config("core.site-name"),), form=form, token=token)
 
 @app.route('/forgot-password', methods=['GET', 'POST'], defaults={"render": "page"})
 @app.route('/forgot-password/<render>', methods=['GET', 'POST'])
@@ -964,7 +964,7 @@ def forgot_password(render):
         send_mail_w_template(
             send_to=[form.user,],
             template="password_reset.txt",
-            subject="Password Reset Email - %%GENERIC SITENAME%%",
+            subject="Password Reset Email - %s" % (app.get_site_config("core.site-name"),),
             variables={
                 "display_name": str(form.user.display_name),
                 "address": app.config['BASE'] + "/password-reset/" + str(token)
@@ -973,16 +973,16 @@ def forgot_password(render):
         sqla.session.add(form.user)
         sqla.session.commit()
         if render == "inline":
-            return render_template("forgot_password_confirm-iframe.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", profile=form.user, next=form.redirect_to.data)
+            return render_template("forgot_password_confirm-iframe.jade", page_title="Forgot Password - %s" % (app.get_site_config("core.site-name"),), profile=form.user, next=form.redirect_to.data)
         else:
-            return render_template("forgot_password_confirm.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", profile=form.user)
+            return render_template("forgot_password_confirm.jade", page_title="Forgot Password - %s" % (app.get_site_config("core.site-name"),), profile=form.user)
     else:
         form.redirect_to.data = request.args.get('next', "/")
 
     if render == "inline":
-        return render_template("forgot_password-iframe.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", form=form)
+        return render_template("forgot_password-iframe.jade", page_title="Forgot Password - %s" % (app.get_site_config("core.site-name"),), form=form)
     else:
-        return render_template("forgot_password.jade", page_title="Forgot Password - %%GENERIC SITENAME%%", form=form)
+        return render_template("forgot_password.jade", page_title="Forgot Password - %s" % (app.get_site_config("core.site-name"),), form=form)
 
 @app.route('/hello/<pk>')
 def confirm_register(pk):
@@ -994,7 +994,7 @@ def confirm_register(pk):
     if user.new_user_token == "":
         return abort(404)
     
-    return render_template("confirm_new_user.jade", page_title="Welcome! - %%GENERIC SITENAME%%", profile=user)
+    return render_template("confirm_new_user.jade", page_title="Welcome! - %s" % (app.get_site_config("core.site-name"),), profile=user)
     
 @app.route('/confirm-user/<token>')
 def real_confirm_register(token):
@@ -1037,10 +1037,10 @@ def real_confirm_register(token):
     sqla.session.add(user)
     sqla.session.commit()
     
-    return render_template("welcome_new_user.jade", page_title="Welcome! - %%GENERIC SITENAME%%", profile=user)
+    return render_template("welcome_new_user.jade", page_title="Welcome! - %s" % (app.get_site_config("core.site-name"),), profile=user)
 
 def credits():
-    return render_template("acknowledgement.jade", page_title="Thank You - %%GENERIC SITENAME%%")
+    return render_template("acknowledgement.jade", page_title="Thank You - %s" % (app.get_site_config("core.site-name"),))
     
 @app.route('/stats')
 def stats():
@@ -1060,7 +1060,7 @@ def stats():
         stat.db_users = db_users
         all_stats[stat.name] = stat
     
-    return render_template("global_stats.jade", page_title="Stats - %%GENERIC SITENAME%%", all_stats=all_stats)
+    return render_template("global_stats.jade", page_title="Stats - %s" % (app.get_site_config("core.site-name"),), all_stats=all_stats)
 
 @app.route('/register', methods=['GET', 'POST'], defaults={"render": "page"})
 @app.route('/register/<render>', methods=['GET', 'POST'])
@@ -1108,7 +1108,7 @@ def register(render):
         # send_mail_w_template(
         #     send_to=[new_user,],
         #     template="pending_validation.txt",
-        #     subject="Your Account is Being Reviewed - %%GENERIC SITENAME%%",
+        #     subject="Your Account is Being Reviewed - %s" % (app.get_site_config("core.site-name"),),
         #     variables={
         #         "_user": new_user,
         #     }
@@ -1131,7 +1131,7 @@ def register(render):
             send_mail_w_template(
                 send_to=[new_user,],
                 template="welcome_to_moe.txt",
-                subject="Welcome to %%GENERIC SITENAME%%!",
+                subject="Welcome to %s!" % (app.get_site_config("core.site-name"),),
                 variables={
                     "_user": new_user,
                     "address": app.config['BASE'] + "/confirm-user/" + str(token)
@@ -1166,9 +1166,9 @@ def register(render):
         form.redirect_to.data = request.args.get('next', "/")
 
     if render == "inline":
-        return render_template("register-iframe.jade", page_title="Become One of Us - %%GENERIC SITENAME%%", form=form)
+        return render_template("register-iframe.jade", page_title="Become One of Us - %s" % (app.get_site_config("core.site-name"),), form=form)
     else:
-        return render_template("register.jade", page_title="Become One of Us - %%GENERIC SITENAME%%", form=form)
+        return render_template("register.jade", page_title="Become One of Us - %s" % (app.get_site_config("core.site-name"),), form=form)
 
 @app.route('/sign-in', methods=['GET', 'POST'], defaults={"render": "page"})
 @app.route('/sign-in/<render>', methods=['GET', 'POST'])
@@ -1223,9 +1223,9 @@ def sign_in(render):
     flavor_text = random.choice(flavor_text)
     
     if render == "inline":
-        return render_template("sign_in-iframe.jade", page_title="Sign In - %%GENERIC SITENAME%%", form=form, flavor_text=flavor_text)
+        return render_template("sign_in-iframe.jade", page_title="Sign In - %s" % (app.get_site_config("core.site-name"),), form=form, flavor_text=flavor_text)
     else:
-        return render_template("sign_in.jade", page_title="Sign In - %%GENERIC SITENAME%%", form=form, flavor_text=flavor_text)
+        return render_template("sign_in.jade", page_title="Sign In - %s" % (app.get_site_config("core.site-name"),), form=form, flavor_text=flavor_text)
 
 @app.route('/banned')
 def banned_user():
@@ -1287,7 +1287,7 @@ def user_list_api_variant():
 @app.route('/members', methods=["GET",])
 @login_required
 def show_memeber_listing():
-    return render_template("members.jade", page_title="Members - %%GENERIC SITENAME%%")
+    return render_template("members.jade", page_title="Members - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/preview', methods=["POST",])
 @login_required

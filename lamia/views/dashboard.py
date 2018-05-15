@@ -278,5 +278,5 @@ def view_dashboard():
     return render_template("dashboard.jade",
         followed_topics = _followed_topics,
         followed_blogs = _followed_blogs,
-        page_title="Your Dashboard - %%GENERIC SITENAME%%"
+        page_title="Your Dashboard - %s" % (app.get_site_config("core.site-name"),)
         )

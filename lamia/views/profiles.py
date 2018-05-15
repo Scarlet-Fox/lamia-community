@@ -209,7 +209,7 @@ def validate_user(login_name):
     send_mail_w_template(
         send_to=[user,],
         template="manual_validation_welcome.txt",
-        subject="Welcome to %%GENERIC SITENAME%%!",
+        subject="Welcome to %s!" % (app.get_site_config("core.site-name"),),
         variables={
             "_user": user,
             "address": app.config['BASE'] + "/sign-in"
@@ -236,7 +236,7 @@ def show_signatures(login_name):
         except:
             s.parsed = ""
 
-    return render_template("profile/view_signatures.jade", signatures=signatures, profile=user, page_title="%s's Signatures - %%GENERIC SITENAME%%" % (str(user.display_name),))
+    return render_template("profile/view_signatures.jade", signatures=signatures, profile=user, page_title="%s's Signatures - %s" % (str(user.display_name), app.get_site_config("core.site-name")))
 
 @app.route('/member/<login_name>/delete-signature/<id>', methods=['POST'])
 @login_required
@@ -310,7 +310,7 @@ def edit_signature(login_name, id):
         form.signature.data = signature.html
         form.name.data = signature.name
 
-    return render_template("profile/edit_signature.jade", form=form, profile=user, signature=signature, page_title="Edit Signature - %%GENERIC SITENAME%%")
+    return render_template("profile/edit_signature.jade", form=form, profile=user, signature=signature, page_title="Edit Signature - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/member/<login_name>/new-signature', methods=['GET', 'POST'])
 @login_required
@@ -337,7 +337,7 @@ def new_signature(login_name):
         sqla.session.commit()
         return redirect("/member/"+str(user.my_url)+"/signatures")
 
-    return render_template("profile/new_signature.jade", form=form, profile=user, page_title="New Signature - %%GENERIC SITENAME%%")
+    return render_template("profile/new_signature.jade", form=form, profile=user, page_title="New Signature - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/member/<login_name>/friends', methods=['GET'])
 def show_friends(login_name):
@@ -388,7 +388,7 @@ def show_friends(login_name):
             incoming_friend_requests=incoming_friend_requests,
             friend_status_updates=friend_status_updates,
             friend_blog_entries=friend_blog_entries,
-            page_title="%s's Friends - %%GENERIC SITENAME%%" % (str(user.display_name),),
+            page_title="%s's Friends - %s" % (str(user.display_name), app.get_site_config("core.site-name")),
         )
 
 @app.route('/member/<login_name>/request-friend', methods=['POST'])
@@ -754,7 +754,7 @@ def change_avatar_or_title(login_name):
         filename = None
         form.title.data = user.title
 
-    return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - %%GENERIC SITENAME%%")
+    return render_template("profile/change_avatar.jade", profile=user, form=form, page_title="Change Avatar and Title - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/member/<login_name>/toggle-notification-method', methods=['POST'])
 @login_required
@@ -953,11 +953,11 @@ def customize_user_profile(login_name):
         form.header_text_shadow_color.data = user.text_shadow_color
         form.use_text_shadow.data = user.use_text_shadow
 
-    return render_template("profile/customize_profile.jade", profile=user, form=form, page_title="Customize Profile - %%GENERIC SITENAME%%")
+    return render_template("profile/customize_profile.jade", profile=user, form=form, page_title="Customize Profile - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/unsubscribe-confirm', methods=['GET'])
 def confirm_unsubscribe_from_all_emails():
-    return render_template("unsubscribe_confirm.jade", page_title="Unsubscribed - %%GENERIC SITENAME%%")
+    return render_template("unsubscribe_confirm.jade", page_title="Unsubscribed - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/member/<id>/<email>/unsubscribe', methods=['GET', 'POST'])
 def unsubscribe_from_all_emails(id, email):
@@ -972,7 +972,7 @@ def unsubscribe_from_all_emails(id, email):
         sqla.session.commit()
         return app.jsonify(url="/unsubscribe-confirm")
     else:
-        return render_template("unsubscribe.jade", profile=user, page_title="Unsubscribe - %%GENERIC SITENAME%%")
+        return render_template("unsubscribe.jade", profile=user, page_title="Unsubscribe - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/member/<login_name>/change-settings', methods=['GET', 'POST'])
 @login_required
@@ -1056,7 +1056,7 @@ def change_user_settings(login_name):
         else:
             form.theme.data = str(user.theme.id)
 
-    return render_template("profile/change_user_settings.jade", profile=user, NOTIFICATION_CATEGORIES=sqlm.Notification.NOTIFICATION_CATEGORIES, available_fields=available_fields, current_fields=current_fields, form=form, page_title="Change Settings - %%GENERIC SITENAME%%")
+    return render_template("profile/change_user_settings.jade", profile=user, NOTIFICATION_CATEGORIES=sqlm.Notification.NOTIFICATION_CATEGORIES, available_fields=available_fields, current_fields=current_fields, form=form, page_title="Change Settings - %s" % (app.get_site_config("core.site-name"),))
 
 from itsdangerous import want_bytes
 def invalidate_sessions(login_name): #default
@@ -1119,7 +1119,7 @@ def change_display_name_password(login_name):
         form.display_name.data = user.display_name
         form.email.data = user.email_address
 
-    return render_template("profile/change_account.jade", profile=user, form=form, page_title="Change Account Details - %%GENERIC SITENAME%%")
+    return render_template("profile/change_account.jade", profile=user, form=form, page_title="Change Account Details - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/member/<login_name>/edit-profile', methods=['GET', 'POST'])
 @login_required

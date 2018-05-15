@@ -132,7 +132,7 @@ def blogs_index(page):
         entry.preview = str(BeautifulSoup(clean_html_parser.parse(entry.html, _object=entry)[:500], "lxml"))+"..."
 
     return render_template("blogs/list_of_blogs.jade",
-        page_title="Blogs - %%GENERIC SITENAME%%",
+        page_title="Blogs - %s" % (app.get_site_config("core.site-name"),),
         my_blogs=my_blogs,
         random_blogs=random_blogs,
         featured_blog_entries=featured_blog_entries,
@@ -161,7 +161,7 @@ def new_blog():
         sqla.session.commit()
         return redirect("/blog/"+str(b.slug))
 
-    return render_template("blogs/create_new_blog.jade", form=form, page_title="New Blog - %%GENERIC SITENAME%%")
+    return render_template("blogs/create_new_blog.jade", form=form, page_title="New Blog - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/blog/<slug>/toggle-follow', methods=['POST'])
 @login_required
@@ -275,7 +275,7 @@ def edit_blog(slug):
         form.privacy_setting.data = blog.privacy_setting
         form.title.data = blog.name
 
-    return render_template("blogs/edit_blog.jade", form=form, blog=blog, page_title="Edit Blog - %%GENERIC SITENAME%%")
+    return render_template("blogs/edit_blog.jade", form=form, blog=blog, page_title="Edit Blog - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/blog/<slug>/new-entry', methods=['GET', 'POST'])
 @login_required
@@ -367,7 +367,7 @@ def new_blog_entry(slug):
                     )
         return redirect("/blog/"+str(blog.slug))
 
-    return render_template("blogs/new_blog_entry.jade", form=form, blog=blog, page_title="New Blog Entry - %%GENERIC SITENAME%%")
+    return render_template("blogs/new_blog_entry.jade", form=form, blog=blog, page_title="New Blog Entry - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/blog/<slug>/e/<entry_slug>/remove-entry', methods=['GET', 'POST'])
 @login_required
@@ -450,7 +450,7 @@ def edit_blog_entry(slug, entry_slug):
         form.title.data = e.title
         form.entry.data = e.html
 
-    return render_template("blogs/edit_blog_entry.jade", form=form, blog=blog, entry=e, page_title="Edit Blog Entry - %%GENERIC SITENAME%%")
+    return render_template("blogs/edit_blog_entry.jade", form=form, blog=blog, entry=e, page_title="Edit Blog Entry - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/blog/<slug>/e/<entry_slug>/c/<comment_id>/edit-comment', methods=['GET', 'POST'])
 @login_required
@@ -489,7 +489,7 @@ def edit_blog_comment(slug, entry_slug, comment_id):
     else:
         form.comment.data = comment.html
 
-    return render_template("blogs/edit_blog_entry_comment.jade", form=form, blog=blog, entry=entry, comment=comment, page_title="Edit Blog Comment - %%GENERIC SITENAME%%")
+    return render_template("blogs/edit_blog_entry_comment.jade", form=form, blog=blog, entry=entry, comment=comment, page_title="Edit Blog Comment - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/blog/<slug>', methods=['GET'], defaults={'page': 1})
 @app.route('/blog/<slug>/page/<page>', methods=['GET'])
@@ -553,7 +553,7 @@ def blog_index(slug, page):
 
     pages = [p+1 for p in range(pages)]
 
-    return render_template("blogs/blog_entry_listing.jade", blog=blog, drafts=drafts, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count, page_title=blog.name+" - %%GENERIC SITENAME%%")
+    return render_template("blogs/blog_entry_listing.jade", blog=blog, drafts=drafts, entries=entries, description=description, comments=comments, page=page, pages=pages, entry_count=entry_count, page_title=blog.name+" - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/blog/<slug>/e/<entry_slug>/toggle-boop', methods=['POST'])
 def boop_blog_entry(slug, entry_slug):
@@ -693,7 +693,7 @@ def blog_entry_index(slug, entry_slug, page):
     pages = [p+1 for p in range(pages)]
 
     return render_template("blogs/blog_entry_view.jade", blog=blog, meta_description=get_preview(entry.html, 140),
-    entry=entry, comments=comments, page=page, pages=pages, page_title=entry.title+" - %%GENERIC SITENAME%%")
+    entry=entry, comments=comments, page=page, pages=pages, page_title=entry.title+" - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/blog/<slug>/e/<entry_slug>/new-comment', methods=['POST'], defaults={'page': 1})
 @app.route('/blog/<slug>/e/<entry_slug>/page/<page>/new-comment', methods=['POST'])

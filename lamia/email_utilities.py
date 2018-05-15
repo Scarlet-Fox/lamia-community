@@ -184,15 +184,15 @@ def send_notification_emails():
             sqla.session.commit()
             
             if _total == 1:
-                subject = "You have a notification at %%GENERIC SITENAME%% Forums"
+                subject = "You have a notification at %s" % (app.get_site_config("core.site-name"),)
             else:
-                subject = "You have %s notifications at %%GENERIC SITENAME%% Forums" % (_total,)
+                subject = "You have %s notifications at %s" % (_total, app.get_site_config("core.site-name"))
                 
             if not app.settings_file.get("lockout_on", False):
                 result = requests.post(
                     "https://api.mailgun.net/v3/casualanime.com/messages",
                     auth=("api", _api),
-                    data={"from": "%%GENERIC SITENAME%% <help@casualanime.com>",
+                    data={"from": "%s <help@casualanime.com>" % (app.get_site_config("core.site-name"),),
                           "to": _to_email_address,
                           "subject": subject,
                           "text": _rendered})
@@ -202,7 +202,7 @@ def send_notification_emails():
             new_email_log = sqlm.EmailLog()
             new_email_log.to = u
             new_email_log.sent = arrow.utcnow().datetime.replace(tzinfo=None)
-            new_email_log.subject = "You have %s notifications at %%GENERIC SITENAME%% Forums" % (_total,)
+            new_email_log.subject = "You have %s notifications at %s" % (_total, app.get_site_config("core.site-name"))
             new_email_log.body = _rendered
             new_email_log.result = str(result)
             sqla.session.add(new_email_log)
@@ -226,7 +226,7 @@ def send_mail_w_template(send_to, subject, template, variables):
         response = requests.post(
             "https://api.mailgun.net/v3/casualanime.com/messages",
             auth=("api", _api),
-            data={"from": "%%GENERIC SITENAME%% <help@casualanime.com>",
+            data={"from": "%s <help@casualanime.com>" % (app.get_site_config("core.site-name"),),
                   "to": _to_email_addresses,
                   "subject": subject,
                   "text": _template.render(**variables)})
@@ -261,7 +261,7 @@ def send_announcement_emails():
                     result = requests.post(
                         "https://api.mailgun.net/v3/casualanime.com/messages",
                         auth=("api", _api),
-                        data={"from": "%%GENERIC SITENAME%% <help@casualanime.com>",
+                        data={"from": "%s <help@casualanime.com>" % (app.get_site_config("core.site-name"),),
                               "to": user.email_address,
                               "subject": announcement.subject,
                               "text": _rendered})

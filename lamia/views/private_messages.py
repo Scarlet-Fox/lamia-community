@@ -545,9 +545,9 @@ def create_message_index(target):
             pass
 
     if target_user:
-        return render_template("core/new_message.jade", target_user=target_user, page_title="New Private Message - %%GENERIC SITENAME%%")
+        return render_template("core/new_message.jade", target_user=target_user, page_title="New Private Message - %s" % (app.get_site_config("core.site-name"),))
     else:
-        return render_template("core/new_message.jade", target_user=False, page_title="New Private Message - %%GENERIC SITENAME%%")
+        return render_template("core/new_message.jade", target_user=False, page_title="New Private Message - %s" % (app.get_site_config("core.site-name"),))
 
 @app.route('/message-topics', methods=['POST'])
 @login_required
@@ -635,4 +635,4 @@ def messages_topics():
 @app.route('/messages', methods=['GET'])
 @login_required
 def messages_index():
-    return render_template("core/messages.jade", page_title="Your Private Messages - %%GENERIC SITENAME%%")
+    return render_template("core/messages.jade", page_title="Your Private Messages - %s" % (app.get_site_config("core.site-name"),))

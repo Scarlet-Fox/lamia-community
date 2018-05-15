@@ -523,7 +523,7 @@ def recent_posts(page):
         post.preview = str(BeautifulSoup(clean_html_parser.parse(post.html, _object=post)[:900], "lxml"))+"..."
     
     return render_template("forum/recent_posts.jade",
-        page_title="Recent Posts - %%GENERIC SITENAME%%",
+        page_title="Recent Posts - %s" % (app.get_site_config("core.site-name"),),
         posts=recent_posts,
         pages=pages,
         page=page)
@@ -1724,7 +1724,7 @@ def index():
     status_update_count = cache.get_w_default("status_update_count", 0) #sqla.session.query(sqlm.StatusUpdate).count()
     status_comments_count = cache.get_w_default("status_comments_count", 0) #sqla.session.query(sqlm.StatusComment).count()
         
-    render = render_template("index.jade", page_title="%%GENERIC SITENAME%%", meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
+    render = render_template("index.jade", page_title=app.get_site_config("core.site-name"), meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
         hierarchy=hierarchy,children=children,announcements=announcements,
         status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets, birthday_list=birthday_list,
