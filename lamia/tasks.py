@@ -30,6 +30,7 @@ def log_task(name=False, recurring=False, meta=False):
     
     sqla.session.add(task)
     sqla.session.commit()
+    sqla.session.close()
 
 ###############################################################################
 # RSS Feed updater
@@ -102,7 +103,8 @@ def rss_feed_updater():
 
                 sqla.session.add(rss_content)
                 sqla.session.commit()
-                
+
+    sqla.session.close()
     log_task(name="rss_feed_updater", recurring=True, meta="")
 
 ###############################################################################
@@ -131,7 +133,8 @@ def infraction_point_calculator():
         
         sqla.session.add(user)
         sqla.session.commit()
-        
+    
+    sqla.session.close()
     log_task(name="infraction_point_calculator", recurring=True, meta="")
 
 ###############################################################################
@@ -159,6 +162,8 @@ def basic_user_stats_calculator():
         sqla.session.add(user)
         sqla.session.commit()
         
+        
+    sqla.session.close()
     log_task(name="basic_user_stats_calculator", recurring=True, meta="")
 
 ###############################################################################
@@ -176,6 +181,7 @@ def basic_site_stats_calculator():
     cache.set("status_update_count", sqla.session.query(sqlm.StatusUpdate).count(), timeout=0)
     cache.set("status_comments_count", sqla.session.query(sqlm.StatusComment).count(), timeout=0)
     
+    sqla.session.close()
     log_task(name="basic_site_stats_calculator", recurring=True, meta="")
     
 
