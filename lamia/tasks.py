@@ -31,6 +31,7 @@ def log_task(name=False, recurring=False, meta=False):
     sqla.session.add(task)
     sqla.session.commit()
     sqla.session.close()
+    sqla.engine.dispose()
 
 ###############################################################################
 # RSS Feed updater
@@ -105,6 +106,7 @@ def rss_feed_updater():
                 sqla.session.commit()
 
     sqla.session.close()
+    sqla.engine.dispose()
     log_task(name="rss_feed_updater", recurring=True, meta="")
 
 ###############################################################################
@@ -135,6 +137,7 @@ def infraction_point_calculator():
         sqla.session.commit()
     
     sqla.session.close()
+    sqla.engine.dispose()
     log_task(name="infraction_point_calculator", recurring=True, meta="")
 
 ###############################################################################
@@ -164,6 +167,7 @@ def basic_user_stats_calculator():
         
         
     sqla.session.close()
+    sqla.engine.dispose()
     log_task(name="basic_user_stats_calculator", recurring=True, meta="")
 
 ###############################################################################
@@ -182,6 +186,7 @@ def basic_site_stats_calculator():
     cache.set("status_comments_count", sqla.session.query(sqlm.StatusComment).count(), timeout=0)
     
     sqla.session.close()
+    sqla.engine.dispose()
     log_task(name="basic_site_stats_calculator", recurring=True, meta="")
     
 
