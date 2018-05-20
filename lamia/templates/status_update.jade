@@ -53,7 +53,7 @@
                   |:
               span.status-time {{ status.created|humanize_time }} 
             if current_user.is_admin
-              a.float-right(href="/admin/statusupdate/edit/?id={{status.id}}", target="_blank")
+              a.float-right(href="/staff/statusupdate/edit/?id={{status.id}}", target="_blank")
                 span.glyphicon.glyphicon-cog
             p {{status.message}}
       else
@@ -70,7 +70,7 @@
                   |:
               span.status-time {{ status.created|humanize_time }} 
             if current_user.is_admin
-              a.float-right(href="/admin/statusupdate/edit/?id={{status.id}}", target="_blank")
+              a.float-right(href="/staff/statusupdate/edit/?id={{status.id}}", target="_blank")
                 span.glyphicon.glyphicon-cog
             p {{status.message}}
       li.list-group-item.status-replies#status-replies

@@ -601,7 +601,7 @@ $ ->
                               <button type="button" class="btn btn-default mention-button" data-author="{{author_login_name}}">@</button>
                               <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
                               <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="post"><span class="glyphicon glyphicon-exclamation-sign"></span></button>
-                              {{#if is_topic_mod}}<a href="/admin/post/edit/?id={{_id}}" target="_blank"><button type="button" class="btn btn-default" data-type="post"><span class="glyphicon glyphicon-cog"></span></button></a>{{/if}}
+                              {{#if is_topic_mod}}<a href="/staff/post/edit/?id={{_id}}" target="_blank"><button type="button" class="btn btn-default" data-type="post"><span class="glyphicon glyphicon-cog"></span></button></a>{{/if}}
                               <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 <span class="caret"></span>
                                 <span class="sr-only">Toggle Dropdown</span>
@@ -625,7 +625,7 @@ $ ->
                                  <li><a href="{{topic_leader}}">Edit Topic</a></li>
                                  {{#if is_topic_mod}}
                                   <li>
-                                    <a href="/admin/topic/edit/?id={{_tid}}" target="_blank">Topic Admin</a>
+                                    <a href="/staff/topic/edit/?id={{_tid}}" target="_blank">Topic Admin</a>
                                   </li>
                                 {{/if}}
                                 {{/if}}
@@ -695,7 +695,7 @@ $ ->
                     <div class="post-signature">
                       {{#if signature}}
                       {{#if is_sig_mod}}
-                      <a href="/admin/signature/edit/?id={{signature_id}}" target="_blank" class="float-right"><span class="glyphicon glyphicon-cog"></span></a>
+                      <a href="/staff/signature/edit/?id={{signature_id}}" target="_blank" class="float-right"><span class="glyphicon glyphicon-cog"></span></a>
                       {{/if}}
                       {{/if}}
                       {{#if signature}}

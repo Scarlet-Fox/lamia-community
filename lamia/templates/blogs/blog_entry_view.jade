@@ -43,7 +43,7 @@
           | by 
           a.hover_user(href="{{url_for('view_profile', login_name=entry.author.my_url)}}")= entry.author.display_name
           if current_user.is_admin
-            a.float-right(href="/admin/blogentry/edit/?id={{entry.id}}", target="_blank")
+            a.float-right(href="/staff/blogentry/edit/?id={{entry.id}}", target="_blank")
               span.glyphicon.glyphicon-cog
           br
           span.text-muted {{ entry.published|humanize_time }}
@@ -93,7 +93,7 @@
               .col-xs-10
                 {{ comment.created|humanize_time }}
                 if current_user.is_admin
-                  a.float-right(href="/admin/blogcomment/edit/?id={{comment.id}}", target="_blank")
+                  a.float-right(href="/staff/blogcomment/edit/?id={{comment.id}}", target="_blank")
                     span.glyphicon.glyphicon-cog
           .list-group-item(style="padding: 20px;")
             .row.blog-comment
