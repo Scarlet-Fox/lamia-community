@@ -1,4 +1,4 @@
-from lamia.parsers import ForumPostParser, emoticon_codes
+from lamia.parsers import ForumPostParser
 from lamia.forms.core import AvatarTitleForm, DisplayNamePasswordForm, UserSettingsForm, SiteCustomizationForm
 from lamia.forms.signatures import NewSignature
 from lamia import app

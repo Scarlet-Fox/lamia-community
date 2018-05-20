@@ -1805,10 +1805,21 @@ class Smiley(db.Model):
     filename = db.Column(db.Text, index=True)
     replaces_text = db.Column(db.Text, index=True)
     unlisted = db.Column(db.Boolean, default=False, index=True)
-    
+        
     def __repr__(self):
         return "<Smiley: (replaces_text='%s', filename='%s')>" % (self.replaces_text, self.filename)
+
+def get_local_smilies():
+    cached = cache.get("site_smilies")
     
+    if cached != None:
+        return cached
+    else:
+        smilies = Smiley.query.all()
+        smilies = [{"code": s.replaces_text, "filename": s.filename} for s in smilies]
+        cache.set("site_smilies", smilies)
+        return smilies
+
 class SwearFilter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.Text, index=True)

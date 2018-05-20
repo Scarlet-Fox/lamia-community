@@ -314,6 +314,45 @@
             });
           };
         })(this));
+        $.get("/local_emoticons.json", (function(_this) {
+          return function(response) {
+            var parsed_emoji_list;
+            parsed_emoji_list = response;
+            return $($("#post-editor-" + _this.quillID).children(".ql-editor")[0]).atwho({
+              at: ":",
+              displayTpl: "<li data-code=\":${name}:\"><img src=\"/static/smilies/${filename}\"> ${name}</li>",
+              data: parsed_emoji_list,
+              limit: 30,
+              callbacks: {
+                beforeInsert: function(text, li) {
+                  return quill.focus();
+                }
+              },
+              functionOverrides: {
+                insert: function(text, li) {
+                  var code_value, findTextLength, query_text;
+                  code_value = $(li).data("code");
+                  query_text = this.query.text;
+                  findTextLength = function(guessLength, maxLength) {
+                    var _text, j, length, ref;
+                    if (maxLength == null) {
+                      maxLength = 50;
+                    }
+                    for (length = j = 0, ref = maxLength; 0 <= ref ? j <= ref : j >= ref; length = 0 <= ref ? ++j : --j) {
+                      _text = quill.getText(quill.getSelection(true).index - guessLength - length, guessLength + length);
+                      if (/:/.test(_text)) {
+                        return guessLength + length;
+                        break;
+                      }
+                    }
+                  };
+                  quill.deleteText(quill.getSelection(true).index - findTextLength(query_text.length), findTextLength(query_text.length));
+                  return quill.insertText(quill.getSelection(true).index, code_value);
+                }
+              }
+            });
+          };
+        })(this));
         $.get("/static/local/emoji.js", (function(_this) {
           return function(response) {
             var parsed_emoji_list;
@@ -432,18 +471,28 @@
       };
 
       InlineEditor.prototype.createAndShowEmoticonModal = function() {
-        var _this, current_position;
+        var current_position;
         current_position = this.quill.getSelection(true).index;
-        $("#emoticon-modal-" + this.quillID).html("<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n    <div class=\"modal-header\">\n      <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    </div>\n    <div class=\"modal-body\">\n      <img src=\"/static/emotes/angry.png\" class=\"emoticon-listing\" data-emotecode=\" :anger: \">\n      <img src=\"/static/emotes/smile.png\" class=\"emoticon-listing\" data-emotecode=\" :) \">\n      <img src=\"/static/emotes/sad.png\" class=\"emoticon-listing\" data-emotecode=\" :( \">\n      <img src=\"/static/emotes/heart.png\" class=\"emoticon-listing\" data-emotecode=\" :heart: \">\n      <img src=\"/static/emotes/oh.png\" class=\"emoticon-listing\" data-emotecode=\" :surprise: \">\n      <img src=\"/static/emotes/wink.png\" class=\"emoticon-listing\" data-emotecode=\" :wink: \">\n      <img src=\"/static/emotes/cry.png\" class=\"emoticon-listing\" data-emotecode=\" :cry: \">\n      <img src=\"/static/emotes/tongue.png\" class=\"emoticon-listing\" data-emotecode=\" :silly: \">\n      <img src=\"/static/emotes/embarassed.png\" class=\"emoticon-listing\" data-emotecode=\" :blushing: \">\n      <img src=\"/static/emotes/biggrin.png\" class=\"emoticon-listing\" data-emotecode=\" :lol: \">\n  </div>\n    <div class=\"modal-footer\">\n      <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n    </div>\n  </div>\n</div>");
-        _this = this;
-        $(".emoticon-listing").click(function(e) {
-          var emoticon_code;
-          e.preventDefault();
-          emoticon_code = $(this).data("emotecode");
-          _this.quill.insertText(current_position, emoticon_code);
-          return $("#emoticon-modal-" + _this.quillID).modal("hide");
-        });
-        return $("#emoticon-modal-" + this.quillID).modal("show");
+        return $.get("/local_emoticons.json", (function(_this) {
+          return function(response) {
+            var emoji_list_html, j, len, smiley;
+            emoji_list_html = "";
+            for (j = 0, len = response.length; j < len; j++) {
+              smiley = response[j];
+              emoji_list_html = emoji_list_html + ("<img src=\"/static/smilies/" + smiley.filename + "\" class=\"emoticon-listing\" data-emotecode=\" :" + smiley.name + ": \">\n");
+            }
+            $("#emoticon-modal-" + _this.quillID).html("<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n    <div class=\"modal-header\">\n      <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    </div>\n    <div class=\"modal-body\">\n      " + emoji_list_html + "\n    </div>\n    <div class=\"modal-footer\">\n      <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n    </div>\n  </div>\n</div>");
+            _this = _this;
+            $(".emoticon-listing").click(function(e) {
+              var emoticon_code;
+              e.preventDefault();
+              emoticon_code = $(this).data("emotecode");
+              _this.quill.insertText(current_position, emoticon_code);
+              return $("#emoticon-modal-" + _this.quillID).modal("hide");
+            });
+            return $("#emoticon-modal-" + _this.quillID).modal("show");
+          };
+        })(this));
       };
 
       InlineEditor.prototype.createAndShowDraftModal = function(drafts) {

@@ -220,7 +220,32 @@ $ ->
           $("#preview-box-#{@quillID}").html response.preview
           window.addExtraHTML("#preview-box-#{@quillID}")
           
-      
+      $.get "/local_emoticons.json", (response) =>
+        parsed_emoji_list = response
+        
+        $($("#post-editor-#{@quillID}").children(".ql-editor")[0]).atwho
+            at: ":"
+            displayTpl: """<li data-code=":${name}:"><img src="/static/smilies/${filename}"> ${name}</li>"""
+            data: parsed_emoji_list
+            limit: 30
+            callbacks:
+              beforeInsert: (text, li) ->
+                quill.focus()
+                
+            functionOverrides:
+              insert: (text, li) ->
+                code_value = $(li).data("code")
+                query_text = this.query.text
+                
+                findTextLength = (guessLength, maxLength=50) ->
+                  for length in [0..maxLength]
+                    _text = quill.getText quill.getSelection(true).index-guessLength-length, guessLength+length
+                    if /:/.test(_text)
+                      return guessLength+length
+                      break
+                
+                quill.deleteText quill.getSelection(true).index - findTextLength(query_text.length), findTextLength(query_text.length)
+                quill.insertText quill.getSelection(true).index, code_value
           
       $.get "/static/local/emoji.js", (response) =>
         parsed_emoji_list = JSON.parse response
@@ -351,40 +376,37 @@ $ ->
 
     createAndShowEmoticonModal: () =>
       current_position = this.quill.getSelection(true).index
-      $("#emoticon-modal-#{@quillID}").html(
-        """
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body">
-                <img src="/static/emotes/angry.png" class="emoticon-listing" data-emotecode=" :anger: ">
-                <img src="/static/emotes/smile.png" class="emoticon-listing" data-emotecode=" :) ">
-                <img src="/static/emotes/sad.png" class="emoticon-listing" data-emotecode=" :( ">
-                <img src="/static/emotes/heart.png" class="emoticon-listing" data-emotecode=" :heart: ">
-                <img src="/static/emotes/oh.png" class="emoticon-listing" data-emotecode=" :surprise: ">
-                <img src="/static/emotes/wink.png" class="emoticon-listing" data-emotecode=" :wink: ">
-                <img src="/static/emotes/cry.png" class="emoticon-listing" data-emotecode=" :cry: ">
-                <img src="/static/emotes/tongue.png" class="emoticon-listing" data-emotecode=" :silly: ">
-                <img src="/static/emotes/embarassed.png" class="emoticon-listing" data-emotecode=" :blushing: ">
-                <img src="/static/emotes/biggrin.png" class="emoticon-listing" data-emotecode=" :lol: ">
-            </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      $.get "/local_emoticons.json", (response) =>
+        emoji_list_html = ""
+        
+        for smiley in response
+          emoji_list_html = emoji_list_html + """<img src="/static/smilies/#{smiley.filename}" class="emoticon-listing" data-emotecode=" :#{smiley.name}: ">\n"""
+        
+        $("#emoticon-modal-#{@quillID}").html(
+          """
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                  #{emoji_list_html }
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
               </div>
             </div>
-          </div>
-        """)
+          """)
 
-      _this = this
-      $(".emoticon-listing").click (e) ->
-        e.preventDefault()
-        emoticon_code = $(this).data("emotecode")
-        _this.quill.insertText current_position, emoticon_code
-        $("#emoticon-modal-#{_this.quillID}").modal("hide")
+        _this = this
+        $(".emoticon-listing").click (e) ->
+          e.preventDefault()
+          emoticon_code = $(this).data("emotecode")
+          _this.quill.insertText current_position, emoticon_code
+          $("#emoticon-modal-#{_this.quillID}").modal("hide")
 
-      $("#emoticon-modal-#{@quillID}").modal("show")
+        $("#emoticon-modal-#{@quillID}").modal("show")
     
     createAndShowDraftModal: (drafts) =>
       draft_picks_html = ""

@@ -31,24 +31,6 @@ raw_image_re = re.compile("(<img src=\"(.*?)\"(?:.*)>)")
 html_img_re = re.compile(r'<img src=\"(.*?)\">', re.IGNORECASE)
 href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
 
-emoticon_codes = {
-    ":anger:" : "angry.png",
-    ":)" : "smile.png",
-    ":(" : "sad.png",
-    ":heart:" : "heart.png",
-    ":O" : "oh.png",
-    ":o" : "oh.png",
-    ":surprise:" : "oh.png",
-    ":wink:" : "wink.png",
-    ";)" : "wink.png",
-    ":cry:" : "cry.png",
-    ":P" : "tongue.png",
-    ":silly:" : "tongue.png",
-    ":blushing:" : "embarassed.png",
-    ":lol:" : "biggrin.png",
-    ":D" : "biggrin.png",
-}
-
 def lamia_linker(url):
     href = url
     
@@ -519,12 +501,12 @@ class ForumPostParser(object):
                 sqla.session.rollback()
                 html = html.replace("[@%s]" % str(mention), "", 1)
 
-        # parse smileys
         if not current_user.no_images:
-            for smiley in list(emoticon_codes.keys()):
-                img_html = """<img src="%s" />""" % (os.path.join("/static/emotes",emoticon_codes[smiley]),)
-                html = html.replace(smiley, img_html)
-                
+            emoticon_codes = sqlm.get_local_smilies()
+            for smiley in emoticon_codes:
+                img_html = """<img src="%s" />""" % (os.path.join("/static/smilies", smiley["filename"]),)
+                html = html.replace(":"+smiley["code"]+":", img_html)
+            
         html = bbcode_parser.format(html, strip_images=strip_images, content_owner=_content_owner)
         
         for _code, _html in _mangled_html_links:

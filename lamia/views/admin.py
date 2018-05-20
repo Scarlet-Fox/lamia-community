@@ -25,6 +25,9 @@ _base_url = app.config['BASE']
 # Special classes
 ###################################################################################################
 
+class LamiaImageUploadField(form.ImageUploadField):
+    keep_image_formats = ('PNG','GIF')
+
 class StartsWithQueryAjaxModelLoader(QueryAjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.session.query(self.model)
@@ -568,7 +571,7 @@ class SmileyConfigView(ModelView):
         }
         
     form_extra_fields = {
-            'filename': form.ImageUploadField('Smiley', base_path=app.config["SMILEY_UPLOAD_DIR"], url_relative_path="smilies/"),
+            'filename': LamiaImageUploadField('Smiley', base_path=app.config["SMILEY_UPLOAD_DIR"], url_relative_path="smilies/"),
             'replaces_text': StringField()
         }
         
@@ -592,7 +595,7 @@ class AttachmentView(ModelView):
     form_excluded_columns = ["owner", "character", "character_gallery","character_gallery_weight","character_avatar"]
         
     form_extra_fields = {
-        'path': form.ImageUploadField('Attachment', base_path=app.config["ATTACHMENTS_UPLOAD_DIR"], url_relative_path="uploads/"),
+        'path': LamiaImageUploadField('Attachment', base_path=app.config["ATTACHMENTS_UPLOAD_DIR"], url_relative_path="uploads/"),
     }
     
     column_default_sort = ('created_date', False)

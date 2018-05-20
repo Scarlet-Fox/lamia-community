@@ -1,5 +1,5 @@
 from lamia import login_manager
-from lamia import app, bcrypt
+from lamia import app, bcrypt, cache
 from lamia.parsers import ForumPostParser
 from collections import OrderedDict
 from lamia.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
@@ -1325,6 +1325,26 @@ def toggle_manual_validation():
     
     return app.jsonify(response="Ok.")
 
+@app.route('/local_emoticons.json', methods=["GET",])
+@login_required
+def get_site_emoticons():
+    smileys = sqlm.get_local_smilies()
+    parsed_smileys = []
+    
+    for smiley in smileys:
+        parsed_smileys.append({
+            "name": smiley["code"],
+            "filename": smiley["filename"]
+        })
+        
+    response = app.response_class(
+            response=json.dumps(parsed_smileys),
+            status=200,
+            mimetype='application/json'
+        )
+    
+    return response
+    
 @app.route('/member-list-api', methods=["GET",])
 @login_required
 def member_list_api():
