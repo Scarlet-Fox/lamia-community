@@ -260,24 +260,6 @@ def ipb_password_check(salt, old_hash, password):
 
     return new_hash == old_hash
 
-emoticon_codes = {
-    ":anger:" : "angry.png",
-    ":)" : "smile.png",
-    ":(" : "sad.png",
-    ":heart:" : "heart.png",
-    ":O" : "oh.png",
-    ":o" : "oh.png",
-    ":surprise:" : "oh.png",
-    ":wink:" : "wink.png",
-    ";)" : "wink.png",
-    ":cry:" : "cry.png",
-    ":P" : "tongue.png",
-    ":silly:" : "tongue.png",
-    ":blushing:" : "embarassed.png",
-    ":lol:" : "biggrin.png",
-    ":D" : "biggrin.png",
-}
-
 class ForumHTMLCleaner(object):
     def __init__(self):
         self.cleaner = Cleaner(
@@ -315,10 +297,6 @@ class ForumHTMLCleaner(object):
         urls = url_rgx.findall(text)
         for url in urls:
             text = text.replace(url, """<a href="%s" target="_blank">%s</a>""" % (str(url), str(url),), 1)
-
-        for smiley in list(emoticon_codes.keys()):
-            img_html = """<img src="%s" />""" % (os.path.join("/static/emotes",emoticon_codes[smiley]),)
-            text = text.replace(smiley, img_html)
 
         return text
 

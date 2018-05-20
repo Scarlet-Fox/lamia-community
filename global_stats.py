@@ -2,7 +2,7 @@ from lamia import sqla
 from lamia.sqlmodels import *
 import lamia.sqlmodels as sqlm
 from sqlalchemy.orm.attributes import flag_modified
-from lamia.parsers import emoticon_codes
+# from lamia.parsers import emoticon_codes
 from lamia.utilities import strip_tags
 
 sqla.session.query(sqlm.TopTen).delete()
