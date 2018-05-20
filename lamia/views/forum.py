@@ -1741,7 +1741,7 @@ def index():
         
         cache.set("site_roles_for_legend", roles_for_legend)
         
-    render = render_template("index.jade", page_title=app.get_site_config("core.site-name"), meta_description="Friendly online community devoted to members of the anime fandom that aren't hardcore otakus.",
+    render = render_template("index.jade", page_title=app.get_site_config("core.site-name"),
         hierarchy=hierarchy,children=children,announcements=announcements,
         status_updates=status_updates, online_users=online_users, blogs=blogs,
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets, birthday_list=birthday_list,
