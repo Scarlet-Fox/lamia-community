@@ -612,18 +612,6 @@ class AttachmentView(ModelView):
 
 class SwearFilterView(ModelView):
     page_size = 100
-    
-    form_extra_fields = {
-        'replace_with': StringField()
-    }
-    
-    extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
-        "/static/assets/datatables/dataTables.responsive.css"
-        ]
-    extra_js = ["/static/assets/datatables/js/jquery.dataTables.min.js",
-        "/static/assets/datatables/dataTables.bootstrap.js",
-        "/static/assets/datatables/dataTables.responsive.js"
-        ]
         
     def create_model(self, form):
         """
@@ -636,7 +624,6 @@ class SwearFilterView(ModelView):
             _last_model = None
             for _word in form.word.data.split("\n"):
                 model = self.model()
-                model.replace_with = form.replace_with.data
                 model.word = _word.lower().strip()
                 self.session.add(model)
                 self._on_model_change(form, model, True)

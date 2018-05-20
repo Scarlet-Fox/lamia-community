@@ -16,14 +16,14 @@ if __name__ == "__main__":
     configure_mappers()
     sqla.create_all()
 
-    def create_setting(hierarchy, key, default_value, option_type, meta, default):
+    def create_setting(hierarchy, key, default_value, option_type, local_meta, default):
         try:
             _setting = sqlm.SiteConfiguration(
                     hierarchy=hierarchy,
                     key=key,
                     value=default_value,
                     option_type=option_type,
-                    meta=meta,
+                    local_meta=local_meta,
                     default=default
                 )
 
