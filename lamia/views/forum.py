@@ -492,6 +492,7 @@ def recent_posts(page):
     
     recent_posts = sqla.session.query(sqlm.Post) \
         .join(sqlm.Post.topic) \
+        .filter(sqlm.Topic.recent_post_id == sqlm.Post.id) \
         .filter(sqlm.Post.created > _starting) \
         .filter(sqla.or_(sqlm.Post.hidden == False, sqlm.Post.hidden == None)) \
         .order_by(sqla.desc(sqlm.Post.created))
