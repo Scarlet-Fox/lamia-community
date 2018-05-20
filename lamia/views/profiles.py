@@ -1029,6 +1029,7 @@ def change_user_settings(login_name):
     else:
         form.no_images.data = user.no_images
         form.time_zone.data = user.time_zone
+        form.swear_filter.data = user.swear_filter
         if user.birthday:
             form.birthday.data = user.birthday
         form.no_emails.data = user.emails_muted

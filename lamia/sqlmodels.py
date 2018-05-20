@@ -1823,10 +1823,23 @@ def get_local_smilies():
 class SwearFilter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.Text, index=True)
-    replace_with = db.Column(db.Text, index=True)
     
     def __repr__(self):
-        return "<SwearFilter: (word='%s', replace_with='%s')>" % (self.word, self.replace_with)
+        return "<SwearFilter: (word='%s')>" % (self.word, self.replace_with)
+
+def get_swear_filters():
+    cached = cache.get("site_swear_words_for_filtering")
+    
+    if cached != None:
+        return cached
+    else:
+        filter_query = SwearFilter.query.all()
+        wordlist = []
+        for w in filter_query:
+            wordlist.append(w.word)
+            
+        cache.set("site_swear_words_for_filtering", wordlist, 60)
+        return wordlist
 
 ############################################################
 # System/Other Models

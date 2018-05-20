@@ -11,6 +11,7 @@ except:
 from flask_login import current_user
 from threading import Thread
 from lamia import sqla
+from bs4 import BeautifulSoup
 import lamia.sqlmodels as sqlm
 from urllib.parse import urlencode
 import bbcode
@@ -518,6 +519,11 @@ class ForumPostParser(object):
                     "%s" % plain_jane_image[0],
                     """<a href="%s" target="_blank">View External Image : <br>%s.</a>""" % (plain_jane_image[1], plain_jane_image[1])
                 )
+           
+        if (app.get_site_config("core.swear-filter-default") == "yes" and not current_user.is_authenticated) or (current_user.is_authenticated and current_user.swear_filter == True):
+            swear_words_to_filter = sqlm.get_swear_filters()
+            for w in swear_words_to_filter:
+                html = re.subn(re.escape(w), "****", html, count=0, flags=re.IGNORECASE)[0]
             
         return "<div class=\"parsed\">"+html+"</div>"
         
