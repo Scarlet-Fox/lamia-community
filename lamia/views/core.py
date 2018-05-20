@@ -1243,6 +1243,29 @@ def sign_out():
     logout_user()
     return redirect(app.config['BASE'])
 
+# @app.route('/user_mentions', methods=['GET'])
+# @login_required
+# def get_users_for_mention():
+#     query = request.args.get("q", "")[0:100]
+#
+#     # if len(query) < 2:
+#     #     return app.jsonify(results=[])
+#
+#     users = sqlm.User.query.filter(sqla.or_(
+#         sqlm.User.display_name.startswith(query),
+#         sqlm.User.login_name.startswith(query)
+#     )).limit(30)
+#
+#     result = [{"name": u.display_name, "avatar": u.get_avatar_url("40")} for u in users]
+#
+#     response = app.response_class(
+#         response=json.dumps(result),
+#         status=200,
+#         mimetype='application/json'
+#     )
+#
+#     return response
+    
 @app.route('/user-list-api', methods=['GET'])
 @login_required
 def user_list_api():

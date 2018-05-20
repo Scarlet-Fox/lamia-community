@@ -219,7 +219,25 @@ $ ->
         $.post "/preview", JSON.stringify({text: $("#post-editor-#{@quillID}").children(".ql-editor").html()}), (response) =>
           $("#preview-box-#{@quillID}").html response.preview
           window.addExtraHTML("#preview-box-#{@quillID}")
-          
+      
+      # Opens the list in the top left, repositioning code was never called, this is insane
+      # The code for positioning built into At.js is running before the results arrive, I think - it's a timing issue
+      # I don't even want to fix this bug, lol, let's just... make our own later
+      # $($("#post-editor-#{@quillID}").children(".ql-editor")[0]).atwho
+      #   at: "@"
+      #   displayTpl: "<li> ${name}</li>"
+      #   searchKey: "name"
+      #   limit: 10
+      #   callbacks:
+      #     beforeInsert: (text, li) ->
+      #       quill.focus()
+      #     remoteFilter: (query, callback) ->
+      #       $.get "/user_mentions", {q: query}, (response) ->
+      #         callback(response)
+      #     beforeReposition: (offset) ->
+      #       offset.top += 1000
+      #       console.log quill.getBounds(quill.getSelection(true).index)
+      
       $.get "/local_emoticons.json", (response) =>
         parsed_emoji_list = response
         
