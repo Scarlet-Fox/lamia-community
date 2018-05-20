@@ -319,9 +319,10 @@
             var parsed_emoji_list;
             parsed_emoji_list = JSON.parse(response);
             return $($("#post-editor-" + _this.quillID).children(".ql-editor")[0]).atwho({
-              at: ":",
+              at: "::",
               displayTpl: "<li data-unicode=\"${unicode}\">${unicode} ${name}</li>",
               data: parsed_emoji_list,
+              limit: 30,
               callbacks: {
                 beforeInsert: function(text, li) {
                   return quill.focus();
@@ -339,7 +340,7 @@
                     }
                     for (length = j = 0, ref = maxLength; 0 <= ref ? j <= ref : j >= ref; length = 0 <= ref ? ++j : --j) {
                       _text = quill.getText(quill.getSelection(true).index - guessLength - length, guessLength + length);
-                      if (/:/.test(_text)) {
+                      if (/::/.test(_text)) {
                         return guessLength + length;
                         break;
                       }

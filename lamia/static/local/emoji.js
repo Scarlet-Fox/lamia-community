@@ -1,20 +1,5 @@
 [
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "grinning face",
         "unicode": "\ud83d\ude00",
         "name": "grinning_face"
@@ -85,11 +70,6 @@
         "name": "face_blowing_a_kiss"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd70",
-        "name": ""
-    },
-    {
         "description": "kissing face",
         "unicode": "\ud83d\ude17",
         "name": "kissing_face"
@@ -115,11 +95,6 @@
         "name": "slightly_smiling_face"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "hugging face",
         "unicode": "\ud83e\udd17",
         "name": "hugging_face"
@@ -128,16 +103,6 @@
         "description": "star-struck",
         "unicode": "\ud83e\udd29",
         "name": "star_struck"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "thinking face",
@@ -240,11 +205,6 @@
         "name": "drooling_face"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "unamused face",
         "unicode": "\ud83d\ude12",
         "name": "unamused_face"
@@ -278,16 +238,6 @@
         "description": "astonished face",
         "unicode": "\ud83d\ude32",
         "name": "astonished_face"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "frowning face",
@@ -370,16 +320,6 @@
         "name": "face_screaming_in_fear"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd75",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd76",
-        "name": ""
-    },
-    {
         "description": "flushed face",
         "unicode": "\ud83d\ude33",
         "name": "flushed_face"
@@ -388,11 +328,6 @@
         "description": "zany face",
         "unicode": "\ud83e\udd2a",
         "name": "zany_face"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "dizzy face",
@@ -413,16 +348,6 @@
         "description": "face with symbols on mouth",
         "unicode": "\ud83e\udd2c",
         "name": "face_with_symbols_on_mouth"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "face with medical mask",
@@ -455,16 +380,6 @@
         "name": "sneezing_face"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "smiling face with halo",
         "unicode": "\ud83d\ude07",
         "name": "smiling_face_with_halo"
@@ -473,21 +388,6 @@
         "description": "cowboy hat face",
         "unicode": "\ud83e\udd20",
         "name": "cowboy_hat_face"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd73",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd74",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd7a",
-        "name": ""
     },
     {
         "description": "lying face",
@@ -513,16 +413,6 @@
         "description": "nerd face",
         "unicode": "\ud83e\udd13",
         "name": "nerd_face"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "smiling face with horns",
@@ -585,16 +475,6 @@
         "name": "pile_of_poo"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "grinning cat face",
         "unicode": "\ud83d\ude3a",
         "name": "grinning_cat_face"
@@ -640,16 +520,6 @@
         "name": "pouting_cat_face"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "see-no-evil monkey",
         "unicode": "\ud83d\ude48",
         "name": "see_no_evil_monkey"
@@ -663,16 +533,6 @@
         "description": "speak-no-evil monkey",
         "unicode": "\ud83d\ude4a",
         "name": "speak_no_evil_monkey"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "baby",
@@ -723,16 +583,6 @@
         "description": "old woman",
         "unicode": "\ud83d\udc75",
         "name": "old_woman"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "man health worker",
@@ -835,11 +685,6 @@
         "name": "woman_scientist"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "man technologist",
         "unicode": "\ud83d\udc68\u200d\ud83d\udcbb",
         "name": "man_technologist"
@@ -940,11 +785,6 @@
         "name": "man_guard"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "woman guard",
         "unicode": "\ud83d\udc82\u200d\u2640\ufe0f",
         "name": "woman_guard"
@@ -1020,51 +860,6 @@
         "name": "blond_haired_woman"
     },
     {
-        "description": "",
-        "unicode": "\ud83d\udc68\u200d\ud83e\uddb0",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83d\udc69\u200d\ud83e\uddb0",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83d\udc68\u200d\ud83e\uddb1",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83d\udc69\u200d\ud83e\uddb1",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83d\udc68\u200d\ud83e\uddb3",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83d\udc69\u200d\ud83e\uddb3",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83d\udc68\u200d\ud83e\uddb2",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83d\udc69\u200d\ud83e\uddb2",
-        "name": ""
-    },
-    {
         "description": "man in tuxedo",
         "unicode": "\ud83e\udd35",
         "name": "man_in_tuxedo"
@@ -1083,16 +878,6 @@
         "description": "breast-feeding",
         "unicode": "\ud83e\udd31",
         "name": "breast_feeding"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "baby angel",
@@ -1195,11 +980,6 @@
         "name": "mermaid"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "merman",
         "unicode": "\ud83e\udddc\u200d\u2642\ufe0f",
         "name": "merman"
@@ -1248,16 +1028,6 @@
         "description": "man zombie",
         "unicode": "\ud83e\udddf\u200d\u2642\ufe0f",
         "name": "man_zombie"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "person frowning",
@@ -1360,11 +1130,6 @@
         "name": "man_bowing"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "woman bowing",
         "unicode": "\ud83d\ude47\u200d\u2640\ufe0f",
         "name": "woman_bowing"
@@ -1398,16 +1163,6 @@
         "description": "woman shrugging",
         "unicode": "\ud83e\udd37\u200d\u2640\ufe0f",
         "name": "woman_shrugging"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "person getting massage",
@@ -1510,11 +1265,6 @@
         "name": "man_in_steamy_room"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "person climbing",
         "unicode": "\ud83e\uddd7",
         "name": "person_climbing"
@@ -1573,16 +1323,6 @@
         "description": "busts in silhouette",
         "unicode": "\ud83d\udc65",
         "name": "busts_in_silhouette"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "person fencing",
@@ -1685,11 +1425,6 @@
         "name": "person_lifting_weights"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "man lifting weights",
         "unicode": "\ud83c\udfcb\ufe0f\u200d\u2642\ufe0f",
         "name": "man_lifting_weights"
@@ -1790,11 +1525,6 @@
         "name": "person_playing_handball"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "man playing handball",
         "unicode": "\ud83e\udd3e\u200d\u2642\ufe0f",
         "name": "man_playing_handball"
@@ -1818,16 +1548,6 @@
         "description": "woman juggling",
         "unicode": "\ud83e\udd39\u200d\u2640\ufe0f",
         "name": "woman_juggling"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "man and woman holding hands",
@@ -1930,11 +1650,6 @@
         "name": "family_man_man_girl_boy"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "family: man, man, boy, boy",
         "unicode": "\ud83d\udc68\u200d\ud83d\udc68\u200d\ud83d\udc66\u200d\ud83d\udc66",
         "name": "family_man_man_boy_boy"
@@ -2020,16 +1735,6 @@
         "name": "family_woman_girl_girl"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "selfie",
         "unicode": "\ud83e\udd33",
         "name": "selfie"
@@ -2038,16 +1743,6 @@
         "description": "flexed biceps",
         "unicode": "\ud83d\udcaa",
         "name": "flexed_biceps"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddb5",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddb6",
-        "name": ""
     },
     {
         "description": "backhand index pointing left",
@@ -2128,11 +1823,6 @@
         "description": "thumbs down",
         "unicode": "\ud83d\udc4e",
         "name": "thumbs_down"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "raised fist",
@@ -2235,11 +1925,6 @@
         "name": "eye"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "eye in speech bubble",
         "unicode": "\ud83d\udc41\ufe0f\u200d\ud83d\udde8\ufe0f",
         "name": "eye_in_speech_bubble"
@@ -2250,16 +1935,6 @@
         "name": "brain"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\uddb4",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddb7",
-        "name": ""
-    },
-    {
         "description": "tongue",
         "unicode": "\ud83d\udc45",
         "name": "tongue"
@@ -2268,46 +1943,6 @@
         "description": "mouth",
         "unicode": "\ud83d\udc44",
         "name": "mouth"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddb0",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddb1",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddb3",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddb2",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "kiss mark",
@@ -2410,11 +2045,6 @@
         "name": "zzz"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "anger symbol",
         "unicode": "\ud83d\udca2",
         "name": "anger_symbol"
@@ -2470,16 +2100,6 @@
         "name": "hole"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "glasses",
         "unicode": "\ud83d\udc53",
         "name": "glasses"
@@ -2488,16 +2108,6 @@
         "description": "sunglasses",
         "unicode": "\ud83d\udd76",
         "name": "sunglasses"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd7d",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd7c",
-        "name": ""
     },
     {
         "description": "necktie",
@@ -2580,11 +2190,6 @@
         "name": "backpack"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "man\u2019s shoe",
         "unicode": "\ud83d\udc5e",
         "name": "mans_shoe"
@@ -2593,16 +2198,6 @@
         "description": "running shoe",
         "unicode": "\ud83d\udc5f",
         "name": "running_shoe"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd7e",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd7f",
-        "name": ""
     },
     {
         "description": "high-heeled shoe",
@@ -2670,21 +2265,6 @@
         "name": "gem_stone"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "monkey face",
         "unicode": "\ud83d\udc35",
         "name": "monkey_face"
@@ -2723,11 +2303,6 @@
         "description": "fox face",
         "unicode": "\ud83e\udd8a",
         "name": "fox_face"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd9d",
-        "name": ""
     },
     {
         "description": "cat face",
@@ -2783,11 +2358,6 @@
         "description": "deer",
         "unicode": "\ud83e\udd8c",
         "name": "deer"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "cow face",
@@ -2855,11 +2425,6 @@
         "name": "two_hump_camel"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd99",
-        "name": ""
-    },
-    {
         "description": "giraffe",
         "unicode": "\ud83e\udd92",
         "name": "giraffe"
@@ -2875,11 +2440,6 @@
         "name": "rhinoceros"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd9b",
-        "name": ""
-    },
-    {
         "description": "mouse face",
         "unicode": "\ud83d\udc2d",
         "name": "mouse_face"
@@ -2888,11 +2448,6 @@
         "description": "mouse",
         "unicode": "\ud83d\udc01",
         "name": "mouse"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "rat",
@@ -2945,29 +2500,9 @@
         "name": "panda_face"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd98",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udda1",
-        "name": ""
-    },
-    {
         "description": "paw prints",
         "unicode": "\ud83d\udc3e",
         "name": "paw_prints"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "turkey",
@@ -3025,49 +2560,14 @@
         "name": "duck"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udda2",
-        "name": ""
-    },
-    {
         "description": "owl",
         "unicode": "\ud83e\udd89",
         "name": "owl"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd9a",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd9c",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "frog face",
         "unicode": "\ud83d\udc38",
         "name": "frog_face"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "crocodile",
@@ -3108,16 +2608,6 @@
         "description": "T-Rex",
         "unicode": "\ud83e\udd96",
         "name": "t_rex"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "spouting whale",
@@ -3170,11 +2660,6 @@
         "name": "crab"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd9e",
-        "name": ""
-    },
-    {
         "description": "shrimp",
         "unicode": "\ud83e\udd90",
         "name": "shrimp"
@@ -3183,16 +2668,6 @@
         "description": "squid",
         "unicode": "\ud83e\udd91",
         "name": "squid"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "snail",
@@ -3245,26 +2720,6 @@
         "name": "scorpion"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd9f",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udda0",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "bouquet",
         "unicode": "\ud83d\udc90",
         "name": "bouquet"
@@ -3313,16 +2768,6 @@
         "description": "tulip",
         "unicode": "\ud83c\udf37",
         "name": "tulip"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "seedling",
@@ -3385,21 +2830,6 @@
         "name": "leaf_fluttering_in_wind"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "grapes",
         "unicode": "\ud83c\udf47",
         "name": "grapes"
@@ -3433,11 +2863,6 @@
         "description": "pineapple",
         "unicode": "\ud83c\udf4d",
         "name": "pineapple"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd6d",
-        "name": ""
     },
     {
         "description": "red apple",
@@ -3485,16 +2910,6 @@
         "name": "coconut"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "avocado",
         "unicode": "\ud83e\udd51",
         "name": "avocado"
@@ -3530,11 +2945,6 @@
         "name": "cucumber"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd6c",
-        "name": ""
-    },
-    {
         "description": "broccoli",
         "unicode": "\ud83e\udd66",
         "name": "broccoli"
@@ -3555,16 +2965,6 @@
         "name": "chestnut"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "bread",
         "unicode": "\ud83c\udf5e",
         "name": "bread"
@@ -3583,11 +2983,6 @@
         "description": "pretzel",
         "unicode": "\ud83e\udd68",
         "name": "pretzel"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd6f",
-        "name": ""
     },
     {
         "description": "pancakes",
@@ -3665,11 +3060,6 @@
         "name": "egg"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "cooking",
         "unicode": "\ud83c\udf73",
         "name": "cooking"
@@ -3700,24 +3090,9 @@
         "name": "popcorn"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\uddc2",
-        "name": ""
-    },
-    {
         "description": "canned food",
         "unicode": "\ud83e\udd6b",
         "name": "canned_food"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "bento box",
@@ -3780,11 +3155,6 @@
         "name": "fish_cake_with_swirl"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd6e",
-        "name": ""
-    },
-    {
         "description": "dango",
         "unicode": "\ud83c\udf61",
         "name": "dango"
@@ -3803,16 +3173,6 @@
         "description": "takeout box",
         "unicode": "\ud83e\udd61",
         "name": "takeout_box"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "soft ice cream",
@@ -3850,11 +3210,6 @@
         "name": "shortcake"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\uddc1",
-        "name": ""
-    },
-    {
         "description": "pie",
         "unicode": "\ud83e\udd67",
         "name": "pie"
@@ -3883,16 +3238,6 @@
         "description": "honey pot",
         "unicode": "\ud83c\udf6f",
         "name": "honey_pot"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "baby bottle",
@@ -3965,16 +3310,6 @@
         "name": "cup_with_straw"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "chopsticks",
         "unicode": "\ud83e\udd62",
         "name": "chopsticks"
@@ -4005,21 +3340,6 @@
         "name": "amphora"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "globe showing Europe-Africa",
         "unicode": "\ud83c\udf0d",
         "name": "globe_showing_europe_africa"
@@ -4048,21 +3368,6 @@
         "description": "map of Japan",
         "unicode": "\ud83d\uddfe",
         "name": "map_of_japan"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udded",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "snow-capped mountain",
@@ -4110,16 +3415,6 @@
         "name": "national_park"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "stadium",
         "unicode": "\ud83c\udfdf",
         "name": "stadium"
@@ -4133,11 +3428,6 @@
         "description": "building construction",
         "unicode": "\ud83c\udfd7",
         "name": "building_construction"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddf1",
-        "name": ""
     },
     {
         "description": "houses",
@@ -4220,11 +3510,6 @@
         "name": "japanese_castle"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "castle",
         "unicode": "\ud83c\udff0",
         "name": "castle"
@@ -4243,16 +3528,6 @@
         "description": "Statue of Liberty",
         "unicode": "\ud83d\uddfd",
         "name": "statue_of_liberty"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "church",
@@ -4278,16 +3553,6 @@
         "description": "kaaba",
         "unicode": "\ud83d\udd4b",
         "name": "kaaba"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "fountain",
@@ -4373,16 +3638,6 @@
         "description": "circus tent",
         "unicode": "\ud83c\udfaa",
         "name": "circus_tent"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "locomotive",
@@ -4485,11 +3740,6 @@
         "name": "oncoming_police_car"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "taxi",
         "unicode": "\ud83d\ude95",
         "name": "taxi"
@@ -4540,11 +3790,6 @@
         "name": "kick_scooter"
     },
     {
-        "description": "",
-        "unicode": "\ud83d\udef9",
-        "name": ""
-    },
-    {
         "description": "motor scooter",
         "unicode": "\ud83d\udef5",
         "name": "motor_scooter"
@@ -4590,11 +3835,6 @@
         "name": "vertical_traffic_light"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "stop sign",
         "unicode": "\ud83d\uded1",
         "name": "stop_sign"
@@ -4603,16 +3843,6 @@
         "description": "construction",
         "unicode": "\ud83d\udea7",
         "name": "construction"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "anchor",
@@ -4653,16 +3883,6 @@
         "description": "ship",
         "unicode": "\ud83d\udea2",
         "name": "ship"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "airplane",
@@ -4725,34 +3945,9 @@
         "name": "flying_saucer"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "bellhop bell",
         "unicode": "\ud83d\udece",
         "name": "bellhop_bell"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddf3",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "hourglass done",
@@ -4855,11 +4050,6 @@
         "name": "six_oclock"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "six-thirty",
         "unicode": "\ud83d\udd61",
         "name": "six_thirty"
@@ -4913,16 +4103,6 @@
         "description": "eleven-thirty",
         "unicode": "\ud83d\udd66",
         "name": "eleven_thirty"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "new moon",
@@ -5025,11 +4205,6 @@
         "name": "cloud"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "sun behind cloud",
         "unicode": "\u26c5",
         "name": "sun_behind_cloud"
@@ -5130,11 +4305,6 @@
         "name": "snowman"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "snowman without snow",
         "unicode": "\u26c4",
         "name": "snowman_without_snow"
@@ -5160,21 +4330,6 @@
         "name": "water_wave"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "jack-o-lantern",
         "unicode": "\ud83c\udf83",
         "name": "jack_o_lantern"
@@ -5193,11 +4348,6 @@
         "description": "sparkler",
         "unicode": "\ud83c\udf87",
         "name": "sparkler"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udde8",
-        "name": ""
     },
     {
         "description": "sparkles",
@@ -5250,11 +4400,6 @@
         "name": "moon_viewing_ceremony"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udde7",
-        "name": ""
-    },
-    {
         "description": "ribbon",
         "unicode": "\ud83c\udf80",
         "name": "ribbon"
@@ -5275,24 +4420,9 @@
         "name": "admission_tickets"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "ticket",
         "unicode": "\ud83c\udfab",
         "name": "ticket"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "military medal",
@@ -5325,16 +4455,6 @@
         "name": "3rd_place_medal"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "soccer ball",
         "unicode": "\u26bd",
         "name": "soccer_ball"
@@ -5343,11 +4463,6 @@
         "description": "baseball",
         "unicode": "\u26be",
         "name": "baseball"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd4e",
-        "name": ""
     },
     {
         "description": "basketball",
@@ -5375,11 +4490,6 @@
         "name": "tennis"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\udd4f",
-        "name": ""
-    },
-    {
         "description": "bowling",
         "unicode": "\ud83c\udfb3",
         "name": "bowling"
@@ -5398,11 +4508,6 @@
         "description": "ice hockey",
         "unicode": "\ud83c\udfd2",
         "name": "ice_hockey"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udd4d",
-        "name": ""
     },
     {
         "description": "ping pong",
@@ -5435,11 +4540,6 @@
         "name": "flag_in_hole"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "ice skate",
         "unicode": "\u26f8",
         "name": "ice_skate"
@@ -5470,16 +4570,6 @@
         "name": "curling_stone"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "direct hit",
         "unicode": "\ud83c\udfaf",
         "name": "direct_hit"
@@ -5493,11 +4583,6 @@
         "description": "crystal ball",
         "unicode": "\ud83d\udd2e",
         "name": "crystal_ball"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddff",
-        "name": ""
     },
     {
         "description": "video game",
@@ -5518,16 +4603,6 @@
         "description": "game die",
         "unicode": "\ud83c\udfb2",
         "name": "game_die"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\udde9",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddf8",
-        "name": ""
     },
     {
         "description": "spade suit",
@@ -5570,16 +4645,6 @@
         "name": "flower_playing_cards"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "performing arts",
         "unicode": "\ud83c\udfad",
         "name": "performing_arts"
@@ -5593,31 +4658,6 @@
         "description": "artist palette",
         "unicode": "\ud83c\udfa8",
         "name": "artist_palette"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddf5",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddf6",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "muted speaker",
@@ -5665,16 +4705,6 @@
         "name": "bell_with_slash"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "musical score",
         "unicode": "\ud83c\udfbc",
         "name": "musical_score"
@@ -5720,16 +4750,6 @@
         "name": "radio"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "saxophone",
         "unicode": "\ud83c\udfb7",
         "name": "saxophone"
@@ -5760,16 +4780,6 @@
         "name": "drum"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "mobile phone",
         "unicode": "\ud83d\udcf1",
         "name": "mobile_phone"
@@ -5798,16 +4808,6 @@
         "description": "fax machine",
         "unicode": "\ud83d\udce0",
         "name": "fax_machine"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "battery",
@@ -5868,21 +4868,6 @@
         "description": "dvd",
         "unicode": "\ud83d\udcc0",
         "name": "dvd"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddee",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "movie camera",
@@ -5958,16 +4943,6 @@
         "description": "red paper lantern",
         "unicode": "\ud83c\udfee",
         "name": "red_paper_lantern"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "notebook with decorative cover",
@@ -6055,16 +5030,6 @@
         "name": "label"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "money bag",
         "unicode": "\ud83d\udcb0",
         "name": "money_bag"
@@ -6100,11 +5065,6 @@
         "name": "credit_card"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\uddfe",
-        "name": ""
-    },
-    {
         "description": "chart increasing with yen",
         "unicode": "\ud83d\udcb9",
         "name": "chart_increasing_with_yen"
@@ -6118,16 +5078,6 @@
         "description": "heavy dollar sign",
         "unicode": "\ud83d\udcb2",
         "name": "heavy_dollar_sign"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "envelope",
@@ -6195,16 +5145,6 @@
         "name": "ballot_box_with_ballot"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "pencil",
         "unicode": "\u270f",
         "name": "pencil"
@@ -6238,16 +5178,6 @@
         "description": "memo",
         "unicode": "\ud83d\udcdd",
         "name": "memo"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "briefcase",
@@ -6350,11 +5280,6 @@
         "name": "scissors"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "card file box",
         "unicode": "\ud83d\uddc3",
         "name": "card_file_box"
@@ -6368,16 +5293,6 @@
         "description": "wastebasket",
         "unicode": "\ud83d\uddd1",
         "name": "wastebasket"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "locked",
@@ -6408,16 +5323,6 @@
         "description": "old key",
         "unicode": "\ud83d\udddd",
         "name": "old_key"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "hammer",
@@ -6500,44 +5405,9 @@
         "name": "chains"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\uddf0",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddf2",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "alembic",
         "unicode": "\u2697",
         "name": "alembic"
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddea",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddeb",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddec",
-        "name": ""
     },
     {
         "description": "microscope",
@@ -6555,16 +5425,6 @@
         "name": "satellite_antenna"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "syringe",
         "unicode": "\ud83d\udc89",
         "name": "syringe"
@@ -6573,16 +5433,6 @@
         "description": "pill",
         "unicode": "\ud83d\udc8a",
         "name": "pill"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "door",
@@ -6615,59 +5465,9 @@
         "name": "bathtub"
     },
     {
-        "description": "",
-        "unicode": "\ud83e\uddf4",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddf7",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddf9",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddfa",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddfb",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddfc",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddfd",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "\ud83e\uddef",
-        "name": ""
-    },
-    {
         "description": "shopping cart",
         "unicode": "\ud83d\uded2",
         "name": "shopping_cart"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "cigarette",
@@ -6688,21 +5488,6 @@
         "description": "moai",
         "unicode": "\ud83d\uddff",
         "name": "moai"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "ATM sign",
@@ -6770,16 +5555,6 @@
         "name": "left_luggage"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "warning",
         "unicode": "\u26a0",
         "name": "warning"
@@ -6843,16 +5618,6 @@
         "description": "biohazard",
         "unicode": "\u2623",
         "name": "biohazard"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "up arrow",
@@ -6955,24 +5720,9 @@
         "name": "soon_arrow"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "TOP arrow",
         "unicode": "\ud83d\udd1d",
         "name": "top_arrow"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "place of worship",
@@ -7033,16 +5783,6 @@
         "description": "dotted six-pointed star",
         "unicode": "\ud83d\udd2f",
         "name": "dotted_six_pointed_star"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "Aries",
@@ -7108,16 +5848,6 @@
         "description": "Ophiuchus",
         "unicode": "\u26ce",
         "name": "ophiuchus"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "shuffle tracks button",
@@ -7220,11 +5950,6 @@
         "name": "dim_button"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "bright button",
         "unicode": "\ud83d\udd06",
         "name": "bright_button"
@@ -7243,16 +5968,6 @@
         "description": "mobile phone off",
         "unicode": "\ud83d\udcf4",
         "name": "mobile_phone_off"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "female sign",
@@ -7355,11 +6070,6 @@
         "name": "curly_loop"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "double curly loop",
         "unicode": "\u27bf",
         "name": "double_curly_loop"
@@ -7435,16 +6145,6 @@
         "name": "trade_mark"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "keycap: #",
         "unicode": "#\ufe0f\u20e3",
         "name": "keycap"
@@ -7508,16 +6208,6 @@
         "description": "keycap: 10",
         "unicode": "\ud83d\udd1f",
         "name": "keycap_10"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "hundred points",
@@ -7620,11 +6310,6 @@
         "name": "p_button"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "SOS button",
         "unicode": "\ud83c\udd98",
         "name": "sos_button"
@@ -7723,16 +6408,6 @@
         "description": "Japanese \u201cno vacancy\u201d button",
         "unicode": "\ud83c\ude35",
         "name": "japanese_no_vacancy_button"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "red circle",
@@ -7835,11 +6510,6 @@
         "name": "radio_button"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "black square button",
         "unicode": "\ud83d\udd32",
         "name": "black_square_button"
@@ -7848,21 +6518,6 @@
         "description": "white square button",
         "unicode": "\ud83d\udd33",
         "name": "white_square_button"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "chequered flag",
@@ -7898,16 +6553,6 @@
         "description": "\u229b pirate flag",
         "unicode": "\ud83c\udff4\u200d\u2620\ufe0f",
         "name": "pirate_flag"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "Ascension Island",
@@ -8010,11 +6655,6 @@
         "name": "bangladesh"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "Belgium",
         "unicode": "\ud83c\udde7\ud83c\uddea",
         "name": "belgium"
@@ -8113,11 +6753,6 @@
         "description": "Cocos (Keeling) Islands",
         "unicode": "\ud83c\udde8\ud83c\udde8",
         "name": "cocos_keeling_islands"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "Congo - Kinshasa",
@@ -8220,11 +6855,6 @@
         "name": "diego_garcia"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "Djibouti",
         "unicode": "\ud83c\udde9\ud83c\uddef",
         "name": "djibouti"
@@ -8323,11 +6953,6 @@
         "description": "France",
         "unicode": "\ud83c\uddeb\ud83c\uddf7",
         "name": "france"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "Gabon",
@@ -8430,11 +7055,6 @@
         "name": "hong_kong_sar_china"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "Heard & McDonald Islands",
         "unicode": "\ud83c\udded\ud83c\uddf2",
         "name": "heard_mcdonald_islands"
@@ -8533,11 +7153,6 @@
         "description": "Japan",
         "unicode": "\ud83c\uddef\ud83c\uddf5",
         "name": "japan"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "Kenya",
@@ -8640,11 +7255,6 @@
         "name": "luxembourg"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "Latvia",
         "unicode": "\ud83c\uddf1\ud83c\uddfb",
         "name": "latvia"
@@ -8743,11 +7353,6 @@
         "description": "Mauritius",
         "unicode": "\ud83c\uddf2\ud83c\uddfa",
         "name": "mauritius"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "Maldives",
@@ -8850,11 +7455,6 @@
         "name": "peru"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "French Polynesia",
         "unicode": "\ud83c\uddf5\ud83c\uddeb",
         "name": "french_polynesia"
@@ -8953,11 +7553,6 @@
         "description": "Solomon Islands",
         "unicode": "\ud83c\uddf8\ud83c\udde7",
         "name": "solomon_islands"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "Seychelles",
@@ -9060,11 +7655,6 @@
         "name": "tristan_da_cunha"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "Turks & Caicos Islands",
         "unicode": "\ud83c\uddf9\ud83c\udde8",
         "name": "turks_caicos_islands"
@@ -9165,11 +7755,6 @@
         "name": "united_nations"
     },
     {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
         "description": "United States",
         "unicode": "\ud83c\uddfa\ud83c\uddf8",
         "name": "united_states"
@@ -9258,16 +7843,6 @@
         "description": "Zimbabwe",
         "unicode": "\ud83c\uddff\ud83c\uddfc",
         "name": "zimbabwe"
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
-    },
-    {
-        "description": "",
-        "unicode": "",
-        "name": ""
     },
     {
         "description": "England",

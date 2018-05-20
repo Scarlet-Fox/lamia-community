@@ -226,9 +226,10 @@ $ ->
         parsed_emoji_list = JSON.parse response
         
         $($("#post-editor-#{@quillID}").children(".ql-editor")[0]).atwho
-            at: ":"
+            at: "::"
             displayTpl: """<li data-unicode="${unicode}">${unicode} ${name}</li>"""
             data: parsed_emoji_list
+            limit: 30
             callbacks:
               beforeInsert: (text, li) ->
                 quill.focus()
@@ -241,13 +242,13 @@ $ ->
                 findTextLength = (guessLength, maxLength=50) ->
                   for length in [0..maxLength]
                     _text = quill.getText quill.getSelection(true).index-guessLength-length, guessLength+length
-                    if /:/.test(_text)
+                    if /::/.test(_text)
                       return guessLength+length
                       break
                 
                 quill.deleteText quill.getSelection(true).index - findTextLength(query_text.length), findTextLength(query_text.length)
                 quill.insertText quill.getSelection(true).index, unicode_value
-
+        
       if @readyFunction?
         do @readyFunction
 

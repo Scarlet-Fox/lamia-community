@@ -28,7 +28,6 @@ to_export = []
 
 for row in emoji_rows:
     cells = row.findChildren('td')
-    emoji_exists = True
     emoji_description = ""
     emoji_slug = ""
     emoji_unicode = ""
@@ -37,7 +36,7 @@ for row in emoji_rows:
     for i, cell in enumerate(cells):
         if i == 1:
             unicode_text = cell.string.split(" ")[0].lower().replace("u+", "")
-            # emoji_exists = emoji_exists_in_filesystem(unicode_text)
+            emoji_exists = unicode_text != ""
         
         if i == 2:
             emoji_unicode = cell.string
@@ -46,11 +45,11 @@ for row in emoji_rows:
             emoji_description = cell.string
             emoji_slug = slugify.slugify(cell.string).replace("-", "_")
     
-    if emoji_exists:
+    if emoji_slug.strip() != "":
         to_export.append({
-            "description": emoji_description,
-            "unicode": emoji_unicode,
-            "name": emoji_slug
+            "description": emoji_description.strip(),
+            "unicode": emoji_unicode.strip(),
+            "name": emoji_slug.strip()
             # "file": unicode_text
         })
     
