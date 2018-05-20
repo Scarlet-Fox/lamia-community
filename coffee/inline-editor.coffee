@@ -219,6 +219,34 @@ $ ->
         $.post "/preview", JSON.stringify({text: $("#post-editor-#{@quillID}").children(".ql-editor").html()}), (response) =>
           $("#preview-box-#{@quillID}").html response.preview
           window.addExtraHTML("#preview-box-#{@quillID}")
+          
+      
+          
+      $.get "/static/local/emoji.js", (response) =>
+        parsed_emoji_list = JSON.parse response
+        
+        $($("#post-editor-#{@quillID}").children(".ql-editor")[0]).atwho
+            at: ":"
+            displayTpl: """<li data-unicode="${unicode}">${unicode} ${name}</li>"""
+            data: parsed_emoji_list
+            callbacks:
+              beforeInsert: (text, li) ->
+                quill.focus()
+                
+            functionOverrides:
+              insert: (text, li) ->
+                unicode_value = $(li).data("unicode")
+                query_text = this.query.text
+                
+                findTextLength = (guessLength, maxLength=50) ->
+                  for length in [0..maxLength]
+                    _text = quill.getText quill.getSelection(true).index-guessLength-length, guessLength+length
+                    if /:/.test(_text)
+                      return guessLength+length
+                      break
+                
+                quill.deleteText quill.getSelection(true).index - findTextLength(query_text.length), findTextLength(query_text.length)
+                quill.insertText quill.getSelection(true).index, unicode_value
 
       if @readyFunction?
         do @readyFunction

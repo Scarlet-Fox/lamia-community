@@ -314,6 +314,44 @@
             });
           };
         })(this));
+        $.get("/static/local/emoji.js", (function(_this) {
+          return function(response) {
+            var parsed_emoji_list;
+            parsed_emoji_list = JSON.parse(response);
+            return $($("#post-editor-" + _this.quillID).children(".ql-editor")[0]).atwho({
+              at: ":",
+              displayTpl: "<li data-unicode=\"${unicode}\">${unicode} ${name}</li>",
+              data: parsed_emoji_list,
+              callbacks: {
+                beforeInsert: function(text, li) {
+                  return quill.focus();
+                }
+              },
+              functionOverrides: {
+                insert: function(text, li) {
+                  var findTextLength, query_text, unicode_value;
+                  unicode_value = $(li).data("unicode");
+                  query_text = this.query.text;
+                  findTextLength = function(guessLength, maxLength) {
+                    var _text, j, length, ref;
+                    if (maxLength == null) {
+                      maxLength = 50;
+                    }
+                    for (length = j = 0, ref = maxLength; 0 <= ref ? j <= ref : j >= ref; length = 0 <= ref ? ++j : --j) {
+                      _text = quill.getText(quill.getSelection(true).index - guessLength - length, guessLength + length);
+                      if (/:/.test(_text)) {
+                        return guessLength + length;
+                        break;
+                      }
+                    }
+                  };
+                  quill.deleteText(quill.getSelection(true).index - findTextLength(query_text.length), findTextLength(query_text.length));
+                  return quill.insertText(quill.getSelection(true).index, unicode_value);
+                }
+              }
+            });
+          };
+        })(this));
         if (this.readyFunction != null) {
           return this.readyFunction();
         }

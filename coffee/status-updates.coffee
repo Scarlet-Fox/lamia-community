@@ -38,6 +38,7 @@ $ ->
             $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
           else
             $("#status-replies").append status.replyHTML(data.reply)
+          window.addExtraHTML("#reply-#{data.reply.idx}")
 
       $("#submit-reply").click (e) ->
         e.preventDefault()
@@ -94,6 +95,7 @@ $ ->
           @updateReplyCount data.count
           @updateCount 0
           $("#status-replies").append @replyHTML(data.newest_reply)
+          window.addExtraHTML("#reply-#{data.newest_reply.idx}")
           $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)
 
     flashError: (error) ->
@@ -170,6 +172,7 @@ $ ->
 
         for comment in response.replies
           $("#status-replies").append @replyHTML(comment)
+          window.addExtraHTML("#reply-#{data.reply.idx}")
 
         if scrolldown
           $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight)

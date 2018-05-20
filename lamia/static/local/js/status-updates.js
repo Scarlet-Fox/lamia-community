@@ -35,10 +35,11 @@
             status.updateReplyCount(data.count);
             if (($("#status-replies").scrollTop() + $("#status-replies").innerHeight()) === $("#status-replies")[0].scrollHeight) {
               $("#status-replies").append(status.replyHTML(data.reply));
-              return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
+              $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
             } else {
-              return $("#status-replies").append(status.replyHTML(data.reply));
+              $("#status-replies").append(status.replyHTML(data.reply));
             }
+            return window.addExtraHTML("#reply-" + data.reply.idx);
           }
         });
         $("#submit-reply").click(function(e) {
@@ -107,6 +108,7 @@
               _this.updateReplyCount(data.count);
               _this.updateCount(0);
               $("#status-replies").append(_this.replyHTML(data.newest_reply));
+              window.addExtraHTML("#reply-" + data.newest_reply.idx);
               return $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
             }
           };
@@ -155,6 +157,7 @@
             for (i = 0, len = ref.length; i < len; i++) {
               comment = ref[i];
               $("#status-replies").append(_this.replyHTML(comment));
+              window.addExtraHTML("#reply-" + data.reply.idx);
             }
             if (scrolldown) {
               $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);
