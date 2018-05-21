@@ -220,23 +220,32 @@ $ ->
           $("#preview-box-#{@quillID}").html response.preview
           window.addExtraHTML("#preview-box-#{@quillID}")
       
-      # Opens the list in the top left, repositioning code was never called, this is insane
-      # The code for positioning built into At.js is running before the results arrive, I think - it's a timing issue
-      # I don't even want to fix this bug, lol, let's just... make our own later
-      # $($("#post-editor-#{@quillID}").children(".ql-editor")[0]).atwho
-      #   at: "@"
-      #   displayTpl: "<li> ${name}</li>"
-      #   searchKey: "name"
-      #   limit: 10
-      #   callbacks:
-      #     beforeInsert: (text, li) ->
-      #       quill.focus()
-      #     remoteFilter: (query, callback) ->
-      #       $.get "/user_mentions", {q: query}, (response) ->
-      #         callback(response)
-      #     beforeReposition: (offset) ->
-      #       offset.top += 1000
-      #       console.log quill.getBounds(quill.getSelection(true).index)
+      $.get "/users.json", (response) =>
+        parsed_user_list = response
+        
+        $($("#post-editor-#{@quillID}").children(".ql-editor")[0]).atwho
+            at: "@"
+            displayTpl: """<li data-code="[@${login}]"> ${name}</li>"""
+            data: parsed_user_list 
+            limit: 30
+            callbacks:
+              beforeInsert: (text, li) ->
+                quill.focus()
+                
+            functionOverrides:
+              insert: (text, li) ->
+                code_value = $(li).data("code")
+                query_text = this.query.text
+                
+                findTextLength = (guessLength, maxLength=50) ->
+                  for length in [0..maxLength]
+                    _text = quill.getText quill.getSelection(true).index-guessLength-length, guessLength+length
+                    if /@/.test(_text)
+                      return guessLength+length
+                      break
+                
+                quill.deleteText quill.getSelection(true).index - findTextLength(query_text.length), findTextLength(query_text.length)
+                quill.insertText quill.getSelection(true).index, code_value
       
       $.get "/local_emoticons.json", (response) =>
         parsed_emoji_list = response

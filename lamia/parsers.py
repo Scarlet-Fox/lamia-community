@@ -496,7 +496,7 @@ class ForumPostParser(object):
         mentions = mention_re.findall(html)
         for mention in mentions:
             try:
-                user = sqla.session.query(sqlm.User).filter_by(my_url=mention)[0]
+                user = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
                 html = html.replace("[@%s]" % str(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.my_url, user.display_name), 1)
             except:
                 sqla.session.rollback()
