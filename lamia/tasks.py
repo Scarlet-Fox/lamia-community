@@ -195,7 +195,7 @@ def basic_site_stats_calculator():
 ###############################################################################
 
 @celery.task()
-def users_for_mention_pre_loader(filepath, size):
+def users_for_mention_pre_loader():
     sqla = SQLAlchemy(app)
     print("users_for_mention_pre_loader running")
     
