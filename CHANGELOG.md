@@ -13,6 +13,7 @@ and this project (loosely) adheres to [Semantic Versioning](http://semver.org/sp
 - Re-added the old import scripts for ipb 3.x (they probably don't work, but they're likely a good example)
 - Added emoji support throughout the site (just use a :: or an emoji keyboard)
 - Celery is now used for background tasks (will need documentation on this)
+- Working @ mentions
 
 ### Changed
 - Recent posts now only shows one most recent post per thread
