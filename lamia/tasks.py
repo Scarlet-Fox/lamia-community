@@ -195,6 +195,20 @@ def basic_site_stats_calculator():
 ###############################################################################
 
 @celery.task()
+def users_for_mention_pre_loader(filepath, size):
+    sqla = SQLAlchemy(app)
+    print("users_for_mention_pre_loader running")
+    
+    users = sqla.session.query(sqlm.User).filter_by(banned=False).all()
+    result = [{"name": u.display_name, "login": u.login_name} for u in users]
+    cache.delete("site_users_for_mentions")
+    cache.set("site_users_for_mentions", result, 3600)
+    
+    sqla.session.close()
+    sqla.engine.dispose()
+    log_task(name="users_for_mention_pre_loader", recurring=True, meta="")
+
+@celery.task()
 def verify_attachment(filepath, size):
     filepath = os.path.join(os.getcwd(), "lamia/static/uploads", filepath)
     sizepath = os.path.join(os.getcwd(), "lamia/static/uploads", 
@@ -216,4 +230,5 @@ def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(settings_file["infraction_point_calculator_delay"], infraction_point_calculator.s(), name='infraction_point_calculator')
     sender.add_periodic_task(settings_file["basic_user_stats_calculator_delay"], basic_user_stats_calculator.s(), name='basic_user_stats_calculator')
     sender.add_periodic_task(settings_file["basic_site_stats_calculator_delay"], basic_site_stats_calculator.s(), name='basic_site_stats_calculator_delay')
+    sender.add_periodic_task(600, users_for_mention_pre_loader.s(), name='users_for_mention_pre_loader')
     
