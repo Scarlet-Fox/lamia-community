@@ -4,24 +4,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project (loosely) adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Prerelease 6] - 2018-05-20
 ### Added
-- 
+- Meta description and author as configurables
+- Customizable smilies listing that can be used across the site (just use a : )
+- A working swear filter
+- Profile visitors are counted
+- Re-added the old import scripts for ipb 3.x (they probably don't work, but they're likely a good example)
+- Added emoji support throughout the site (just use a :: or an emoji keyboard)
+- Celery is now used for background tasks (will need documentation on this)
 
 ### Changed
-- 
+- Recent posts now only shows one most recent post per thread
+- Roles can be marked as "displaying inline" for certain users, giving logged in user styling (configurable)
+- The name of the site is now configurable
+- Email addresses can now be used to login
+- Categories can be marked to automatically follow them for all new users
+- Roles can be prioritized
+- Messages left on profiles no longer alert all of a user's followers
 
 ### Deprecated
-- 
-
-### Removed
-- 
+- We are now only compatible with Python 3.x
+- Admin site is now at /staff/
+- Updated all Flask-related and other Python dependencies
 
 ### Fixed
-- 
-
-### Security
-- 
+- Ban page now shows no images if there are no images to show (rather than a broken image)
+- Restored all admin links
+- Changed "says" to "said" for status comments
+- Fixed the "initial setup" script so that it actually works
 
 ## [Prerelease 5] - 2018-05-09
 ### Added
