@@ -38,6 +38,7 @@ if __name__ == "__main__":
     create_setting("core.site-name", "What's the name of this site?", "Your Site Name Here", "text", {}, "Your Site Name Here")
     create_setting("meta.author", "Site author?", "", "text", {}, "")
     create_setting("meta.description", "Site description?", "", "text", {}, "")
+    create_setting("forum.allow-embed", "Allow embedded RSS content?", "no", "toggle", {}, "no")
     create_setting("twitter.twitter-consumer-key", "Twitter Consumer Key", "", "text", {}, "")
     create_setting("twitter.twitter-consumer-secret", "Twitter Consumer Secret", "", "text", {}, "")
     create_setting("twitter.twitter-access-token-key", "Twitter Access Token Key", "", "text", {}, "")

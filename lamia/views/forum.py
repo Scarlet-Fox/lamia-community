@@ -583,7 +583,11 @@ def topic_posts(slug):
 
     author_signatures = {}
     author_signatures_id = {}
-    inline = request_json.get("inline", False)
+    
+    if app.get_site_config("forum.allow-embed") == "yes":
+        inline = request_json.get("inline", False)
+    else:
+        inline = False
     
     for post in posts.items:
         if inline:
@@ -1116,7 +1120,7 @@ def topic_index(slug, render, page, post):
     if topic.category.slug in ["roleplays", "scenarios"]:
         rp_topic = "true"
     
-    if render == "inline":
+    if render == "inline" and app.get_site_config("forum.allow-embed") == "yes":
         return render_template("forum/topic-iframe.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %s" % (str(topic.title), app.get_site_config("core.site-name")), initial_page=page, rp_area=rp_topic)
     else:
         return render_template("forum/topic.jade", more_topics=more_topics, topic=topic, meta_description=meta_description, page_title="%s - %s" % (str(topic.title), app.get_site_config("core.site-name")), initial_page=page, rp_area=rp_topic)

@@ -977,14 +977,14 @@ def forgot_password(render):
         )
         sqla.session.add(form.user)
         sqla.session.commit()
-        if render == "inline":
+        if render == "inline" and app.get_site_config("forum.allow-embed") == "yes":
             return render_template("forgot_password_confirm-iframe.jade", page_title="Forgot Password - %s" % (app.get_site_config("core.site-name"),), profile=form.user, next=form.redirect_to.data)
         else:
             return render_template("forgot_password_confirm.jade", page_title="Forgot Password - %s" % (app.get_site_config("core.site-name"),), profile=form.user)
     else:
         form.redirect_to.data = request.args.get('next', "/")
 
-    if render == "inline":
+    if render == "inline" and app.get_site_config("forum.allow-embed") == "yes":
         return render_template("forgot_password-iframe.jade", page_title="Forgot Password - %s" % (app.get_site_config("core.site-name"),), form=form)
     else:
         return render_template("forgot_password.jade", page_title="Forgot Password - %s" % (app.get_site_config("core.site-name"),), form=form)
@@ -1170,7 +1170,7 @@ def register(render):
     else:
         form.redirect_to.data = request.args.get('next', "/")
 
-    if render == "inline":
+    if render == "inline" and app.get_site_config("forum.allow-embed") == "yes":
         return render_template("register-iframe.jade", page_title="Become One of Us - %s" % (app.get_site_config("core.site-name"),), form=form)
     else:
         return render_template("register.jade", page_title="Become One of Us - %s" % (app.get_site_config("core.site-name"),), form=form)
@@ -1227,7 +1227,7 @@ def sign_in(render):
     
     flavor_text = random.choice(flavor_text)
     
-    if render == "inline":
+    if render == "inline" and app.get_site_config("forum.allow-embed") == "yes":
         return render_template("sign_in-iframe.jade", page_title="Sign In - %s" % (app.get_site_config("core.site-name"),), form=form, flavor_text=flavor_text)
     else:
         return render_template("sign_in.jade", page_title="Sign In - %s" % (app.get_site_config("core.site-name"),), form=form, flavor_text=flavor_text)
