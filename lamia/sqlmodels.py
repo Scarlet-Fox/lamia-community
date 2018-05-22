@@ -1820,6 +1820,8 @@ def get_local_smilies():
         cache.set("site_smilies", smilies)
         return smilies
 
+app.get_local_smilies = get_local_smilies
+
 class SwearFilter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.Text, index=True)
@@ -1840,6 +1842,8 @@ def get_swear_filters():
             
         cache.set("site_swear_words_for_filtering", wordlist, 60)
         return wordlist
+
+app.get_swear_filters = get_swear_filters
 
 ############################################################
 # System/Other Models

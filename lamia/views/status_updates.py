@@ -21,10 +21,12 @@ def status_update_replies(status):
     if status.hidden == True and (current_user.is_admin != True or current_user.is_mod != True):
         return abort(404)
 
+    cleaner = ForumHTMLCleaner()
+    
     replies = []
     for reply in sqla.session.query(sqlm.StatusComment).filter_by(status=status, hidden=False).order_by(sqlm.StatusComment.created):
         parsed_reply = {}
-        parsed_reply["text"] = reply.message
+        parsed_reply["text"] = cleaner.escape(reply.message)
         parsed_reply["user_name"] = reply.author.display_name
         parsed_reply["author_login_name"] = reply.author.my_url
         parsed_reply["user_avatar"] = reply.author.get_avatar_url("60")
@@ -34,7 +36,7 @@ def status_update_replies(status):
         parsed_reply["time"] = humanize_time(reply.created)
         parsed_reply["idx"] = reply.id
         replies.append(parsed_reply)
-
+    
     return app.jsonify(replies=replies, count=status.get_comment_count())
 
 @app.route('/status/<status>', methods=['GET'])
@@ -115,7 +117,9 @@ def status_update_index():
     if authors:
         query_ = query_.filter(sqlm.StatusUpdate.author_id.in_([a["id"] for a in authors]))
     status_updates = parse_search_string(search, sqlm.StatusUpdate, query_, ["message",]).order_by(sqla.desc(sqlm.StatusUpdate.created))[:count]
-
+    
+    cleaner = ForumHTMLCleaner()
+    
     if request.method == 'POST':
         parsed_statuses = []
         for status in status_updates:
@@ -124,7 +128,7 @@ def status_update_index():
             parsed_status["_id"] = status.id
             parsed_status["profile_address"] = url_for('view_profile', login_name=status.author.my_url)
             parsed_status["user_name"] = status.author.display_name
-            parsed_status["message"] = status.message
+            parsed_status["message"] = cleaner.escape(status.message)
             parsed_status["user_avatar"] = status.author.get_avatar_url("60")
             if status.attached_to_user != None:
                 parsed_status["attached_to_user"] = status.attached_to_user.display_name
@@ -181,9 +185,11 @@ def make_status_update_reply(status):
 
     cleaner = ForumHTMLCleaner()
     try:
-        _html = cleaner.escape(request_json.get("reply", ""))
+        cleaner.escape(request_json.get("reply", ""))
     except:
         return abort(500)
+        
+    _html = request_json.get("reply", "").strip()
 
     user_last_comment = False
     for comment in status.comments:
@@ -214,7 +220,7 @@ def make_status_update_reply(status):
 
     clean_html_parser = ForumPostParser()
     parsed_reply = {}
-    parsed_reply["text"] = sc.message
+    parsed_reply["text"] = cleaner.escape(sc.message)
     parsed_reply["user_name"] = sc.author.display_name
     parsed_reply["user_avatar"] = sc.author.get_avatar_url("60")
     parsed_reply["user_avatar_x"] = sc.author.avatar_60_x
@@ -307,10 +313,12 @@ def create_new_status(target):
 
     cleaner = ForumHTMLCleaner()
     try:
-        _html = cleaner.escape(request_json.get("message", "").strip())
+        cleaner.escape(request_json.get("message", "").strip())
     except:
         return abort(500)
-
+    
+    _html = request_json.get("message", "").strip()
+    
     status = sqlm.StatusUpdate()
     if attached_to_user:
         status.attached_to_user = attached_to_user

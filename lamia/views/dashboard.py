@@ -16,7 +16,7 @@ from lamia.utilities import render_lamia_template as render_template
 def send_message(data):
     req = urllib.request.Request(app.settings_file["talker_path"]+"/notify")
     req.add_header('Content-Type', 'application/json')
-    response = urllib.request.urlopen(req, py_json.dumps(data))
+    response = urllib.request.urlopen(req, py_json.dumps(data).encode("utf-8"))
 
 def broadcast(to, category, url, title, description, content, author, priority=0):
     

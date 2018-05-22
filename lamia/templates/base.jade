@@ -16,7 +16,10 @@ head
       meta(name='hue', content='Hello {{current_user.display_name}}. Stare too long at this code, and you will succumb to eldritch influences. You have been warned.')
     link(rel="icon", href="/static/favicon.png", type="image/png", sizes="any")
     link(rel="canonical", href=request.canonical)
-    meta(name='description', content=get_site_config("meta.description"))
+    if meta_description
+      meta(name='description', content=meta_description)
+    else
+      meta(name='description', content=get_site_config("meta.description"))
     meta(http-equiv='content-type', content='text/html; charset=UTF-8')
     meta(http-equiv="content-language", content="en-us")
     meta(charset='utf-8')

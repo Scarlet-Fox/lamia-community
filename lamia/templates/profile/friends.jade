@@ -72,7 +72,7 @@ ul.list-group
               span.discuss 
                 a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
               br
-              p.status-message {{status.message}}
+              p.status-message {{status.message|cleaner}}
               span.status-reply-time 
                 a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
           {% endfor %}

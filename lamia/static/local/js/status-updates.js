@@ -46,6 +46,58 @@
           e.preventDefault();
           return status.addReply();
         });
+        $.get("/static/local/emoji.js", (function(_this) {
+          return function(response) {
+            var parsed_emoji_list;
+            parsed_emoji_list = JSON.parse(response);
+            $("#status-reply").atwho({
+              at: "::",
+              displayTpl: "<li data-unicode=\"${unicode}\">${unicode} ${name}</li>",
+              insertTpl: "${unicode}",
+              data: parsed_emoji_list,
+              limit: 30
+            });
+            return $("#status-new").atwho({
+              at: "::",
+              displayTpl: "<li data-unicode=\"${unicode}\">${unicode} ${name}</li>",
+              insertTpl: "${unicode}",
+              data: parsed_emoji_list,
+              limit: 30
+            });
+          };
+        })(this));
+        $.get("/local_emoticons.json", (function(_this) {
+          return function(response) {
+            var parsed_emoji_list;
+            parsed_emoji_list = response;
+            $("#status-reply").atwho({
+              at: ":",
+              displayTpl: "<li data-code=\":${name}:\"><img src=\"/static/smilies/${filename}\"> ${name}</li>",
+              insertTpl: ":${name}:",
+              data: parsed_emoji_list,
+              limit: 30
+            });
+            return $("#status-new").atwho({
+              at: ":",
+              displayTpl: "<li data-code=\":${name}:\"><img src=\"/static/smilies/${filename}\"> ${name}</li>",
+              insertTpl: ":${name}:",
+              data: parsed_emoji_list,
+              limit: 30
+            });
+          };
+        })(this));
+        $("#status-reply").keypress(function(e) {
+          if (e.keyCode === 13 && !e.shiftKey) {
+            e.preventDefault();
+            return status.addReply();
+          }
+        });
+        $("#status-new").keypress(function(e) {
+          if (e.keyCode === 13 && !e.shiftKey) {
+            e.preventDefault();
+            return $("#new-status").click();
+          }
+        });
         $("#go-down").click(function(e) {
           e.preventDefault();
           return $('#status-replies').scrollTop($('#status-replies')[0].scrollHeight);
@@ -157,7 +209,7 @@
             for (i = 0, len = ref.length; i < len; i++) {
               comment = ref[i];
               $("#status-replies").append(_this.replyHTML(comment));
-              window.addExtraHTML("#reply-" + data.reply.idx);
+              window.addExtraHTML("#reply-" + comment.idx);
             }
             if (scrolldown) {
               $("#status-replies").scrollTop($('#status-replies')[0].scrollHeight);

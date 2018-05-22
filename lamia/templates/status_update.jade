@@ -55,7 +55,7 @@
             if current_user.is_admin
               a.float-right(href="/staff/statusupdate/edit/?id={{status.id}}", target="_blank")
                 span.glyphicon.glyphicon-cog
-            p {{status.message}}
+            p {{status.message|cleaner}}
       else
         li.list-group-item.front-page-status#status(data-id="{{status.id}}", data-author-id="{{status.author_id}}", data-mod="{{mod}}", data-locked="{{status.locked}}")
           .media-left
@@ -72,28 +72,16 @@
             if current_user.is_admin
               a.float-right(href="/staff/statusupdate/edit/?id={{status.id}}", target="_blank")
                 span.glyphicon.glyphicon-cog
-            p {{status.message}}
+            p {{status.message|cleaner}}
       li.list-group-item.status-replies#status-replies
       if current_user.is_authenticated
         li.list-group-item.status-reply-form
           form.form-inline
             .form-group.status-reply-box
-              input.form-control#status-reply(type="text", maxlength="250", autocomplete="off")
+              textarea.form-control#status-reply(type="text", rows="3", style="width: 100%; max-width:100%;", maxlength="250", autocomplete="off")
             .btn-group
               button#submit-reply.btn.btn-default(type="submit") Reply
-              button#show-smileys.btn.btn-default &#9786;
               button#go-down.btn.btn-default.glyphicon.glyphicon-arrow-down(style="top: 0px;")
-            .smileys(style="display: none;")
-              <img src="/static/emotes/angry.png" class="emoticon-listing" data-emotecode=" :anger: ">
-              <img src="/static/emotes/smile.png" class="emoticon-listing" data-emotecode=" :) ">
-              <img src="/static/emotes/sad.png" class="emoticon-listing" data-emotecode=" :( ">
-              <img src="/static/emotes/heart.png" class="emoticon-listing" data-emotecode=" :heart: ">
-              <img src="/static/emotes/oh.png" class="emoticon-listing" data-emotecode=" :surprise: ">
-              <img src="/static/emotes/wink.png" class="emoticon-listing" data-emotecode=" :wink: ">
-              <img src="/static/emotes/cry.png" class="emoticon-listing" data-emotecode=" :cry: ">
-              <img src="/static/emotes/tongue.png" class="emoticon-listing" data-emotecode=" :silly: ">
-              <img src="/static/emotes/embarassed.png" class="emoticon-listing" data-emotecode=" :blushing: ">
-              <img src="/static/emotes/biggrin.png" class="emoticon-listing" data-emotecode=" :lol: ">
             &nbsp;
             span#status-comment-count
           
@@ -120,8 +108,8 @@
       ul.list-group.category
         li.list-group-item.section-header(style="font-size: 14px;") New Status Update
         li.list-group-item
-          form.form-group.status-reply-box
-            input.form-control#status-new(type="text", maxlength="250", autocomplete="off")
+          form.form-group
+            textarea.form-control#status-new(type="text", rows="3", maxlength="250", style="width: 100%; max-width:100%;", autocomplete="off")
             br
             button#new-status.btn.btn-default(type="submit") Create
 

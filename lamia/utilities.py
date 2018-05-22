@@ -293,6 +293,13 @@ class ForumHTMLCleaner(object):
 
     def escape(self, dirty_text):
         text = cgi.escape(dirty_text)
+        
+        text = text.replace("\n", "<br>")
+        
+        smilies = app.get_local_smilies()
+        for smiley in smilies:
+            img_html = """<img src="%s" />""" % (os.path.join("/static/smilies", smiley["filename"]),)
+            text = text.replace(":"+smiley["code"]+":", img_html)
 
         urls = url_rgx.findall(text)
         for url in urls:
@@ -313,6 +320,17 @@ class ForumHTMLCleaner(object):
 
         return html
 
+
+@app.template_filter('cleaner')
+def cleaner(twitter):
+    cleaner = ForumHTMLCleaner()
+    try:
+        _html = cleaner.escape(twitter)
+    except:
+        return ""
+        
+    return _html
+    
 @app.template_filter('twittercleaner')
 def twitter_cleaner(twitter):
     cleaner = ForumHTMLCleaner()
