@@ -9,6 +9,7 @@ and this project (loosely) adheres to [Semantic Versioning](http://semver.org/sp
 ### Added
 - Emoji selector for status updates
 - Emoticon selector for status updates
+- @Mentions for status updates
 
 ### Changed
 - Status update text boxes are now textareas (multiline) (shift+enter for line break)
