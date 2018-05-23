@@ -956,6 +956,22 @@ class User(db.Model):
         else:
             return "/static/avatars/"+str(self.avatar_timestamp)+str(self.id)+size+self.avatar_extension
 
+def login_name_exists(login_name):
+    cached = cache.get("site_"+login_name+"_exists")
+    
+    if cached != None:
+        return cached
+    else:
+        try:
+            user = db.session.query(User).filter_by(login_name=login_name)[0]
+            cache.set("site_"+login_name+"_exists", True, 60*60)
+            return True
+        except IndexError:
+            cache.set("site_"+login_name+"_exists", False, 60*60)
+            return False
+
+app.login_name_exists = login_name_exists
+
 class Signature(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id',

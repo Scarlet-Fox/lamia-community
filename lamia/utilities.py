@@ -17,6 +17,7 @@ from flask import request, make_response
 from urllib.parse import urlencode
 current_app = app
 
+mention_re = re.compile("\[@(.*?)\]")
 url_rgx = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 spec_characters = re.compile('&[a-z0-9]{2,5};')
 twitter_hashtag_re = re.compile(r'(?<=^|(?<=[^a-zA-Z0-9-\.]))#([A-Za-z]+[A-Za-z0-9-]+)')
@@ -295,7 +296,14 @@ class ForumHTMLCleaner(object):
         text = cgi.escape(dirty_text)
         
         text = text.replace("\n", "<br>")
-        
+    
+        mentions = mention_re.findall(status_msg)
+        for mention in mentions:
+            if app.login_name_exists(mention):
+                text = text.replace("[@%s]" % str(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.my_url, user.display_name), 1)
+            else:
+                text = text.replace("[@%s]" % str(mention), "", 1)
+                        
         smilies = app.get_local_smilies()
         for smiley in smilies:
             img_html = """<img src="%s" />""" % (os.path.join("/static/smilies", smiley["filename"]),)

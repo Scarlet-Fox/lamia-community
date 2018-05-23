@@ -1,5 +1,5 @@
 from lamia import app
-from lamia.parsers import ForumPostParser
+from lamia.parsers import ForumPostParser, mention_re
 from flask import abort, redirect, url_for, request, make_response, json, flash, session, send_from_directory
 from flask_login import login_required, current_user
 from lamia.utilities import scrub_json, humanize_time, ForumHTMLCleaner, parse_search_string, get_preview_for_email, get_preview
@@ -8,6 +8,22 @@ from lamia.views.dashboard import broadcast
 from lamia import sqla
 import lamia.sqlmodels as sqlm
 from lamia.utilities import render_lamia_template as render_template
+
+def scan_status_for_mentions(status_id, status_msg, exclude=[], is_reply=False):
+    
+            
+    broadcast(
+        to=send_notify_to_users,
+        category="status",
+        url="/status/"+str(status.id),
+        title="replied to %s's status update" % (
+            str(status.author.display_name),
+            ),
+        description=status.message,
+        content=status,
+        author=current_user
+        )
+    
 
 @app.route('/status/<status>/replies', methods=['GET'])
 def status_update_replies(status):

@@ -495,11 +495,9 @@ class ForumPostParser(object):
         
         mentions = mention_re.findall(html)
         for mention in mentions:
-            try:
-                user = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
+            if app.login_name_exists(mention):
                 html = html.replace("[@%s]" % str(mention), """<a href="/member/%s" class="hover_user">@%s</a>""" % (user.my_url, user.display_name), 1)
-            except:
-                sqla.session.rollback()
+            else:
                 html = html.replace("[@%s]" % str(mention), "", 1)
 
         if not current_user.no_images:
