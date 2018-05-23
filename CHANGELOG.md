@@ -13,6 +13,7 @@ and this project (loosely) adheres to [Semantic Versioning](http://semver.org/sp
 
 ### Changed
 - Status update text boxes are now textareas (multiline) (shift+enter for line break)
+- Caching member lookup for @mentions
 
 ### Deprecated
 - Item
