@@ -124,36 +124,35 @@
               strong
                 a(href="/t/{{announcement.slug}}")= announcement.title
               div= announcement.created|humanize_time("MMM D YYYY")
-    if status_updates
-      ul.list-group
-        li.list-group-item.section-header.sidebar-section-header Newest Status Updates
-        {% for status in status_updates %}
-        li.list-group-item.front-page-status.sidebar-status-section
-          .media-left.subcategory-listing-recent-image
-            a(href="{{url_for('view_profile', login_name=status.author.my_url)}}")
-              img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
-          .media-body
-            a.hover_user(href="{{url_for('view_profile', login_name=status.author.my_url)}}") {{ status.author.display_name }}
-            span &nbsp;said{% if not status.attached_to_user %}:{% endif %}
-              if status.attached_to_user
-                | &nbsp;to 
-                a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.my_url)}}") {{ status.attached_to_user.display_name }}
-                |:
-            span.discuss 
-              a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
-            br
-            p.status-message {{status.message|cleaner}}
-            span.status-reply-time 
-              a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
-        {% endfor %}
-        if current_user.is_authenticated
-          li.list-group-item
-            center
-              p
-              form.form-group.status-reply-box
-                input.form-control#status-new(type="text", maxlength="250")
-                br
-                button#new-status.btn.btn-primary(type="submit") Create a Status Update
+    ul.list-group
+      li.list-group-item.section-header.sidebar-section-header Newest Status Updates
+      {% for status in status_updates %}
+      li.list-group-item.front-page-status.sidebar-status-section
+        .media-left.subcategory-listing-recent-image
+          a(href="{{url_for('view_profile', login_name=status.author.my_url)}}")
+            img.media-object(src="{{ status.author.get_avatar_url("60") }}", width="{{ status.author.avatar_60_x }}", height="{{ status.author.avatar_60_y }}", class="avatar-mini")
+        .media-body
+          a.hover_user(href="{{url_for('view_profile', login_name=status.author.my_url)}}") {{ status.author.display_name }}
+          span &nbsp;said{% if not status.attached_to_user %}:{% endif %}
+            if status.attached_to_user
+              | &nbsp;to 
+              a.hover_user(href="{{url_for('view_profile', login_name=status.attached_to_user.my_url)}}") {{ status.attached_to_user.display_name }}
+              |:
+          span.discuss 
+            a(href="/status/{{status.id}}") Discuss{% if status.get_comment_count() %} ({{status.get_comment_count()}}) {% endif %}
+          br
+          p.status-message {{status.message|cleaner}}
+          span.status-reply-time 
+            a(href="/status/{{status.id}}") {{ status.created|humanize_time }}
+      {% endfor %}
+      if current_user.is_authenticated
+        li.list-group-item
+          center
+            p
+            form.form-group.status-reply-box
+              textarea.form-control#status-new(type="text", maxlength="250")
+              br
+              button#new-status.btn.btn-primary(type="submit") Create a Status Update
 
     if birthday_list
       ul.list-group
@@ -226,6 +225,11 @@
 {% block script %}
 script(type="text/javascript").
   $(document).ready(function(){
-  $('#forum-li').addClass('active');
+    $('#forum-li').addClass('active');
   });
+  
+{% assets filters="rjsmin", output="generated/forum-index.js",
+"local/js/forum-index.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
 {% endblock %}

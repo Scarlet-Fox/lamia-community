@@ -195,7 +195,7 @@ style!= profile.get_custom_css()
               center
                 p
                 form.form-group.status-reply-box
-                  input.form-control#status-new(type="text", maxlength="250")
+                  textarea.form-control#status-new(type="text", maxlength="250")
                   br
                   button#new-status.btn.btn-primary(type="submit", data-target="{{profile.login_name}}") Leave Comment for {{profile.display_name}}
     .row
@@ -297,4 +297,9 @@ script(type="text/javascript").
     window.setupContent()
     {% endif %}
   });
+  
+{% assets filters="rjsmin", output="generated/profile.js",
+"local/js/profile.js" %}
+script(type="text/javascript", src="{{ASSET_URL}}").
+{% endassets %}
 {% endblock %}
