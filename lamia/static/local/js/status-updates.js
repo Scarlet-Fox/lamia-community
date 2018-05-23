@@ -46,6 +46,26 @@
           e.preventDefault();
           return status.addReply();
         });
+        $.get("/users.json", (function(_this) {
+          return function(response) {
+            var parsed_user_list;
+            parsed_user_list = response;
+            $("#status-new").atwho({
+              at: "@",
+              displayTpl: "<li>${name}</li>",
+              insertTpl: "[@${login}]",
+              data: parsed_user_list,
+              limit: 30
+            });
+            return $("#status-reply").atwho({
+              at: "@",
+              displayTpl: "<li>${name}</li>",
+              insertTpl: "[@${login}]",
+              data: parsed_user_list,
+              limit: 30
+            });
+          };
+        })(this));
         $.get("/static/local/emoji.js", (function(_this) {
           return function(response) {
             var parsed_emoji_list;

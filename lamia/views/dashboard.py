@@ -55,11 +55,11 @@ def broadcast(to, category, url, title, description, content, author, priority=0
                 user = sqla.session.query(sqlm.User).filter_by(banned=False).filter_by(login_name=u)[0]
             else:
                 user = u
-            try:
-                if current_user == user:
-                    continue
-            except:
-                pass
+            # try:
+            #     if current_user == user:
+            #         continue
+            # except:
+            #     pass
         except IndexError:
             continue
         

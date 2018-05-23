@@ -43,6 +43,23 @@ $ ->
       $("#submit-reply").click (e) ->
         e.preventDefault()
         do status.addReply
+        
+      $.get "/users.json", (response) =>
+        parsed_user_list = response
+    
+        $("#status-new").atwho
+            at: "@"
+            displayTpl: """<li>${name}</li>"""
+            insertTpl: "[@${login}]"
+            data: parsed_user_list 
+            limit: 30
+    
+        $("#status-reply").atwho
+            at: "@"
+            displayTpl: """<li>${name}</li>"""
+            insertTpl: "[@${login}]"
+            data: parsed_user_list 
+            limit: 30
       
       $.get "/static/local/emoji.js", (response) =>
         parsed_emoji_list = JSON.parse response

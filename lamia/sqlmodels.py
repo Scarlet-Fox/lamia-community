@@ -964,8 +964,8 @@ def login_name_exists(login_name):
     else:
         try:
             user = db.session.query(User).filter_by(login_name=login_name)[0]
-            cache.set("site_"+login_name+"_exists", True, 60*60)
-            return True
+            cache.set("site_"+login_name+"_exists", {"my_url": user.my_url, "display_name": user.display_name}, 60*60)
+            return {"my_url": user.my_url, "display_name": user.display_name}
         except IndexError:
             cache.set("site_"+login_name+"_exists", False, 60*60)
             return False

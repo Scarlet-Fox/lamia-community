@@ -9,21 +9,33 @@ from lamia import sqla
 import lamia.sqlmodels as sqlm
 from lamia.utilities import render_lamia_template as render_template
 
-def scan_status_for_mentions(status_id, status_msg, exclude=[], is_reply=False):
+def scan_status_for_mentions(status, exclude=[], is_reply=False):
+    mentions = mention_re.findall(status.message)
+    to_notify_m = {}
+    for mention in mentions:
+        try:
+            _user = sqla.session.query(sqlm.User).filter_by(login_name=mention)[0]
+            if not _user.id in exclude:
+                to_notify_m[mention] = _user
+        except IndexError:
+            continue
     
-            
+    if not is_reply:
+        notification_msg = "mentioned you in a status update"
+        notification_id = status.id
+    else:
+        notification_msg = "mentioned you in a status update reply"
+        notification_id = status.status.id
+        
     broadcast(
-        to=send_notify_to_users,
-        category="status",
-        url="/status/"+str(status.id),
-        title="replied to %s's status update" % (
-            str(status.author.display_name),
-            ),
+        to=list(to_notify_m.values()),
+        category="mention",
+        url="/status/"+str(notification_id),
+        title=notification_msg,
         description=status.message,
         content=status,
-        author=current_user
+        author=status.author
         )
-    
 
 @app.route('/status/<status>/replies', methods=['GET'])
 def status_update_replies(status):
@@ -245,17 +257,22 @@ def make_status_update_reply(status):
     parsed_reply["time"] = humanize_time(sc.created)
 
     send_notify_to_users = []
+    exclude_from_mention = []
     for user in sqla.session.query(sqlm.StatusUpdateUser).filter_by(status=status).all():
         if user.author == current_user:
+            exclude_from_mention.append(user.author.id)
             continue
 
         if user.ignoring:
+            exclude_from_mention.append(user.author.id)
             continue
 
         if user.author == status.author:
+            exclude_from_mention.append(user.author.id)
             continue
 
         send_notify_to_users.append(user.author)
+        exclude_from_mention.append(user.author.id)
     
     broadcast(
         to=send_notify_to_users,
@@ -295,7 +312,9 @@ def make_status_update_reply(status):
                     description=status.message,
                     content=status,
                     author=current_user
-                    )            
+                    )
+    
+    scan_status_for_mentions(sc, exclude_from_mention, is_reply=True)         
 
     return app.jsonify(newest_reply=parsed_reply, count=status.get_comment_count(), success=True)
 
@@ -328,10 +347,10 @@ def create_new_status(target):
         return app.jsonify(error="Your status update is too long.")
 
     cleaner = ForumHTMLCleaner()
-    try:
-        cleaner.escape(request_json.get("message", "").strip())
-    except:
-        return abort(500)
+    # try:
+    cleaner.escape(request_json.get("message", "").strip())
+    # except:
+    #     return abort(500)
     
     _html = request_json.get("message", "").strip()
     
@@ -348,6 +367,7 @@ def create_new_status(target):
     sqla.session.commit()
 
     if target_user:
+        send_notify_to_users = []
         broadcast(
           to=[target_user,],
           category="profile_comment",
@@ -374,6 +394,12 @@ def create_new_status(target):
           content=status,
           author=status.author
           )
+          
+    exclude_from_mention = [u.id for u in send_notify_to_users]
+    if target_user:
+        exclude_from_mention.append(target_user.id)
+          
+    scan_status_for_mentions(status, exclude_from_mention, is_reply=False)
 
     return app.jsonify(url="/status/"+str(status.id))
 
