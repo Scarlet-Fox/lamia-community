@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project (loosely) adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased] - 2018-05-22 [LAST UPDATE]
+### Added
+- Emoji selector for status updates
+- Emoticon selector for status updates
+
+### Changed
+- Status update text boxes are now textareas (multiline) (shift+enter for line break)
+
+### Deprecated
+- Item
+
+### Removed
+- Item
+
+### Fixed
+- Item
+
+### Security
+- Item
+
 ## [Prerelease 6] - 2018-05-20
 ### Added
 - Meta description and author as configurables
