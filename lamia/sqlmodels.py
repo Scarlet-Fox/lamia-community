@@ -772,10 +772,7 @@ class User(db.Model):
 
     def set_password(self, password, rounds=12):
         self.legacy_password = None
-        try:
-            self.password_hash = bcrypt.generate_password_hash(password.strip().encode('utf-8'),rounds).encode('utf-8')
-        except AttributeError:
-            self.password_hash = bcrypt.generate_password_hash(password.strip(),rounds)
+        self.password_hash = bcrypt.generate_password_hash(password.strip(),rounds).decode('utf-8')
 
     def check_password(self, password):
         if "vb3~" in str(self.password_hash):
