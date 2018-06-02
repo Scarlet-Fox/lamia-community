@@ -36,6 +36,7 @@ if __name__ == "__main__":
     create_setting("core.lock-site", "Lock Site? (Under construction page.)", "no", "toggle", {}, "no")
     create_setting("core.swear-filter-default", "Swear filter on by default?", "no", "toggle", {}, "no")
     create_setting("core.site-name", "What's the name of this site?", "Your Site Name Here", "text", {}, "Your Site Name Here")
+    create_setting("core.site-email", "What's this site's email address?", "", "text", {}, "")
     create_setting("meta.author", "Site author?", "", "text", {}, "")
     create_setting("meta.description", "Site description?", "", "text", {}, "")
     create_setting("forum.allow-embed", "Allow embedded RSS content?", "no", "toggle", {}, "no")

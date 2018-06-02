@@ -6,6 +6,7 @@
 	"talker_path": "http://localhost:3001/talker",
 	"listener": "http://localhost:3000",
 	"mailgun_api": "N/A",
+	"mailgun_url": "N/A",
 	"listener_path": "/",
 	"alchemy_uri": "postgresql://username:password@localhost/database_name",
 	"twitter_consumer_key": "",

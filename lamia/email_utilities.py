@@ -12,6 +12,7 @@ from sqlalchemy.orm.attributes import flag_modified
 _mylookup = TemplateLookup(directories=[app.config['MAKO_EMAIL_TEMPLATE_DIR']])
 _debug = app.config['DEBUG']
 _api = app.config['MGAPI']
+_mgurl = app.config['MGURL']
 _base_url = app.config['BASE']
 
 def send_notification_emails():
@@ -190,9 +191,9 @@ def send_notification_emails():
                 
             if not app.settings_file.get("lockout_on", False):
                 result = requests.post(
-                    "https://api.mailgun.net/v3/casualanime.com/messages",
+                    _mgurl,
                     auth=("api", _api),
-                    data={"from": "%s <help@casualanime.com>" % (app.get_site_config("core.site-name"),),
+                    data={"from": "%s <%s>" % (app.get_site_config("core.site-name"), app.get_site_config("core.site-email")),
                           "to": _to_email_address,
                           "subject": subject,
                           "text": _rendered})
@@ -224,9 +225,9 @@ def send_mail_w_template(send_to, subject, template, variables):
 
     if not app.settings_file.get("lockout_on", False):
         response = requests.post(
-            "https://api.mailgun.net/v3/casualanime.com/messages",
+            _mgurl,
             auth=("api", _api),
-            data={"from": "%s <help@casualanime.com>" % (app.get_site_config("core.site-name"),),
+            data={"from": "%s <%s>" % (app.get_site_config("core.site-name"), app.get_site_config("core.site-email")),
                   "to": _to_email_addresses,
                   "subject": subject,
                   "text": _template.render(**variables)})
@@ -259,9 +260,9 @@ def send_announcement_emails():
             if not user.emails_muted:
                 if not app.settings_file.get("lockout_on", False):
                     result = requests.post(
-                        "https://api.mailgun.net/v3/casualanime.com/messages",
+                        _mgurl,
                         auth=("api", _api),
-                        data={"from": "%s <help@casualanime.com>" % (app.get_site_config("core.site-name"),),
+                        data={"from": "%s <%s>" % (app.get_site_config("core.site-name"), app.get_site_config("core.site-email")),
                               "to": user.email_address,
                               "subject": announcement.subject,
                               "text": _rendered})

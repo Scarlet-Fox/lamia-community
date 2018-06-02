@@ -520,7 +520,7 @@ class ConfigurationView(ModelView):
     edit_modal = True
     can_create = False
     column_list = ["hierarchy","key","value","default"]
-    form_excluded_columns = ["hierarchy","key","meta","option_type","default"]
+    form_excluded_columns = ["hierarchy","key","local_meta","option_type","default"]
     column_default_sort = ('hierarchy', False)
     
     extra_css = ["/static/assets/datatables/dataTables.bootstrap.css",
@@ -762,7 +762,21 @@ class TaskLogView(ModelView):
     
     def is_accessible(self):
         return current_user.is_admin
-
+        
+class EmailLogView(ModelView):
+    column_default_sort = ('sent', True)
+    can_delete = False
+    can_create = False
+    can_edit = False
+    can_view_details = True
+    
+    column_formatters = {
+        'created': _fancy_time_formatter,
+    }
+    
+    def is_accessible(self):
+        return current_user.is_admin
+        
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
     admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
@@ -773,6 +787,7 @@ with warnings.catch_warnings():
     admin.add_view(ThemeView(sqlm.SiteTheme, sqla.session, name='Theme Manager', category="Site", endpoint='site-themes'))
     admin.add_view(RSSView(sqlm.RSSScraper, sqla.session, name='RSS Feed Reader', category="Site", endpoint='feed-reader'))
     admin.add_view(TaskLogView(sqlm.TaskLog, sqla.session, name='Task Log', category="Site", endpoint='task-log'))
+    admin.add_view(EmailLogView(sqlm.EmailLog, sqla.session, name='Email Log', category="Site", endpoint='email-log'))
 
 ###################################################################################################
 # Administrative views : Forum-specific options, settings, and config
