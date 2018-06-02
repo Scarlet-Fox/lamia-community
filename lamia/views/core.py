@@ -962,7 +962,7 @@ def forgot_password(render):
 
     form = ForgotPasswordForm(csrf_enabled=False)
     if form.validate_on_submit():
-        time = str(arrow.utcnow().timestamp)+"THIS IS A POINTLESS BIT OF TEXT LOL"
+        time = bytes(str(arrow.utcnow().timestamp)+"THIS IS A POINTLESS BIT OF TEXT LOL") # ???
         token = bcrypt.generate_password_hash(time,10).replace("/","_")
         form.user.password_forgot_token = token
         form.user.password_forgot_token_date = arrow.utcnow().datetime.replace(tzinfo=None)
@@ -1125,7 +1125,7 @@ def register(render):
             sqla.session.rollback()
             manual_validation = False
             
-        time = str(arrow.utcnow().timestamp)+"THIS IS ANOTHER POINTLESS BIT OF TEXT LOL"
+        time = bytes(str(arrow.utcnow().timestamp)+"THIS IS ANOTHER POINTLESS BIT OF TEXT LOL") # why???
         token = bcrypt.generate_password_hash(time,10).replace("/","_")
         new_user.new_user_token = token
         new_user.new_user_token_date = arrow.utcnow().datetime.replace(tzinfo=None)
