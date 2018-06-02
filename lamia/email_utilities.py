@@ -213,7 +213,7 @@ def send_mail_w_template(send_to, subject, template, variables):
     _to_email_addresses = []
     for user in send_to:
         if _debug:
-            if not user.is_admin and not user.is_allowed_during_construction:
+            if not user.is_admin:
                 continue
             else:
                 _to_email_addresses.append(user.email_address)
