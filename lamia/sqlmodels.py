@@ -785,7 +785,7 @@ class User(db.Model):
             _hashed = _bcrypt.hashpw(_bcrypt.hashpw(password.encode('utf-8'), _salt),_salt)
             return _salt == _hashed.encode('utf-8')
         else:
-            return bcrypt.check_password_hash(self.password_hash.encode('utf-8'), password.strip().encode('utf-8'))
+            return bcrypt.check_password_hash(self.password_hash, password.strip())
             
         # if self.legacy_password:
         #     if ipb_password_check(self.ipb_salt, self.ipb_hash, password):
