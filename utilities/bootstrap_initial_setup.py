@@ -10,7 +10,7 @@ import os.path, sys
 
 if __name__ == "__main__":
     if os.path.exists("setup.txt"):
-        print "Setup is already completed (remove setup.txt to force a database reset)."
+        print("Setup is already completed (remove setup.txt to force a database reset).")
         sys.exit()
         
     configure_mappers()
@@ -45,28 +45,28 @@ if __name__ == "__main__":
     create_setting("twitter.twitter-access-token-key", "Twitter Access Token Key", "", "text", {}, "")
     create_setting("twitter.twitter-access-token-secret", "Twitter Access Token Secret", "", "text", {}, "")
     
-    print
-    print "Set a username for the first user (your admin/site owner account)"
+    print()
+    print("Set a username for the first user (your admin/site owner account)")
     username = raw_input()
     password = ""
     
-    print
-    print "Set an email address for the first user (your admin/site owner account)"
+    print()
+    print("Set an email address for the first user (your admin/site owner account)")
     email = raw_input()
     
     def get_password():
-        print
-        print "Enter a password for this account"
+        print()
+        print("Enter a password for this account")
         password = getpass()
         
-        print
-        print "Confirm your password?"
+        print()
+        print("Confirm your password?")
         password_confirm = getpass()
         
         if password != password_confirm:
-            print
-            print "Error: password did not match confirmation."
-            print
+            print()
+            print("Error: password did not match confirmation.")
+            print()
             return get_password()
         
         return password
