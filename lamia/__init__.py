@@ -84,7 +84,7 @@ class LamiaRedisCache(RedisCache):
         else:
             return default
 
-cache = LamiaRedisCache()
+cache = LamiaRedisCache(key_prefix=settings_file.get("redis_key_prefix", None))
 
 app.config['SESSION_TYPE'] = 'sqlalchemy'
 app.config['SESSION_SQLALCHEMY'] = sqla

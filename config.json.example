@@ -15,7 +15,8 @@
 	"twitter_access_token_secret": "",
   "celery_result_backend": "redis://localhost:6379",
   "celery_broker_url": "redis://localhost:6379",
-  "rss_feed_update_delay": 10
+  "rss_feed_update_delay": 10,
+  "redis_key_prefix": "lamia_"
 }
 
 DELETE THIS LINE - also, substitute with real values as needed

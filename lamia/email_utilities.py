@@ -191,7 +191,7 @@ def send_notification_emails():
                 
             if not app.settings_file.get("lockout_on", False):
                 result = requests.post(
-                    _mgurl,
+                    _mgurl+"/messages",
                     auth=("api", _api),
                     data={"from": "%s <%s>" % (app.get_site_config("core.site-name"), app.get_site_config("core.site-email")),
                           "to": _to_email_address,
@@ -225,7 +225,7 @@ def send_mail_w_template(send_to, subject, template, variables):
 
     if not app.settings_file.get("lockout_on", False):
         response = requests.post(
-            _mgurl,
+            _mgurl+"/messages",
             auth=("api", _api),
             data={"from": "%s <%s>" % (app.get_site_config("core.site-name"), app.get_site_config("core.site-email")),
                   "to": _to_email_addresses,
@@ -260,7 +260,7 @@ def send_announcement_emails():
             if not user.emails_muted:
                 if not app.settings_file.get("lockout_on", False):
                     result = requests.post(
-                        _mgurl,
+                        _mgurl+"/messages",
                         auth=("api", _api),
                         data={"from": "%s <%s>" % (app.get_site_config("core.site-name"), app.get_site_config("core.site-email")),
                               "to": user.email_address,
