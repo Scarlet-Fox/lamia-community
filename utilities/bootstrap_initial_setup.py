@@ -48,12 +48,12 @@ if __name__ == "__main__":
     
     print()
     print("Set a username for the first user (your admin/site owner account)")
-    username = raw_input()
+    username = input()
     password = ""
     
     print()
     print("Set an email address for the first user (your admin/site owner account)")
-    email = raw_input()
+    email = input()
     
     def get_password():
         print()
