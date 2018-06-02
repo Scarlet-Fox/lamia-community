@@ -143,7 +143,7 @@ class LoginForm(Form):
             if not user:
                 raise validators.ValidationError("Invalid username or password.")
 
-        if not user.check_password(field.data.strip()):
+        if not user.check_password(field.data.strip().encode('utf-8')):
             raise validators.ValidationError("Invalid username or password.")
 
         self.user = user
