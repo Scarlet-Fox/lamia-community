@@ -2,7 +2,7 @@
 
 {% block content %}
 .row
-  .col-lg-6.col-md-6.col-sm-12
+  .col-sm-12
     ul.list-group.category
       li.list-group-item.section-header Sign In
       li.list-group-item
@@ -24,19 +24,7 @@
           button(type="submit").btn.btn-default Submit
           &nbsp;&nbsp;&nbsp;
           a(href="/forgot-password") Forgot Your Password?
-          br
-  .col-lg-6.col-md-6.col-sm-12
-    ul.list-group.category
-      li.list-group-item.section-header Welcome Back!
-      li.list-group-item
-        center
-          h2 <strong style="color: purple;">Hi, welcome back!</strong>
-        br
-        for text in flavor_text
-          p= text
-        p I'm just kidding! But, it really is nice that you're here. If you're not a member yet, then <a href="/register">click here to visit the registration page</a> to read about the site and sign up.
-        p By the way, you can select "anonymous login" to hide yourself from the active member list. (It's helpful if you're shy.)
-        
+          br        
 {% endblock %}
 
 {% block script %}
