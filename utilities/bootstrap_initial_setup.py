@@ -9,6 +9,22 @@ import arrow
 from sqlalchemy.orm.mapper import configure_mappers
 from slugify import slugify
 
+def create_setting(hierarchy, key, default_value, option_type, local_meta, default):
+    try:
+        _setting = sqlm.SiteConfiguration(
+                hierarchy=hierarchy,
+                key=key,
+                value=default_value,
+                option_type=option_type,
+                local_meta=local_meta,
+                default=default
+            )
+
+        sqla.session.add(_setting)
+        sqla.session.commit()
+    except:
+        sqla.session.rollback()
+
 if __name__ == "__main__":
     if os.path.exists("setup.txt"):
         print("Setup is already completed (remove setup.txt to force a database reset).")
@@ -17,27 +33,12 @@ if __name__ == "__main__":
     configure_mappers()
     sqla.create_all()
 
-    def create_setting(hierarchy, key, default_value, option_type, local_meta, default):
-        try:
-            _setting = sqlm.SiteConfiguration(
-                    hierarchy=hierarchy,
-                    key=key,
-                    value=default_value,
-                    option_type=option_type,
-                    local_meta=local_meta,
-                    default=default
-                )
-
-            sqla.session.add(_setting)
-            sqla.session.commit()
-        except:
-            sqla.session.rollback()
-
     create_setting("core.manual-validation-active", "Manual Validation is Active?", "no", "toggle", {}, "no")
     create_setting("core.lock-site", "Lock Site? (Under construction page.)", "no", "toggle", {}, "no")
     create_setting("core.swear-filter-default", "Swear filter on by default?", "no", "toggle", {}, "no")
     create_setting("core.site-name", "What's the name of this site?", "Your Site Name Here", "text", {}, "Your Site Name Here")
     create_setting("core.site-email", "What's this site's email address?", "", "text", {}, "")
+    create_setting("core.site-email-name", "Who (or what) is sending your emails?", "", "text", {}, "")
     create_setting("meta.author", "Site author?", "", "text", {}, "")
     create_setting("meta.description", "Site description?", "", "text", {}, "")
     create_setting("forum.allow-embed", "Allow embedded RSS content?", "no", "toggle", {}, "no")

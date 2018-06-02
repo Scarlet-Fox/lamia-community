@@ -193,7 +193,7 @@ def send_notification_emails():
                 result = requests.post(
                     _mgurl+"/messages",
                     auth=("api", _api),
-                    data={"from": "%s <%s>" % (app.get_site_config("core.site-name"), app.get_site_config("core.site-email")),
+                    data={"from": "%s <%s>" % (app.get_site_config("core.site-email-name"), app.get_site_config("core.site-email")),
                           "to": _to_email_address,
                           "subject": subject,
                           "text": _rendered})
@@ -227,7 +227,7 @@ def send_mail_w_template(send_to, subject, template, variables):
         response = requests.post(
             _mgurl+"/messages",
             auth=("api", _api),
-            data={"from": "%s <%s>" % (app.get_site_config("core.site-name"), app.get_site_config("core.site-email")),
+            data={"from": "%s <%s>" % (app.get_site_config("core.site-email-name"), app.get_site_config("core.site-email")),
                   "to": _to_email_addresses,
                   "subject": subject,
                   "text": _template.render(**variables)})
@@ -262,7 +262,7 @@ def send_announcement_emails():
                     result = requests.post(
                         _mgurl+"/messages",
                         auth=("api", _api),
-                        data={"from": "%s <%s>" % (app.get_site_config("core.site-name"), app.get_site_config("core.site-email")),
+                        data={"from": "%s <%s>" % (app.get_site_config("core.site-email-name"), app.get_site_config("core.site-email")),
                               "to": user.email_address,
                               "subject": announcement.subject,
                               "text": _rendered})
