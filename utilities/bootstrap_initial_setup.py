@@ -1,3 +1,5 @@
+import os.path, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from lamia import sqla
 import lamia.sqlmodels as sqlm
 from getpass import getpass
@@ -6,7 +8,6 @@ import random
 import arrow
 from sqlalchemy.orm.mapper import configure_mappers
 from slugify import slugify
-import os.path, sys
 
 if __name__ == "__main__":
     if os.path.exists("setup.txt"):
