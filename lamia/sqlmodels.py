@@ -778,9 +778,9 @@ class User(db.Model):
             self.password_hash = bcrypt.generate_password_hash(password.strip(),rounds)
 
     def check_password(self, password):
-        if "vb3~" in self.password_hash:
+        if "vb3~" in str(self.password_hash):
             return False # Fix this later
-        elif "bb4~" in self.password_hash:
+        elif "bb4~" in str(self.password_hash):
             _salt = self.password_hash.replace("bb4~","").encode('utf-8')
             _hashed = _bcrypt.hashpw(_bcrypt.hashpw(password.encode('utf-8'), _salt),_salt)
             return _salt == _hashed.encode('utf-8')
