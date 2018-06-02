@@ -1410,3 +1410,7 @@ li.list-group-item.subcategory.category-subcategories > div > div.row > .col-xs-
 .role-legend {
   font-size: 85%;
 }
+
+.form-control {
+ height:auto;   
+}
