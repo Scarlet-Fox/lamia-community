@@ -7,7 +7,7 @@
       li.list-group-item.section-header 
       li.list-group-item
         center
-          h1 <strong style="color: purple;">Welcome to GENERIC SITENAME, {{profile.display_name}}!</strong>
+          h1 <strong style="color: purple;">Welcome to {{get_site_config("core.site-name")}}, {{profile.display_name}}!</strong>
           h3 <strong style="color: purple;">Check your email to confirm your new membership...</strong>
           br
           h4 <strong>It should arrive shortly! Check your spam or email us at {{get_site_config("core.site-email")}} if it doesn't appear.</strong>
