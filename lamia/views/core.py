@@ -223,27 +223,6 @@ def inject_theme_coffee_templates():
     
     return dict(theme_coffee_templates=my_coffee_template_overrides)
 
-@app.before_request
-def log_request():
-    if not request.path.startswith("staff/") and not request.path.startswith("/static/"):
-        l = sqlm.SiteLog()
-        l.method = request.method
-        l.path = request.path
-        l.ip_address = request.remote_addr
-        l.agent_platform = request.user_agent.platform
-        l.agent_browser = request.user_agent.browser
-        l.agent_browser_version = request.user_agent.version
-        l.agent = request.user_agent.string
-        l.time = arrow.utcnow().datetime.replace(tzinfo=None)
-
-        try:
-            if current_user.is_authenticated:
-                l.user = current_user
-            sqla.session.add(l)
-            sqla.session.commit()
-        except:
-            sqla.session.rollback()
-
 @app.route('/get-user-info-api', methods=['POST',])
 def get_user_info_api():
     request_json = request.get_json(force=True)
