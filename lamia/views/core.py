@@ -1342,6 +1342,14 @@ def get_site_emoticons():
         )
     
     return response
+
+@app.route('/rules')
+def rules():
+    return render_template("rules.jade", page_title="Rules - %s" % (app.get_site_config("core.site-name"),) )
+
+@app.route('/privacy')
+def privacy():
+    return render_template("privacy.jade", page_title="Privacy Policy - %s" % (app.get_site_config("core.site-name"),) )
     
 @app.route('/member-list-api', methods=["GET",])
 @login_required
