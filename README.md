@@ -43,3 +43,7 @@ Most of our current tasks are in the issue tracker, but some additional targets 
 
 * Develop a full suite of tests. We're rather ashamed of the current lack of coverage. This will be fixed.
 * Adding multi lingual support. This was never on the radar while Lamia was just the engine for a fan site. Now that we are working on making it more generalized, language file support is on our wish list.
+
+## Credits and Acknowledgements 
+
+<a href="https://freesound.org/people/FoolBoyMedia/sounds/234524/">FoolBoyMedia</a> for the notification sound. 
