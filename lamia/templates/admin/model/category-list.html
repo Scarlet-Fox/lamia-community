@@ -223,7 +223,7 @@
             element.children("i").addClass("fas").addClass("fa-eye");
             element.css("color", "green");
           }
-          $.post("/admin/categories/toggle-view/"+_db_id, JSON.stringify({}), function(response) {});
+          $.post("/staff/categories/toggle-view/"+_db_id, JSON.stringify({}), function(response) {});
           e.preventDefault(); 
         })
         
@@ -239,7 +239,7 @@
             element.children("i").addClass("fas").addClass("fa-unlock-alt");
             element.css("color", "green");
           }
-          $.post("/admin/categories/toggle-topics/"+_db_id, JSON.stringify({}), function(response) {});
+          $.post("/staff/categories/toggle-topics/"+_db_id, JSON.stringify({}), function(response) {});
           e.preventDefault(); 
         })
         
@@ -255,13 +255,13 @@
             element.children("i").addClass("fas").addClass("fa-comments");
             element.css("color", "green");
           }
-          $.post("/admin/categories/toggle-posts/"+_db_id, JSON.stringify({}), function(response) {});
+          $.post("/staff/categories/toggle-posts/"+_db_id, JSON.stringify({}), function(response) {});
           e.preventDefault(); 
         })
         
         $('.dd').nestable({ 
           callback: function(l,e){
-            $.post("/admin/categories/reorder", JSON.stringify($('.dd').nestable('serialize')), function(response) {
+            $.post("/staff/categories/reorder", JSON.stringify($('.dd').nestable('serialize')), function(response) {
               
             });
           },

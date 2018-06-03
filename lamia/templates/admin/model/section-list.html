@@ -164,7 +164,7 @@
         
         $('.dd').nestable({ 
           callback: function(l,e){
-            $.post("/admin/sections/reorder", JSON.stringify($('.dd').nestable('serialize')), function(response) {
+            $.post("/staff/sections/reorder", JSON.stringify($('.dd').nestable('serialize')), function(response) {
               
             });
           },
