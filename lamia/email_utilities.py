@@ -225,7 +225,7 @@ def send_mail_w_template(send_to, subject, template, variables):
                 _to_email_addresses.append(user.email_address)
         else:
             _to_email_addresses.append(user.email_address)
-    _template = _mylookup.get_template(template)
+    _template = get_email_template(template)
 
     _rendered = _template.render(**variables)
 
