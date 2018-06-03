@@ -298,7 +298,7 @@ def render_attachment_bbcode(tag_name, value, options, parent, context):
     try:
         _attachment_wrap = _options[2]
     except:
-        _attachment_wrap = "wrap"
+        _attachment_wrap = ""
         
     try:
         attachment = sqla.session.query(sqlm.Attachment).filter_by(id=_attachment_id)[0]
