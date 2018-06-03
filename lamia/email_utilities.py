@@ -9,11 +9,17 @@ from bs4 import BeautifulSoup
 from lamia.utilities import get_preview_for_email
 from sqlalchemy.orm.attributes import flag_modified
 
-_mylookup = TemplateLookup(directories=[app.config['MAKO_EMAIL_TEMPLATE_DIR']])
 _debug = app.config['DEBUG']
 _api = app.config['MGAPI']
 _mgurl = app.config['MGURL']
 _base_url = app.config['BASE']
+
+def get_email_template(name):
+    try:
+        db_template = sqlm.EmailTemplate.query.filter_by(name=name)[0]
+        return db_template.template
+    except IndexError:
+        return False
 
 def send_notification_emails():
     __banned_users_to_check = sqla.session.query(sqlm.User).filter_by(banned=True).all()
@@ -157,7 +163,7 @@ def send_notification_emails():
             if len(_list) == 0 and len(_details) == 0 and len(_summaries) == 0:
                 continue
 
-            _template = _mylookup.get_template("notification.txt")
+            _template = get_email_template("notification")
             _rendered = _template.render(
                 _user = u,
                 _base = _base_url,
@@ -248,7 +254,7 @@ def send_mail_w_template(send_to, subject, template, variables):
 def send_announcement_emails():
     for announcement in sqla.session.query(sqlm.Announcement).filter_by(draft=False).all():
         for user in sqla.session.query(sqlm.User).filter_by(banned=False, validated=True).all():
-            _template = _mylookup.get_template("announcement.txt")
+            _template = get_email_template("announcement")
             _rendered = _template.render(
                 message = announcement.body,
                 _user = user,

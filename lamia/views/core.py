@@ -968,7 +968,7 @@ def forgot_password(render):
         form.user.password_forgot_token_date = arrow.utcnow().datetime.replace(tzinfo=None)
         send_mail_w_template(
             send_to=[form.user,],
-            template="password_reset.txt",
+            template="password_reset",
             subject="Password Reset Email - %s" % (app.get_site_config("core.site-name"),),
             variables={
                 "display_name": str(form.user.display_name),
@@ -1135,7 +1135,7 @@ def register(render):
         if not manual_validation:
             send_mail_w_template(
                 send_to=[new_user,],
-                template="welcome.txt",
+                template="welcome",
                 subject="Welcome to %s!" % (app.get_site_config("core.site-name"),),
                 variables={
                     "_user": new_user,

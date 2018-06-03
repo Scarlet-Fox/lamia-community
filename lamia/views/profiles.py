@@ -208,7 +208,7 @@ def validate_user(login_name):
 
     send_mail_w_template(
         send_to=[user,],
-        template="manual_validation_welcome.txt",
+        template="manual_validation_welcome",
         subject="Welcome to %s!" % (app.get_site_config("core.site-name"),),
         variables={
             "_user": user,
