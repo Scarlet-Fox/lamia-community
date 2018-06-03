@@ -14,13 +14,18 @@ _api = app.config['MGAPI']
 _mgurl = app.config['MGURL']
 _base_url = app.config['BASE']
 
-def get_email_template(name):
+def get_template_lookup():
     try:
-        db_template = sqlm.EmailTemplate.query.filter_by(name=name)[0]
-        return db_template.template
+        db_template = sqlm.EmailTemplate.query.all()
+        _lookup = TemplateLookup()
+        
+        for template in db_template:
+            _lookup.put_string(template.name, template.template)
+        
+        return _lookup
     except IndexError:
         return False
-
+        
 def send_notification_emails():
     __banned_users_to_check = sqla.session.query(sqlm.User).filter_by(banned=True).all()
     for _u in __banned_users_to_check:
@@ -163,7 +168,7 @@ def send_notification_emails():
             if len(_list) == 0 and len(_details) == 0 and len(_summaries) == 0:
                 continue
 
-            _template = get_email_template("notification")
+            _template = get_template_lookup().get_template("notification")
             _rendered = _template.render(
                 _user = u,
                 _base = _base_url,
@@ -225,7 +230,7 @@ def send_mail_w_template(send_to, subject, template, variables):
                 _to_email_addresses.append(user.email_address)
         else:
             _to_email_addresses.append(user.email_address)
-    _template = get_email_template(template)
+    _template = get_template_lookup().get_template(template)
 
     _rendered = _template.render(**variables)
 
@@ -254,7 +259,7 @@ def send_mail_w_template(send_to, subject, template, variables):
 def send_announcement_emails():
     for announcement in sqla.session.query(sqlm.Announcement).filter_by(draft=False).all():
         for user in sqla.session.query(sqlm.User).filter_by(banned=False, validated=True).all():
-            _template = get_email_template("announcement")
+            _template = get_template_lookup().get_template("announcement")
             _rendered = _template.render(
                 message = announcement.body,
                 _user = user,
