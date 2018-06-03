@@ -9,6 +9,7 @@ Lamia Community is a platform, built using Flask.py, for those looking for an in
 * PostgreSQL
 * Python 3.x
 * Redis
+* Mailgun (for now)
 * Nginx (optional, but strongly recommended)
 
 ## What is Lamia Community?
