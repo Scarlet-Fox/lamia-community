@@ -1135,7 +1135,7 @@ def register(render):
         if not manual_validation:
             send_mail_w_template(
                 send_to=[new_user,],
-                template="welcome_to_moe.txt",
+                template="welcome.txt",
                 subject="Welcome to %s!" % (app.get_site_config("core.site-name"),),
                 variables={
                     "_user": new_user,

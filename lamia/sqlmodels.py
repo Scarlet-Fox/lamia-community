@@ -392,6 +392,11 @@ class EmailLog(db.Model):
     body = db.Column(db.Text, index=True)
     result = db.Column(db.Text)
 
+class EmailTemplate(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, index=True)
+    template = db.Column(db.Text)
+
 # class Notice(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
 #     subject = db.Column(db.Text, index=True)

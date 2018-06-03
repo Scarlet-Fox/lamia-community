@@ -1,5 +1,0 @@
-Hello ${_user.display_name},
-
-${message}
-
-To unsubscribe from all future messages from Casual Anime, go to this page - ${_base}/member/${_user.id}/${_user.email_address}/unsubscribe
