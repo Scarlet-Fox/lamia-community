@@ -1,6 +1,6 @@
 Hello ${_user.display_name},
 
-You have notifications at casualanime.com!
+You have unread notifications,
 
 % for category in _summaries:
     % if _summaries_k[category] == 1:
@@ -47,4 +47,4 @@ ${_notification_names[category][0].capitalize()} Notification(s)
 -------------------
 To change your notification preferences, go to the settings area on your profile page - ${_base}/member/${_user.get_url_safe_login_name()}/change-settings
 
-To unsubscribe from all future messages from Casual Anime, go to this page - ${_base}/member/${_user.id}/${_user.email_address}/unsubscribe
+To unsubscribe from all future messages from our community, go to this page - ${_base}/member/${_user.id}/${_user.email_address}/unsubscribe
