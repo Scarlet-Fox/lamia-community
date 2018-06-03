@@ -1,6 +1,6 @@
 Hello ${_user.display_name},
 
-Welcome to Casual Anime! It is great to have you as a member of our community!
+Welcome! It is great to have you as a member of our community!
 
 Please click the following link to confirm your shiny new member account:
 
@@ -9,4 +9,4 @@ ${address}
 We look forward to seeing you around. :)
 
 Take care!
-- Casual Anime
+- The Administration
