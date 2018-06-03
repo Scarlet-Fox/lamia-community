@@ -208,9 +208,7 @@ $ ->
 
       $("#preview-#{@quillID}").click (e) =>
         e.preventDefault()
-        if $("#preview-box-#{@quillID}").parent().is(":visible")
-          $("#preview-box-#{@quillID}").parent().hide()
-        else
+        if not $("#preview-box-#{@quillID}").parent().is(":visible")
           $("#dropzone-#{@quillID}").hide()
           $("#preview-box-#{@quillID}").parent().show()
         if window.updateHeight?

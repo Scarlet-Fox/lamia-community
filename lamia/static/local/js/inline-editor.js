@@ -297,9 +297,7 @@
         $("#preview-" + this.quillID).click((function(_this) {
           return function(e) {
             e.preventDefault();
-            if ($("#preview-box-" + _this.quillID).parent().is(":visible")) {
-              $("#preview-box-" + _this.quillID).parent().hide();
-            } else {
+            if (!$("#preview-box-" + _this.quillID).parent().is(":visible")) {
               $("#dropzone-" + _this.quillID).hide();
               $("#preview-box-" + _this.quillID).parent().show();
             }
