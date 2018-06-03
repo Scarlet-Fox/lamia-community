@@ -785,7 +785,15 @@ class EmailTemplateView(ModelView):
     
     def is_accessible(self):
         return current_user.is_admin
-        
+
+class LogView(ModelView):
+    column_default_sort = ('time', True)
+    column_list = ("id", "user", "ip_address", "time", "method", "path", "error", "error_code")
+    column_filters = ("user_id", "ip_address", "time", "path", "method", "error", "error_code")
+
+    def is_accessible(self):
+        return current_user.is_admin
+
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
     admin.add_view(ConfigurationView(sqlm.SiteConfiguration, sqla.session, name='General Options', category="Site", endpoint='configuration'))
@@ -797,6 +805,7 @@ with warnings.catch_warnings():
     admin.add_view(RSSView(sqlm.RSSScraper, sqla.session, name='RSS Feed Reader', category="Site", endpoint='feed-reader'))
     admin.add_view(TaskLogView(sqlm.TaskLog, sqla.session, name='Task Log', category="Site", endpoint='task-log'))
     admin.add_view(EmailLogView(sqlm.EmailLog, sqla.session, name='Email Log', category="Site", endpoint='email-log'))
+    admin.add_view(LogView(sqlm.SiteLog, sqla.session, name='Site Error Log', category="Site", endpoint='error-log'))
     admin.add_view(EmailTemplateView(sqlm.EmailTemplate, sqla.session, name='Email Templates', category="Site", endpoint='email-templates'))
 
 ###################################################################################################
