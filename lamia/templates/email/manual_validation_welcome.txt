@@ -1,6 +1,6 @@
 Hello ${_user.display_name},
 
-Welcome to Casual Anime! It is great to have you as a member of our community!
+Welcome to our community! It is great to have you as a member of our community!
 
 Your account has been manually validated by our staff. This means that you are now ready to sign in!
 
@@ -9,4 +9,4 @@ ${address}
 We look forward to seeing you around. :)
 
 Take care!
-- Casual Anime
+- The Administration
