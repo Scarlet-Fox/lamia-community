@@ -177,13 +177,6 @@
               img.avatar-mini(src=newest_member.get_avatar_url("60"), width=newest_member.avatar_60_x, height=newest_member.avatar_60_y)
           .media-body Our newest member is 
             a.hover_user(href="{{url_for('view_profile', login_name=newest_member.my_url)}}") {{newest_member.display_name}} 
-            if new_member_intro_topic
-              |&nbsp;and they have a 
-              a(href="/t/{{new_member_intro_topic.slug}}") welcome topic.
-              br
-              a(href="/t/{{new_member_intro_topic.slug}}") Go say hello!
-            else
-              |but they have no welcome topic. :(
     ul.list-group
       li.list-group-item.section-header Forum Stats
       li.list-group-item 
