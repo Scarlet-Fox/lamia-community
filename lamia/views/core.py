@@ -1007,15 +1007,16 @@ def real_confirm_register(token):
         author=user
         )
 
-    broadcast(
-        to=[user,],
-        category="new_member",
-        url="/category/welcome",
-        title="Welcome! Click here to introduce yourself!",
-        description="",
-        content=user,
-        author=user
-        )
+    # TODO: Fix this later
+    # broadcast(
+    #     to=[user,],
+    #     category="new_member",
+    #     url="/category/welcome",
+    #     title="Welcome! Click here to introduce yourself!",
+    #     description="",
+    #     content=user,
+    #     author=user
+    #     )
     
     sqla.session.add(user)
     sqla.session.commit()
@@ -1103,7 +1104,7 @@ def register(render):
             sqla.session.rollback()
             manual_validation = False
             
-        token = str(arrow.utcnow().timestamp)+"-"+str(new_user.login_name)
+        token = str(arrow.utcnow().timestamp)+"-"+str(new_user.id)
         new_user.new_user_token = token
         new_user.new_user_token_date = arrow.utcnow().datetime.replace(tzinfo=None)
         sqla.session.add(new_user)
