@@ -1,9 +1,9 @@
 Hello ${_user.display_name},
 
-Thank you for registering at Casual Anime! Please be patient while our administrators review your account application. We review all accounts manually to protect the community from spammers, trolls and other troublemakers.
+Thank you for registering at our community! Please be patient while our administrators review your account application. We review all accounts manually to protect the community from spammers, trolls and other troublemakers.
 
 This process usually doesn't take very long. However, on occasion, there may be a slight delay. You will receive an email notification when your account has been validated. :)
 
-To unsubscribe from all future messages from Casual Anime, go to this page - https://casualanime.com/member/${_user.id}/${_user.email_address}/unsubscribe - after your account has been validated.
+To unsubscribe from all future messages from us, go to this page - ${_base}/member/${_user.id}/${_user.email_address}/unsubscribe - after your account has been validated.
 
-- Casual Anime
+- The Administration
