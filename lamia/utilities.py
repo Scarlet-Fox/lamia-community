@@ -246,7 +246,7 @@ def get_top_frequences(frequencies, trim, floor=1):
     return ([keys[:trim], values[:trim]])
 
 def md5(txt):
-    return str(txt) #hashlib.md5(txt).hexdigest()
+    return hashlib.md5(txt.encode('utf-8')).hexdigest()
 
 def ipb_password_check(salt, old_hash, password):
     password = password.replace("&", "&amp;") \

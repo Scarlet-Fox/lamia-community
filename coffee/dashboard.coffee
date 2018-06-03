@@ -116,7 +116,6 @@ $ ->
         category_element = $("#notifs-"+notification.category)
 
       notification._member_name = notification.member_pk
-
       existing_notification = $(".ref-#{notification.ref}-#{notification.category}")
       if existing_notification.length > 0 and notification.ref != ""
         count = parseInt(existing_notification.data("count"))
