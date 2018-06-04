@@ -21,10 +21,7 @@ style!= profile.get_custom_css()
             span.text-muted= profile.title
           for role in profile.get_roles()
             if role
-              br
-              span
-                strong
-                  | {{role}}
+              | {{role}}
           if current_user.is_authenticated and current_user.is_admin and not profile.validated
             center
               a.btn.btn-warning.post-link(href="/member/{{profile.my_url}}/validate-user") Validate User

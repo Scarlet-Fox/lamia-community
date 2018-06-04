@@ -838,15 +838,9 @@ class User(db.Model):
             return self.display_name
 
     def get_roles(self):
-        db_roles = db.session.query(
-                Role.pre_html,
-                Role.role,
-                Role.post_html,
-                Role.weight
-            ) \
-            .filter(
-                user_role_table.c.user_id == self.id
-            ).distinct().order_by("weight")
+        db_roles = Role.query \
+            .join(user_role_table, user_role_table.c.role_id == Role.id) \
+            .filter(user_role_table.c.user_id == self.id).order_by("weight")
         my_roles = []
         
         for role in db_roles:
