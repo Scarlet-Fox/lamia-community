@@ -309,14 +309,17 @@ def render_attachment_bbcode(tag_name, value, options, parent, context):
     if current_user.no_images:
         return """<a href="/static/uploads/%s" target="_blank">View Attachment.%s (%sKB)</a>""" % (quote(attachment.path.encode('utf-8')), attachment.extension, int(float(attachment.size_in_bytes)/1024))
 
-    if _attachment_size == attachment.x_size:
+    try:
+        if _attachment_size == attachment.x_size:
+            ignore_size = True
+        else:
+            ignore_size = False
+            if _attachment_size < 5:
+                _attachment_size = 5
+            if _attachment_size > 700:
+                _attachment_size = 700 # TODO: Max attachment width should be configurable
+    except:
         ignore_size = True
-    else:
-        ignore_size = False
-        if _attachment_size < 5:
-            _attachment_size = 5
-        if _attachment_size > 700:
-            _attachment_size = 700 # TODO: Max attachment width should be configurable
 
     if _attachment_wrap == "wrap":
         image_formatting_class = " image-wrap"
