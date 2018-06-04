@@ -820,19 +820,14 @@ class User(db.Model):
             if cached_role is not None:
                 return cached_role
                 
-            db_role = db.session.query(
-                    Role.inline_pre_html,
-                    Role.role,
-                    Role.inline_post_html,
-                    Role.weight
-                ) \
-                .filter(
-                    user_role_table.c.user_id == self.id
-                ).distinct().order_by("weight")[0]
+            db_role = Role.query \
+                .join(user_role_table, user_role_table.c.role_id == Role.id) \
+                .filter(user_role_table.c.user_id == self.id).order_by("weight")[0]
+
             _pre_html = db_role.inline_pre_html if db_role.inline_pre_html else ""
             _post_html = db_role.inline_post_html if db_role.inline_post_html else ""
             
-            cache.set(self.login_name+"_primary_role_inline", _pre_html+self.display_name+_post_html)
+            cache.set(self.login_name+"_primary_role_inline", _pre_html+self.display_name+_post_html, 120)
             return _pre_html+self.display_name+_post_html
         except IndexError:
             return self.display_name
