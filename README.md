@@ -23,6 +23,26 @@ Lamia is...
 
 ... all tied together with some added seasoning.
 
+## How to get started?
+
+I'm going to assume that you're using Linux, because that makes life easier. If you aren't then you should send a PM to Zephyr on the Lamia Community website, and we will try to help you get going.
+
+Keep in mind, you should not base your community on Lamia until 1.00 is released. I am only providing these instructions for the purpose of helping developers that are hoping to contribute to Lamia's development (or just curious and wanting to poke holes into things). 
+
+Seriously. We will not make any migration scripts for upgrading versions until 1.00 is released, so *do not use Lamia in production until that time unless you are Zephyr or you really know what tf you're doing*. You have been warned. :3
+
+1. Install the latest version of Python 3.x that you can get your hands on
+2. Install libxml-dev, python3-dev, redis-server, postgresql-server, imagemagick, and libncurses5-dev
+3. Get everything setup and running (you need to have postgres running and redis (make sure you have a db setup!))
+4. Get a Mailgun account (I'm sorry, this requirement will be removed later)
+5. Copy the config.json.example file and modify it with your own settings
+6. In the lamia root, run the following command 'python utilities/bootstrap_initial_setup.py'
+7. Answer the questions
+8. Run the following comment 'python manage.py runserver'
+9. For real time notifications, install nodejs and npm
+10. From the lamia root, run 'npm install expressjs socket.io coffee-script'
+11. Run './node_modules/coffeescript/bin/coffee ./listener.coffee'
+
 ## Project History
 
 In 2015, after repeated attempts, a group of hackers that had been targeting our forum finally took us offline. Our forum had been put together using a fairly vanilla copy of one of the more popular commercial forum packages. In the beginning, it had seemed like a safe bet. However, as our forum grew over time, we became intimately familiar with the frustratingly slow response times from support, an obtuse plug in interface, and expensive licensing fees.
