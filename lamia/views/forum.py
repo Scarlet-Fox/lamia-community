@@ -1472,7 +1472,7 @@ CASE
 END AS last_post_avatar
 FROM "topic" t
 LEFT JOIN "label" l ON t.label_id = l.id
-JOIN "post" fp ON t.recent_post_id = fp.id
+JOIN "post" fp ON t.first_post_id = fp.id
 JOIN "post" rp ON t.recent_post_id = rp.id
 JOIN "user" fpa ON fp.author_id = fpa.id
 JOIN "user" rpa ON rp.author_id = rpa.id
