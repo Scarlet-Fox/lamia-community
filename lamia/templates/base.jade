@@ -127,20 +127,20 @@ body(role='document')
                   li.notification-li(data-notification-count='{{notification["count"]}}', data-notification-ref='{{notification["ref"]}}')
                     .media
                       .media-left
-                        a(href='{{notification["sender_url"]}}')
+                        a(href='/member/{{notification["sender_url"]}}')
                           img.avatar-mini(src='{{notification["sender_avatar"]}}')
                       .media-body
                         span.who
                           if notification["count"] == 1
-                            a.hover_user(href='{{notification["sender_url"]}}')= notification["sender_name"]
+                            a.hover_user(href='/member/{{notification["sender_url"]}}')= notification["sender_name"]
                           if notification["count"] > 1 and notification["count"] < 3
-                            a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                            a.hover_user(href='/member/{{notification["actors"][0][1]}}')= notification["actors"][0][0]
                             |  and 
-                            a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                            a.hover_user(href='/member/{{notification["actors"][1][1]}}')= notification["actors"][1][0]
                           if notification["count"] >= 3
-                            a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                            a.hover_user(href='/member/{{notification["actors"][0][1]}}')= notification["actors"][0][0]
                             |,&nbsp;
-                            a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                            a.hover_user(href='/member/{{notification["actors"][1][1]}}')= notification["actors"][1][0]
                             |,&nbsp;and
                             |<span class="count">{{notification["count"] - 2}}</span>
                             |more
@@ -341,20 +341,20 @@ body(role='document')
                       li.notification-li(data-notification-count='{{notification["count"]}}', data-notification-ref='{{notification["ref"]}}')
                         .media
                           .media-left
-                            a(href='{{notification["sender_url"]}}')
+                            a(href='{{/member/notification["sender_url"]}}')
                               img.avatar-mini(src='{{notification["sender_avatar"]}}')
                           .media-body
                             span.who
                               if notification["count"] == 1
-                                a.hover_user(href='{{notification["sender_url"]}}')= notification["sender_name"]
+                                a.hover_user(href='/member/{{notification["sender_url"]}}')= notification["sender_name"]
                               if notification["count"] > 1 and notification["count"] < 3
-                                a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                                a.hover_user(href='/member/{{notification["actors"][0][1]}}')= notification["actors"][0][0]
                                 |  and 
-                                a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                                a.hover_user(href='/member/{{notification["actors"][1][1]}}')= notification["actors"][1][0]
                               if notification["count"] >= 3
-                                a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                                a.hover_user(href='/member/{{notification["actors"][0][1]}}')= notification["actors"][0][0]
                                 |,&nbsp;
-                                a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                                a.hover_user(href='/member/{{notification["actors"][1][1]}}')= notification["actors"][1][0]
                                 |,&nbsp;and
                                 |<span class="count">{{notification["count"] - 2}}</span>
                                 |more
@@ -395,20 +395,20 @@ body(role='document')
                   li.notification-li(data-notification-count='{{notification["count"]}}', data-notification-ref='{{notification["ref"]}}')
                     .media
                       .media-left
-                        a(href='{{notification["sender_url"]}}')
+                        a(href='/member/{{notification["sender_url"]}}')
                           img.avatar-mini(src='{{notification["sender_avatar"]}}')
                       .media-body
                         span.who
                           if notification["count"] == 1
-                            a.hover_user(href='{{notification["sender_url"]}}')= notification["sender_name"]
+                            a.hover_user(href='/member/{{notification["sender_url"]}}')= notification["sender_name"]
                           if notification["count"] > 1 and notification["count"] < 3
-                            a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                            a.hover_user(href='/member/{{notification["actors"][0][1]}}')= notification["actors"][0][0]
                             |  and 
-                            a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                            a.hover_user(href='/member/{{notification["actors"][1][1]}}')= notification["actors"][1][0]
                           if notification["count"] >= 3
-                            a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                            a.hover_user(href='/member/{{notification["actors"][0][1]}}')= notification["actors"][0][0]
                             |,&nbsp;
-                            a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                            a.hover_user(href='/member/{{notification["actors"][1][1]}}')= notification["actors"][1][0]
                             |,&nbsp;and
                             |<span class="count">{{notification["count"] - 2}}</span>
                             |more
@@ -610,20 +610,20 @@ body(role='document')
                       li.notification-li(data-notification-count='{{notification["count"]}}', data-notification-ref='{{notification["ref"]}}')
                         .media
                           .media-left
-                            a(href='{{notification["sender_url"]}}')
+                            a(href='/member/{{notification["sender_url"]}}')
                               img.avatar-mini(src='{{notification["sender_avatar"]}}')
                           .media-body
                             span.who
                               if notification["count"] == 1
-                                a.hover_user(href='{{notification["sender_url"]}}')= notification["sender_name"]
+                                a.hover_user(href='/member/{{notification["sender_url"]}}')= notification["sender_name"]
                               if notification["count"] > 1 and notification["count"] < 3
-                                a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                                a.hover_user(href='/member/{{notification["actors"][0][1]}}')= notification["actors"][0][0]
                                 |  and 
-                                a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                                a.hover_user(href='/member/{{notification["actors"][1][1]}}')= notification["actors"][1][0]
                               if notification["count"] >= 3
-                                a.hover_user(href='{{notification["actors"][0][1]}}')= notification["actors"][0][0]
+                                a.hover_user(href='/member/{{notification["actors"][0][1]}}')= notification["actors"][0][0]
                                 |,&nbsp;
-                                a.hover_user(href='{{notification["actors"][1][1]}}')= notification["actors"][1][0]
+                                a.hover_user(href='/member/{{notification["actors"][1][1]}}')= notification["actors"][1][0]
                                 |,&nbsp;and
                                 |<span class="count">{{notification["count"] - 2}}</span>
                                 |more
