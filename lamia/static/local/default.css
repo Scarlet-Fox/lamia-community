@@ -1414,3 +1414,11 @@ li.list-group-item.subcategory.category-subcategories > div > div.row > .col-xs-
 .form-control {
  height:auto;   
 }
+
+li.list-group-item.subcategory.category-subcategories > div.row {
+    display: flex;
+}
+
+li.list-group-item.subcategory.category-subcategories > div.row > .col-sm-6.col-xs-8 {
+    align-self: center;
+}
