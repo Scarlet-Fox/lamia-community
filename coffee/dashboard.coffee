@@ -156,7 +156,7 @@ $ ->
         <div class="media-left" style="display: none;"><span class="badge"></span></div>
         <div class="media-body">
           <button class="close ack_single" data-notification="{{_id}}" data-panel="{{category}}">&times;</button>
-          <div class="text-muted"><span class="m-name"><a href="/member/{{member_name}}" class="hover_user">{{member_disp_name}}</a></span>
+          <div class="text-muted"><span class="m-name"><a href="/member/{{member_url}}" class="hover_user">{{member_disp_name}}</a></span>
           <a href="{{url}}" data-notification="{{id}}" class="m-title ack_single_href">{{text}}</a>
           - <span class="m-time" style="white-space: nowrap;">{{time}}</span></div>
         </div>

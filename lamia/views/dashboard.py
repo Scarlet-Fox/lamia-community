@@ -118,6 +118,7 @@ def broadcast(to, category, url, title, description, content, author, priority=0
         "member_pk": str(author.id),
         "member_disp_name": author.display_name,
         "author_url": "/member/"+author.my_url,
+        "member_url": "/member/"+author.my_url,
         "author_avatar": author.get_avatar_url("40"),
         "time": humanize_time(now.datetime),
         "url": url,

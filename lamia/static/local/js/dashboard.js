@@ -204,7 +204,7 @@
       };
 
       Dashboard.prototype.notificationHTML = function() {
-        return "<li class=\"list-group-item ref-{{ref}}-{{category}}\" id=\"{{id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <div class=\"text-muted\"><span class=\"m-name\"><a href=\"/member/{{member_name}}\" class=\"hover_user\">{{member_disp_name}}</a></span>\n    <a href=\"{{url}}\" data-notification=\"{{id}}\" class=\"m-title ack_single_href\">{{text}}</a>\n    - <span class=\"m-time\" style=\"white-space: nowrap;\">{{time}}</span></div>\n  </div>\n</li>";
+        return "<li class=\"list-group-item ref-{{ref}}-{{category}}\" id=\"{{id}}\" data-stamp=\"{{stamp}}\" data-count=\"1\">\n  <div class=\"media-left\" style=\"display: none;\"><span class=\"badge\"></span></div>\n  <div class=\"media-body\">\n    <button class=\"close ack_single\" data-notification=\"{{_id}}\" data-panel=\"{{category}}\">&times;</button>\n    <div class=\"text-muted\"><span class=\"m-name\"><a href=\"/member/{{member_url}}\" class=\"hover_user\">{{member_disp_name}}</a></span>\n    <a href=\"{{url}}\" data-notification=\"{{id}}\" class=\"m-title ack_single_href\">{{text}}</a>\n    - <span class=\"m-time\" style=\"white-space: nowrap;\">{{time}}</span></div>\n  </div>\n</li>";
       };
 
       Dashboard.prototype.panelHTML = function() {
