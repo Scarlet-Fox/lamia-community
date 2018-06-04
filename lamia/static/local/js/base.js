@@ -102,7 +102,7 @@
       }
       window.socketio = socket;
     }
-    notificationHTML = "<li data-notification-count=\"{{my_count}}\" data-notification-ref=\"{{ref}}\" class=\"notification-li\">\n  <div class=\"media\">\n    <div class=\"media-left\"><a href=\"test\"><img src=\"{{author_avatar}}\" class=\"avatar-mini\"></a>\n    </div>\n    <div class=\"media-body\">\n      <span class=\"who\">{{{who}}}</span>\n      <br>\n      <a href=\"{{url}}\" data-notification=\"{{_id}}\" class=\"notification-link dropdown-notif-{{_id}}-{{category}}\">{{text}}</a>\n    </div>\n  </div>\n</li>";
+    notificationHTML = "<li data-notification-count=\"{{my_count}}\" data-notification-ref=\"{{ref}}\" class=\"notification-li\">\n  <div class=\"media\">\n    <div class=\"media-left\"><a href=\"{{author_url}}\"><img src=\"{{author_avatar}}\" class=\"avatar-mini\"></a>\n    </div>\n    <div class=\"media-body\">\n      <span class=\"who\">{{{who}}}</span>\n      <br>\n      <a href=\"{{url}}\" data-notification=\"{{_id}}\" class=\"notification-link dropdown-notif-{{_id}}-{{category}}\">{{text}}</a>\n    </div>\n  </div>\n</li>";
     notificationTemplate = Handlebars.compile(notificationHTML);
     if (window.logged_in) {
       socket.emit("user", {

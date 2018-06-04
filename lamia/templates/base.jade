@@ -341,7 +341,7 @@ body(role='document')
                       li.notification-li(data-notification-count='{{notification["count"]}}', data-notification-ref='{{notification["ref"]}}')
                         .media
                           .media-left
-                            a(href='{{/member/notification["sender_url"]}}')
+                            a(href='/member/{{notification["sender_url"]}}')
                               img.avatar-mini(src='{{notification["sender_avatar"]}}')
                           .media-body
                             span.who

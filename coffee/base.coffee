@@ -118,7 +118,7 @@ $ ->
   notificationHTML = """
 <li data-notification-count="{{my_count}}" data-notification-ref="{{ref}}" class="notification-li">
   <div class="media">
-    <div class="media-left"><a href="test"><img src="{{author_avatar}}" class="avatar-mini"></a>
+    <div class="media-left"><a href="{{author_url}}"><img src="{{author_avatar}}" class="avatar-mini"></a>
     </div>
     <div class="media-body">
       <span class="who">{{{who}}}</span>
