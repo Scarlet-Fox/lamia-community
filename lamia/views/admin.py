@@ -1226,7 +1226,7 @@ class TopicView(ModelView):
         'author': StartsWithQueryAjaxModelLoader('author', sqla.session, sqlm.User, fields=['display_name',], page_size=10),
     }
 
-    form_edit_rules = ("author", "title", "sticky", "locked", "hidden", "post_count")
+    form_edit_rules = ("author", "title", "sticky", "locked", "hidden", "announcement")
         
     def is_accessible(self):
         return current_user.is_admin or current_user.is_mod
