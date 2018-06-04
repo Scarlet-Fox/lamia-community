@@ -185,7 +185,7 @@ class StatusUpdate(db.Model):
     locked = db.Column(db.Boolean, default=False, index=True)
 
     def get_comment_count(self):
-        count = db.session.query(StatusComment).filter(StatusComment.status_id==self.id).count()
+        count = db.session.query(StatusComment).filter(StatusComment.status_id==self.id).filter(StatusComment.hidden != True).count()
         return count
 
     def blocked(self):
