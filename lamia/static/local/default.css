@@ -1183,8 +1183,8 @@ div.col-md-4.col-sm-6.status-index-panel.shuffle-item.filtered > ul.list-group >
     min-height:108px;
 }
 .post-member-avatar {
-    height:150px;
-    width:150px;
+    max-height:150px;
+    max-width:150px;
     margin-top:20px;
 }
  
