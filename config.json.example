@@ -15,7 +15,10 @@
 	"twitter_access_token_secret": "",
   "celery_result_backend": "redis://localhost:6379",
   "celery_broker_url": "redis://localhost:6379",
-  "rss_feed_update_delay": 10,
+  "rss_feed_update_delay": 300,
+  "infraction_point_calculator_delay": 600,
+  "basic_user_stats_calculator_delay": 600,
+  "basic_site_stats_calculator_delay": 120,
   "redis_key_prefix": "lamia_"
 }
 
