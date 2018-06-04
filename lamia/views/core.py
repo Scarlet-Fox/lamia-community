@@ -1,5 +1,6 @@
 from lamia import login_manager
 from lamia import app, bcrypt, cache
+from slugify import slugify
 from lamia.parsers import ForumPostParser
 from collections import OrderedDict
 from lamia.forms.core import LoginForm, RegistrationForm, ForgotPasswordForm, ResetPasswordForm
@@ -1057,7 +1058,7 @@ def register(render):
     if form.validate_on_submit():
         new_user = sqlm.User(
             login_name = form.username.data.strip().lower(),
-            my_url = form.username.data.strip().lower(),
+            my_url = slugify(form.username.data.strip().lower(), max_length=100, word_boundary=True, save_order=True),
             display_name = form.username.data.strip(),
             email_address = form.email.data.strip().lower()
         )
