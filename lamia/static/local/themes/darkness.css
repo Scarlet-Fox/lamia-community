@@ -321,3 +321,32 @@ hr {
 .attached-status {
   background-color: #84041a;
 }
+
+div#dropzone-1.dropzone {
+ color:black; 
+ background-color: #596D7E;
+}
+
+.btn.btn-default:hover {
+  color: #510303 !important;
+  background-color: #7aa1c2;
+}
+
+.btn.btn-default:active {
+  color: #510303 !important;
+  background-color: #7aa1c2;
+}
+
+.btn-primary:hover {
+  color: #510303 !important;
+  background-color: #7aa1c2;
+}
+
+.btn-primary:active {
+  color: #510303 !important;
+  background-color: #7aa1c2;
+}
+
+.btn-group {
+    background:transparent;
+}
