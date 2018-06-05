@@ -40,7 +40,7 @@
 
 % if _section_image or _section_background_color:
 .panel-heading {
-    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") no-repeat scroll top !important" if _section_image else ''};
+    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") scroll top !important" if _section_image else ''};
     % if _section_text_color:
     color: #${_section_text_color};
     % endif
@@ -52,7 +52,7 @@
 }
 
 .section-header {
-    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") no-repeat scroll top !important" if _section_image else ''};
+    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") scroll top !important" if _section_image else ''};
     % if _section_text_color:
     color: #${_section_text_color};
     % endif
@@ -64,7 +64,7 @@
 }
 
 .popover-title {
-    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") no-repeat scroll top !important" if _section_image else ''} !important;
+    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") scroll top !important" if _section_image else ''} !important;
     % if _section_text_color:
     color: #${_section_text_color};
     % endif
@@ -76,7 +76,7 @@
 }
 
 .toggle-show-roles-button {
-    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") no-repeat scroll top !important" if _section_image else ''};
+    background: ${"#"+_section_background_color if _section_background_color else ''} ${"url(\"/static/customizations/"+_section_image+"\") scroll top !important" if _section_image else ''};
     % if _section_text_color:
     color: #${_section_text_color};
     % endif
