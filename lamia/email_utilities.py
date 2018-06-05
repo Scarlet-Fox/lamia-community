@@ -124,13 +124,13 @@ def send_notification_emails(sqla):
 
                 if n.category not in _list_k:
                     _list_k[n.category] = [{
-                        "message": n.message,
+                        "message": n.author.display_name + " " + n.message,
                         "url": _base_url+n.url
                     }]
                     _list.append(n.category)
                 else:
                     _list_k[n.category].append({
-                        "message": n.message,
+                        "message": n.author.display_name + " " + n.message,
                         "url": _base_url+n.url
                     })
 
@@ -144,14 +144,14 @@ def send_notification_emails(sqla):
                 if n.category not in _details_k:
                     _details_k[n.category] = [{
                         "url": _base_url+n.url,
-                        "message": n.message,
+                        "message": n.author.display_name + " " + n.message,
                         "description": get_preview_for_email(n.snippet)
                     }]
                     _details.append(n.category)
                 else:
                     _details_k[n.category].append({
                         "url": _base_url+n.url,
-                        "message": n.message,
+                        "message": n.author.display_name + " " + n.message,
                         "description": get_preview_for_email(n.snippet)
                     })
 
