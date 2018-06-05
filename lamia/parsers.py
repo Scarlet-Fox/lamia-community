@@ -420,7 +420,7 @@ def render_reply_bbcode(tag_name, value, options, parent, context):
             re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
         )
         
-    if reply[1] == "blogcomment":
+    if _content_type == "blogcomment":
         try:
             _replying_to = sqla.session.query(sqlm.BlogComment).filter_by(id=_content_id)[0]
         except:
@@ -445,7 +445,7 @@ def render_reply_bbcode(tag_name, value, options, parent, context):
             re.sub(reply_re, "", re.sub(deluxe_reply_re, "", inner_html))
         )
         
-    if reply[1] == "pm":
+    if _content_type == "pm":
         try:
             _replying_to = sqla.session.query(sqlm.PrivateMessageReply).filter_by(id=_content_id)[0]
             pm_user = sqla.session.query(sqlm.PrivateMessageUser).filter_by(
@@ -470,6 +470,7 @@ def render_reply_bbcode(tag_name, value, options, parent, context):
             "/member/%s" % _replying_to.author.my_url,
             re.sub(reply_re, "", inner_html)
         )
+        
 bbcode_parser.add_formatter("reply", render_reply_bbcode, escape_html=False)
 
 class ForumPostParser(object):
