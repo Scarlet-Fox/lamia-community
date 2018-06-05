@@ -12,6 +12,7 @@ import feedparser
 import os
 
 from flask_sqlalchemy import SQLAlchemy
+from lamia.email_utilities import send_notification_emails
 celery = app.celery
 
 ###############################################################################
@@ -141,6 +142,21 @@ def infraction_point_calculator():
     log_task(name="infraction_point_calculator", recurring=True, meta="")
 
 ###############################################################################
+# Notifications emailer
+###############################################################################
+
+@celery.task
+def notification_emailer():
+    sqla = SQLAlchemy(app)
+    print("notification_emailer running")
+    
+    send_notification_emails(sqla)
+    
+    sqla.session.close()
+    sqla.engine.dispose()
+    log_task(name="notification_emailer", recurring=True, meta="")
+
+###############################################################################
 # Basic user stats calculator
 ###############################################################################
 
@@ -231,4 +247,5 @@ def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(settings_file["basic_user_stats_calculator_delay"], basic_user_stats_calculator.s(), name='basic_user_stats_calculator')
     sender.add_periodic_task(settings_file["basic_site_stats_calculator_delay"], basic_site_stats_calculator.s(), name='basic_site_stats_calculator_delay')
     sender.add_periodic_task(600, users_for_mention_pre_loader.s(), name='users_for_mention_pre_loader')
+    sender.add_periodic_task(300, notification_emailer.s(), name='notification_emailer')
     

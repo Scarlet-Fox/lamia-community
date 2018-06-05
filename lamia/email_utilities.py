@@ -26,7 +26,7 @@ def get_template_lookup():
     except IndexError:
         return False
         
-def send_notification_emails():
+def send_notification_emails(sqla):
     __banned_users_to_check = sqla.session.query(sqlm.User).filter_by(banned=True).all()
     for _u in __banned_users_to_check:
         notifications = sqla.session.query(sqlm.Notification) \
