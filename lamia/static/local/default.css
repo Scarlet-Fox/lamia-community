@@ -582,8 +582,9 @@ blockquote {
   margin-top: 10px !important;
   margin-bottom: 10px !important;
   width: 100% !important;
-  overflow: scroll !important;
+  overflow: auto !important;
   border: 1px lightgray solid !important;
+  resize:vertical;
 }
 .post-left {
   background-color: #FCFFE0;
