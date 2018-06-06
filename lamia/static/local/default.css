@@ -1422,3 +1422,19 @@ li.list-group-item.subcategory.category-subcategories > div.row {
 li.list-group-item.subcategory.category-subcategories > div.row > .col-sm-6.col-xs-8 {
     align-self: center;
 }
+
+@media screen and ( max-width:365px ) {
+   a.button.collapsed.float-left.hidden-sm.hidden-md.hidden-lg{
+        display:none !important;
+    }
+    a.navbar-brand {
+        display:none !important;
+    }
+}
+
+@media screen and ( max-width:313px ) {
+   a.to-bottom.glyphicon.glyphicon-arrow-down.hidden-sm.hidden-md.hidden-lg.button.mini-notification-button {
+       display:none !important
+    }
+
+}
