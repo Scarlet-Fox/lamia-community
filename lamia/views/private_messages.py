@@ -240,7 +240,7 @@ def new_message_in_pm_topic(pk):
     parsed_post["user_title"] = message.author.title
     parsed_post["_id"] = message.id
     parsed_post["author_name"] = message.author.display_name
-    parsed_post["author_login_name"] = message.author.my_url
+    parsed_post["author_login_name"] = message.author.login_name
     post_count = sqla.session.query(sqlm.PrivateMessageReply).filter_by(pm=topic).count()
 
     notify_users = []
@@ -312,7 +312,7 @@ def private_message_posts(pk):
         parsed_post["user_avatar_y_60"] = post.author.avatar_60_y
         parsed_post["user_title"] = post.author.title
         parsed_post["author_name"] = post.author.display_name
-        parsed_post["author_login_name"] = post.author.my_url
+        parsed_post["author_login_name"] = post.author.login_name
         parsed_post["_id"] = post.id
 
         if current_user.is_authenticated:
