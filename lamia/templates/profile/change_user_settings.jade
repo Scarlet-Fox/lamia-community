@@ -130,6 +130,6 @@ script(type="text/javascript", src="{{ASSET_URL}}").
 script(type="text/javascript").
   $(document).ready(function(){
     $("#time_zone").select2({});
-    window.l_name = "{{profile.login_name}}";
+    window.l_name = "{{profile.my_url}}";
   });
 {% endblock%}
