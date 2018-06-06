@@ -1670,13 +1670,13 @@ def index():
     recently_replied_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
         .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:5]
+        .join(sqlm.Topic.recent_post).order_by(sqlm.Post.created.desc())[:10]
     
     # TODO: Cache this
     recently_created_topics = sqla.session.query(sqlm.Topic) \
         .filter(sqla.or_(sqlm.Topic.hidden == False, sqlm.Topic.hidden == None)) \
         .filter(sqlm.Topic.category.has(sqlm.Category.restricted==False)) \
-        .order_by(sqlm.Topic.created.desc())[:5]
+        .order_by(sqlm.Topic.created.desc())[:10]
     
     status_updates = sqla.session.query(sqlm.StatusUpdate) \
         .filter(sqla.or_(sqlm.StatusUpdate.hidden == False, sqlm.StatusUpdate.hidden == None)) \
