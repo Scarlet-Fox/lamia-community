@@ -1883,13 +1883,6 @@ def del_smiley_image(mapper, connection, target):
             os.remove(os.path.join(app.config["SMILEY_UPLOAD_DIR"], target.filename))
         except OSError:
             pass
-
-        # Delete thumbnail
-        try:
-            os.remove(os.path.join(app.config["SMILEY_UPLOAD_DIR"],
-                              form.thumbgen_filename(target.filename)))
-        except OSError:
-            pass
             
 @listens_for(Attachment, 'after_delete')
 def del_attachment_image(mapper, connection, target):
@@ -1897,13 +1890,6 @@ def del_attachment_image(mapper, connection, target):
         # Delete image
         try:
             os.remove(os.path.join(app.config["ATTACHMENTS_UPLOAD_DIR"], target.path))
-        except OSError:
-            pass
-
-        # Delete thumbnail (there probably isn't one)
-        try:
-            os.remove(os.path.join(app.config["ATTACHMENTS_UPLOAD_DIR"],
-                              form.thumbgen_filename(target.path)))
         except OSError:
             pass
 
