@@ -1065,6 +1065,7 @@ def register(render):
         new_user.set_password(form.password.data.strip())
         new_user.joined = arrow.utcnow().datetime
         new_user.over_thirteeen = True
+        new_user.auto_follow = True
         new_user.validated = False
         new_user.how_did_you_find_us = form.how_did_you_find_us.data
         new_user.last_seen_ip_address = request.remote_addr
