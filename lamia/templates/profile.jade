@@ -43,14 +43,14 @@ style!= profile.get_custom_css()
                     a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/request-friend") Friend Request
                   else
                     a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/un-friend") Unfriend
+              br
+              br
+              .btn-group
                 if profile not in current_user.ignoring()
                   a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/toggle-ignore") Ignore
                 else
-                  a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/toggle-ignore") Unignore
-                br
-                br
-                center
-                  a.btn.btn-default.report-button(data-pk=profile.id, data-type="profile") Report
+                  a.btn.btn-default.post-link(href="/member/{{profile.my_url}}/toggle-ignore") Unignore                 
+                a.btn.btn-default.report-button(data-pk=profile.id, data-type="profile") Report
           br
     ul.list-group
       li.list-group-item.section-header Navigation
