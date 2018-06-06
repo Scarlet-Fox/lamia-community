@@ -32,7 +32,7 @@
       ul.list-group
         li.list-group-item.section-header.hidden-sm.hidden-xs= entry.title
         if entry.draft
-          li.list-group-item(style="background-color: #FFDCFF;")
+          li.list-group-item(style="background-color: #ffdcff61;")
             .media-left
               a(href="{{url_for('view_profile', login_name=entry.author.my_url)}}")
                 img.avatar-mini(src="{{entry.author.get_avatar_url("60")}}", width="{{entry.author.avatar_60_x}}", height="{{entry.author.avatar_60_y}}")
