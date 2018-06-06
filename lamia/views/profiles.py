@@ -1023,6 +1023,7 @@ def change_user_settings(login_name):
         user.all_notification_sounds = form.all_notification_sounds.data
         user.navbar_top = form.navbar_top.data
         user.minimum_time_between_emails = form.minimum_time_between_emails.data
+        user.auto_follow = form.auto_follow.data
         sqla.session.add(user)
         sqla.session.commit()
         return redirect("/member/"+user.my_url)
@@ -1036,6 +1037,7 @@ def change_user_settings(login_name):
         form.notification_sound.data = user.notification_sound
         form.all_notification_sounds.data = user.all_notification_sounds
         form.navbar_top.data = user.navbar_top
+        form.auto_follow.data = user.auto_follow
 
         if user.minimum_time_between_emails == None:
             user.minimum_time_between_emails = 360

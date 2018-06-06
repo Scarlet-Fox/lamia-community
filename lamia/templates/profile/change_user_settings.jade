@@ -16,11 +16,9 @@
               .form-group
                 {{ form.time_zone.label }}
                 {{ form.time_zone(class="form-control") }}
-              {% if theme %}
               .form-group
                 {{ form.theme.label }}
                 {{ form.theme(class="form-control") }}
-              {% endif %}
               .form-group
                 {{ form.birthday.label }}
                 {{ form.birthday(class="form-control") }}
@@ -45,6 +43,9 @@
               .form-group
                 {{ form.minimum_time_between_emails.label }}
                 {{ form.minimum_time_between_emails(class="form-control") }}
+              .form-group
+                {{ form.auto_follow.label }}
+                {{ form.auto_follow(class="form-control") }}
               button(type="submit").btn.btn-default Submit
     ul.list-group
       li.list-group-item.section-header Change Ignore Settings

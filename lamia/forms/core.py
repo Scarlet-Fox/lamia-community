@@ -40,6 +40,7 @@ class UserSettingsForm(Form):
     minimum_time_between_emails = IntegerField("Minimum time between notification emails (in minutes, no less than 5 and no more than 1440)",
             [validators.InputRequired(), validators.NumberRange(5,1440)]
         )
+    auto_follow = BooleanField("Automatically follow threads that you post in")
     
     try:
         THEME_CHOICES = [(str(t.id), t.name) for t in sqla.session.query(sqlm.SiteTheme).order_by(sqlm.SiteTheme.weight).all()]

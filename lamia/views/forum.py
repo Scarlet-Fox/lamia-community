@@ -404,6 +404,22 @@ def new_post_in_topic(slug):
         content=topic,
         author=new_post.author
         )
+        
+    if not current_user in topic.watchers and current_user.auto_follow == True:
+        topic.watchers.append(current_user)
+        if topic.author in topic.watchers:
+            broadcast(
+              to=[topic.author,],
+              category="followed",
+              url="/t/%s" % (str(topic.slug),),
+              title="followed topic %s" % (str(topic.title)),
+              description="",
+              content=topic,
+              author=current_user
+              )
+              
+        sqla.session.add(topic)
+        sqla.session.commit()
 
     return app.jsonify(newest_post=parsed_post, count=post_count, success=True)
 
