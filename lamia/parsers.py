@@ -29,7 +29,7 @@ giphy_re = re.compile("(?:giphy\.com/gifs/|gph\.is/)(?:.*)-(.*)", re.IGNORECASE)
 _domain_re = re.compile(r'(?im)(?:www\d{0,3}[.]|[a-z0-9.\-]+[.](?:com|net|org|edu|biz|gov|mil|info|io|name|me|tv|us|uk|mobi))')
 
 raw_image_re = re.compile("(<img src=\"(.*?)\"(?:.*)>)")
-html_img_re = re.compile(r'<img src=\"(.*?)\">', re.IGNORECASE)
+html_img_re = re.compile(r'(<img src=\".*?\">)', re.IGNORECASE)
 href_re = re.compile("((href|src)=(.*?)>(.*?)(<|>))")
 
 def lamia_linker(url):
@@ -490,7 +490,13 @@ class ForumPostParser(object):
                     _content_owner = _object
                 else:
                     _content_owner = False
-
+        
+        _mangled_html_image_links = []
+        all_html_image_links = html_img_re.findall(html)
+        for i, _html_image_link in enumerate(all_html_image_links):
+            _mangled_html_image_links.append(["mangled-img-%s" % i, _html_image_link])
+            html = html.replace(_html_image_link, "mangled-img-%s" % i, 1)
+        
         _mangled_html_links = []
         all_html_links = href_re.findall(html)
         for i, _html_link in enumerate(all_html_links):
@@ -515,7 +521,10 @@ class ForumPostParser(object):
         
         for _code, _html in _mangled_html_links:
             html = html.replace(_code, _html, 1)
-
+        
+        for _code, _html in _mangled_html_image_links:
+            html = html.replace(_code, _html, 1)
+            
         if current_user.no_images:
             for plain_jane_image in raw_image_re.findall(html):
                 html = html.replace(
