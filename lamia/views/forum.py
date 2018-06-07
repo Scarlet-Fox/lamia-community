@@ -312,7 +312,8 @@ def new_post_in_topic(slug):
     parsed_post["user_avatar_y_60"] = new_post.author.avatar_60_y
     parsed_post["user_title"] = new_post.author.title
     parsed_post["author_name"] = new_post.author.display_name
-    parsed_post["author_login_name"] = new_post.author.login_name
+    parsed_post["author_login_name"] = new_post.author.my_url
+    parsed_post["author_actual_login_name"] = new_post.author.login_name
 
     if new_post.character is not None:
         try:
@@ -740,7 +741,8 @@ def topic_posts(slug):
 
         if post == first_post:
             parsed_post["topic_leader"] = "/t/"+topic.slug+"/edit-topic"
-        parsed_post["author_login_name"] = post.author.login_name
+        parsed_post["author_login_name"] = post.author.my_url
+        parsed_post["author_actual_login_name"] = post.author.login_name
         parsed_post["has_booped"] = current_user in post.boops
         parsed_post["boop_count"] = len(post.boops)
         if parsed_post["boop_count"] == 1:

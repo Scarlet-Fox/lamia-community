@@ -598,7 +598,7 @@ $ ->
                           {{#if _is_logged_in}}
                           <div class="btn-group" role="group" aria-label="...">
                             <div class="btn-group">
-                              <button type="button" class="btn btn-default mention-button" data-author="{{author_login_name}}">@</button>
+                              <button type="button" class="btn btn-default mention-button" data-author="{{author_actual_login_name}}">@</button>
                               <button type="button" class="btn btn-default reply-button" data-pk="{{_id}}">Reply</button>
                               <button type="button" class="btn btn-default report-button" data-pk="{{_id}}" data-type="post"><span class="glyphicon glyphicon-exclamation-sign"></span></button>
                               {{#if is_topic_mod}}<a href="/staff/post/edit/?id={{_id}}" target="_blank"><button type="button" class="btn btn-default" data-type="post"><span class="glyphicon glyphicon-cog"></span></button></a>{{/if}}
