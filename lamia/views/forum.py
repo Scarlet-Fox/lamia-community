@@ -162,9 +162,6 @@ def new_post_in_topic(slug):
 
     request_json = request.get_json(force=True)
 
-    if request_json.get("text", "").strip() == "":
-        return app.jsonify(no_content=True)
-
     if len(request_json.get("text", "")) > 50000:
         return app.jsonify(error="Your post is too large.")
 

@@ -84,6 +84,9 @@
                 if (data.closed_topic != null) {
                   topic.inline_editor.flashError("Topic Closed: " + data.closed_message);
                 }
+                if (data.no_content != null) {
+                  topic.inline_editor.flashError("Your post has no text.");
+                }
                 if (data.error != null) {
                   topic.inline_editor.flashError(data.error);
                 }

@@ -65,8 +65,8 @@ $ ->
             if data.closed_topic?
               topic.inline_editor.flashError "Topic Closed: #{data.closed_message}"
 
-            # if data.no_content?
-            #   topic.inline_editor.flashError "Your post has no text."
+            if data.no_content?
+              topic.inline_editor.flashError "Your post has no text."
 
             if data.error?
               topic.inline_editor.flashError data.error
