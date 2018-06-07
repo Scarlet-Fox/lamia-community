@@ -1134,6 +1134,23 @@ class RecentHiddenPostView(ModelView):
     def get_count_query(self):
         return None
         
+def _label_formatter_(view, context, model, name):
+    return Markup("""%s%s%s""" % (model.pre_html, model.label, model.post_html))
+
+class LabelView(ModelView):
+    can_create = True
+    can_delete = True
+    column_list = ("id", "label",)
+
+    column_formatters = {
+        'label': _label_formatter_
+    }
+
+    column_filters = ["id", ]
+
+    def is_accessible(self):
+        return current_user.is_admin
+
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
     admin.add_view(SectionView(sqlm.Section, sqla.session, name='Sections', category="Forum", endpoint='sections'))
@@ -1143,6 +1160,7 @@ with warnings.catch_warnings():
     admin.add_view(UserAdministrationView(sqlm.User, sqla.session, name='Manage Users', category="Forum", endpoint='manage-users'))
     admin.add_view(StaffView(sqlm.User, sqla.session, name='Manage Staff', category="Forum", endpoint='manage-staff'))
     admin.add_view(RecentHiddenPostView(sqlm.Post, sqla.session, name='Recently Hidden Posts', category="Forum", endpoint='hidden-posts'))
+    admin.add_view(LabelView(sqlm.Label, sqla.session, name='Topic Labels', category="Forum", endpoint='topic-labels'))
 
 class PostView(ModelView):
     can_create = False
