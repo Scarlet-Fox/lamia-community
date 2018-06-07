@@ -831,7 +831,7 @@ def edit_topic_post_html(slug):
     if current_user != post.author and not (current_user.is_admin or topic.category.slug in current_user.get_modded_areas):
         return abort(404)
 
-    if request_json.get("html", "").replace("<br>", "").replace("</div>", "").replace("<div>", "").replace("</span>", "").replace("<span>", "").strip() == "":
+    if request_json.get("post", "").replace("<br>", "").replace("</div>", "").replace("<div>", "").replace("</span>", "").replace("<span>", "").strip() == "":
         return app.jsonify(error="Please enter actual text for your post.")
 
     if len(request_json.get("text", "")) > 50000:
