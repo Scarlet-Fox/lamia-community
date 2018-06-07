@@ -241,7 +241,16 @@ def toggle_follow_blog_entry(slug, entry_slug):
         sqla.session.commit()
     except:
         sqla.session.rollback()
-
+    
+    if not current_user in blog.subscribers:
+        blog.subscribers.append(current_user)
+        
+        try:
+            sqla.session.add(blog)
+            sqla.session.commit()
+        except:
+            sqla.session.rollback()
+    
     return app.jsonify(url="/blog/%s/e/%s" % (blog.slug, entry.slug))
 
 @app.route('/blog/<slug>/edit-blog', methods=['GET', 'POST'])
