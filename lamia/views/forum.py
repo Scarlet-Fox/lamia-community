@@ -1208,7 +1208,7 @@ def edit_topic(slug):
         if request_json.get("title", "").strip() == "":
             return app.jsonify(error="Please enter a title.")
 
-        if request_json.get("text", "").strip() == "":
+        if request_json.get("post", "").replace("<br>", "").replace("</div>", "").replace("<div>", "").replace("</span>", "").replace("<span>", "").strip() == "":
             return app.jsonify(error="Please enter actual text for your topic.")
             
         if len(request_json.get("text", "")) > 50000:
