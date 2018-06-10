@@ -1494,7 +1494,7 @@ JOIN "user" rpa ON rp.author_id = rpa.id
 WHERE t.hidden = False
 AND t.category_id = :cid
 ORDER BY t.sticky DESC,
-t.recent_post_time DESC
+rp.created DESC
 LIMIT :pagination OFFSET :page
     """),
     page=(page-1)*pagination,
