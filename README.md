@@ -1,8 +1,12 @@
 # Lamia-Community
 
-**Latest News:** We are currently pushing for a 1.00 release in September 2018. This will be our first tagged release. Until that release, use at your own risk, this is a rapidly changing project. We are calling this release 1.00 because Lamia has already been used to run live sites since 2015 and has never had significant reliability issues.
+**Latest News:** This is dead. Forums are dead. Do not use forums. Do not use this. This is here only because it was once here and fuck, it might as well stay here since it was open source. Consider it a monument to obsolescence and my sins, which are so numerous that you can't even begin to imagine them all.
 
-Lamia Community is a platform, built using Flask.py, for those looking for an integrated forum, blog, and status update interface without all of the assumptions made by social network platforms.
+No seriously, don't use this, it's dead and I can't be assed to maintain it. This is serious because some of the dependencies have security vulnerabilities that have come up since this died. I haven't done anything about that and I'm not going to, because I need to move on. You should too. Life is better that way.
+
+Thank you for coming to my ted talk. Please like and subscribe.
+
+OLD STUFF FROM WHEN I WAS ACTUALLY MAINTAINING THIS CONTINUES BELOW. IT IS OLD.
 
 ## What do I need in order to run Lamia Community?
 
