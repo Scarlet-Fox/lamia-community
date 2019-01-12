@@ -1,4 +1,6 @@
-# Lamia-Community
+# Lamia-Community -- a forum
+
+ [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
 **Latest News:** This is dead. Forums are dead. Do not use forums. Do not use this. This is here only because it was once here and fuck, it might as well stay here since it was open source. Consider it a monument to obsolescence and my sins, which are so numerous that you can't even begin to imagine them all.
 
