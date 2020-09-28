@@ -61,5 +61,5 @@ validators==0.12.1
 vine==1.1.4
 Wand==0.6.3
 webassets==0.12.1
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 WTForms==2.1
