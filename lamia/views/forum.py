@@ -1756,6 +1756,6 @@ def index():
         newest_member=newest_member, new_member_intro_topic=new_member_intro_topic, tweets=tweets, birthday_list=birthday_list,
         online_user_count=len(online_users), recently_replied_topics=recently_replied_topics, recently_created_topics=recently_created_topics,
         post_count=post_count, topic_count=topic_count, blog_entry_count=blog_entry_count, status_update_count=status_update_count, status_comments_count=status_comments_count,
-        roles_for_legend=roles_for_legend)
+        roles_for_legend=roles_for_legend, login_name=current_user.login_name)
 
     return render

@@ -1057,7 +1057,22 @@ def change_user_settings(login_name):
                     except AttributeError:
                         pass
         else:
-            form.theme.data = str(user.theme.id)
+            try:
+                form.theme.data = str(user.theme.id)
+            except:
+                default_theme = sqla.session.query(sqlm.SiteTheme).filter_by(default=True).all()
+                if len(default_theme) > 0:
+                    default_theme = default_theme[0]
+                else:
+                    default_theme = sqla.session.query(sqlm.SiteTheme).order_by("weight").all()
+                    if len(default_theme) > 0:
+                        default_theme = default_theme[0]
+                    else:
+                        try:
+                            form.theme.data = None
+                        except AttributeError:
+                            pass
+                
 
     return render_template("profile/change_user_settings.jade", profile=user, NOTIFICATION_CATEGORIES=sqlm.Notification.NOTIFICATION_CATEGORIES, available_fields=available_fields, current_fields=current_fields, form=form, page_title="Change Settings - %s" % (app.get_site_config("core.site-name"),))
 

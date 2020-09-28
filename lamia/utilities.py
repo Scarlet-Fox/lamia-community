@@ -3,6 +3,7 @@ import hashlib
 import arrow
 from lamia import app
 import cgi, pytz, os
+import html
 try:
     import regex as re
 except:
@@ -272,11 +273,11 @@ class ForumHTMLCleaner(object):
         )
 
     def basic_escape(self, dirty_text):
-        text = cgi.escape(dirty_text)
+        text = html.escape(dirty_text)
         return text
         
     def tweet_clear(self, dirty_text):
-        text = cgi.escape(dirty_text)
+        text = html.escape(dirty_text)
 
         urls = url_rgx.findall(text)
         for url in urls:
@@ -293,7 +294,7 @@ class ForumHTMLCleaner(object):
         return text
 
     def escape(self, dirty_text):
-        text = cgi.escape(dirty_text)
+        text = html.escape(dirty_text)
         
         text = text.replace("\n", "<br>")
     
