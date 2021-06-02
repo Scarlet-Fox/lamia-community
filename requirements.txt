@@ -56,7 +56,7 @@ SQLAlchemy-Searchable==1.0.3
 SQLAlchemy-Utils==0.33.3
 termstyle==0.1.11
 Unidecode==1.0.22
-urllib3==1.22
+urllib3==1.26.5
 validators==0.12.1
 vine==1.1.4
 Wand==0.6.3
