@@ -1,6 +1,6 @@
 alembic==0.9.9
 amqp==2.6.0
-arrow==0.12.1
+arrow==0.15.1
 backports.functools-lru-cache==1.5
 bbcode==1.0.31
 bcrypt==3.1.4
